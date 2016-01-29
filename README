@@ -1,7 +1,9 @@
+This is WIP to develop libraries and command line tools with minimum dependencies
+to support conversion of DICOM data specific to quantitative image analysis research.
+
+This work is part of the QIICR project, http://qiicr.org.
+
 TODO:
-* separate into a project
-* library vs application
-* top-level name: qdicom?
 * add superbuild for dependencies
   * dcmtk
   * SlicerExecutionModel
