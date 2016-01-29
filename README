@@ -1,0 +1,8 @@
+TODO:
+* separate into a project
+* library vs application
+* top-level name: qdicom?
+* add superbuild for dependencies
+  * dcmtk
+  * SlicerExecutionModel
+  * ITK

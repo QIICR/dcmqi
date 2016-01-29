@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics</category>
+  <title>Convert DICOM SEG into NRRD</title>
+  <description></description>
+  <version></version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Andrey Fedorov, BWH</contributor>
+<acknowledgements></acknowledgements>
+
+<parameters>
+    <file>
+      <name>inputSEGFileName</name>
+      <label>SEG file name</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description>File name of the SEG object.</description>
+    </file>
+
+    <boolean>
+      <name>combineSegments</name>
+      <flag>c</flag>
+      <longflag>combine</longflag>
+      <label>Combine segments</label>
+      <channel>input</channel>
+      <default>0</default>
+      <description>Combine segments into one output file. This option will cause warnings to be printed on the console in case segments overlap and are overwritten. For now, always split into separate files.</description>
+    </boolean>
+
+    <file>
+      <name>outputDirName</name>
+      <label>Output directory name</label>
+      <channel>input</channel>
+      <index>1</index>
+      <description>Directory to store individual segments as NRRD files. File names will correspond to the segment numbers.</description>
+    </file>
+
+  </parameters>
+
+</executable>

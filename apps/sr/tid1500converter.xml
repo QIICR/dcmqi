@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics</category>
+  <title>DICOM conversion of the Iowa QIICR single time point use case</title>
+  <description></description>
+  <version></version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Andrey Fedorov, BWH</contributor>
+<acknowledgements></acknowledgements>
+
+<parameters>
+    <string-vector>
+      <name>inputPETFileNames</name>
+      <label>PET images file names</label>
+      <channel>input</channel>
+      <longflag>petFiles</longflag>
+      <description>List of PET images that were used for calculating the measurement</description>
+    </string-vector>
+
+    <file>
+      <name>inputRWVMFileName</name>
+      <label>RWVM file name</label>
+      <channel>input</channel>
+      <longflag>rwvmFile</longflag>
+      <description>File name of the RWVM object encoding PET SUVbw</description>
+    </file>
+
+    <file>
+      <name>inputSEGFileName</name>
+      <label>SEG file name</label>
+      <channel>output</channel>
+      <longflag>segFile</longflag>
+      <description>File name of the SEG object encoding the regions</description>
+    </file>
+
+    <file>
+      <name>inputLabelAttributesFileName</name>
+      <label>Text file storing the attributes for each label of SEG</label>
+      <channel>input</channel>
+      <longflag>labelAttributes</longflag>
+      <description>Text file storing the attributes for each label of SEG</description>
+    </file>
+
+    <string>
+      <name>measurementsFileName</name>
+      <label>Measurements file name</label>
+      <channel>input</channel>
+      <longflag>measurementsFile</longflag>
+      <description>CSV file produced by the QuantitativeIndexCalculation tool that encode measurements for each of the ROIs. The measurements are stored in rows, rows are expected to be in the same order as segments in SEGFileName.</description>
+    </string>
+
+    <file>
+      <name>quantityTermsFileName</name>
+      <label>Dictionary of coded terms for quantities and units</label>
+      <channel>input</channel>
+      <longflag>quantityTerms</longflag>
+      <description>Comma-delimited file, see documentation for details</description>
+    </file>
+
+    <file>
+      <name>outputSRFileName</name>
+      <label>SR file name</label>
+      <channel>output</channel>
+      <description>File name of the SR object that will keep the resulting SR document.</description>
+      <index>0</index>
+    </file>
+
+    <string>
+      <name>readerId</name>
+      <label>Reader Identifier</label>
+      <channel>input</channel>
+      <longflag>readerId</longflag>
+      <description>Reader identifier</description>
+    </string>
+
+    <string>
+      <name>deviceUID</name>
+      <label>Device Unique Identifier</label>
+      <channel>input</channel>
+      <longflag>deviceUID</longflag>
+      <description>Device unique identifier. Note that either reader ID, or device UID must be specified!</description>
+    </string>
+
+    <string>
+      <name>deviceName</name>
+      <label>Device Name</label>
+      <channel>input</channel>
+      <longflag>deviceName</longflag>
+      <description>Human-readable name of the device used to generate the report.</description>
+    </string>
+
+    <string>
+      <name>sessionId</name>
+      <label>Session Identifier</label>
+      <channel>input</channel>
+      <longflag>sessionId</longflag>
+      <description>Session identifier</description>
+    </string>
+
+    <string>
+      <name>timePointId</name>
+      <label>Time Point Identifier</label>
+      <channel>input</channel>
+      <longflag>timepointId</longflag>
+      <description>Time point identifier</description>
+    </string>
+
+    <string>
+      <name>seriesDescription</name>
+      <label>Series description</label>
+      <channel>input</channel>
+      <longflag>seriesDescription</longflag>
+      <description>Series description</description>
+    </string>
+
+    <string>
+      <name>seriesNumber</name>
+      <label>Series number</label>
+      <channel>input</channel>
+      <longflag>seriesNumber</longflag>
+      <description>Series number - make it unique for series wihin a study.</description>
+    </string>
+
+    <string>
+      <name>instanceNumber</name>
+      <label>Instance number</label>
+      <channel>input</channel>
+      <longflag>instanceNumber</longflag>
+      <description>Instance number</description>
+      <default>"1"</default>
+    </string>
+
+  </parameters>
+
+</executable>
