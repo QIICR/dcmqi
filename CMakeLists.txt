@@ -210,12 +210,6 @@ set(DCMQI_DEPENDENCIES
   ITK
   )
 
-  if(COMMAND superbuild_is_external_project_includable)
-    superbuild_is_external_project_includable("DCMTK" _include_project)
-  endif()
-
-message("includable ${_include_project}")
-
 include(CMake/ctkBlockCheckDependencies.cmake)
 
 
