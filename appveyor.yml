@@ -13,7 +13,7 @@ before_build:
   - cmd: cmake --version
   - cmd: mkdir c:\dcmqi-build
   - cmd: cd c:\dcmqi-build
-  - cmd: cmake -DCMAKE_BUILD_TYPE=Release c:\dcmqi
+  - cmd: cmake -DCMAKE_BUILD_TYPE:STRING=Release c:\dcmqi
   - cmd: dir
 build_script:
   - cmd: msbuild DCMQI.sln
