@@ -12,7 +12,7 @@ before_build:
   - cmd: cmake c:\dcmqi
   - cmd: dir
 build_script:
-  - cmd: msbuild DCMQI.sln
+  - cmd: msbuild DCMQI.sln /m
 cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
