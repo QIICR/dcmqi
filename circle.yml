@@ -1,7 +1,9 @@
 dependencies:
-  cache:
+  cache_directories:
+    - "~/dcmqi-build/zlib"
     - "~/dcmqi-build/ITK"
     - "~/dcmqi-build/DCMTK"
+    - "~/dcmqi-build/SlicerExecutionModel"
   pre:
     - sudo apt-get update; sudo apt-get install cmake
   post:

@@ -8,6 +8,7 @@ set(${proj}_DEPENDENCIES "")
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
 
 if(${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
+  message("===> Using system zlib!")
   unset(zlib_DIR CACHE)
   find_package(ZLIB REQUIRED)
   set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})

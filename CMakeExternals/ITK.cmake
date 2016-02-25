@@ -25,7 +25,7 @@ endif()
 
 if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
-  set(revision_tag "v4.9.0")
+  set(revision_tag 84ba36bbbdfc9bdf489479453a4a85b4a4ed22d5)
   if(${proj}_REVISION_TAG)
     set(revision_tag ${${proj}_REVISION_TAG})
   endif()
@@ -37,7 +37,7 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
                       GIT_TAG ${revision_tag})
   else()
-    set(location_args GIT_REPOSITORY "${git_protocol}://itk.org/ITK.git"
+    set(location_args GIT_REPOSITORY "${git_protocol}://github.com/Slicer/ITK.git"
                       GIT_TAG ${revision_tag})
   endif()
 

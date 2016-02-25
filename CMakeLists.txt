@@ -208,6 +208,7 @@ set(DCMQI_DEPENDENCIES
   zlib
   DCMTK
   ITK
+  SlicerExecutionModel
   )
 
 include(CMake/ctkBlockCheckDependencies.cmake)
