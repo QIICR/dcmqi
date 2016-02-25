@@ -2,7 +2,7 @@
 set(proj SlicerExecutionModel)
 
 # Set dependency list
-set(${proj}_DEPENDENCIES ${ITK_EXTERNAL_NAME})
+set(${proj}_DEPENDENCIES ITK DCMTK)
 
 # Include dependent projects if any
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
@@ -61,15 +61,6 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
       ${${proj}_DEPENDENCIES}
     )
   set(SlicerExecutionModel_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
-
-  #-----------------------------------------------------------------------------
-  # Launcher setting specific to build tree
-
-  set(${proj}_LIBRARY_PATHS_LAUNCHER_BUILD ${SlicerExecutionModel_DIR}/ModuleDescriptionParser/bin/<CMAKE_CFG_INTDIR>)
-  mark_as_superbuild(
-    VARS ${proj}_LIBRARY_PATHS_LAUNCHER_BUILD
-    LABELS "LIBRARY_PATHS_LAUNCHER_BUILD"
-    )
 
 else()
   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})

@@ -4,7 +4,7 @@
 
 set(proj ITK)
 
-set(${proj}_DEPENDENCIES DCMTK)
+set(${proj}_DEPENDENCIES DCMTK zlib)
 
 ExternalProject_Include_Dependencies(${proj}
   PROJECT_VAR proj
