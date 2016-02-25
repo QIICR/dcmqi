@@ -7,4 +7,4 @@ dependencies:
   pre:
     - sudo apt-get update; sudo apt-get install cmake
   post:
-    - mkdir ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
+    - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
