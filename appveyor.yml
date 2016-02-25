@@ -16,4 +16,7 @@ before_build:
   - cmd: cmake c:\dcmqi
   - cmd: dir
 build_script:
-  - cmd: msbuild
+  - cmd: msbuild DCMQI
+cache:
+  - C:\ProgramData\chocolatey\bin
+  - C:\ProgramData\chocolatey\lib
