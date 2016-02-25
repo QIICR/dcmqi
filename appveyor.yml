@@ -4,7 +4,7 @@ os:
 clone_depth: 1
 clone_folder: c:\dcmqi
 configuration:
-  - Debug
+  - Release
 platform:
   - x64
 install:
