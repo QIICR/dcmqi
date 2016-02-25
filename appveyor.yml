@@ -9,12 +9,11 @@ platform:
   - x64
 install:
   - cinst cmake
-  - cinst make
-build_script:
+before_build:
   - cmd: cmake --version
-  - cmd: make -v
   - cmd: mkdir c:\dcmqi-build
   - cmd: cd c:\dcmqi-build
   - cmd: cmake c:\dcmqi
   - cmd: dir
-  - cmd: make all
+build_script:
+  - cmd: msbuild
