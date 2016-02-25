@@ -1,0 +1,17 @@
+version: 1.0.{build}
+os:
+  - Visual Studio 2013
+clone_depth: 1
+clone_folder: c:\dcmqi
+configuration:
+  - Release
+platform:
+  - x64
+install:
+  - cinst cmake
+  - cinst make
+build_script:
+  - cmd: mkdir c:\dcmqi-build
+  - cmd: cd c:\dcmqi-build
+  - cmd: cmake c:\dcmqi
+  - cmd: make
