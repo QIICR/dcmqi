@@ -11,6 +11,8 @@ install:
   - cinst cmake
   - cinst make
 build_script:
+  - cmd: cmake --version
+  - cmd: make -v
   - cmd: mkdir c:\dcmqi-build
   - cmd: cd c:\dcmqi-build
   - cmd: cmake c:\dcmqi
