@@ -3,10 +3,6 @@ os:
   - Visual Studio 2013
 clone_depth: 1
 clone_folder: c:\dcmqi
-configuration:
-  - Release
-platform:
-  - x64
 install:
   - cinst cmake
 before_build:
