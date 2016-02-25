@@ -72,7 +72,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_APPS:BOOL=OFF
       -DDCMTK_ENABLE_BUILTIN_DICTIONARY:BOOL=ON
       -DDCMTK_ENABLE_PRIVATE_TAGS:BOOL=ON
-      -DCMTK_MODULES:STRING=ofstd;oflog;dcmdata;dcmimgle;dcmimage;dcmsr;dcmiod;dcmfg;dcmseg;dcmjpeg
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
