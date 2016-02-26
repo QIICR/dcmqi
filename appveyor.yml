@@ -9,9 +9,10 @@ before_build:
   - cmd: cmake --version
   - cmd: mkdir c:\dcmqi-build
   - cmd: cd c:\dcmqi-build
-  - cmd: cmake c:\dcmqi
+  - cmd: cmake -DCMAKE_BUILD_TYPE:STRING=Release c:\dcmqi
   - cmd: dir
 build_script:
+  - cmd: type DCMQI.sln
   - cmd: msbuild DCMQI.sln /m
 cache:
   - C:\ProgramData\chocolatey\bin
