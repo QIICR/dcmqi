@@ -7,11 +7,13 @@ install:
   - cinst cmake
 configuration:
   - Release
+platform:
+  - x64
 before_build:
   - cmd: cmake --version
   - cmd: mkdir c:\dcmqi-build
   - cmd: cd c:\dcmqi-build
-  - cmd: cmake -DCMAKE_BUILD_TYPE:STRING=Release c:\dcmqi
+  - cmd: cmake -G "Visual Studio 12 2013 Win64"-DCMAKE_BUILD_TYPE:STRING=Release c:\dcmqi
   - cmd: dir
 build_script:
   - cmd: type DCMQI.sln
