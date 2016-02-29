@@ -22,9 +22,9 @@ cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
 artifacts:
-  - path: c:\dcmqi-build\ITK-build
+  - path: dcmqi-build\ITK-build
     name: ITK-dcmqi-bin
     type: zip
-  - path: c:\dcmqi-build\DCMTK-build
+  - path: dcmqi-build\DCMTK-build
     name: DCMTK-dcmqi-bin
     type: zip
