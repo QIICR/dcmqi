@@ -29,7 +29,7 @@ artifacts:
     name: DCMTK-dcmqi-bin
     type: zip
 deploy:
-    provider: Github
+    provider: GitHub
     description: 'Test upload package of ITK-dcmqi-build zipped folder'
     artifact: ITK-dcmqi-bin
     auth_token:
