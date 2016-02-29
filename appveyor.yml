@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 0.0.{build}
 os:
   - Visual Studio 2013
 clone_depth: 1
@@ -29,6 +29,7 @@ artifacts:
     name: DCMTK-dcmqi-bin
     type: zip
 deploy:
+    release: itkdcmqi-v$(appveyor_build_version)
     provider: GitHub
     description: 'Test upload package of ITK-dcmqi-build zipped folder'
     artifact: ITK-dcmqi-bin
