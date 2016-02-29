@@ -28,3 +28,9 @@ artifacts:
   - path: dcmqi-build\DCMTK-build
     name: DCMTK-dcmqi-bin
     type: zip
+deploy:
+    provider: Github
+    description: 'Test upload package of ITK-dcmqi-build zipped folder'
+    artifact: ITK-dcmqi-bin
+    auth_token:
+      secure: ffHRHxe8buygkDl6kRw4vaNaH/ikYGoDn3TXfZ42cFXq7986houCT7/7qB8o5Vvf
