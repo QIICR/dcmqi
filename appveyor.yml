@@ -21,3 +21,10 @@ build_script:
 cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
+artifacts:
+  - path: c:\dcmqi-build\ITK-build
+    name: ITK-dcmqi-bin
+    type: zip
+  - path: c:\dcmqi-build\DCMTK-build
+    name: DCMTK-dcmqi-bin
+    type: zip
