@@ -71,6 +71,8 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
       -DDCMTK_ENABLE_BUILTIN_DICTIONARY:BOOL=ON
       -DDCMTK_ENABLE_PRIVATE_TAGS:BOOL=ON
+      # restrict enabled modules to cut on build time
+      -DDCMTK_MODULES:STRING=ofstd;oflog;dcmdata;dcmsr;dcmiod;dcmfg;dcmseg;dcmimgle;dcmimage
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
