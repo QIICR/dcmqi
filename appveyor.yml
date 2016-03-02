@@ -17,7 +17,7 @@ before_build:
   - cmd: dir
 after_build:
   - cmd: dir c:\dcmqi-build\ITK-build
-  - cmd: 7z a ITK-build.zip C:\dcmqi-build\ITK-build\*.*
+  - cmd: 7z a ITK-build.zip -r C:\dcmqi-build\ITK-build\*.*
   - cmd: appveyor PushArtifact ITK-build.zip
 build_script:
   - cmd: type DCMQI.sln
