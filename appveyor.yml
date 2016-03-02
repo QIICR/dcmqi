@@ -5,6 +5,7 @@ clone_depth: 1
 branches:
   only:
     - master
+skip_tags: true
 clone_folder: c:\dcmqi
 install:
   - cinst cmake
