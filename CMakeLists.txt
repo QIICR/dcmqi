@@ -224,4 +224,4 @@ if(DCMQI_SUPERBUILD)
   return()
 endif()
 
-add_directory("apps")
+add_subdirectory("apps")
