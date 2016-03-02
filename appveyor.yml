@@ -22,7 +22,9 @@ before_build:
 after_build:
   - cmd: dir c:\dcmqi-build\ITK-build
   - cmd: 7z a ITK-build.zip  C:\dcmqi-build\ITK-build\
-  - cmd: appveyor PushArtifact ITK-build.zip
+  - cmd: appveyor PushArtifact ITK-build1.zip
+  - cmd: dir c:\
+  - cmd: dir c:\dcmqi
 build_script:
   - cmd: type DCMQI.sln
   - cmd: msbuild DCMQI.sln /m
@@ -30,10 +32,10 @@ cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
 artifacts:
-  - path: ITK-build.zip
+  - path: ..\dcmqi-build\ITK-build
     name: ITK-dcmqi-bin
     type: zip
-  - path: DCMTK-build
+  - path: ..\dcmqi-build\DCMTK-build
     name: DCMTK-dcmqi-bin
     type: zip
 deploy:
