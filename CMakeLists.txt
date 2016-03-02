@@ -223,3 +223,5 @@ if(DCMQI_SUPERBUILD)
   include("${CMAKE_CURRENT_SOURCE_DIR}/SuperBuild.cmake")
   return()
 endif()
+
+add_directory("apps")
