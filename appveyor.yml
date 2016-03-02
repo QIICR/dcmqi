@@ -30,7 +30,7 @@ cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
 artifacts:
-  - path: ITK-build
+  - path: ITK-build.zip
     name: ITK-dcmqi-bin
     type: zip
   - path: DCMTK-build
