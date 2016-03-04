@@ -3,7 +3,5 @@ os:
   - osx
 compiler:
   - clang
-before_install:
-  - brew update
 script:
-  - cd src && cmake . && make
+  - cmake . && make
