@@ -7,8 +7,13 @@ before_script:
   - cmake --version
   - clang --version
   - mkdir /Users/travis/build/fedorov/dcmqi-build
+  - cd /Users/travis/build/fedorov
+  - wget https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz
+  - tar zxf cmake-3.4.3.tar.gz
+  - cd cmake-3.4.3
+  - ./configure && make
 script:
   - cd /Users/travis/build/fedorov/dcmqi-build
-  - cmake /Users/travis/build/fedorov/dcmqi
+  - /Users/travis/build/fedorov/cmake-3.4.3/bin/cmake /Users/travis/build/fedorov/dcmqi
   - ls DCMQI-build
   - make
