@@ -3,5 +3,12 @@ os:
   - osx
 compiler:
   - clang
+before_script:
+  - cmake --version
+  - clang --version
+  - mkdir /Users/travis/build/fedorov/dcmqi-build
 script:
-  - cmake . && make
+  - cd /Users/travis/build/fedorov/dcmqi-build
+  - cmake . 
+  - ls DCMQI-build
+  - make
