@@ -9,6 +9,6 @@ before_script:
   - mkdir /Users/travis/build/fedorov/dcmqi-build
 script:
   - cd /Users/travis/build/fedorov/dcmqi-build
-  - cmake . 
+  - cmake /Users/travis/build/fedorov/dcmqi
   - ls DCMQI-build
   - make
