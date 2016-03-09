@@ -21,8 +21,13 @@ before_build:
   - cmd: dir
 after_build:
   - cmd: dir c:\dcmqi-build\ITK-build
+  - cmd: dir c:\dcmqi-build\zlib-build
+  - cmd: 7z a zlib-install.zip C:\dcmqi-build\zlib-install
+  - cmd: appveyor PushArtifact zlib-build.zip
   - cmd: 7z a ITK-build.zip  C:\dcmqi-build\ITK-build\
-  - cmd: appveyor PushArtifact ITK-build1.zip
+  - cmd: appveyor PushArtifact ITK-build.zip
+  - cmd: 7z a DCMTK-build.zip  C:\dcmqi-build\DCMTK-build\
+  - cmd: appveyor PushArtifact DCMTK-build.zip
   - cmd: dir c:\
   - cmd: dir c:\dcmqi
 build_script:
@@ -31,17 +36,3 @@ build_script:
 cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
-artifacts:
-  - path: ..\dcmqi-build\ITK-build
-    name: ITK-dcmqi-bin
-    type: zip
-  - path: ..\dcmqi-build\DCMTK-build
-    name: DCMTK-dcmqi-bin
-    type: zip
-deploy:
-    release: itkdcmqi-v$(appveyor_build_version)
-    provider: GitHub
-    description: 'Test upload package of ITK-dcmqi-build zipped folder'
-    artifact: ITK-dcmqi-bin
-    auth_token:
-      secure: ffHRHxe8buygkDl6kRw4vaNaH/ikYGoDn3TXfZ42cFXq7986houCT7/7qB8o5Vvf
