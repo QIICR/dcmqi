@@ -14,25 +14,33 @@ configuration:
 platform:
   - x64
 before_build:
-  - cmd: cmake --version
-  - cmd: mkdir c:\dcmqi-build
-  - cmd: cd c:\dcmqi-build
-  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE:STRING=Release c:\dcmqi
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
+  - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/DCMTK/releases/download/DCMTK-dcmqi-3.6.1_20160216-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
+  - cmd: 7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.12/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
+  - cmd: 7z x C:\ITK-dcmqi.zip -oC:\ITK-install
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.4/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
+  - cmd: 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel-build
+  - cmd: mkdir c:\dcmqi\dcmqi-build
+  - cmd: cd c:\dcmqi\dcmqi-build
+  - cmd: cd c:\dcmqi\dcmqi-install
+  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE:STRING=Release -DITK_DIR:PATH=C:\ITK-install\lib\cmake -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
   - cmd: dir
-after_build:
-  - cmd: dir c:\dcmqi-build\ITK-build
-  - cmd: dir c:\dcmqi-build\zlib-build
-  - cmd: 7z a zlib-install.zip C:\dcmqi-build\zlib-install
-  - cmd: appveyor PushArtifact zlib-build.zip
-  - cmd: 7z a ITK-build.zip  C:\dcmqi-build\ITK-build\
-  - cmd: appveyor PushArtifact ITK-build.zip
-  - cmd: 7z a DCMTK-build.zip  C:\dcmqi-build\DCMTK-build\
-  - cmd: appveyor PushArtifact DCMTK-build.zip
-  - cmd: dir c:\
-  - cmd: dir c:\dcmqi
 build_script:
   - cmd: type DCMQI.sln
   - cmd: msbuild DCMQI.sln /m
+artifacts:
+  - path: dcmqi-build
+    name: dcmqi
+    type: zip
 cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
+deploy:
+  release: dcmqi-VS12-Win64-Release-v$(appveyor_build_version)
+  provider: GitHub
+  description: 'dcmqi-build packaged by appveyor'
+  artifact: ITK-dcmqi
+  auth_token:
+    secure: ffHRHxe8buygkDl6kRw4vaNaH/ikYGoDn3TXfZ42cFXq7986houCT7/7qB8o5Vvf
