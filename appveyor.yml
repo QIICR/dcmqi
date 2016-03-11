@@ -40,10 +40,3 @@ artifacts:
 cache:
   - C:\ProgramData\chocolatey\bin
   - C:\ProgramData\chocolatey\lib
-deploy:
-  release: dcmqi-VS12-Win64-Release-v$(appveyor_build_version)
-  provider: GitHub
-  description: 'dcmqi-build packaged by appveyor'
-  artifact: ITK-dcmqi
-  auth_token:
-    secure: ffHRHxe8buygkDl6kRw4vaNaH/ikYGoDn3TXfZ42cFXq7986houCT7/7qB8o5Vvf
