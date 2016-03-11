@@ -18,7 +18,7 @@ before_build:
   - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/DCMTK/releases/download/DCMTK-dcmqi-3.6.1_20160216-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
   - cmd: 7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.21/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.23/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
   - cmd: 7z x C:\ITK-dcmqi.zip -oC:\ITK-install
   - cmd: cd c:\
   - cmd: git clone https://github.com/fedorov/SlicerExecutionModel.git SlicerExecutionModel
