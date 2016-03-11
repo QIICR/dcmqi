@@ -18,7 +18,7 @@ before_build:
   - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/DCMTK/releases/download/DCMTK-dcmqi-3.6.1_20160216-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
   - cmd: 7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.19/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.21/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
   - cmd: 7z x C:\ITK-dcmqi.zip -oC:\ITK
   - cmd: cd c:\
   - cmd: git clone https://github.com/fedorov/SlicerExecutionModel.git SlicerExecutionModel
@@ -28,7 +28,7 @@ before_build:
   - cmd: 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
   - cmd: mkdir c:\dcmqi\dcmqi-build
   - cmd: cd c:\dcmqi\dcmqi-build
-  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE:STRING=Release -DITK_DIR:PATH=C:\ITK\ITK-build -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
+  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE:STRING=Release -DITK_DIR:PATH=C:\ITK-install -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
   - cmd: dir
 build_script:
   - cmd: type DCMQI.sln
