@@ -21,7 +21,7 @@
 
 #include "dcmtk/dcmdata/dcrledrg.h"
 
-#include "vnl/vnl_cross.h"
+#include "vnl_cross.h"
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
