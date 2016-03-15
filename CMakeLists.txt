@@ -241,4 +241,5 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/dcmqiVersionConfigure.h
 )
 
+enable_testing()
 add_subdirectory("apps")
