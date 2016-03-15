@@ -3,8 +3,6 @@ os:
 - osx
 compiler:
 - clang
-branches:
-  only: -master
 before_script:
 - cmake --version
 - clang --version
