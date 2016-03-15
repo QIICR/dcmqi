@@ -1,22 +1,28 @@
 language: c++
 os:
-  - osx
+- osx
 compiler:
-  - clang
+- clang
 branches:
-  only:
-    -master
+  only: -master
 before_script:
-  - cmake --version
-  - clang --version
-  - mkdir /Users/travis/build/fedorov/dcmqi-build
-  - cd /Users/travis/build/fedorov
-  - wget https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz
-  - tar zxf cmake-3.4.3.tar.gz
-  - cd cmake-3.4.3
-  - ./configure && make
+- cmake --version
+- clang --version
+- mkdir /Users/travis/build/fedorov/dcmqi-build
+- cd /Users/travis/build/fedorov
+- wget https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz
+- tar zxf cmake-3.4.3.tar.gz
+- cd cmake-3.4.3
+- ./configure && make
 script:
-  - cd /Users/travis/build/fedorov/dcmqi-build
-  - /Users/travis/build/fedorov/cmake-3.4.3/bin/cmake /Users/travis/build/fedorov/dcmqi
-  - ls DCMQI-build
-  - make
+- cd /Users/travis/build/fedorov/dcmqi-build
+- /Users/travis/build/fedorov/cmake-3.4.3/bin/cmake /Users/travis/build/fedorov/dcmqi
+- ls DCMQI-build
+- make
+deploy:
+  provider: releases
+  api_key:
+    secure: JGMWzGrUGKnJQslFRyt2MjPrrXQa71PZN34czdkdslk4iAqJqx41XB+U5CoWK/+91KRzY5FBBISAF/NJjAgPfbGeMLhnUcTacFd3iruVaAu7aXXV80BIaT4AOggU7NWMb8y+PQ5q7GtxDU0LXNW4t3kBez9oX+VB/+v9OyvVnpVb87iFJ+i4zKU20N8tWeUdHYXKrQUiNZSHeOQstSBn+F/GjA2hbenqqHArNznqECd4+gYJcPWiBx67zJDn3/vyb3vX5gLBYQEmbCEzLSlb8yVR0TO4T/oJ9Jt1T6EZ0A4HWdjXUw/JABb30zfd/1WiFRnVMc5Jrh5um6fway27o9ITL/QhT99uBFDlV48ySyKPIi7kKTdTTgbm8lDMzA5MbKIrgVNBgV9/RfQNI57RoxrnJBnSPzpJ7V3XxvpS5ms694YHRyFqfcG5/sbDm0dlyovQB9Dz1iChOpTzcuGEpaTPkx+ROk8JLhvOcRZhtZgdUiC7rsNrGILUoJtdv3UXJbavBwrZa0CzF4qOAkKSaI5x9xUsAim8PVwkCb+CRr478u8yd09IlubtjlL6m72D3RLSZ/56j+8sj0s6aI3hFbv7DrlxoNAlWKRzE9ybms1GAE3I+8nlAAjIt43rFIv+VTFeF8VEER046ocaRZsA2GypnxoRvuATVxk9AqG3E9U=
+  file: ''
+  on:
+    repo: fedorov/dcmqi
