@@ -17,6 +17,5 @@ before_script:
 script:
 - cd /Users/travis/build/fedorov/dcmqi-build
 - /Users/travis/build/fedorov/cmake-3.4.3/bin/cmake /Users/travis/build/fedorov/dcmqi
-- ls DCMQI-build
 - make
-- cd DCMQI-build/dcmqi-build && /Users/travis/build/fedorov/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
+- cd dcmqi-build/dcmqi-build && /Users/travis/build/fedorov/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
