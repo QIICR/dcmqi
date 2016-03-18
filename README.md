@@ -1,6 +1,8 @@
-[![Circle CI](https://circleci.com/gh/fedorov/dcmqi.svg?style=svg)](https://circleci.com/gh/fedorov/dcmqi)
-[![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
-[![TravisCI](https://travis-ci.org/fedorov/dcmqi.svg?branch=master)](https://travis-ci.org/fedorov/dcmqi)
+Linux build: [![Circle CI](https://circleci.com/gh/fedorov/dcmqi.svg?style=svg)](https://circleci.com/gh/fedorov/dcmqi)
+
+Windows build: [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
+
+Max OS X build: [![TravisCI](https://travis-ci.org/fedorov/dcmqi.svg?branch=master)](https://travis-ci.org/fedorov/dcmqi)
 
 # About
 
@@ -11,7 +13,15 @@ This work is part of the QIICR project, http://qiicr.org.
 
 # Prerequisites
 
-You will need the development envir
+You will need the development environment suitable for your platform. 
+CMake (http://cmake.org) is required to configure the build. The code is
+expected to compile on Windows, Mac and Linux (you can take a look at the icons
+on top of this document to see if the build succeeds on these platforms).
+
+The project is configured to download and build the prerequisites, which
+include Insight toolkit (ITK) http://itk.org, DICOM Toolkit (DCMTK)
+(http://dcmtk.org) and Slicer Execution Model
+(https://github.com/Slicer/SlicerExecutionModel). 
 
 # Usage
 
@@ -65,6 +75,6 @@ CA180918, PIs Kikinis and Fedorov).
 
 # Contact
 
-[Andrey Fedorov](http://fedorov.github.io)
+Please send your feedback, comments or problem reports to [Andrey Fedorov](http://fedorov.github.io)
 
-http://qiicr.org
+More information about QIICR: http://qiicr.org
