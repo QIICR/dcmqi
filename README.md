@@ -66,6 +66,18 @@ dcmqi-build directory:
 ctest -VV .
 ```
 
+# What is planned
+
+* separate functionality used by the converter tools into a reusable library
+* improve mechanisms used for communicating metadata to the converter tools;
+  one idea being explored is to use JSON instead of or as an alternative to the
+  comma-separated .info files used currently. It is also conceivable to replace
+  command line arguments with a JSON to communicate series level attributes
+  separately from segment-level attributes.
+* integrate this library within a 3D Slicer extension
+* provide converter tools for generating DICOM Structured Reports following TID
+  1500 (Measurement Report).
+
 # Acknowledgments
 
 This work is supported in part the National Institutes of Health, National
