@@ -465,7 +465,7 @@ int main(int argc, char *argv[])
             if(sliceIterator.Get() == label){
               frameData[framePixelCnt] = 1;
               ImageType::IndexType idx = sliceIterator.GetIndex();
-              std::cout << framePixelCnt << " " << idx[1] << "," << idx[0] << std::endl;
+              //std::cout << framePixelCnt << " " << idx[1] << "," << idx[0] << std::endl;
             } else
               frameData[framePixelCnt] = 0;
           }

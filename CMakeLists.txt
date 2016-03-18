@@ -227,6 +227,7 @@ endif()
 find_package(DCMTK NO_MODULE REQUIRED)
 find_package(SlicerExecutionModel NO_MODULE REQUIRED GenerateCLP)
 find_package(ITK NO_MODULE REQUIRED)
+include(${ITK_USE_FILE})
 
 include(${SlicerExecutionModel_USE_FILE})
 
@@ -242,4 +243,6 @@ configure_file(
 )
 
 enable_testing()
+set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
+
 add_subdirectory("apps")
