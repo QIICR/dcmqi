@@ -2,7 +2,7 @@
 
 * Linux build: [![Circle CI](https://circleci.com/gh/fedorov/dcmqi.svg?style=svg)](https://circleci.com/gh/fedorov/dcmqi)
 * Windows build: [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
-* Max OS X build: [![TravisCI](https://travis-ci.org/fedorov/dcmqi.svg?branch=master)](https://travis-ci.org/fedorov/dcmqi)
+* Mac OS X build: [![TravisCI](https://travis-ci.org/fedorov/dcmqi.svg?branch=master)](https://travis-ci.org/fedorov/dcmqi)
 
 # About
 
