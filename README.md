@@ -1,8 +1,8 @@
 # Continuous integration
 
-* Linux build: [![Circle CI](https://circleci.com/gh/fedorov/dcmqi.svg?style=svg)](https://circleci.com/gh/fedorov/dcmqi)
+* Linux build: [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
 * Windows build: [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
-* Mac OS X build: [![TravisCI](https://travis-ci.org/fedorov/dcmqi.svg?branch=master)](https://travis-ci.org/fedorov/dcmqi)
+* Mac OS X build: [![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
 
 # About
 
