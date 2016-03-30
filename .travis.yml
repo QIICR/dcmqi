@@ -8,8 +8,8 @@ compiler:
 before_script:
 - cmake --version
 - clang --version
-- mkdir /Users/travis/build/fedorov/dcmqi-build
-- cd /Users/travis/build/fedorov
+- mkdir /Users/travis/build/QIICR/dcmqi-build
+- cd /Users/travis/build/QIICR
 - wget http://www.dclunie.com/dicom3tools/workinprogress/macexe/dicom3tools_macexe_1.00.snapshot.20151213160232.zip
 - tar zxf dicom3tools_macexe_1.00.snapshot.20151213160232.zip
 - wget https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz
@@ -17,7 +17,7 @@ before_script:
 - cd cmake-3.4.3
 - ./configure && make
 script:
-- cd /Users/travis/build/fedorov/dcmqi-build
-- /Users/travis/build/fedorov/cmake-3.4.3/bin/cmake /Users/travis/build/fedorov/dcmqi
+- cd /Users/travis/build/QIICR/dcmqi-build
+- /Users/travis/build/QIICR/cmake-3.4.3/bin/cmake /Users/travis/build/QIICR/dcmqi
 - make
-- cd /Users/travis/build/fedorov/dcmqi-build && /Users/travis/build/fedorov/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
+- cd /Users/travis/build/QIICR/dcmqi-build && /Users/travis/build/QIICR/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
