@@ -29,26 +29,29 @@
 #include "dcmtk/dcmsr/codes/srt.h"
 #include "dcmtk/dcmsr/cmr/tid1500.h"
 
+#include "json/json.h"
+
 #include "tid1500converterCLP.h"
 
 int main(int argc, char** argv){
   PARSE_ARGS;
 
+  Json::Value root;
+  std::fstream test("test.json", std::ifstream::binary);
+  test >> root;
+
   TID1500_MeasurementReport report(CMR_CID7021::ImagingMeasurementReport);
   DSRCodedEntryValue title;
-  /* check initial settings */
-  OFCHECK(!report.isValid());
-  OFCHECK(report.getDocumentTitle(title).good());
-  OFCHECK(title == CODE_DCM_ImagingMeasurementReport);
-  OFCHECK(report.compareTemplateIdentication("1500", "DCMR"));
+
   /* create a new report */
-  OFCHECK(report.createNewMeasurementReport(CMR_CID7021::PETMeasurementReport).good());
-  OFCHECK(report.getDocumentTitle(title).good());
-  OFCHECK(title == CODE_DCM_PETMeasurementReport);
+  OFCHECK(report.createNewMeasurementReport(CMR_CID7021::ImagingMeasurementReport).good());
+
   /* set the language */
   OFCHECK(report.setLanguage(CID5000_Languages::English).good());
+
   /* set details on the observation context */
   OFCHECK(report.getObservationContext().addPersonObserver("Doe^Jane", "Some Organization").good());
+
   /* create new image library (only needed after clear) */
   OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
   /* set two values for "procedure reported" */
