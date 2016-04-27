@@ -29,6 +29,7 @@ The project is configured to download and build the following prerequisites:
 
 If you built Slicer previously on your own, you can disable the SuperBuild option. Since your Slicer build already
 downloaded and built all essential prerequisites, this CMake project will be able to reuse them.
+
 1. Set DCMQI_SUPERBUILD in your CMAKE settings to OFF
 2. Configure
 3. Set SlicerExecutionModel_DIR manually, which is usually located under
