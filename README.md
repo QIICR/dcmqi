@@ -20,10 +20,22 @@ CMake (http://cmake.org) is required to configure the build. The code is
 expected to compile on Windows, Mac and Linux (you can take a look at the icons
 on top of this document to see if the build succeeds on these platforms).
 
-The project is configured to download and build the prerequisites, which
-include Insight toolkit (ITK) http://itk.org, DICOM Toolkit (DCMTK)
-(http://dcmtk.org) and Slicer Execution Model
-(https://github.com/Slicer/SlicerExecutionModel). 
+The project is configured to download and build the following prerequisites:
+* Insight toolkit (ITK) http://itk.org
+* DICOM Toolkit (DCMTK) http://dcmtk.org
+* Slicer Execution Model https://github.com/Slicer/SlicerExecutionModel
+
+### Did you build Slicer on your own? You can speed up the build process!
+
+If you built Slicer previously on your own, you can disable the SuperBuild option. Since your Slicer build already
+downloaded and built all essential prerequisites, this CMake project will be able to reuse them.
+1. Set DCMQI_SUPERBUILD in your CMAKE settings to OFF
+2. Configure
+3. Set SlicerExecutionModel_DIR manually, which is usually located under
+{Slicer_Build_Directory}/SlicerExecutionModel-build
+4. Configure and generate
+
+This will speed up the build process enormously.
 
 # Usage
 
