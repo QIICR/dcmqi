@@ -1,12 +1,84 @@
 @startuml
 
+package "dcmqi" {
+    class SegmentAttributes
+    class Segmentation
+    SegmentInformationReader <|-- SegmentInformationCSVReader
+    SegmentInformationReader <|-- SegmentInformationJSONReader
+
+    SegmentInformationWriter <|-- SegmentInformationCSVWriter
+    SegmentInformationWriter <|-- SegmentInformationJSONWriter
+
+    SegmentInformationReader --* SegmentAttributes : use
+    SegmentInformationWriter --* SegmentAttributes : use
+}
+
+package JSON <<Database>> {
+}
+
+package CSV <<Database>> {
+}
+
+SegmentInformationCSVReader --> CSV : reads
+SegmentInformationCSVWriter --> CSV : writes
+
+SegmentInformationJSONReader --> JSON : reads
+SegmentInformationJSONWriter --> JSON : writes
+
+
+
+abstract class SegmentInformationReader {
+    + attributes : SegmentAttributes[]
+    + SegmentInformationReader(string inputFileName)
+    + {abstract} read() : bool
+}
+
+class Segmentation {
+    + seriesNumber: int
+    + seriesDescription: string
+}
+
+note right of Segmentation
+    Here it would make sense to provide
+    as many default attributes as bossible
+end note
+
+class SegmentInformationCSVReader {
+    read() : bool
+}
+
+class SegmentInformationJSONReader {
+    read() : bool
+}
+
+abstract class SegmentInformationWriter {
+    + attributes : SegmentAttributes[]
+    + SegmentInformationWriter()
+    + {abstract} write(string filename) : bool
+}
+
+class SegmentInformationCSVWriter {
+    write(string filename) : bool
+}
+
+class SegmentInformationJSONWriter {
+    write(string filename) : bool
+}
+
+note bottom of dcmqi
+  Needs to handle DICOM Segmentation conversion
+  1. itk -> dcm
+  2. dcm -> itk
+  - label/segment information transmitted via json OR csv
+end note
+
 class SegmentAttributes {
-- labelID : unsigned
-- attributesDictionary : map<string, string>
-+ setLabelID(unsigned labelID) : void
-+ lookupAttribute(string key) : string
-+ populateAttributesFromString(string attributesStr) : int
-+ PrintSelf() : void
+    - labelID : unsigned
+    - attributesDictionary : map<string, string>
+    + setLabelID(unsigned labelID) : void
+    + lookupAttribute(string key) : string
+    + populateAttributesFromString(string attributesStr) : int
+    + PrintSelf() : void
 }
 
 @enduml
