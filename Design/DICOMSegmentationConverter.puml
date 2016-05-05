@@ -1,6 +1,7 @@
 @startuml
 
-package "dcmqi" {
+package dcmqi {
+
     class SegmentAttributes
     class Segmentation
     SegmentInformationReader <|-- SegmentInformationCSVReader
@@ -11,6 +12,21 @@ package "dcmqi" {
 
     SegmentInformationReader --* SegmentAttributes : use
     SegmentInformationWriter --* SegmentAttributes : use
+
+    note as bla
+      DICOM Segmentation conversion
+      1. itk -> dcm
+      2. dcm -> itk
+      Label/Segment information
+      transmitted using json OR csv
+    end note
+
+    note as SegmentationNote
+        Here it would make sense to provide
+        as many default attributes as possible
+    end note
+
+    SegmentationNote <- Segmentation
 }
 
 package JSON <<Database>> {
@@ -38,11 +54,6 @@ class Segmentation {
     + seriesDescription: string
 }
 
-note right of Segmentation
-    Here it would make sense to provide
-    as many default attributes as possible
-end note
-
 class SegmentInformationCSVReader {
     read() : bool
 }
@@ -64,13 +75,6 @@ class SegmentInformationCSVWriter {
 class SegmentInformationJSONWriter {
     write(string filename) : bool
 }
-
-note bottom of dcmqi
-  Needs to handle DICOM Segmentation conversion
-  1. itk -> dcm
-  2. dcm -> itk
-  - label/segment information transmitted via json OR csv
-end note
 
 class SegmentAttributes {
     - labelID : unsigned
