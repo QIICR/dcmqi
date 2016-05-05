@@ -40,7 +40,7 @@ class Segmentation {
 
 note right of Segmentation
     Here it would make sense to provide
-    as many default attributes as bossible
+    as many default attributes as possible
 end note
 
 class SegmentInformationCSVReader {
