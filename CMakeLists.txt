@@ -245,4 +245,9 @@ configure_file(
 enable_testing()
 set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
+# jsoncpp
+# https://github.com/open-source-parsers/jsoncpp/
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp)
+set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
+
 add_subdirectory("apps")
