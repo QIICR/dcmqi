@@ -20,6 +20,6 @@ script:
 - cd /Users/travis/build/QIICR/dcmqi-build
 - /Users/travis/build/QIICR/cmake-3.4.3/bin/cmake /Users/travis/build/QIICR/dcmqi
 - make
-- cd /Users/travis/build/QIICR/dcmqi-build && /Users/travis/build/QIICR/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
+- cd /Users/travis/build/QIICR/dcmqi-build/dcmqi-build && /Users/travis/build/QIICR/cmake-3.4.3/bin/ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
 after_script:
 - /Users/travis/build/QIICR/dciodvfy /Users/travis/build/QIICR/dcmqi-build/dcmqi-build/Testing/Temporary/liver.dcm
