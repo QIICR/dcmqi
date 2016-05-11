@@ -1,0 +1,25 @@
+@startuml
+title DICOM Segmentation to ITK image Conversion
+
+database ITK <<NRRD Segmentation>>as ITK1
+database DcmSegmentation as DICOM1
+rectangle DCMQI as DCMQI1
+
+DICOM1 -> DCMQI1
+DCMQI1 -> ITK1 : conversion to
+
+
+newpage
+
+title ITK image to DCM Segmentation Conversion
+
+database JSON <<Segmentation Metadata>>
+database DcmSegmentation as DICOM
+rectangle DCMQI
+database ITK <<Segmentations>>
+
+ITK -> DCMQI
+JSON --> DCMQI
+DCMQI -> DICOM : conversion to
+
+@enduml

@@ -1,80 +1,73 @@
 @startuml
 
-package dcmqi {
-
-    class SegmentAttributes
-    class Segmentation
-    SegmentInformationReader <|-- SegmentInformationCSVReader
-    SegmentInformationReader <|-- SegmentInformationJSONReader
-
-    SegmentInformationWriter <|-- SegmentInformationCSVWriter
-    SegmentInformationWriter <|-- SegmentInformationJSONWriter
-
-    SegmentInformationReader --* SegmentAttributes : use
-    SegmentInformationWriter --* SegmentAttributes : use
-
-    note as bla
-      DICOM Segmentation conversion
-      1. itk -> dcm
-      2. dcm -> itk
-      Label/Segment information
-      transmitted using json OR csv
-    end note
-
-    note as SegmentationNote
-        Here it would make sense to provide
-        as many default attributes as possible
-    end note
-
-    SegmentationNote <- Segmentation
-}
+title ITK image -> DCM segmentation, DCM segmentation -> ITK image
 
 package JSON <<Database>> {
 }
 
-package CSV <<Database>> {
+package DICOM <<Database>> {
 }
 
-SegmentInformationCSVReader --> CSV : reads
-SegmentInformationCSVWriter --> CSV : writes
+package ITK <<Database>> {
+}
 
-SegmentInformationJSONReader --> JSON : reads
-SegmentInformationJSONWriter --> JSON : writes
+package dcmqi {
+
+    note as dcmqiNote
+      Two public functions:
+
+      itkimage2dcmSegmentation(itkimage, seginfo, segments) : dcmdataset
+
+      dcmSegmentation2itkimage()
+    end note
+
+    SegmentInformationJSONHandler --* SegmentAttributes : use
+'    SegmentInformationJSONHandler -> Segmentation : creates
+'    SegmentInformationJSONHandler -> Segmentation : reads
+'    note as SegmentationNote
+'        Here it would make sense to provide
+'        as many default attributes as possible
+'    end note
+'
+'    Segmentation .. SegmentationNote
 
 
+dcmqi -> JSON : read/write
+dcmqi -> DICOM: read/write
+dcmqi -> ITK: read/write
 
-abstract class SegmentInformationReader {
+    SegmentAttributes -*  Helpers : use
+}
+
+class Helpers {
+    + {static} TokenizeString(string str, vector<string> &tokens, string delimiter): void
+    + {static} SplitString(string str, string &head, string &tail, string delimiter): void
+    + {static} FloatToStrScientific(float f): string
+---
+    + {static} StringToCodeSequenceMacro(std::string str): CodeSequenceMacro
+    + {static} StringToDSRCodedEntryValue(std::string str): DSRCodedEntryValue
+---
+    + {static} getCIEXYZFromRGB(unsigned *rgb, float *cieXYZ): float*
+    + {static} getRGBFromCIEXYZ(float* cieXYZ, unsigned *rgb): unsigned*
+    + {static} getCIELabFromCIEXYZ(float *cieXYZ, float *cieLab): float*
+    + {static} getCIEXYZFromCIELab(float *cieLab, float *cieXYZ): float*
+    + {static} getIntegerScaledCIELabFromCIELab(float *cieLab, unsigned *cieLabScaled): unsigned*
+    + {static} getCIELabFromIntegerScaledCIELab(unsigned* cieLabScaled, float* cieLab): float*
+}
+
+class SegmentInformationJSONHandler {
     + attributes : SegmentAttributes[]
-    + SegmentInformationReader(string inputFileName)
-    + {abstract} read() : bool
+    + SegmentInformationJSONHandler()
+    + SegmentInformationJSONHandler(string inputFileName)
+    + write(string filename) : bool
+    - read() : bool
 }
-
-class Segmentation {
-    + seriesNumber: int
-    + seriesDescription: string
-}
-
-class SegmentInformationCSVReader {
-    read() : bool
-}
-
-class SegmentInformationJSONReader {
-    read() : bool
-}
-
-abstract class SegmentInformationWriter {
-    + attributes : SegmentAttributes[]
-    + SegmentInformationWriter()
-    + {abstract} write(string filename) : bool
-}
-
-class SegmentInformationCSVWriter {
-    write(string filename) : bool
-}
-
-class SegmentInformationJSONWriter {
-    write(string filename) : bool
-}
+'
+'class Segmentation {
+'    + seriesNumber: int
+'    + seriesDescription: string
+'    + isValid(): bool
+'}
 
 class SegmentAttributes {
     - labelID : unsigned
