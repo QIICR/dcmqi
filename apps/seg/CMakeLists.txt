@@ -14,6 +14,8 @@ set(MODULE_NAME segimage2itkimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
+  DCMQIHelper.h
+  DCMQIHelper.cpp
   SegmentAttributes.h)
 
 SEMMacroBuildCLI(

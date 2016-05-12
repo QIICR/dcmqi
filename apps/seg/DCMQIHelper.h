@@ -1,5 +1,5 @@
-#ifndef DCMQI_DCMQIHELPER
-#define DCMQI_DCMQIHELPER
+#ifndef DCMQI_DCMQIHELPER_H
+#define DCMQI_DCMQIHELPER_H
 
 #include "dcmtk/dcmseg/segdoc.h"
 #include "dcmtk/dcmfg/fgderimg.h"
@@ -31,4 +31,4 @@ public:
 
 };
 
-#endif //DCMQI_DCMQIHELPER
+#endif //DCMQI_DCMQIHELPER_H
