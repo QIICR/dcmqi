@@ -1,30 +1,12 @@
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/oflog/oflog.h"
-#include "dcmtk/ofstd/ofconapp.h"
 #include "dcmtk/dcmseg/segdoc.h"
 #include "dcmtk/dcmseg/segment.h"
-#include "dcmtk/dcmfg/fginterface.h"
-#include "dcmtk/dcmiod/iodutil.h"
-#include "dcmtk/dcmiod/modmultiframedimension.h"
-#include "dcmtk/dcmdata/dcsequen.h"
 
 #include "dcmtk/dcmfg/fgderimg.h"
 #include "dcmtk/dcmfg/fgplanor.h"
 #include "dcmtk/dcmfg/fgpixmsr.h"
-#include "dcmtk/dcmfg/fgfracon.h"
 #include "dcmtk/dcmfg/fgplanpo.h"
-
-#include "dcmtk/dcmiod/iodmacro.h"
-
-#include "dcmtk/oflog/loglevel.h"
-
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTRING
-#include "dcmtk/ofstd/ofstdinc.h"
-
-#include <sstream>
-#include <fstream>
 
 #ifdef WITH_ZLIB
 #include <zlib.h>                     /* for zlibVersion() */
@@ -45,42 +27,11 @@
 // versioning
 #include "dcmqiVersionConfigure.h"
 
-// CLP inclides
+// CLP includes
 #include "itkimage2segimageCLP.h"
 
-#define CHECK_COND(condition) \
-  do { \
-    if (condition.bad()) { \
-      std::cerr << condition.text() << " in " __FILE__ << ":" << __LINE__  << std::endl; \
-      return EXIT_FAILURE; \
-    } \
-  } while (0)
-
-std::string FloatToStrScientific(float f) {
-  std::ostringstream sstream;
-  sstream << std::scientific << f;
-  return sstream.str();
-}
-
-void checkValidityOfFirstSrcImage(DcmSegmentation *segdoc) {
-  FGInterface &fgInterface = segdoc->getFunctionalGroups();
-  bool isPerFrame = false;
-  FGDerivationImage *derimgfg =
-    OFstatic_cast(FGDerivationImage*,fgInterface.get(0,
-          DcmFGTypes::EFG_DERIVATIONIMAGE, isPerFrame));
-  assert(derimgfg);
-  assert(isPerFrame);
-
-  OFVector<DerivationImageItem*> &deritems = derimgfg->getDerivationImageItems();
-
-  OFVector<SourceImageItem*> &srcitems = deritems[0]->getSourceImageItems();
-  OFString codeValue;
-  CodeSequenceMacro &code = srcitems[0]->getPurposeOfReferenceCode();
-  if(!code.getCodeValue(codeValue).good()) {
-    std::cout << "Failed to look up purpose of reference code" << std::endl;
-    abort();
-  }
-}
+#include "preproc.h"
+#include "DCMQIHelper.h"
 
 
 int main(int argc, char *argv[])
@@ -120,7 +71,7 @@ int main(int argc, char *argv[])
   CHECK_COND(ident.setContentLabel("QIICR QIN IOWA"));
   CHECK_COND(ident.setInstanceNumber(instanceNumber.c_str()));
 
-  /* Create new segementation document */
+  /* Create new segmentation document */
   DcmDataset segdocDataset;
   DcmSegmentation *segdoc = NULL;
 
@@ -180,12 +131,12 @@ int main(int argc, char *argv[])
 
     FGPlaneOrientationPatient *planor =
         FGPlaneOrientationPatient::createMinimal(
-            FloatToStrScientific(labelDirMatrix[0][0]).c_str(),
-            FloatToStrScientific(labelDirMatrix[1][0]).c_str(),
-            FloatToStrScientific(labelDirMatrix[2][0]).c_str(),
-            FloatToStrScientific(labelDirMatrix[0][1]).c_str(),
-            FloatToStrScientific(labelDirMatrix[1][1]).c_str(),
-            FloatToStrScientific(labelDirMatrix[2][1]).c_str());
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[0][0]).c_str(),
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[1][0]).c_str(),
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[2][0]).c_str(),
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[0][1]).c_str(),
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[1][1]).c_str(),
+            DCMQIHelper::FloatToStrScientific(labelDirMatrix[2][1]).c_str());
 
 
     //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
@@ -252,7 +203,7 @@ int main(int argc, char *argv[])
         std::string attrString;
         getline(attrStream,attrString);
         std::string labelStr, attributesStr;
-        SplitString(attrString,labelStr,attributesStr,";");
+        DCMQIHelper::SplitString(attrString,labelStr,attributesStr,";");
         unsigned labelId = atoi(labelStr.c_str());
         label2attributes[labelId] = SegmentAttributes(labelId);
         label2attributes[labelId].populateAttributesFromString(attributesStr);
@@ -339,8 +290,8 @@ int main(int argc, char *argv[])
       CodeSequenceMacro categoryCode, typeCode;
 
       // these are required
-      categoryCode = StringToCodeSequenceMacro(label2attributes[label].lookupAttribute("SegmentedPropertyCategory"));
-      typeCode = StringToCodeSequenceMacro(label2attributes[label].lookupAttribute("SegmentedPropertyType"));
+      categoryCode = DCMQIHelper::StringToCodeSequenceMacro(label2attributes[label].lookupAttribute("SegmentedPropertyCategory"));
+      typeCode = DCMQIHelper::StringToCodeSequenceMacro(label2attributes[label].lookupAttribute("SegmentedPropertyType"));
 
       // these ones are optional
       std::string anatomicRegionStr = label2attributes[label].lookupAttribute("AnatomicRegion");
@@ -377,9 +328,9 @@ int main(int argc, char *argv[])
         CodeSequenceMacro &anatomicRegion = anatomyMacro.getAnatomicRegion();
         OFVector<CodeSequenceMacro*>& modifiersVector = anatomyMacro.getAnatomicRegionModifier();
 
-        anatomicRegion = StringToCodeSequenceMacro(anatomicRegionStr);
+        anatomicRegion = DCMQIHelper::StringToCodeSequenceMacro(anatomicRegionStr);
         if(anatomicRegionModifierStr != ""){
-          CodeSequenceMacro anatomicRegionModifier = StringToCodeSequenceMacro(anatomicRegionModifierStr);
+          CodeSequenceMacro anatomicRegionModifier = DCMQIHelper::StringToCodeSequenceMacro(anatomicRegionModifierStr);
           modifiersVector.push_back(&anatomicRegionModifier);
         }
       }
@@ -388,16 +339,16 @@ int main(int argc, char *argv[])
       if(rgbStr != ""){
         unsigned rgb[3];
         std::vector<std::string> rgbStrVector;
-        TokenizeString(rgbStr,rgbStrVector,",");
+        DCMQIHelper::TokenizeString(rgbStr,rgbStrVector,",");
         for(int rgb_i=0;rgb_i<3;rgb_i++)
           rgb[rgb_i] = atoi(rgbStrVector[rgb_i].c_str());
 
         unsigned cielabScaled[3];
         float cielab[3], ciexyz[3];
 
-        getCIEXYZFromRGB(&rgb[0],&ciexyz[0]);
-        getCIELabFromCIEXYZ(&ciexyz[0],&cielab[0]);
-        getIntegerScaledCIELabFromCIELab(&cielab[0],&cielabScaled[0]);
+        DCMQIHelper::getCIEXYZFromRGB(&rgb[0],&ciexyz[0]);
+        DCMQIHelper::getCIELabFromCIEXYZ(&ciexyz[0],&cielab[0]);
+        DCMQIHelper::getIntegerScaledCIELabFromCIELab(&cielab[0],&cielabScaled[0]);
         CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielabScaled[0],cielabScaled[1],cielabScaled[2]));
       }
 
@@ -437,9 +388,9 @@ int main(int argc, char *argv[])
             labelImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
           }
           fgppp->setImagePositionPatient(
-            FloatToStrScientific(sliceOriginPoint[0]).c_str(),
-            FloatToStrScientific(sliceOriginPoint[1]).c_str(),
-            FloatToStrScientific(sliceOriginPoint[2]).c_str());
+            DCMQIHelper::FloatToStrScientific(sliceOriginPoint[0]).c_str(),
+            DCMQIHelper::FloatToStrScientific(sliceOriginPoint[1]).c_str(),
+            DCMQIHelper::FloatToStrScientific(sliceOriginPoint[2]).c_str());
         }
 
         /* Add frame that references this segment */
@@ -471,14 +422,14 @@ int main(int argc, char *argv[])
           }
 
           if(sliceNumber!=firstSlice)
-            checkValidityOfFirstSrcImage(segdoc);
+            DCMQIHelper::checkValidityOfFirstSrcImage(segdoc);
 
           FGDerivationImage* fgder = new FGDerivationImage();
           perFrameFGs[2] = fgder;
           //fgder->clearData();
 
           if(sliceNumber!=firstSlice)
-            checkValidityOfFirstSrcImage(segdoc);
+            DCMQIHelper::checkValidityOfFirstSrcImage(segdoc);
 
           DerivationImageItem *derimgItem;
           CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
@@ -500,7 +451,7 @@ int main(int argc, char *argv[])
           CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
 
           // check if frame 0 still has what we expect
-          checkValidityOfFirstSrcImage(segdoc);
+          DCMQIHelper::checkValidityOfFirstSrcImage(segdoc);
 
           if(1){
             // initialize class UID and series instance UID

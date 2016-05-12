@@ -1,19 +1,13 @@
 #include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
+
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/oflog/oflog.h"
-#include "dcmtk/ofstd/ofconapp.h"
 #include "dcmtk/dcmseg/segdoc.h"
 #include "dcmtk/dcmseg/segment.h"
 #include "dcmtk/dcmseg/segutils.h"
-#include "dcmtk/dcmfg/fginterface.h"
-#include "dcmtk/dcmiod/iodutil.h"
-#include "dcmtk/dcmiod/modmultiframedimension.h"
-#include "dcmtk/dcmdata/dcsequen.h"
 
-#include "dcmtk/dcmfg/fgderimg.h"
 #include "dcmtk/dcmfg/fgplanor.h"
 #include "dcmtk/dcmfg/fgpixmsr.h"
-#include "dcmtk/dcmfg/fgfracon.h"
 #include "dcmtk/dcmfg/fgplanpo.h"
 #include "dcmtk/dcmfg/fgseg.h"
 
@@ -23,11 +17,6 @@
 
 #include "vnl/vnl_cross.h"
 
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTRING
-#include "dcmtk/ofstd/ofstdinc.h"
-
-#include <sstream>
 #include <map>
 #include <vector>
 
@@ -46,29 +35,21 @@
 //#include "framesorter.h"
 #include "SegmentAttributes.h"
 
-// CLP inclides
+// CLP includes
 #include "segimage2itkimageCLP.h"
 
-static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
+#include "DCMQIHelper.h"
 
-#define CHECK_COND(condition) \
-    do { \
-        if (condition.bad()) { \
-            OFLOG_FATAL(dcemfinfLogger, condition.text() << " in " __FILE__ << ":" << __LINE__ ); \
-            throw -1; \
-        } \
-    } while (0)
+
+static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 typedef unsigned short PixelType;
 typedef itk::Image<PixelType,3> ImageType;
 
-double distanceBwPoints(vnl_vector<double> from, vnl_vector<double> to){
-  return sqrt((from[0]-to[0])*(from[0]-to[0])+(from[1]-to[1])*(from[1]-to[1])+(from[2]-to[2])*(from[2]-to[2]));
-}
-
 int getImageDirections(FGInterface &fgInterface, ImageType::DirectionType &dir);
 int getDeclaredImageSpacing(FGInterface &fgInterface, ImageType::SpacingType &spacing);
-int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, ImageType::PointType &imageOrigin, double &sliceSpacing, double &sliceExtent);
+int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, ImageType::PointType &imageOrigin,
+                        double &sliceSpacing, double &sliceExtent);
 
 int main(int argc, char *argv[])
 {
@@ -95,7 +76,6 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  DcmSegment *segment = segdoc->getSegment(1);
   FGInterface &fgInterface = segdoc->getFunctionalGroups();
 
   ImageType::PointType imageOrigin;
@@ -246,11 +226,11 @@ int main(int argc, char *argv[])
       cielabScaled[1] = unsigned(ciedcm[1]);
       cielabScaled[2] = unsigned(ciedcm[2]);
 
-      getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
+      DCMQIHelper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
 
-      getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
+      DCMQIHelper::getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
 
-      getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
+      DCMQIHelper::getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
 
       // line format:
       // labelNum;RGB:R,G,B;SegmentedPropertyCategory:code,scheme,meaning;SegmentedPropertyType:code,scheme,meaning;SegmentedPropertyTypeModifier:code,scheme,meaning;AnatomicRegion:code,scheme,meaning;AnatomicRegionModifier:code,scheme,meaning
@@ -400,7 +380,8 @@ int getImageDirections(FGInterface &fgInterface, ImageType::DirectionType &dir){
   return 0;
 }
 
-int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, ImageType::PointType &imageOrigin, double &sliceSpacing, double &sliceExtent){
+int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, ImageType::PointType &imageOrigin,
+                        double &sliceSpacing, double &sliceExtent){
   // Size
   // Rows/Columns can be read directly from the respective attributes
   // For number of slices, consider that all segments must have the same number of frames.
@@ -515,7 +496,8 @@ int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirec
     float dist1 = fabs(originDistances[i-1]-originDistances[i]);
     float delta = sliceSpacing-dist1;
     if(delta > 0.001){
-      std::cerr << "WARNING: Inter-slice distance " << originDistances[i] << " difference exceeded threshold: " << delta << std::endl;
+      std::cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
+              " difference exceeded threshold: " << delta << std::endl;
     }
   }
 

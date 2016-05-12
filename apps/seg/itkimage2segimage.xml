@@ -71,7 +71,7 @@
       <label>Series number</label>
       <channel>input</channel>
       <longflag>seriesNumber</longflag>
-      <description>Series number. Reqired. This will be assigned to SeriesNumber DICOM attribute. Ideally, should be unique for series wihin a study.</description>
+      <description>Series number. Required. This will be assigned to SeriesNumber DICOM attribute. Ideally, should be unique for series within a study.</description>
     </string>
 
     <string>
