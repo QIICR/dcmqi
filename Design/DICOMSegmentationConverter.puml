@@ -34,12 +34,12 @@ package dcmqi {
 
     SegmentInformationJSONHandler -* SegmentAttributes : use
 
-    dcmqi -> JSON : read/write
-    dcmqi -> DICOM: read/write
-    dcmqi -> DICOM1: read
+    SegmentInformationJSONHandler <-> JSON : read/write
+    DCMQI <-> DICOM: read/write
+    DCMQI <- DICOM1: read
 
-    dcmqi -> ITK: read
-    dcmqi -> NRRD: write
+    DCMQI <- ITK: read
+    DCMQI -> NRRD: write
 
     SegmentAttributes -*  DCMQIHelper : use
 }
