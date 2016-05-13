@@ -2,44 +2,49 @@
 
 title ITK image -> DCM segmentation, DCM segmentation -> ITK image
 
-package JSON <<Database>> {
+package Metadata <<Rectangle>> {
+    package JSON <<Database>> {
+        note as metaNote
+          - series
+          - segment(s)
+        end note
+    }
+    package CSV(future) <<Database>> {
+    }
 }
 
-package DICOM <<Database>> {
+package Segmentation(s) <<Rectangle>>{
+    package NRRD <<Database>> {
+    }
+    package ITK <<Database>> {
+    }
+    package DICOM <<Database>>{
+    }
 }
 
-package ITK <<Database>> {
+package ReferenceImage(s) as ReferenceImage <<Rectangle>> {
+    package DICOM as DICOM1 <<Database>>{
+    }
 }
 
 package dcmqi {
 
-    note as dcmqiNote
-      Two public functions:
+    DCMQI ---* SegmentInformationJSONHandler: use
+    DCMQI ---* DCMQIHelper : use
 
-      itkimage2dcmSegmentation(itkimage, seginfo, segments) : dcmdataset
+    SegmentInformationJSONHandler -* SegmentAttributes : use
 
-      dcmSegmentation2itkimage()
-    end note
+    dcmqi -> JSON : read/write
+    dcmqi -> DICOM: read/write
+    dcmqi -> DICOM1: read
 
-    SegmentInformationJSONHandler --* SegmentAttributes : use
-'    SegmentInformationJSONHandler -> Segmentation : creates
-'    SegmentInformationJSONHandler -> Segmentation : reads
-'    note as SegmentationNote
-'        Here it would make sense to provide
-'        as many default attributes as possible
-'    end note
-'
-'    Segmentation .. SegmentationNote
+    dcmqi -> ITK: read
+    dcmqi -> NRRD: write
 
-
-dcmqi -> JSON : read/write
-dcmqi -> DICOM: read/write
-dcmqi -> ITK: read/write
-
-    SegmentAttributes -*  Helpers : use
+    SegmentAttributes -*  DCMQIHelper : use
 }
 
-class Helpers {
+class DCMQIHelper {
     + {static} TokenizeString(string str, vector<string> &tokens, string delimiter): void
     + {static} SplitString(string str, string &head, string &tail, string delimiter): void
     + {static} FloatToStrScientific(float f): string
@@ -55,23 +60,28 @@ class Helpers {
     + {static} getCIELabFromIntegerScaledCIELab(unsigned* cieLabScaled, float* cieLab): float*
 }
 
+class DCMQI {
+    + {static} itkimage2dcmSegmentation(dcmImages, itkimages, jsonMetaFile, outputFileName)
+    + {static} dcmSegmentation2itkimage(dcmImage, ...)
+---
+    - allOtherMethods()
+}
+
 class SegmentInformationJSONHandler {
     + attributes : SegmentAttributes[]
+    - filename : const char*
+---
     + SegmentInformationJSONHandler()
-    + SegmentInformationJSONHandler(string inputFileName)
-    + write(string filename) : bool
+    + SegmentInformationJSONHandler(const char* filename)
+    + write(const char* filename) : bool
+---
     - read() : bool
 }
-'
-'class Segmentation {
-'    + seriesNumber: int
-'    + seriesDescription: string
-'    + isValid(): bool
-'}
 
 class SegmentAttributes {
     - labelID : unsigned
     - attributesDictionary : map<string, string>
+---
     + setLabelID(unsigned labelID) : void
     + lookupAttribute(string key) : string
     + populateAttributesFromString(string attributesStr) : int
