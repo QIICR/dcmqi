@@ -1,0 +1,30 @@
+{
+  "seriesAttributes": {
+    "ReaderID": "Reader1",
+    "SessionID": "Session1",
+    "TimePointID": "1",
+    "SeriesDescription": "Segmentation",
+    "SeriesNumber": "300",
+    "InstanceNumber": "1",
+    "BodyPartExamined": ""
+  },
+  "segmentAttributes": [{
+    "LabelID": 1,
+    "SegmentedPropertyCategoryCode": {
+      "codeValue": "T-D0050",
+      "codingSchemeDesignator": "SRT",
+      "codeMeaning": "Tissue"
+    },
+    "SegmentedPropertyType": {
+      "codeValue": "T-D0050",
+      "codingSchemeDesignator": "SRT",
+      "codeMeaning": "Tissue"
+    },
+    "SegmentAlgorithmType": "SEMIAUTOMATIC",
+    "RecommendedDisplayRGBValue": [
+      "128",
+      "174",
+      "128"
+    ]
+  }]
+}
