@@ -38,8 +38,6 @@
 // CLP includes
 #include "segimage2itkimageCLP.h"
 
-#include "DCMQIHelper.h"
-
 
 static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
@@ -226,11 +224,11 @@ int main(int argc, char *argv[])
       cielabScaled[1] = unsigned(ciedcm[1]);
       cielabScaled[2] = unsigned(ciedcm[2]);
 
-      DCMQIHelper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
+      dcmqi::Helper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
 
-      DCMQIHelper::getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
+      dcmqi::Helper::getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
 
-      DCMQIHelper::getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
+      dcmqi::Helper::getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
 
       // line format:
       // labelNum;RGB:R,G,B;SegmentedPropertyCategory:code,scheme,meaning;SegmentedPropertyType:code,scheme,meaning;SegmentedPropertyTypeModifier:code,scheme,meaning;AnatomicRegion:code,scheme,meaning;AnatomicRegionModifier:code,scheme,meaning

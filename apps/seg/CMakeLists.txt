@@ -14,8 +14,10 @@ set(MODULE_NAME segimage2itkimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
-  DCMQIHelper.h
-  DCMQIHelper.cpp
+  Helper.h
+  Helper.cpp
+  Converter.h
+  Converter.cpp
   SegmentAttributes.h)
 
 SEMMacroBuildCLI(
@@ -43,10 +45,12 @@ set(MODULE_NAME itkimage2segimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
-  DCMQIHelper.h
-  DCMQIHelper.cpp
-  SegmentInformationJSONHandler.h
-  SegmentInformationJSONHandler.cpp
+  Helper.h
+  Helper.cpp
+  Converter.h
+  Converter.cpp
+  JSONMetaInformationHandler.h
+  JSONMetaInformationHandler.cpp
   SegmentAttributes.h
   QIICRUIDs.h
   preproc.h)
