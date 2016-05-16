@@ -3,13 +3,11 @@
 title ITK image -> DCM segmentation, DCM segmentation -> ITK image
 
 package Metadata <<Rectangle>> {
-    package JSON <<Database>> {
+    package JSON-LD as JSON <<Database>> {
         note as metaNote
           - series
           - segment(s)
         end note
-    }
-    package CSV(future) <<Database>> {
     }
 }
 
@@ -29,22 +27,22 @@ package ReferenceImage(s) as ReferenceImage <<Rectangle>> {
 
 package dcmqi {
 
-    DCMQI ---* SegmentInformationJSONHandler: use
-    DCMQI ---* DCMQIHelper : use
+    Converter ---* JSONMetaInformationHandler: use
+    Converter ---* Helper : use
 
-    SegmentInformationJSONHandler -* SegmentAttributes : use
+    JSONMetaInformationHandler -* SegmentAttributes : use
 
-    SegmentInformationJSONHandler <-> JSON : read/write
-    DCMQI <-> DICOM: read/write
-    DCMQI <- DICOM1: read
+    JSONMetaInformationHandler <-> JSON : read/write
+    Converter <-> DICOM: read/write
+    Converter <- DICOM1: read
 
-    DCMQI <- ITK: read
-    DCMQI -> NRRD: write
+    Converter <- ITK: read
+    Converter -> NRRD: write
 
-    SegmentAttributes -*  DCMQIHelper : use
+    SegmentAttributes -*  Helper : use
 }
 
-class DCMQIHelper {
+class Helper {
     + {static} TokenizeString(string str, vector<string> &tokens, string delimiter): void
     + {static} SplitString(string str, string &head, string &tail, string delimiter): void
     + {static} FloatToStrScientific(float f): string
@@ -60,19 +58,19 @@ class DCMQIHelper {
     + {static} getCIELabFromIntegerScaledCIELab(unsigned* cieLabScaled, float* cieLab): float*
 }
 
-class DCMQI {
+class Converter {
     + {static} itkimage2dcmSegmentation(dcmImages, itkimages, jsonMetaFile, outputFileName)
     + {static} dcmSegmentation2itkimage(dcmImage, ...)
 ---
     - allOtherMethods()
 }
 
-class SegmentInformationJSONHandler {
+class JSONMetaInformationHandler {
     + attributes : SegmentAttributes[]
     - filename : const char*
 ---
-    + SegmentInformationJSONHandler()
-    + SegmentInformationJSONHandler(const char* filename)
+    + JSONMetaInformationHandler()
+    + JSONMetaInformationHandler(const char* filename)
     + write(const char* filename) : bool
 ---
     - read() : bool
