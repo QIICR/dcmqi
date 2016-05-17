@@ -45,6 +45,7 @@ set(MODULE_NAME itkimage2segimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
+  ../../jsoncpp/jsoncpp.cpp
   Helper.h
   Helper.cpp
   Converter.h
@@ -52,6 +53,7 @@ set(MODULE_SRCS
   JSONMetaInformationHandler.h
   JSONMetaInformationHandler.cpp
   SegmentAttributes.h
+  SegmentAttributes.cpp
   QIICRUIDs.h
   preproc.h)
 

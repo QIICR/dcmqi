@@ -23,7 +23,7 @@
 // versioning
 #include "dcmqiVersionConfigure.h"
 
-#include "preproc.h"
+//#include "preproc.h"
 
 #include <itkImageFileReader.h>
 #include <itkLabelImageToLabelMapFilter.h>
@@ -39,6 +39,12 @@ using namespace std;
 
 namespace dcmqi {
 
+    class OFConditionBadException : public std::exception {
+        virtual const char *what() const throw() {
+            return "DICOM Exception: ";
+        }
+    };
+
     class Converter {
 
     public:
@@ -46,10 +52,11 @@ namespace dcmqi {
                                              const char *metaDataFileName, const char *outputFileName);
 
         static bool dcmSegmentation2itkimage();
+        static int CHECK_COND(const OFCondition& condition);
 
     private:
         static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
-
+        static ContentIdentificationMacro createContentIdentificationInformation();
     };
 
 }

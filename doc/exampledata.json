@@ -9,22 +9,23 @@
     "BodyPartExamined": ""
   },
   "segmentAttributes": [{
-    "LabelID": 1,
+    "LabelID": 216,
     "SegmentedPropertyCategoryCode": {
       "codeValue": "T-D0050",
       "codingSchemeDesignator": "SRT",
       "codeMeaning": "Tissue"
     },
     "SegmentedPropertyType": {
-      "codeValue": "T-D0050",
+      "codeValue": "T-62000",
       "codingSchemeDesignator": "SRT",
-      "codeMeaning": "Tissue"
+      "codeMeaning": "Liver"
     },
     "SegmentAlgorithmType": "SEMIAUTOMATIC",
+    "SegmentAlgorithmName": "SlicerEditor",
     "RecommendedDisplayRGBValue": [
-      "128",
-      "174",
-      "128"
+      "221",
+      "130",
+      "101"
     ]
   }]
 }

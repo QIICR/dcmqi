@@ -8,52 +8,48 @@
 
 #include "Helper.h"
 
+using namespace std;
+
+
 namespace dcmqi {
 
     class SegmentAttributes {
     public:
-        SegmentAttributes() { };
+        SegmentAttributes();
+        SegmentAttributes(unsigned labelID);
+        void initAttributes();
+        ~SegmentAttributes();
 
-        SegmentAttributes(unsigned labelID) {
-            this->labelID = labelID;
-        }
+        void setLabelID(unsigned labelID);
+        void setSegmentedPropertyCategoryCode(const string& code, const string& designator, const string& meaning);
+        void setSegmentedPropertyType(const string& code, const string& designator, const string& meaning);
+        void setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning);
+        void setSegmentAlgorithmType(const string& algorithmType);
+        void setSegmentAlgorithmName(const string &algorithmName);
+        void setRecommendedDisplayRGBValue(const unsigned& r, const unsigned& g, const unsigned& b);
+        void setRecommendedDisplayRGBValue(const unsigned rgb[3]);
+        void setAnatomicRegion(const string &anatomicRegion) { this->anatomicRegion = anatomicRegion; }
 
-        ~SegmentAttributes() { };
+        unsigned int getLabelID() const { return labelID; }
+        string getSegmentAlgorithmType() const { return segmentAlgorithmType; }
+        string getSegmentAlgorithmName() const { return segmentAlgorithmName; }
+        string getAnatomicRegion() const { return anatomicRegion; }
+        unsigned* getRecommendedDisplayRGBValue() { return recommendedDisplayRGBValue; }
+        CodeSequenceMacro getSegmentedPropertyCategoryCode() const { return segmentedPropertyCategoryCode; }
+        CodeSequenceMacro getSegmentedPropertyType() const { return segmentedPropertyType; }
+        CodeSequenceMacro getSegmentedPropertyTypeModifier() const { return segmentedPropertyTypeModifier; }
 
-        void setLabelID(unsigned labelID) {
-            this->labelID = labelID;
-        }
-
-        std::string lookupAttribute(std::string key) {
-            if (attributesDictionary.find(key) == attributesDictionary.end())
-                return "";
-            return attributesDictionary[key];
-        }
-
-        int populateAttributesFromString(std::string attributesStr) {
-            std::vector<std::string> tupleList;
-            Helper::TokenizeString(attributesStr, tupleList, ";");
-            for (std::vector<std::string>::const_iterator t = tupleList.begin(); t != tupleList.end(); ++t) {
-                std::vector<std::string> tuple;
-                Helper::TokenizeString(*t, tuple, ":");
-                if (tuple.size() == 2)
-                    attributesDictionary[tuple[0]] = tuple[1];
-            }
-            return 0;
-        }
-
-        void PrintSelf() {
-            std::cout << "LabelID: " << labelID << std::endl;
-            for (std::map<std::string, std::string>::const_iterator mIt = attributesDictionary.begin();
-                 mIt != attributesDictionary.end(); ++mIt) {
-                std::cout << (*mIt).first << " : " << (*mIt).second << std::endl;
-            }
-            std::cout << std::endl;
-        }
+        void PrintSelf();
 
     private:
         unsigned labelID;
-        std::map<std::string, std::string> attributesDictionary;
+        string segmentAlgorithmType;
+        string segmentAlgorithmName;
+        string anatomicRegion;
+        unsigned recommendedDisplayRGBValue[3];
+        CodeSequenceMacro segmentedPropertyCategoryCode;
+        CodeSequenceMacro segmentedPropertyType;
+        CodeSequenceMacro segmentedPropertyTypeModifier;
     };
 
 }

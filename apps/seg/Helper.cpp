@@ -2,9 +2,9 @@
 
 namespace dcmqi {
 
-    std::string Helper::FloatToStrScientific(float f) {
-        std::ostringstream sstream;
-        sstream << std::scientific << f;
+    string Helper::FloatToStrScientific(float f) {
+        ostringstream sstream;
+        sstream << scientific << f;
         return sstream.str();
     }
 
@@ -22,26 +22,26 @@ namespace dcmqi {
         OFString codeValue;
         CodeSequenceMacro &code = srcitems[0]->getPurposeOfReferenceCode();
         if (!code.getCodeValue(codeValue).good()) {
-            std::cout << "Failed to look up purpose of reference code" << std::endl;
+            cout << "Failed to look up purpose of reference code" << endl;
             abort();
         }
     }
 
-    void Helper::TokenizeString(std::string str, std::vector<std::string> &tokens, std::string delimiter) {
+    void Helper::TokenizeString(string str, vector<string> &tokens, string delimiter) {
         // http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
         size_t pos = 0;
-        while ((pos = str.find(delimiter)) != std::string::npos) {
-            std::string token = str.substr(0, pos);
+        while ((pos = str.find(delimiter)) != string::npos) {
+            string token = str.substr(0, pos);
             tokens.push_back(token);
             str.erase(0, pos + delimiter.length());
         }
         tokens.push_back(str);
     };
 
-    void Helper::SplitString(std::string str, std::string &head, std::string &tail, std::string delimiter) {
+    void Helper::SplitString(string str, string &head, string &tail, string delimiter) {
         // http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
         size_t pos = str.find(delimiter);
-        if (pos != std::string::npos) {
+        if (pos != string::npos) {
             head = str.substr(0, pos);
             tail = str.substr(pos + delimiter.length(), str.length() - 1);
         }
@@ -126,9 +126,9 @@ namespace dcmqi {
         else
             var_B = 12.92 * var_B;
 
-        rgb[0] = (int) std::floor(var_R * 255. + .5);
-        rgb[1] = (int) std::floor(var_G * 255. + .5);
-        rgb[2] = (int) std::floor(var_B * 255. + .5);
+        rgb[0] = (int) floor(var_R * 255. + .5);
+        rgb[1] = (int) floor(var_G * 255. + .5);
+        rgb[2] = (int) floor(var_B * 255. + .5);
         //System.err.println("CIEXYZ ("+cieXYZ[0]+","+cieXYZ[1]+","+cieXYZ[2]+") -> RGB ("+rgb[0]+","+rgb[1]+","+rgb[2]+")");
         return rgb;
     }
@@ -223,9 +223,9 @@ namespace dcmqi {
      **/
     unsigned *Helper::getIntegerScaledCIELabFromCIELab(float *cieLab, unsigned *cieLabScaled) {
         // per PS 3.3 C.10.7.1.1 ... scale same way as ICC profile encodes them
-        cieLabScaled[0] = (int) std::floor(cieLab[0] * 65535. / 100. + .5);
-        cieLabScaled[1] = (int) std::floor((cieLab[1] + 128) * 65535. / 255. + .5);
-        cieLabScaled[2] = (int) std::floor((cieLab[2] + 128) * 65535. / 255. + .5);
+        cieLabScaled[0] = (int) floor(cieLab[0] * 65535. / 100. + .5);
+        cieLabScaled[1] = (int) floor((cieLab[1] + 128) * 65535. / 255. + .5);
+        cieLabScaled[2] = (int) floor((cieLab[2] + 128) * 65535. / 255. + .5);
         return cieLabScaled;
     }
 
@@ -244,17 +244,19 @@ namespace dcmqi {
         return cieLab;
     }
 
-    CodeSequenceMacro Helper::StringToCodeSequenceMacro(std::string str) {
-        std::string tail, code, designator, meaning;
+    CodeSequenceMacro Helper::StringToCodeSequenceMacro(string str) {
+        string tail, code, designator, meaning;
         SplitString(str, code, tail, ",");
         SplitString(tail, designator, meaning, ",");
         return CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
-    DSRCodedEntryValue Helper::StringToDSRCodedEntryValue(std::string str) {
-        std::string tail, code, designator, meaning;
+    DSRCodedEntryValue Helper::StringToDSRCodedEntryValue(string str) {
+        string tail, code, designator, meaning;
         SplitString(str, code, tail, ",");
         SplitString(tail, designator, meaning, ",");
         return DSRCodedEntryValue(code.c_str(), designator.c_str(), meaning.c_str());
     }
+
+
 }

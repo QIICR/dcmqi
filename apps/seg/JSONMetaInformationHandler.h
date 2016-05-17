@@ -4,6 +4,8 @@
 #include <json/json.h>
 #include <exception>
 
+#include <vector>
+
 #include "SegmentAttributes.h"
 
 
@@ -24,8 +26,19 @@ namespace dcmqi {
         JSONMetaInformationHandler();
 
         JSONMetaInformationHandler(const char *filename);
+        ~JSONMetaInformationHandler();
 
         bool write(const char *filename);
+
+        string readerID;
+        string sessionID;
+        string timePointID;
+        string seriesDescription;
+        string seriesNumber;
+        string instanceNumber;
+        string bodyPartExamined;
+
+        vector<SegmentAttributes*> segmentsAttributes;
 
     protected:
         bool isValid(const char *filename);
@@ -34,6 +47,9 @@ namespace dcmqi {
         bool read();
 
         const char *filename;
+
+        void readSeriesAttributes(const Json::Value &root);
+        void readSegmentAttributes(const Json::Value &root);
     };
 }
 
