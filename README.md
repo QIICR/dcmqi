@@ -6,8 +6,10 @@
 
 # About
 
-This is WIP to develop libraries and command line tools with minimum dependencies
+This is work in progress to develop libraries and command line tools with minimum dependencies
 to support conversion of DICOM data specific to quantitative image analysis research.
+
+The logic behind the name is DICOM (dcm) + Quantitative Imaging (qi). This follows the patterns used by DCMTK modules (dcmsr, dcmrt, ...). The idea is to put various components needed for QI applications that for one or another reason do not fit DCMTK.
 
 This work is part of the QIICR project, http://qiicr.org.
 
