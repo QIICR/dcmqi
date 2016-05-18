@@ -252,30 +252,30 @@ namespace dcmqi {
                 }
 
                 OFString segmentLabel;
-                CodeSequenceMacro categoryCode, typeCode;
-                typeCode = segmentAttributes->getSegmentedPropertyType();
-                categoryCode = segmentAttributes->getSegmentedPropertyCategoryCode();
-                CHECK_COND(typeCode.getCodeMeaning(segmentLabel));
+                CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyType();
+                CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCode();
+                assert(typeCode != nullptr && categoryCode!= nullptr);
+                CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
                 CHECK_COND(DcmSegment::create(segment,
                                               segmentLabel,
-                                              categoryCode, typeCode,
+                                              *categoryCode, *typeCode,
                                               algoType,
                                               algoName.c_str()));
 
-                // these ones are optional
-//                string anatomicRegionStr = segmentAttributes->getAnatomicRegion();
-//                string anatomicRegionModifierStr = segmentAttributes->label2attributes[label].lookupAttribute("AnatomicRegionModifer");
-//                if(anatomicRegionStr != ""){
-//                    GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-//                    CodeSequenceMacro &anatomicRegion = anatomyMacro.getAnatomicRegion();
-//                    OFVector<CodeSequenceMacro*>& modifiersVector = anatomyMacro.getAnatomicRegionModifier();
-//
-//                    anatomicRegion = Helper::StringToCodeSequenceMacro(anatomicRegionStr);
-//                    if(anatomicRegionModifierStr != ""){
-//                        CodeSequenceMacro anatomicRegionModifier = Helper::StringToCodeSequenceMacro(anatomicRegionModifierStr);
-//                        modifiersVector.push_back(&anatomicRegionModifier);
-//                    }
-//                }
+                CodeSequenceMacro* test = segmentAttributes->getAnatomicRegion();
+
+                if (segmentAttributes->getAnatomicRegion() != NULL){
+                    GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
+                    CodeSequenceMacro &anatomicRegion = anatomyMacro.getAnatomicRegion();
+                    OFVector<CodeSequenceMacro*>& modifiersVector = anatomyMacro.getAnatomicRegionModifier();
+
+                    anatomicRegion = segmentAttributes->getAnatomicRegion();
+
+                    if(segmentAttributes->getAnatomicRegionModifier() != NULL){
+                        CodeSequenceMacro* anatomicRegionModifier = segmentAttributes->getAnatomicRegionModifier();
+                        modifiersVector.push_back(anatomicRegionModifier);
+                    }
+                }
 
                 unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
                 unsigned cielabScaled[3];
@@ -472,8 +472,6 @@ namespace dcmqi {
     }
 
     COUT << "Saved segmentation as " << outputFileName << endl;
-
-
         return true;
     }
 

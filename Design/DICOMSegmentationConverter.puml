@@ -80,8 +80,18 @@ class JSONMetaInformationHandler {
 
 class SegmentAttributes {
     - labelID : unsigned
-    - attributesDictionary : map<string, string>
+    - segmentDescription : string
+    - segmentAlgorithmType :string
+    - segmentAlgorithmName : string
+    - recommendedDisplayRGBValue : unsigned[3]
+    - anatomicRegion : CodeSequenceMacro
+    - anatomicRegionModifier : CodeSequenceMacro
+    - segmentedPropertyCategoryCode : CodeSequenceMacro
+    - segmentedPropertyType : CodeSequenceMacro
+    - segmentedPropertyTypeModifier : CodeSequenceMacro
 ---
+    + setter(...) : void
+    + getter() : whateverType
     + setLabelID(unsigned labelID) : void
     + lookupAttribute(string key) : string
     + populateAttributesFromString(string attributesStr) : int

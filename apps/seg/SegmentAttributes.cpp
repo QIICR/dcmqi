@@ -16,25 +16,52 @@ namespace dcmqi {
 //        TODO: fill from defaults?
         this->setLabelID(1);
         this->setRecommendedDisplayRGBValue(128, 174, 128);
+        this->anatomicRegion = nullptr;
+        this->anatomicRegionModifier = nullptr;
+        this->segmentedPropertyCategoryCode = nullptr;
+        this->segmentedPropertyType = nullptr;
+        this->segmentedPropertyTypeModifier = nullptr;
     }
 
     SegmentAttributes::~SegmentAttributes() {
+        if (this->anatomicRegion)
+            delete this->anatomicRegion;
+        if (this->anatomicRegionModifier)
+            delete this->anatomicRegionModifier;
+        if (this->segmentedPropertyCategoryCode)
+            delete this->segmentedPropertyCategoryCode;
+        if (this->segmentedPropertyType)
+            delete this->segmentedPropertyType;
+        if (this->segmentedPropertyTypeModifier)
+            delete this->segmentedPropertyTypeModifier;
     }
 
     void SegmentAttributes::setLabelID(unsigned labelID) {
         this->labelID = labelID;
     }
 
+    void SegmentAttributes::setSegmentDescription(const string &segmentDescription) {
+        this->segmentDescription = segmentDescription;
+    }
+
+    void SegmentAttributes::setAnatomicRegion(const string& code, const string& designator, const string& meaning) {
+        this->anatomicRegion = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void SegmentAttributes::setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning) {
+        this->anatomicRegionModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
     void SegmentAttributes::setSegmentedPropertyCategoryCode(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyCategoryCode = CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyCategoryCode = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentedPropertyType(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyType = CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyType = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyTypeModifier = CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyTypeModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentAlgorithmType(const string& algorithmType) {
