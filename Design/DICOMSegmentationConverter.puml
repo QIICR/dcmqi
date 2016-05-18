@@ -74,6 +74,8 @@ class JSONMetaInformationHandler {
     + write(const char* filename) : bool
 ---
     - read() : bool
+    - readSeriesAttributes(const Json::Value &root) : void
+    - readSegmentAttributes(const Json::Value &root) : void
 }
 
 class SegmentAttributes {
