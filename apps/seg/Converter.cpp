@@ -266,18 +266,19 @@ namespace dcmqi {
                     modifiersVector.push_back(typeModifierCode);
                 }
 
+                GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
                 if (segmentAttributes->getAnatomicRegion() != nullptr){
-                    GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-                    CodeSequenceMacro &anatomicRegion = anatomyMacro.getAnatomicRegion();
-                    OFVector<CodeSequenceMacro*>& modifiersVector = anatomyMacro.getAnatomicRegionModifier();
-
-                    anatomicRegion = segmentAttributes->getAnatomicRegion();
+                    OFVector<CodeSequenceMacro*>& anatomyMacroModifiersVector = anatomyMacro.getAnatomicRegionModifier();
+                    CodeSequenceMacro& anatomicRegion = anatomyMacro.getAnatomicRegion();
+                    anatomicRegion = *segmentAttributes->getAnatomicRegion();
 
                     if(segmentAttributes->getAnatomicRegionModifier() != nullptr){
                         CodeSequenceMacro* anatomicRegionModifier = segmentAttributes->getAnatomicRegionModifier();
-                        modifiersVector.push_back(anatomicRegionModifier);
+                        anatomyMacroModifiersVector.push_back(anatomicRegionModifier);
                     }
                 }
+
+                // TODO: Maybe implement for PrimaryAnatomicStructure and PrimaryAnatomicStructureModifier
 
                 unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
                 unsigned cielabScaled[3];

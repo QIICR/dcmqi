@@ -26,6 +26,11 @@
       "codingSchemeDesignator": "SRT",
       "codeMeaning": "Right"
     },
+    "AnatomicRegion": {
+      "codeValue": "G-A147",
+      "codingSchemeDesignator": "SRT",
+      "codeMeaning": "Axial"
+    },
     "SegmentAlgorithmType": "SEMIAUTOMATIC",
     "SegmentAlgorithmName": "SlicerEditor",
     "RecommendedDisplayRGBValue": [

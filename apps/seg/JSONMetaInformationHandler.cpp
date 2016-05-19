@@ -84,6 +84,18 @@ namespace dcmqi {
                                                             elem.get("codingSchemeDesignator", "").asString(),
                                                             elem.get("codeMeaning", "").asString());
             }
+            elem = segment["PrimaryAnatomicStructure"];
+            if (!elem.isNull()) {
+                segmentAttribute->setPrimaryAnatomicStructure(elem.get("codeValue", "").asString(),
+                                                              elem.get("codingSchemeDesignator", "").asString(),
+                                                              elem.get("codeMeaning", "").asString());
+            }
+            elem = segment["PrimaryAnatomicStructureModifier"];
+            if (!elem.isNull()) {
+                segmentAttribute->setPrimaryAnatomicStructureModifier(elem.get("codeValue", "").asString(),
+                                                                      elem.get("codingSchemeDesignator", "").asString(),
+                                                                      elem.get("codeMeaning", "").asString());
+            }
             segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
             segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());
             Json::Value rgbArray = segment.get("RecommendedDisplayRGBValue", "128,174,128");
