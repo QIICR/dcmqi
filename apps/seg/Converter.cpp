@@ -161,7 +161,6 @@ namespace dcmqi {
             ImageType::Pointer labelImage = reader->GetOutput();
 
             l2lm->SetInput(labelImage);
-
             l2lm->Update();
 
             typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
@@ -201,7 +200,7 @@ namespace dcmqi {
                 return -1;//abort();
             }
 
-            for(int segLabelNumber=0;segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
+            for(int segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
                 LabelType* labelObject = l2lm->GetOutput()->GetNthLabelObject(segLabelNumber);
                 short label = labelObject->GetLabel();
 
@@ -251,27 +250,30 @@ namespace dcmqi {
                     }
                 }
 
-                OFString segmentLabel;
                 CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyType();
                 CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCode();
                 assert(typeCode != nullptr && categoryCode!= nullptr);
+                OFString segmentLabel;
                 CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
-                CHECK_COND(DcmSegment::create(segment,
-                                              segmentLabel,
-                                              *categoryCode, *typeCode,
-                                              algoType,
-                                              algoName.c_str()));
+                CHECK_COND(DcmSegment::create(segment, segmentLabel, *categoryCode, *typeCode, algoType, algoName.c_str()));
 
-                CodeSequenceMacro* test = segmentAttributes->getAnatomicRegion();
+                if(segmentAttributes->getSegmentDescription().length() > 0)
+                    segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
 
-                if (segmentAttributes->getAnatomicRegion() != NULL){
+                CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifier();
+                if (typeModifierCode != nullptr) {
+                    OFVector<CodeSequenceMacro*>& modifiersVector = segment->getSegmentedPropertyTypeModifierCode();
+                    modifiersVector.push_back(typeModifierCode);
+                }
+
+                if (segmentAttributes->getAnatomicRegion() != nullptr){
                     GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
                     CodeSequenceMacro &anatomicRegion = anatomyMacro.getAnatomicRegion();
                     OFVector<CodeSequenceMacro*>& modifiersVector = anatomyMacro.getAnatomicRegionModifier();
 
                     anatomicRegion = segmentAttributes->getAnatomicRegion();
 
-                    if(segmentAttributes->getAnatomicRegionModifier() != NULL){
+                    if(segmentAttributes->getAnatomicRegionModifier() != nullptr){
                         CodeSequenceMacro* anatomicRegionModifier = segmentAttributes->getAnatomicRegionModifier();
                         modifiersVector.push_back(anatomicRegionModifier);
                     }
