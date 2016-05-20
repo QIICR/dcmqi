@@ -227,7 +227,6 @@ endif()
 find_package(DCMTK NO_MODULE REQUIRED)
 find_package(SlicerExecutionModel NO_MODULE REQUIRED GenerateCLP)
 find_package(ITK NO_MODULE REQUIRED)
-find_package(JSONCPP REQUIRED)
 include(${ITK_USE_FILE})
 
 include(${SlicerExecutionModel_USE_FILE})

@@ -252,7 +252,7 @@ namespace dcmqi {
 
                 CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyType();
                 CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCode();
-                assert(typeCode != nullptr && categoryCode!= nullptr);
+                assert(typeCode != NULL && categoryCode!= NULL);
                 OFString segmentLabel;
                 CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
                 CHECK_COND(DcmSegment::create(segment, segmentLabel, *categoryCode, *typeCode, algoType, algoName.c_str()));
@@ -261,18 +261,18 @@ namespace dcmqi {
                     segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
 
                 CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifier();
-                if (typeModifierCode != nullptr) {
+                if (typeModifierCode != NULL) {
                     OFVector<CodeSequenceMacro*>& modifiersVector = segment->getSegmentedPropertyTypeModifierCode();
                     modifiersVector.push_back(typeModifierCode);
                 }
 
                 GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-                if (segmentAttributes->getAnatomicRegion() != nullptr){
+                if (segmentAttributes->getAnatomicRegion() != NULL){
                     OFVector<CodeSequenceMacro*>& anatomyMacroModifiersVector = anatomyMacro.getAnatomicRegionModifier();
                     CodeSequenceMacro& anatomicRegion = anatomyMacro.getAnatomicRegion();
                     anatomicRegion = *segmentAttributes->getAnatomicRegion();
 
-                    if(segmentAttributes->getAnatomicRegionModifier() != nullptr){
+                    if(segmentAttributes->getAnatomicRegionModifier() != NULL){
                         CodeSequenceMacro* anatomicRegionModifier = segmentAttributes->getAnatomicRegionModifier();
                         anatomyMacroModifiersVector.push_back(anatomicRegionModifier);
                     }

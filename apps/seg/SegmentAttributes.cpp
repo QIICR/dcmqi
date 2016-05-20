@@ -16,13 +16,13 @@ namespace dcmqi {
 //        TODO: fill from defaults?
         this->setLabelID(1);
         this->setRecommendedDisplayRGBValue(128, 174, 128);
-        this->anatomicRegion = nullptr;
-        this->anatomicRegionModifier = nullptr;
-        this->primaryAnatomicStructure = nullptr;
-        this->primaryAnatomicStructureModifier = nullptr;
-        this->segmentedPropertyCategoryCode = nullptr;
-        this->segmentedPropertyType = nullptr;
-        this->segmentedPropertyTypeModifier = nullptr;
+        this->anatomicRegion = NULL;
+        this->anatomicRegionModifier = NULL;
+        this->primaryAnatomicStructure = NULL;
+        this->primaryAnatomicStructureModifier = NULL;
+        this->segmentedPropertyCategoryCode = NULL;
+        this->segmentedPropertyType = NULL;
+        this->segmentedPropertyTypeModifier = NULL;
     }
 
     SegmentAttributes::~SegmentAttributes() {
