@@ -45,7 +45,7 @@ namespace dcmqi {
         }
     };
 
-    class Converter {
+    class ImageSEGConverter {
 
     public:
         static bool itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,

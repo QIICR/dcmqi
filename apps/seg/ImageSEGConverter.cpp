@@ -1,10 +1,10 @@
-#include "Converter.h"
+#include "ImageSEGConverter.h"
 #include <iostream>
 
 
 namespace dcmqi {
 
-    bool Converter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
+    bool ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
                                              const char *metaDataFileName, const char *outputFileName) {
 
         typedef short PixelType;
@@ -91,12 +91,12 @@ namespace dcmqi {
 
             FGPlaneOrientationPatient *planor =
                     FGPlaneOrientationPatient::createMinimal(
-                            Helper::FloatToStrScientific(labelDirMatrix[0][0]).c_str(),
-                            Helper::FloatToStrScientific(labelDirMatrix[1][0]).c_str(),
-                            Helper::FloatToStrScientific(labelDirMatrix[2][0]).c_str(),
-                            Helper::FloatToStrScientific(labelDirMatrix[0][1]).c_str(),
-                            Helper::FloatToStrScientific(labelDirMatrix[1][1]).c_str(),
-                            Helper::FloatToStrScientific(labelDirMatrix[2][1]).c_str());
+                            Helper::floatToStrScientific(labelDirMatrix[0][0]).c_str(),
+                            Helper::floatToStrScientific(labelDirMatrix[1][0]).c_str(),
+                            Helper::floatToStrScientific(labelDirMatrix[2][0]).c_str(),
+                            Helper::floatToStrScientific(labelDirMatrix[0][1]).c_str(),
+                            Helper::floatToStrScientific(labelDirMatrix[1][1]).c_str(),
+                            Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
 
 
             //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
@@ -325,9 +325,9 @@ namespace dcmqi {
                             labelImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
                         }
                         fgppp->setImagePositionPatient(
-                                Helper::FloatToStrScientific(sliceOriginPoint[0]).c_str(),
-                                Helper::FloatToStrScientific(sliceOriginPoint[1]).c_str(),
-                                Helper::FloatToStrScientific(sliceOriginPoint[2]).c_str());
+                                Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
+                                Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
+                                Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
                     }
 
                     /* Add frame that references this segment */
@@ -478,11 +478,11 @@ namespace dcmqi {
         return true;
     }
 
-    bool Converter::dcmSegmentation2itkimage() {
+    bool ImageSEGConverter::dcmSegmentation2itkimage() {
         return true;
     }
 
-    IODGeneralEquipmentModule::EquipmentInfo Converter::getEquipmentInfo() {
+    IODGeneralEquipmentModule::EquipmentInfo ImageSEGConverter::getEquipmentInfo() {
         IODGeneralEquipmentModule::EquipmentInfo eq;
         eq.m_Manufacturer = "QIICR";
         eq.m_DeviceSerialNumber = "0";
@@ -491,7 +491,7 @@ namespace dcmqi {
         return eq;
     }
 
-    ContentIdentificationMacro Converter::createContentIdentificationInformation() {
+    ContentIdentificationMacro ImageSEGConverter::createContentIdentificationInformation() {
         ContentIdentificationMacro ident;
         CHECK_COND(ident.setContentCreatorName("QIICR"));
         CHECK_COND(ident.setContentDescription("Iowa QIN segmentation result"));
@@ -499,7 +499,7 @@ namespace dcmqi {
         return ident;
     }
 
-    int Converter::CHECK_COND(const OFCondition& condition) {
+    int ImageSEGConverter::CHECK_COND(const OFCondition& condition) {
         if (condition.bad()) {
             cerr << condition.text() << " in " __FILE__ << ":" << __LINE__  << endl;
             throw OFConditionBadException();

@@ -16,8 +16,8 @@ set(MODULE_SRCS
   ${MODULE_NAME}.cxx
   Helper.h
   Helper.cpp
-  Converter.h
-  Converter.cpp
+  ImageSEGConverter.h
+  ImageSEGConverter.cpp
   SegmentAttributes.h)
 
 SEMMacroBuildCLI(
@@ -45,11 +45,11 @@ set(MODULE_NAME itkimage2segimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
-  ../../jsoncpp/jsoncpp.cpp
+  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   Helper.h
   Helper.cpp
-  Converter.h
-  Converter.cpp
+  ImageSEGConverter.h
+  ImageSEGConverter.cpp
   JSONMetaInformationHandler.h
   JSONMetaInformationHandler.cpp
   SegmentAttributes.h

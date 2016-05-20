@@ -2,7 +2,7 @@
 
 namespace dcmqi {
 
-    string Helper::FloatToStrScientific(float f) {
+    string Helper::floatToStrScientific(float f) {
         ostringstream sstream;
         sstream << scientific << f;
         return sstream.str();
@@ -27,7 +27,7 @@ namespace dcmqi {
         }
     }
 
-    void Helper::TokenizeString(string str, vector<string> &tokens, string delimiter) {
+    void Helper::tokenizeString(string str, vector<string> &tokens, string delimiter) {
         // http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
         size_t pos = 0;
         while ((pos = str.find(delimiter)) != string::npos) {
@@ -38,7 +38,7 @@ namespace dcmqi {
         tokens.push_back(str);
     };
 
-    void Helper::SplitString(string str, string &head, string &tail, string delimiter) {
+    void Helper::splitString(string str, string &head, string &tail, string delimiter) {
         // http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
         size_t pos = str.find(delimiter);
         if (pos != string::npos) {
@@ -244,17 +244,17 @@ namespace dcmqi {
         return cieLab;
     }
 
-    CodeSequenceMacro Helper::StringToCodeSequenceMacro(string str) {
+    CodeSequenceMacro Helper::stringToCodeSequenceMacro(string str) {
         string tail, code, designator, meaning;
-        SplitString(str, code, tail, ",");
-        SplitString(tail, designator, meaning, ",");
+        splitString(str, code, tail, ",");
+        splitString(tail, designator, meaning, ",");
         return CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
-    DSRCodedEntryValue Helper::StringToDSRCodedEntryValue(string str) {
+    DSRCodedEntryValue Helper::stringToDSRCodedEntryValue(string str) {
         string tail, code, designator, meaning;
-        SplitString(str, code, tail, ",");
-        SplitString(tail, designator, meaning, ",");
+        splitString(str, code, tail, ",");
+        splitString(tail, designator, meaning, ",");
         return DSRCodedEntryValue(code.c_str(), designator.c_str(), meaning.c_str());
     }
 

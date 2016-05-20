@@ -19,9 +19,9 @@ namespace dcmqi {
 
     public:
 
-        static string FloatToStrScientific(float f);
-        static void TokenizeString(string str, vector<string> &tokens, string delimiter);
-        static void SplitString(string str, string &head, string &tail, string delimiter);
+        static string floatToStrScientific(float f);
+        static void tokenizeString(string str, vector<string> &tokens, string delimiter);
+        static void splitString(string str, string &head, string &tail, string delimiter);
 
         static float *getCIEXYZFromRGB(unsigned *rgb, float *cieXYZ);
         static float *getCIEXYZFromCIELab(float *cieLab, float *cieXYZ);
@@ -30,8 +30,8 @@ namespace dcmqi {
         static unsigned *getIntegerScaledCIELabFromCIELab(float *cieLab, unsigned *cieLabScaled);
         static unsigned *getRGBFromCIEXYZ(float *cieXYZ, unsigned *rgb);
 
-        static CodeSequenceMacro StringToCodeSequenceMacro(string str);
-        static DSRCodedEntryValue StringToDSRCodedEntryValue(string str);
+        static CodeSequenceMacro stringToCodeSequenceMacro(string str);
+        static DSRCodedEntryValue stringToDSRCodedEntryValue(string str);
 
         static void checkValidityOfFirstSrcImage(DcmSegmentation *segdoc);
     };

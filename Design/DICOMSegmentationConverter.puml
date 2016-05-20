@@ -27,28 +27,28 @@ package ReferenceImage(s) as ReferenceImage <<Rectangle>> {
 
 package dcmqi {
 
-    Converter ---* JSONMetaInformationHandler: use
-    Converter ---* Helper : use
+    ImageSEGConverter ---* JSONMetaInformationHandler: use
+    ImageSEGConverter ---* Helper : use
 
     JSONMetaInformationHandler -* SegmentAttributes : use
 
     JSONMetaInformationHandler <-> JSON : read/write
-    Converter <-> DICOM: read/write
-    Converter <- DICOM1: read
+    ImageSEGConverter <-> DICOM: read/write
+    ImageSEGConverter <- DICOM1: read
 
-    Converter <- ITK: read
-    Converter -> NRRD: write
+    ImageSEGConverter <- ITK: read
+    ImageSEGConverter -> NRRD: write
 
     SegmentAttributes -*  Helper : use
 }
 
 class Helper {
-    + {static} TokenizeString(string str, vector<string> &tokens, string delimiter): void
-    + {static} SplitString(string str, string &head, string &tail, string delimiter): void
-    + {static} FloatToStrScientific(float f): string
+    + {static} tokenizeString(string str, vector<string> &tokens, string delimiter): void
+    + {static} splitString(string str, string &head, string &tail, string delimiter): void
+    + {static} floatToStrScientific(float f): string
 ---
-    + {static} StringToCodeSequenceMacro(std::string str): CodeSequenceMacro
-    + {static} StringToDSRCodedEntryValue(std::string str): DSRCodedEntryValue
+    + {static} stringToCodeSequenceMacro(std::string str): CodeSequenceMacro
+    + {static} stringToDSRCodedEntryValue(std::string str): DSRCodedEntryValue
 ---
     + {static} getCIEXYZFromRGB(unsigned *rgb, float *cieXYZ): float*
     + {static} getRGBFromCIEXYZ(float* cieXYZ, unsigned *rgb): unsigned*
@@ -58,7 +58,7 @@ class Helper {
     + {static} getCIELabFromIntegerScaledCIELab(unsigned* cieLabScaled, float* cieLab): float*
 }
 
-class Converter {
+class ImageSEGConverter {
     + {static} itkimage2dcmSegmentation(dcmImages, itkimages, jsonMetaFile, outputFileName)
     + {static} dcmSegmentation2itkimage(dcmImage, ...)
 ---
