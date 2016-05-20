@@ -93,8 +93,6 @@ class SegmentAttributes {
     + setter(...) : void
     + getter() : whateverType
     + setLabelID(unsigned labelID) : void
-    + lookupAttribute(string key) : string
-    + populateAttributesFromString(string attributesStr) : int
     + PrintSelf() : void
 }
 
