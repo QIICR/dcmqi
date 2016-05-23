@@ -72,28 +72,56 @@ namespace dcmqi {
         this->segmentedPropertyCategoryCode = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
+    void SegmentAttributes::setSegmentedPropertyCategoryCode(const CodeSequenceMacro& codeSequence) {
+        this->segmentedPropertyCategoryCode = new CodeSequenceMacro(codeSequence);
+    }
+
     void SegmentAttributes::setSegmentedPropertyType(const string& code, const string& designator, const string& meaning) {
         this->segmentedPropertyType = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void SegmentAttributes::setSegmentedPropertyType(const CodeSequenceMacro& codeSequence) {
+        this->segmentedPropertyType = new CodeSequenceMacro(codeSequence);
     }
 
     void SegmentAttributes::setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning) {
         this->segmentedPropertyTypeModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
+    void SegmentAttributes::setSegmentedPropertyTypeModifier(const CodeSequenceMacro& codeSequence) {
+        this->segmentedPropertyTypeModifier = new CodeSequenceMacro(codeSequence);
+    }
+
     void SegmentAttributes::setAnatomicRegion(const string& code, const string& designator, const string& meaning) {
         this->anatomicRegion = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void SegmentAttributes::setAnatomicRegion(const CodeSequenceMacro& codeSequence) {
+        this->anatomicRegion = new CodeSequenceMacro(codeSequence);
     }
 
     void SegmentAttributes::setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning) {
         this->anatomicRegionModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
+    void SegmentAttributes::setAnatomicRegionModifier(const CodeSequenceMacro& codeSequence) {
+        this->anatomicRegionModifier = new CodeSequenceMacro(codeSequence);
+    }
+
     void SegmentAttributes::setPrimaryAnatomicStructure(const string& code, const string& designator, const string& meaning) {
         this->primaryAnatomicStructure = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
+    void SegmentAttributes::setPrimaryAnatomicStructure(const CodeSequenceMacro& codeSequence) {
+        this->primaryAnatomicStructure = new CodeSequenceMacro(codeSequence);
+    }
+
     void SegmentAttributes::setPrimaryAnatomicStructureModifier(const string& code, const string& designator, const string& meaning) {
         this->primaryAnatomicStructureModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void SegmentAttributes::setPrimaryAnatomicStructureModifier(const CodeSequenceMacro& codeSequence) {
+        this->primaryAnatomicStructureModifier = new CodeSequenceMacro(codeSequence);
     }
 
     void SegmentAttributes::PrintSelf() {

@@ -22,10 +22,6 @@ namespace dcmqi {
         }
     }
 
-    bool JSONMetaInformationHandler::write(const char *filename) {
-        return true;
-    }
-
     bool JSONMetaInformationHandler::read() {
         if (this->filename != NULL && this->isValid(this->filename)) {
             try {
@@ -43,6 +39,24 @@ namespace dcmqi {
         }
         return false;
     }
+
+    bool JSONMetaInformationHandler::write(const char *filename) {
+        if (this->segmentsAttributes.size() == 0)
+            return false;
+        return true;
+    }
+
+    SegmentAttributes* JSONMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
+        for (vector<SegmentAttributes*>::iterator it = this->segmentsAttributes.begin() ; it != this->segmentsAttributes.end(); ++it) {
+            SegmentAttributes* segmentAttributes = *it;
+            if (segmentAttributes->getLabelID() == labelID)
+                return NULL;
+        }
+        SegmentAttributes* segment = new SegmentAttributes(labelID);
+        this->segmentsAttributes.push_back(segment);
+        return segment;
+    }
+
 
     void JSONMetaInformationHandler::readSegmentAttributes(const Json::Value &root) {
         Json::Value segmentAttributes = root["segmentAttributes"];

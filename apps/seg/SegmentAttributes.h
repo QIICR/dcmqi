@@ -28,12 +28,20 @@ namespace dcmqi {
         void setRecommendedDisplayRGBValue(const unsigned rgb[3]);
 
         void setSegmentedPropertyCategoryCode(const string& code, const string& designator, const string& meaning);
+        void setSegmentedPropertyCategoryCode(const CodeSequenceMacro& codeSequence);
         void setSegmentedPropertyType(const string& code, const string& designator, const string& meaning);
+        void setSegmentedPropertyType(const CodeSequenceMacro& codeSequence);
         void setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning);
+        void setSegmentedPropertyTypeModifier(const CodeSequenceMacro& codeSequence);
         void setAnatomicRegion(const string& code, const string& designator, const string& meaning);
+        void setAnatomicRegion(const CodeSequenceMacro& codeSequence);
         void setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning);
+        void setAnatomicRegionModifier(const CodeSequenceMacro& codeSequence);
+
         void setPrimaryAnatomicStructure(const string& code, const string& designator, const string& meaning);
+        void setPrimaryAnatomicStructure(const CodeSequenceMacro& codeSequence);
         void setPrimaryAnatomicStructureModifier(const string& code, const string& designator, const string& meaning);
+        void setPrimaryAnatomicStructureModifier(const CodeSequenceMacro& codeSequence);
 
         unsigned int getLabelID() const { return labelID; }
         string getSegmentDescription() const { return segmentDescription; }
@@ -46,6 +54,7 @@ namespace dcmqi {
         CodeSequenceMacro* getSegmentedPropertyType() const { return segmentedPropertyType; }
         CodeSequenceMacro* getSegmentedPropertyTypeModifier() const { return segmentedPropertyTypeModifier; }
         CodeSequenceMacro* getAnatomicRegionModifier() const { return anatomicRegionModifier; }
+
         CodeSequenceMacro* getPrimaryAnatomicStructure() const { return primaryAnatomicStructure; }
         CodeSequenceMacro* getPrimaryAnatomicStructureModifier() const { return primaryAnatomicStructureModifier; }
 

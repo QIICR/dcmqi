@@ -80,6 +80,9 @@ namespace dcmqi {
         static int getDeclaredImageSpacing(FGInterface &fgInterface, ImageType::SpacingType &spacing);
         static int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection,
                                        ImageType::PointType &imageOrigin, double &sliceSpacing, double &sliceExtent);
+
+        static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
+                                                     JSONMetaInformationHandler &metaInfo);
     };
 
 }

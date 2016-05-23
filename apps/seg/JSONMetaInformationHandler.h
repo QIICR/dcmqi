@@ -29,6 +29,9 @@ namespace dcmqi {
         ~JSONMetaInformationHandler();
 
         bool write(const char *filename);
+        SegmentAttributes* createAndGetNewSegment(unsigned labelID);
+
+        vector<SegmentAttributes*> segmentsAttributes;
 
         string readerID;
         string sessionID;
@@ -37,8 +40,6 @@ namespace dcmqi {
         string seriesNumber;
         string instanceNumber;
         string bodyPartExamined;
-
-        vector<SegmentAttributes*> segmentsAttributes;
 
     protected:
         bool isValid(const char *filename);

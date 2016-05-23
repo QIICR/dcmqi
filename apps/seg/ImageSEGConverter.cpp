@@ -460,47 +460,42 @@ namespace dcmqi {
         if(segFF.loadFile(inputSEGFileName).good()){
             segDataset = segFF.getDataset();
         } else {
-            std::cerr << "Failed to read input " << std::endl;
+            cerr << "Failed to read input " << endl;
             return EXIT_FAILURE;
         }
 
-        OFCondition cond;
         DcmSegmentation *segdoc = NULL;
-        cond = DcmSegmentation::loadFile(inputSEGFileName, segdoc);
+        OFCondition cond = DcmSegmentation::loadFile(inputSEGFileName, segdoc);
         if(!segdoc){
-            std::cerr << "Failed to load seg! " << cond.text() << std::endl;
+            cerr << "Failed to load seg! " << cond.text() << endl;
             return EXIT_FAILURE;
         }
-
-        FGInterface &fgInterface = segdoc->getFunctionalGroups();
-
-        ImageType::PointType imageOrigin;
-        ImageType::RegionType imageRegion;
-        ImageType::SizeType imageSize;
-        ImageType::SpacingType imageSpacing;
-        ImageType::Pointer segImage = ImageType::New();
 
         // Directions
-        ImageType::DirectionType dir;
-        if(getImageDirections(fgInterface, dir)){
-            std::cerr << "Failed to get image directions" << std::endl;
+        FGInterface &fgInterface = segdoc->getFunctionalGroups();
+        ImageType::DirectionType direction;
+        if(getImageDirections(fgInterface, direction)){
+            cerr << "Failed to get image directions" << endl;
             return EXIT_FAILURE;
         }
 
         // Spacing and origin
         double computedSliceSpacing, computedVolumeExtent;
         vnl_vector<double> sliceDirection(3);
-        sliceDirection[0] = dir[0][2];
-        sliceDirection[1] = dir[1][2];
-        sliceDirection[2] = dir[2][2];
+        sliceDirection[0] = direction[0][2];
+        sliceDirection[1] = direction[1][2];
+        sliceDirection[2] = direction[2][2];
+
+        ImageType::PointType imageOrigin;
         if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
-            std::cerr << "Failed to compute origin and/or slice spacing!" << std::endl;
+            cerr << "Failed to compute origin and/or slice spacing!" << endl;
             return EXIT_FAILURE;
         }
 
+        ImageType::SpacingType imageSpacing;
         imageSpacing.Fill(0);
         if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
-            std::cerr << "Failed to get image spacing from DICOM!" << std::endl;
+            cerr << "Failed to get image spacing from DICOM!" << endl;
             return EXIT_FAILURE;
         }
 
@@ -509,11 +504,12 @@ namespace dcmqi {
             imageSpacing[2] = computedSliceSpacing;
         }
         else if(fabs(imageSpacing[2]-computedSliceSpacing)>tolerance){
-            std::cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
-            " Declared = " << imageSpacing[2] << " Computed = " << computedSliceSpacing << std::endl;
+            cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
+            " Declared = " << imageSpacing[2] << " Computed = " << computedSliceSpacing << endl;
         }
 
         // Region size
+        ImageType::SizeType imageSize;
         {
             OFString str;
             if(segDataset->findAndGetOFString(DCM_Rows, str).good()){
@@ -529,24 +525,30 @@ namespace dcmqi {
         imageSize[2] = int(computedVolumeExtent/imageSpacing[2]/tolerance+0.5)*tolerance+1;
 
         // Initialize the image
+        ImageType::RegionType imageRegion;
         imageRegion.SetSize(imageSize);
+        ImageType::Pointer segImage = ImageType::New();
         segImage->SetRegions(imageRegion);
         segImage->SetOrigin(imageOrigin);
         segImage->SetSpacing(imageSpacing);
-        segImage->SetDirection(dir);
+        segImage->SetDirection(direction);
         segImage->Allocate();
         segImage->FillBuffer(0);
 
         // ITK images corresponding to the individual segments
-        std::map<unsigned,ImageType::Pointer> segment2image;
+        map<unsigned,ImageType::Pointer> segment2image;
         // list of strings that
-        std::map<unsigned,std::string> segment2meta;
+        map<unsigned,string> segment2meta;
 
         // Iterate over frames, find the matching slice for each of the frames based on
         // ImagePositionPatient, set non-zero pixels to the segment number. Notify
         // about pixels that are initialized more than once.
 
         DcmIODTypes::Frame *unpackedFrame = NULL;
+
+        JSONMetaInformationHandler metaInfo;
+
+        populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
         for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
             const DcmIODTypes::Frame *frame = segdoc->getFrame(frameId);
@@ -566,15 +568,14 @@ namespace dcmqi {
 
             Uint16 segmentId = -1;
             if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
-                std::cerr << "Failed to get seg number!";
+                cerr << "Failed to get seg number!";
                 return EXIT_FAILURE;
             }
-
 
             // WARNING: this is needed only for David's example, which numbers
             // (incorrectly!) segments starting from 0, should start from 1
             if(segmentId == 0){
-                std::cerr << "Segment numbers should start from 1!" << std::endl;
+                cerr << "Segment numbers should start from 1!" << endl;
                 return EXIT_FAILURE;
             }
 
@@ -594,11 +595,10 @@ namespace dcmqi {
                 // NOTE: according to the standard, segment numbering should start from 1,
                 //  not clear if this is intentional behavior or a bug in DCMTK expecting
                 //  it to start from 0
-                std::ostringstream metastr;
 
                 DcmSegment* segment = segdoc->getSegment(segmentId);
                 if(segment == NULL){
-                    std::cerr << "Failed to get segment for segment ID " << segmentId << std::endl;
+                    cerr << "Failed to get segment for segment ID " << segmentId << endl;
                     return EXIT_FAILURE;
                 }
 
@@ -615,55 +615,52 @@ namespace dcmqi {
                     ciedcm[0] = 43803;
                     ciedcm[1] = 26565;
                     ciedcm[2] = 37722;
-                    std::cerr << "Failed to get CIELab values - initializing to default " <<
-                    ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << std::endl;
+                    cerr << "Failed to get CIELab values - initializing to default " <<
+                    ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << endl;
                 }
                 cielabScaled[0] = unsigned(ciedcm[0]);
                 cielabScaled[1] = unsigned(ciedcm[1]);
                 cielabScaled[2] = unsigned(ciedcm[2]);
 
                 dcmqi::Helper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
-
                 dcmqi::Helper::getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
-
                 dcmqi::Helper::getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
 
-                // line format:
-                // labelNum;RGB:R,G,B;SegmentedPropertyCategory:code,scheme,meaning;SegmentedPropertyType:code,scheme,meaning;SegmentedPropertyTypeModifier:code,scheme,meaning;AnatomicRegion:code,scheme,meaning;AnatomicRegionModifier:code,scheme,meaning
-                metastr << segmentId;
-                metastr << ";RGB:" << rgb[0] << "," << rgb[1] << "," << rgb[2];
+                SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
-                OFString meaning, designator, code;
-                segment->getSegmentedPropertyCategoryCode().getCodeMeaning(meaning);
-                segment->getSegmentedPropertyCategoryCode().getCodeValue(code);
-                segment->getSegmentedPropertyCategoryCode().getCodingSchemeDesignator(designator);
-                metastr << ";SegmentedPropertyCategory:" << code << ","  << designator << "," << meaning;
+                if (segmentAttributes) {
+                    switch(segment->getSegmentAlgorithmType()) {
+                        case DcmSegTypes::SAT_MANUAL:
+                            segmentAttributes->setSegmentAlgorithmType("MANUAL");
+                        case DcmSegTypes::SAT_SEMIAUTOMATIC:
+                            segmentAttributes->setSegmentAlgorithmType("SEMIAUTOMATIC");
+                        case DcmSegTypes::SAT_AUTOMATIC:
+                            segmentAttributes->setSegmentAlgorithmType("AUTOMATIC");
+                        default:
+                            segmentAttributes->setSegmentAlgorithmType("SEMIAUTOMATIC");
+                    }
 
-                segment->getSegmentedPropertyTypeCode().getCodeMeaning(meaning);
-                segment->getSegmentedPropertyTypeCode().getCodeValue(code);
-                segment->getSegmentedPropertyTypeCode().getCodingSchemeDesignator(designator);
-                metastr << ";SegmentedPropertyType:" << code << "," << designator << "," << meaning;
-                if(segment->getSegmentedPropertyTypeModifierCode().size()>0){
-                    segment->getSegmentedPropertyTypeModifierCode()[0]->getCodeMeaning(meaning);
-                    segment->getSegmentedPropertyTypeModifierCode()[0]->getCodeValue(code);
-                    segment->getSegmentedPropertyTypeModifierCode()[0]->getCodingSchemeDesignator(designator);
-                    metastr << ";SegmentedPropertyTypeModifier:" << code << "," << designator << "," << meaning;
+                    OFString segmentDescription;
+                    segment->getSegmentDescription(segmentDescription);
+                    segmentAttributes->setSegmentDescription(segmentDescription.c_str());
+
+//                  TODO: dcmtk method for getting algorithm name is missing???
+
+                    segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
+                    segmentAttributes->setSegmentedPropertyCategoryCode(segment->getSegmentedPropertyCategoryCode());
+                    segmentAttributes->setSegmentedPropertyType(segment->getSegmentedPropertyTypeCode());
+
+                    if (segment->getSegmentedPropertyTypeModifierCode().size() > 0) {
+                        segmentAttributes->setSegmentedPropertyTypeModifier(
+                                segment->getSegmentedPropertyTypeModifierCode()[0]);
+                    }
+
+                    GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
+                    segmentAttributes->setAnatomicRegion(anatomyMacro.getAnatomicRegion());
+                    if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
+                        segmentAttributes->setAnatomicRegionModifier(anatomyMacro.getAnatomicRegionModifier()[0]);
+                    }
                 }
-
-                // get anatomy codes
-                GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-                anatomyMacro.getAnatomicRegion().getCodeMeaning(meaning);
-                anatomyMacro.getAnatomicRegion().getCodeValue(code);
-                anatomyMacro.getAnatomicRegion().getCodingSchemeDesignator(designator);
-                metastr << ";AnatomicRegion:" << code << "," << designator << "," << meaning;
-                if(anatomyMacro.getAnatomicRegionModifier().size()>0){
-                    anatomyMacro.getAnatomicRegionModifier()[0]->getCodeMeaning(meaning);
-                    anatomyMacro.getAnatomicRegionModifier()[0]->getCodeValue(code);
-                    anatomyMacro.getAnatomicRegionModifier()[0]->getCodingSchemeDesignator(designator);
-                    metastr << ";AnatomicRegionModifier:" << code << "," << designator << "," << meaning;
-                }
-                metastr << std::endl;
-                segment2meta[segmentId] = metastr.str();
             }
 
             // get string representation of the frame origin
@@ -677,9 +674,9 @@ namespace dcmqi {
             }
 
             if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
-                std::cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
-                " is outside image geometry!" << frameOriginIndex << std::endl;
-                std::cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << std::endl;
+                cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
+                " is outside image geometry!" << frameOriginIndex << endl;
+                cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
                 return EXIT_FAILURE;
             }
 
@@ -713,23 +710,21 @@ namespace dcmqi {
                 delete unpackedFrame;
         }
 
-        for(std::map<unsigned,ImageType::Pointer>::const_iterator sI=segment2image.begin();sI!=segment2image.end();++sI){
+        for(map<unsigned,ImageType::Pointer>::const_iterator sI=segment2image.begin();sI!=segment2image.end();++sI){
             typedef itk::ImageFileWriter<ImageType> WriterType;
-            std::stringstream imageFileNameSStream, infoFileNameSStream;
-            // is this safe?
+            stringstream imageFileNameSStream;
             imageFileNameSStream << outputDirName << "/" << sI->first << ".nrrd";
-            infoFileNameSStream << outputDirName << "/" << sI->first << ".info";
 
             WriterType::Pointer writer = WriterType::New();
-            writer->SetFileName(imageFileNameSStream.str());
+            writer->SetFileName(imageFileNameSStream.str().c_str());
             writer->SetInput(sI->second);
             writer->SetUseCompression(1);
             writer->Update();
-
-            std::ofstream metaf(infoFileNameSStream.str().c_str());
-            metaf << segment2meta[sI->first] << std::endl;
-            metaf.close();
         }
+
+        stringstream jsonOutput;
+        jsonOutput << outputDirName << "/" << "meta.json";
+        metaInfo.write(jsonOutput.str().c_str());
 
         return true;
     }
@@ -752,7 +747,8 @@ namespace dcmqi {
     }
 
     vector<int> ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-                                                                              const itk::Image<short, 3>::Pointer &labelImage) {// Find mapping from the segmentation slice number to the derivation image
+                                                                              const itk::Image<short, 3>::Pointer &labelImage) {
+        // Find mapping from the segmentation slice number to the derivation image
         // Assume that orientation of the segmentation is the same as the source series
         vector<int> slice2derimg(dicomImageFileNames.size());
         for(int i=0;i<dicomImageFileNames.size();i++){
@@ -795,7 +791,7 @@ namespace dcmqi {
         FGPlaneOrientationPatient *planorfg = OFstatic_cast(FGPlaneOrientationPatient*,
                                                             fgInterface.get(0, DcmFGTypes::EFG_PLANEORIENTPATIENT, isPerFrame));
         if(!planorfg){
-            std::cerr << "Plane Orientation (Patient) is missing, cannot parse input " << std::endl;
+            cerr << "Plane Orientation (Patient) is missing, cannot parse input " << endl;
             return EXIT_FAILURE;
         }
         OFString orientStr;
@@ -803,7 +799,7 @@ namespace dcmqi {
             if(planorfg->getImageOrientationPatient(orientStr, i).good()){
                 rowDirection[i] = atof(orientStr.c_str());
             } else {
-                std::cerr << "Failed to get orientation " << i << std::endl;
+                cerr << "Failed to get orientation " << i << endl;
                 return EXIT_FAILURE;
             }
         }
@@ -811,7 +807,7 @@ namespace dcmqi {
             if(planorfg->getImageOrientationPatient(orientStr, i).good()){
                 colDirection[i-3] = atof(orientStr.c_str());
             } else {
-                std::cerr << "Failed to get orientation " << i << std::endl;
+                cerr << "Failed to get orientation " << i << endl;
                 return EXIT_FAILURE;
             }
         }
@@ -837,9 +833,9 @@ namespace dcmqi {
         //   Position (Patient) initialized. So we can get the number of slices by looking
         //   how many per-frame functional groups a segment has.
 
-        std::vector<double> originDistances;
-        std::map<OFString, double> originStr2distance;
-        std::map<OFString, unsigned> frame2overlap;
+        vector<double> originDistances;
+        map<OFString, double> originStr2distance;
+        map<OFString, unsigned> frame2overlap;
         double minDistance;
 
         unsigned numFrames = fgInterface.getNumberOfFrames();
@@ -866,7 +862,7 @@ namespace dcmqi {
                 if(planposfg->getImagePositionPatient(planposStr, j).good()){
                     refOrigin[j] = atof(planposStr.c_str());
                 } else {
-                    std::cerr << "Failed to read patient position" << std::endl;
+                    cerr << "Failed to read patient position" << endl;
                 }
             }
         }
@@ -877,12 +873,12 @@ namespace dcmqi {
                     OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
 
             if(!planposfg){
-                std::cerr << "PlanePositionPatient is missing" << std::endl;
+                cerr << "PlanePositionPatient is missing" << endl;
                 return EXIT_FAILURE;
             }
 
             if(!isPerFrame){
-                std::cerr << "PlanePositionPatient is required for each frame!" << std::endl;
+                cerr << "PlanePositionPatient is required for each frame!" << endl;
                 return EXIT_FAILURE;
             }
 
@@ -897,7 +893,7 @@ namespace dcmqi {
                     if(j<2)
                         sOriginStr+='/';
                 } else {
-                    std::cerr << "Failed to read patient position" << std::endl;
+                    cerr << "Failed to read patient position" << endl;
                     return EXIT_FAILURE;
                 }
             }
@@ -944,51 +940,74 @@ namespace dcmqi {
             float dist1 = fabs(originDistances[i-1]-originDistances[i]);
             float delta = sliceSpacing-dist1;
             if(delta > 0.001){
-                std::cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
-                " difference exceeded threshold: " << delta << std::endl;
+                cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
+                " difference exceeded threshold: " << delta << endl;
             }
         }
 
         sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
         unsigned overlappingFramesCnt = 0;
-        for(std::map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
+        for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
             it!=frame2overlap.end();++it){
             if(it->second>1)
                 overlappingFramesCnt++;
         }
 
-        std::cout << "Total frames: " << numFrames << std::endl;
-        std::cout << "Total frames with unique IPP: " << originDistances.size() << std::endl;
-        std::cout << "Total overlapping frames: " << overlappingFramesCnt << std::endl;
-        std::cout << "Origin: " << imageOrigin << std::endl;
+        cout << "Total frames: " << numFrames << endl;
+        cout << "Total frames with unique IPP: " << originDistances.size() << endl;
+        cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
+        cout << "Origin: " << imageOrigin << endl;
 
         return 0;
     }
 
     int ImageSEGConverter::getDeclaredImageSpacing(FGInterface &fgInterface, ImageType::SpacingType &spacing){
         OFBool isPerFrame;
-        FGPixelMeasures *pixm = OFstatic_cast(FGPixelMeasures*,
-                                              fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
-        if(!pixm){
-            std::cerr << "Pixel measures FG is missing!" << std::endl;
+        FGPixelMeasures *pixelMeasures = OFstatic_cast(FGPixelMeasures*,
+                                                       fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
+        if(!pixelMeasures){
+            cerr << "Pixel measures FG is missing!" << endl;
             return EXIT_FAILURE;
         }
 
-        pixm->getPixelSpacing(spacing[0], 0);
-        pixm->getPixelSpacing(spacing[1], 1);
+        pixelMeasures->getPixelSpacing(spacing[0], 0);
+        pixelMeasures->getPixelSpacing(spacing[1], 1);
 
         Float64 spacingFloat;
-        if(pixm->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
+        if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
             spacing[2] = spacingFloat;
-        } else if(pixm->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
+        } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
             // SliceThickness can be carried forward from the source images, and may not be what we need
             // As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
-            std::cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". NOT using it!" << std::endl;
+            cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". NOT using it!" << endl;
         }
-
         return 0;
     }
 
+    void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
+                                                             JSONMetaInformationHandler &metaInfo) {
+        OFString readerID, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined;
+
+        ContentIdentificationMacro& contentIdentificationMacro = segdoc->getContentIdentification();
+        contentIdentificationMacro.getInstanceNumber(instanceNumber);
+        contentIdentificationMacro.getContentCreatorName(readerID);
+
+        segDataset->findAndGetOFString(DCM_ClinicalTrialTimePointID, timePointID);
+        segDataset->findAndGetOFString(DCM_ClinicalTrialSeriesID, sessionID);
+
+        IODGeneralSeriesModule seriesModule = segdoc->getSeries();
+        seriesModule.getBodyPartExamined(bodyPartExamined);
+        seriesModule.getSeriesNumber(seriesNumber);
+        seriesModule.getSeriesDescription(seriesDescription);
+
+        metaInfo.readerID = readerID.c_str();
+        metaInfo.sessionID = sessionID.c_str();
+        metaInfo.seriesNumber = seriesNumber.c_str();
+        metaInfo.timePointID = timePointID.c_str();
+        metaInfo.seriesDescription = seriesDescription.c_str();
+        metaInfo.instanceNumber = instanceNumber.c_str();
+        metaInfo.bodyPartExamined = bodyPartExamined.c_str();
+    }
 
 }
 
