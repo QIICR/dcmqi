@@ -14,12 +14,18 @@ set(MODULE_NAME segimage2itkimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
+  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   Exceptions.h
   Helper.h
   Helper.cpp
   ImageSEGConverter.h
   ImageSEGConverter.cpp
-  SegmentAttributes.h)
+  JSONMetaInformationHandler.h
+  JSONMetaInformationHandler.cpp
+  SegmentAttributes.h
+  SegmentAttributes.cpp
+  QIICRUIDs.h
+  preproc.h)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
