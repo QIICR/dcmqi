@@ -14,6 +14,7 @@ set(MODULE_NAME segimage2itkimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
+  Exceptions.h
   Helper.h
   Helper.cpp
   ImageSEGConverter.h
@@ -46,6 +47,7 @@ set(MODULE_NAME itkimage2segimage)
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
+  Exceptions.h
   Helper.h
   Helper.cpp
   ImageSEGConverter.h

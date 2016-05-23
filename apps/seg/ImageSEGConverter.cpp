@@ -7,12 +7,6 @@ namespace dcmqi {
     bool ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
                                              const char *metaDataFileName, const char *outputFileName) {
 
-        typedef short PixelType;
-        typedef itk::Image<PixelType, 3> ImageType;
-        typedef itk::ImageFileReader<ImageType> ReaderType;
-        typedef itk::LabelImageToLabelMapFilter<ImageType> LabelToLabelMapFilterType;
-
-
         ReaderType::Pointer reader = ReaderType::New();
         reader->SetFileName(segmentationFileNames[0].c_str());
         reader->Update();
@@ -53,30 +47,7 @@ namespace dcmqi {
 
         /* Initialize shared functional groups */
         FGInterface &segFGInt = segdoc->getFunctionalGroups();
-
-        // Find mapping from the segmentation slice number to the derivation image
-        // Assume that orientation of the segmentation is the same as the source series
-        vector<int> slice2derimg(dicomImageFileNames.size());
-        for(int i=0;i<dicomImageFileNames.size();i++){
-            OFString ippStr;
-            DcmFileFormat sliceFF;
-            DcmDataset *sliceDataset = NULL;
-            ImageType::PointType ippPoint;
-            ImageType::IndexType ippIndex;
-            CHECK_COND(sliceFF.loadFile(dicomImageFileNames[i].c_str()));
-            sliceDataset = sliceFF.getDataset();
-            for(int j=0;j<3;j++){
-                CHECK_COND(sliceDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
-                ippPoint[j] = atof(ippStr.c_str());
-            }
-            if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
-                cerr << "ImagePositionPatient maps outside the ITK image!" << endl;
-                cout << "image position: " << ippPoint << endl;
-                cerr << "ippIndex: " << ippIndex << endl;
-                return -1;
-            }
-            slice2derimg[ippIndex[2]] = i;
-        }
+        vector<int> slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
 
         const unsigned frameSize = inputSize[0] * inputSize[1];
 
@@ -497,6 +468,32 @@ namespace dcmqi {
         CHECK_COND(ident.setContentDescription("Iowa QIN segmentation result"));
         CHECK_COND(ident.setContentLabel("QIICR QIN IOWA"));
         return ident;
+    }
+
+    vector<int> ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
+                                                                              const itk::Image<short, 3>::Pointer &labelImage) {// Find mapping from the segmentation slice number to the derivation image
+        // Assume that orientation of the segmentation is the same as the source series
+        vector<int> slice2derimg(dicomImageFileNames.size());
+        for(int i=0;i<dicomImageFileNames.size();i++){
+            OFString ippStr;
+            DcmFileFormat sliceFF;
+            DcmDataset *sliceDataset = NULL;
+            ImageType::PointType ippPoint;
+            ImageType::IndexType ippIndex;
+            CHECK_COND(sliceFF.loadFile(dicomImageFileNames[i].c_str()));
+            sliceDataset = sliceFF.getDataset();
+            for(int j=0;j<3;j++){
+                CHECK_COND(sliceDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
+                ippPoint[j] = atof(ippStr.c_str());
+            }
+            if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
+                cout << "image position: " << ippPoint << endl;
+                cerr << "ippIndex: " << ippIndex << endl;
+                throw DCMQIImagePositionPatientMapsOutsideITKException("ImagePositionPatient maps outside the ITK image!");
+            }
+            slice2derimg[ippIndex[2]] = i;
+        }
+        return slice2derimg;
     }
 
     int ImageSEGConverter::CHECK_COND(const OFCondition& condition) {

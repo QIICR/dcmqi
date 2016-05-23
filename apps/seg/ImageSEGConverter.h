@@ -35,15 +35,16 @@
 
 #include "JSONMetaInformationHandler.h"
 
+#include "Exceptions.h"
+
 using namespace std;
 
-namespace dcmqi {
+typedef short PixelType;
+typedef itk::Image<PixelType, 3> ImageType;
+typedef itk::ImageFileReader<ImageType> ReaderType;
+typedef itk::LabelImageToLabelMapFilter<ImageType> LabelToLabelMapFilterType;
 
-    class OFConditionBadException : public std::exception {
-        virtual const char *what() const throw() {
-            return "DICOM Exception: ";
-        }
-    };
+namespace dcmqi {
 
     class ImageSEGConverter {
 
@@ -57,6 +58,8 @@ namespace dcmqi {
     private:
         static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
         static ContentIdentificationMacro createContentIdentificationInformation();
+        static vector<int> getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
+                                                                      const itk::Image<short, 3>::Pointer &labelImage);
     };
 
 }
