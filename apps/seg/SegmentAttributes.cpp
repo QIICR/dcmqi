@@ -124,6 +124,24 @@ namespace dcmqi {
         this->primaryAnatomicStructureModifier = new CodeSequenceMacro(codeSequence);
     }
 
+    string SegmentAttributes::getCodeSequenceValue(CodeSequenceMacro* codeSequence) {
+        OFString value;
+        codeSequence->getCodeValue(value);
+        return value.c_str();
+    }
+
+    string SegmentAttributes::getCodeSequenceDesignator(CodeSequenceMacro* codeSequence) {
+        OFString designator;
+        codeSequence->getCodingSchemeDesignator(designator);
+        return designator.c_str();
+    }
+
+    string SegmentAttributes::getCodeSequenceMeaning(CodeSequenceMacro* codeSequence) {
+        OFString meaning;
+        codeSequence->getCodeMeaning(meaning);
+        return meaning.c_str();
+    }
+
     void SegmentAttributes::PrintSelf() {
         cout << "LabelID: " << this->labelID << endl;
 //        for (map<string, string>::const_iterator mIt = attributesDictionary.begin();

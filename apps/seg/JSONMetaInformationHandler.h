@@ -48,9 +48,12 @@ namespace dcmqi {
         bool read();
 
         const char *filename;
-
+        Json::Value codeSequence2Json(CodeSequenceMacro *codeSequence);
         void readSeriesAttributes(const Json::Value &root);
         void readSegmentAttributes(const Json::Value &root);
+
+        Json::Value writeSeriesAttributes();
+        Json::Value writeSegmentAttributes();
     };
 }
 

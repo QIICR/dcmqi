@@ -58,6 +58,10 @@ namespace dcmqi {
         CodeSequenceMacro* getPrimaryAnatomicStructure() const { return primaryAnatomicStructure; }
         CodeSequenceMacro* getPrimaryAnatomicStructureModifier() const { return primaryAnatomicStructureModifier; }
 
+        static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
+        static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
+        static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
+
         void PrintSelf();
 
     private:

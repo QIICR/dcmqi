@@ -43,7 +43,77 @@ namespace dcmqi {
     bool JSONMetaInformationHandler::write(const char *filename) {
         if (this->segmentsAttributes.size() == 0)
             return false;
+        // TODO: add checks for validity here....
+
+        std::ofstream outputFile;
+        outputFile.open(filename);
+        Json::Value data;
+
+        data["seriesAttributes"] = writeSeriesAttributes();
+        data["segmentAttributes"] = writeSegmentAttributes();
+
+        Json::StyledWriter styledWriter;
+        outputFile << styledWriter.write(data);
+
+        outputFile.close();
         return true;
+    }
+
+    Json::Value JSONMetaInformationHandler::writeSegmentAttributes() {
+        Json::Value values(Json::arrayValue);
+        for (vector<SegmentAttributes*>::iterator it = segmentsAttributes.begin() ; it != segmentsAttributes.end(); ++it) {
+            Json::Value segment;
+            segment["LabelID"] = (*it)->getLabelID();
+            segment["SegmentDescription"] = (*it)->getSegmentDescription();
+            segment["SegmentAlgorithmType"] = (*it)->getSegmentAlgorithmType();
+            if ((*it)->getSegmentAlgorithmName().length() > 0)
+                segment["SegmentAlgorithmName"] = (*it)->getSegmentAlgorithmName();
+
+            if ((*it)->getSegmentedPropertyCategoryCode())
+                segment["SegmentedPropertyCategoryCode"] = codeSequence2Json((*it)->getSegmentedPropertyCategoryCode());
+
+            if ((*it)->getSegmentedPropertyType())
+                segment["SegmentedPropertyType"] = codeSequence2Json((*it)->getSegmentedPropertyType());
+
+            if ((*it)->getSegmentedPropertyTypeModifier())
+                segment["SegmentedPropertyTypeModifier"] = codeSequence2Json((*it)->getSegmentedPropertyTypeModifier());
+
+            if ((*it)->getAnatomicRegion())
+                segment["AnatomicRegion"] = codeSequence2Json((*it)->getAnatomicRegion());
+
+            if ((*it)->getAnatomicRegionModifier())
+                segment["AnatomicRegionModifier"] = codeSequence2Json((*it)->getAnatomicRegionModifier());
+
+            // TODO: add PrimaryAnatomicStructure and PrimaryAnatomicStructureModifier here?
+
+            Json::Value rgb(Json::arrayValue);
+            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[0]));
+            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[1]));
+            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[2]));
+            segment["RecommendedDisplayRGBValue"] = rgb;
+            values.append(segment);
+        }
+        return values;
+    }
+
+    Json::Value JSONMetaInformationHandler::writeSeriesAttributes() {
+        Json::Value value;
+        value["ReaderID"] = readerID;
+        value["SessionID"] = sessionID;
+        value["TimePointID"] = timePointID;
+        value["SeriesDescription"] = seriesDescription;
+        value["SeriesNumber"] = seriesNumber;
+        value["InstanceNumber"] = instanceNumber;
+        value["BodyPartExamined"] = bodyPartExamined;
+        return value;
+    }
+
+    Json::Value JSONMetaInformationHandler::codeSequence2Json(CodeSequenceMacro *codeSequence) {
+        Json::Value value;
+        value["codeValue"] = SegmentAttributes::getCodeSequenceValue(codeSequence);
+        value["codingSchemeDesignator"] = SegmentAttributes::getCodeSequenceDesignator(codeSequence);
+        value["codeMeaning"] = SegmentAttributes::getCodeSequenceMeaning(codeSequence);
+        return value;
     }
 
     SegmentAttributes* JSONMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
@@ -56,7 +126,6 @@ namespace dcmqi {
         this->segmentsAttributes.push_back(segment);
         return segment;
     }
-
 
     void JSONMetaInformationHandler::readSegmentAttributes(const Json::Value &root) {
         Json::Value segmentAttributes = root["segmentAttributes"];
