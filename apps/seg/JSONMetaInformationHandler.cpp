@@ -87,9 +87,9 @@ namespace dcmqi {
             // TODO: add PrimaryAnatomicStructure and PrimaryAnatomicStructureModifier here?
 
             Json::Value rgb(Json::arrayValue);
-            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[0]));
-            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[1]));
-            rgb.append(to_string((*it)->getRecommendedDisplayRGBValue()[2]));
+            rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[0]));
+            rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[1]));
+            rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[2]));
             segment["RecommendedDisplayRGBValue"] = rgb;
             values.append(segment);
         }

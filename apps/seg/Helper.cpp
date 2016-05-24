@@ -47,6 +47,12 @@ namespace dcmqi {
         }
     };
 
+    string Helper::toString(const unsigned int& value) {
+        ostringstream oss;
+        oss << value;
+        return oss.str();
+    }
+
     /**
      <p>Convert RGB values in sRGB to CIEXYZ in ICC PCS.</p>
 

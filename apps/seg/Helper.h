@@ -6,6 +6,8 @@
 #include "dcmtk/dcmiod/iodmacro.h"
 #include "dcmtk/dcmsr/dsrcodtn.h"
 
+#include <sstream>
+#include <string>
 #include <vector>
 #include <map>
 
@@ -22,6 +24,8 @@ namespace dcmqi {
         static string floatToStrScientific(float f);
         static void tokenizeString(string str, vector<string> &tokens, string delimiter);
         static void splitString(string str, string &head, string &tail, string delimiter);
+
+        static string toString(const unsigned int& value);
 
         static float *getCIEXYZFromRGB(unsigned *rgb, float *cieXYZ);
         static float *getCIEXYZFromCIELab(float *cieLab, float *cieXYZ);
