@@ -32,7 +32,7 @@ namespace dcmqi {
         void setSegmentedPropertyType(const string& code, const string& designator, const string& meaning);
         void setSegmentedPropertyType(const CodeSequenceMacro& codeSequence);
         void setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning);
-        void setSegmentedPropertyTypeModifier(const CodeSequenceMacro& codeSequence);
+        void setSegmentedPropertyTypeModifier(const CodeSequenceMacro* codeSequence);
         void setAnatomicRegion(const string& code, const string& designator, const string& meaning);
         void setAnatomicRegion(const CodeSequenceMacro& codeSequence);
         void setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning);

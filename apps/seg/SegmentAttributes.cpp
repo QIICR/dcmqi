@@ -88,8 +88,8 @@ namespace dcmqi {
         this->segmentedPropertyTypeModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
-    void SegmentAttributes::setSegmentedPropertyTypeModifier(const CodeSequenceMacro& codeSequence) {
-        this->segmentedPropertyTypeModifier = new CodeSequenceMacro(codeSequence);
+    void SegmentAttributes::setSegmentedPropertyTypeModifier(const CodeSequenceMacro* codeSequence) {
+        this->segmentedPropertyTypeModifier = new CodeSequenceMacro(*codeSequence);
     }
 
     void SegmentAttributes::setAnatomicRegion(const string& code, const string& designator, const string& meaning) {
