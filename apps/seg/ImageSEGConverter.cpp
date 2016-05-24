@@ -656,7 +656,10 @@ namespace dcmqi {
                     }
 
                     GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-                    segmentAttributes->setAnatomicRegion(anatomyMacro.getAnatomicRegion());
+                    CodeSequenceMacro& anatomicRegion = anatomyMacro.getAnatomicRegion();
+                    if (anatomicRegion.check().good()) {
+                        segmentAttributes->setAnatomicRegion(anatomyMacro.getAnatomicRegion());
+                    }
                     if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
                         segmentAttributes->setAnatomicRegionModifier(anatomyMacro.getAnatomicRegionModifier()[0]);
                     }
