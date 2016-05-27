@@ -9,6 +9,7 @@
 #include "dcmtk/dcmsr/dsrdoc.h"
 #include "dcmtk/dcmdata/dcuid.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmsr/dsriodcc.h"
 #include "dcmtk/dcmiod/modhelp.h"
 //#include "dcmtk/dcmdata/modhelp.h"
