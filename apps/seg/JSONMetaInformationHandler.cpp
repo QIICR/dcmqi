@@ -12,7 +12,6 @@ namespace dcmqi {
             JSONReadErrorException jsonException;
             throw jsonException;
         }
-        std::cout << "called JSONMetaInformationHandler" << std::endl;
     }
 
     JSONMetaInformationHandler::~JSONMetaInformationHandler() {
@@ -83,8 +82,6 @@ namespace dcmqi {
 
             if ((*it)->getAnatomicRegionModifier())
                 segment["AnatomicRegionModifier"] = codeSequence2Json((*it)->getAnatomicRegionModifier());
-
-            // TODO: add PrimaryAnatomicStructure and PrimaryAnatomicStructureModifier here?
 
             Json::Value rgb(Json::arrayValue);
             rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[0]));
@@ -166,18 +163,6 @@ namespace dcmqi {
                 segmentAttribute->setAnatomicRegionModifier(elem.get("codeValue", "").asString(),
                                                             elem.get("codingSchemeDesignator", "").asString(),
                                                             elem.get("codeMeaning", "").asString());
-            }
-            elem = segment["PrimaryAnatomicStructure"];
-            if (!elem.isNull()) {
-                segmentAttribute->setPrimaryAnatomicStructure(elem.get("codeValue", "").asString(),
-                                                              elem.get("codingSchemeDesignator", "").asString(),
-                                                              elem.get("codeMeaning", "").asString());
-            }
-            elem = segment["PrimaryAnatomicStructureModifier"];
-            if (!elem.isNull()) {
-                segmentAttribute->setPrimaryAnatomicStructureModifier(elem.get("codeValue", "").asString(),
-                                                                      elem.get("codingSchemeDesignator", "").asString(),
-                                                                      elem.get("codeMeaning", "").asString());
             }
             segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
             segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());

@@ -18,8 +18,6 @@ namespace dcmqi {
         this->setRecommendedDisplayRGBValue(128, 174, 128);
         this->anatomicRegion = NULL;
         this->anatomicRegionModifier = NULL;
-        this->primaryAnatomicStructure = NULL;
-        this->primaryAnatomicStructureModifier = NULL;
         this->segmentedPropertyCategoryCode = NULL;
         this->segmentedPropertyType = NULL;
         this->segmentedPropertyTypeModifier = NULL;
@@ -30,10 +28,6 @@ namespace dcmqi {
             delete this->anatomicRegion;
         if (this->anatomicRegionModifier)
             delete this->anatomicRegionModifier;
-        if (this->primaryAnatomicStructure)
-            delete this->primaryAnatomicStructure;
-        if (this->primaryAnatomicStructureModifier)
-            delete this->primaryAnatomicStructureModifier;
         if (this->segmentedPropertyCategoryCode)
             delete this->segmentedPropertyCategoryCode;
         if (this->segmentedPropertyType)
@@ -106,22 +100,6 @@ namespace dcmqi {
 
     void SegmentAttributes::setAnatomicRegionModifier(const CodeSequenceMacro& codeSequence) {
         this->anatomicRegionModifier = new CodeSequenceMacro(codeSequence);
-    }
-
-    void SegmentAttributes::setPrimaryAnatomicStructure(const string& code, const string& designator, const string& meaning) {
-        this->primaryAnatomicStructure = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
-    }
-
-    void SegmentAttributes::setPrimaryAnatomicStructure(const CodeSequenceMacro& codeSequence) {
-        this->primaryAnatomicStructure = new CodeSequenceMacro(codeSequence);
-    }
-
-    void SegmentAttributes::setPrimaryAnatomicStructureModifier(const string& code, const string& designator, const string& meaning) {
-        this->primaryAnatomicStructureModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
-    }
-
-    void SegmentAttributes::setPrimaryAnatomicStructureModifier(const CodeSequenceMacro& codeSequence) {
-        this->primaryAnatomicStructureModifier = new CodeSequenceMacro(codeSequence);
     }
 
     string SegmentAttributes::getCodeSequenceValue(CodeSequenceMacro* codeSequence) {

@@ -5,8 +5,7 @@
     "TimePointID": "1",
     "SeriesDescription": "Segmentation",
     "SeriesNumber": "300",
-    "InstanceNumber": "1",
-    "BodyPartExamined": ""
+    "InstanceNumber": "1"
   },
   "segmentAttributes": [{
     "LabelID": 216,

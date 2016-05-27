@@ -38,11 +38,6 @@ namespace dcmqi {
         void setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning);
         void setAnatomicRegionModifier(const CodeSequenceMacro& codeSequence);
 
-        void setPrimaryAnatomicStructure(const string& code, const string& designator, const string& meaning);
-        void setPrimaryAnatomicStructure(const CodeSequenceMacro& codeSequence);
-        void setPrimaryAnatomicStructureModifier(const string& code, const string& designator, const string& meaning);
-        void setPrimaryAnatomicStructureModifier(const CodeSequenceMacro& codeSequence);
-
         unsigned int getLabelID() const { return labelID; }
         string getSegmentDescription() const { return segmentDescription; }
         string getSegmentAlgorithmType() const { return segmentAlgorithmType; }
@@ -54,9 +49,6 @@ namespace dcmqi {
         CodeSequenceMacro* getSegmentedPropertyType() const { return segmentedPropertyType; }
         CodeSequenceMacro* getSegmentedPropertyTypeModifier() const { return segmentedPropertyTypeModifier; }
         CodeSequenceMacro* getAnatomicRegionModifier() const { return anatomicRegionModifier; }
-
-        CodeSequenceMacro* getPrimaryAnatomicStructure() const { return primaryAnatomicStructure; }
-        CodeSequenceMacro* getPrimaryAnatomicStructureModifier() const { return primaryAnatomicStructureModifier; }
 
         static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
         static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
@@ -72,8 +64,6 @@ namespace dcmqi {
         unsigned recommendedDisplayRGBValue[3];
         CodeSequenceMacro* anatomicRegion;
         CodeSequenceMacro* anatomicRegionModifier;
-        CodeSequenceMacro* primaryAnatomicStructure;
-        CodeSequenceMacro* primaryAnatomicStructureModifier;
         CodeSequenceMacro* segmentedPropertyCategoryCode;
         CodeSequenceMacro* segmentedPropertyType;
         CodeSequenceMacro* segmentedPropertyTypeModifier;

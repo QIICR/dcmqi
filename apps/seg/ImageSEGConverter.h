@@ -64,10 +64,10 @@ namespace dcmqi {
     class ImageSEGConverter {
 
     public:
-        static bool itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
+        static int itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
                                              const char *metaDataFileName, const char *outputFileName);
 
-        static bool dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName);
+        static int dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName);
         static int CHECK_COND(const OFCondition& condition);
 
     private:

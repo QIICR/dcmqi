@@ -4,7 +4,7 @@
 
 namespace dcmqi {
 
-    bool ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
+    int ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
                                              const char *metaDataFileName, const char *outputFileName) {
 
         ReaderType::Pointer reader = ReaderType::New();
@@ -446,10 +446,10 @@ namespace dcmqi {
     }
 
     COUT << "Saved segmentation as " << outputFileName << endl;
-        return true;
+        return EXIT_SUCCESS;
     }
 
-    bool ImageSEGConverter::dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName) {
+    int ImageSEGConverter::dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName) {
 
         DcmRLEDecoderRegistration::registerCodecs();
 
@@ -629,15 +629,19 @@ namespace dcmqi {
                 SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
                 if (segmentAttributes) {
-                    switch(segment->getSegmentAlgorithmType()) {
-                        case DcmSegTypes::SAT_MANUAL:
-                            segmentAttributes->setSegmentAlgorithmType("MANUAL");
-                        case DcmSegTypes::SAT_SEMIAUTOMATIC:
-                            segmentAttributes->setSegmentAlgorithmType("SEMIAUTOMATIC");
-                        case DcmSegTypes::SAT_AUTOMATIC:
-                            segmentAttributes->setSegmentAlgorithmType("AUTOMATIC");
-                        default:
-                            segmentAttributes->setSegmentAlgorithmType("SEMIAUTOMATIC");
+                    DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
+                    string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
+                    segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);
+
+                    if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
+                        cerr << "AlgorithmType is not valid with value " << readableAlgorithmType << endl;
+                        return EXIT_FAILURE;
+                    }
+                    if (algorithmType != DcmSegTypes::SAT_MANUAL) {
+                        OFString segmentAlgorithmName;
+                        segment->getSegmentAlgorithmName(segmentAlgorithmName);
+                        if(segmentAlgorithmName.length() > 0)
+                            segmentAttributes->setSegmentAlgorithmName(segmentAlgorithmName.c_str());
                     }
 
                     OFString segmentDescription;
@@ -729,7 +733,7 @@ namespace dcmqi {
         jsonOutput << outputDirName << "/" << "meta.json";
         metaInfo.write(jsonOutput.str().c_str());
 
-        return true;
+        return EXIT_SUCCESS;
     }
 
     IODGeneralEquipmentModule::EquipmentInfo ImageSEGConverter::getEquipmentInfo() {
