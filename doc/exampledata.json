@@ -20,16 +20,6 @@
       "codingSchemeDesignator": "SRT",
       "codeMeaning": "Liver"
     },
-    "SegmentedPropertyTypeModifier": {
-      "codeValue": "G-A100",
-      "codingSchemeDesignator": "SRT",
-      "codeMeaning": "Right"
-    },
-    "AnatomicRegion": {
-      "codeValue": "G-A147",
-      "codingSchemeDesignator": "SRT",
-      "codeMeaning": "Axial"
-    },
     "SegmentAlgorithmType": "SEMIAUTOMATIC",
     "SegmentAlgorithmName": "SlicerEditor",
     "RecommendedDisplayRGBValue": [
