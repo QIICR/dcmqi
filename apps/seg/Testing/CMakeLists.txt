@@ -13,7 +13,7 @@ set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARG
 
 add_test(NAME ${MODULE_NAME}_makeNRRD COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
   --compare ${BASELINE}/liver_seg.nrrd
-  ${BASELINE}/liver.dcm
+  ${TEMP_DIR}/1.nrrd
   ModuleEntryPoint
   ${BASELINE}/liver.dcm
   ${TEMP_DIR})
