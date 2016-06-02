@@ -1,0 +1,5 @@
+#jsonForm, #jsonOutput {
+    height: 90%;
+    overflow: auto;
+    margin: 2%;
+}
