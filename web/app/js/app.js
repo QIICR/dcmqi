@@ -239,6 +239,7 @@
   app.controller('SegmentedPropertyCategoryCodeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.required = true;
     self.floatingLabel = "Segmented Category";
     self.selectionChangedEvent = "SegmentedPropertyCategorySelectionChanged";
 
@@ -252,6 +253,7 @@
   app.controller('SegmentedPropertyTypeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.required = true;
     self.floatingLabel = "Type";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
