@@ -1,7 +1,7 @@
 <html lang="en" ng-app="JSONSemanticsCreator">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="../bower_components/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
         <link rel="stylesheet" href="stylesheets/style.css">
     </head>
     <body ng-controller="JSONSemanticsCreatorController as ctrl">
@@ -83,12 +83,18 @@
                         <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
                     </div>
                     <div>
-                    <button ng-click="previous()" ng-disabled="!ctrl.previousSegmentExists">
-                        <ng-md-icon icon="keyboard_arrow_left" style="fill:black"/>
-                    </button>
-                    <button ng-click="next()" ng-disabled="!ctrl.nextSegmentExists">
-                        <ng-md-icon icon="keyboard_arrow_right" style="fill:black"/>
-                    </button>
+                        <button ng-click="previous()" ng-hide="!ctrl.previousSegmentExists">
+                            <ng-md-icon icon="keyboard_arrow_left" style="fill:black"/>
+                        </button>
+                        <button ng-disabled="true" ng-hide="ctrl.previousSegmentExists">
+                            <ng-md-icon icon="keyboard_arrow_left" style="fill:grey"/>
+                        </button>
+                        <button ng-click="next()" ng-hide="!ctrl.nextSegmentExists">
+                            <ng-md-icon icon="keyboard_arrow_right" style="fill:black"/>
+                        </button>
+                        <button ng-disabled="true" ng-hide="ctrl.nextSegmentExists">
+                            <ng-md-icon icon="keyboard_arrow_right" style="fill:grey"/>
+                        </button>
                     </div>
                 </div>
                 <div layout="row">
@@ -260,16 +266,16 @@
     </div>
 
 
-    <script src="../bower_components/angular/angular.min.js"></script>
-    <script src="../bower_components/angular-animate/angular-animate.min.js"></script>
-    <script src="../bower_components/angular-aria/angular-aria.min.js"></script>
-    <script src="../bower_components/angular-messages/angular-messages.min.js"></script>
-    <script src="../bower_components/angular-route/angular-route.min.js"></script>
-    <script src="../bower_components/angular-material/angular-material.min.js"></script>
-    <script src="../bower_components/angular-material-icons/angular-material-icons.min.js"></script>
-    <script src="../bower_components/x2js/xml2json.min.js"></script>
-    <script src="../bower_components/angular-xml/angular-xml.min.js"></script>
-    <script src="../bower_components/jsonld/js/jsonld.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/angular-material/angular-material.min.js"></script>
+    <script src="bower_components/angular-material-icons/angular-material-icons.min.js"></script>
+    <script src="bower_components/x2js/xml2json.min.js"></script>
+    <script src="bower_components/angular-xml/angular-xml.min.js"></script>
+    <script src="bower_components/jsonld/js/jsonld.js"></script>
 
     <script src="js/app.js"></script>
     </body>

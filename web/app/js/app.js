@@ -1,7 +1,7 @@
 (function(angular) {
 
-  var anatomicRegionXMLPath = '../app/assets/AnatomicRegionAndModifier.xml';
-  var segmentationCodesXMLPath = '../app/assets/SegmentationCategoryTypeModifier.xml';
+  var anatomicRegionXMLPath = 'assets/AnatomicRegionAndModifier.xml';
+  var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
 
   var app = angular.module('JSONSemanticsCreator', ['ngMaterial', 'ngMessages', 'ngMdIcons', 'xml'])
     .config(function ($httpProvider) {
@@ -84,6 +84,16 @@
       self.nextSegmentExists = false;
 
       $scope.output = {};
+
+      $scope.next = function() {
+        // TODO: create new segment entry here take current input data and add to class
+        // if ()
+        self.previousSegmentExists = true;
+      };
+
+      $scope.previous = function() {
+        self.nextSegmentExists = false;
+      };
 
       self.createJSONOutput = function() {
 
