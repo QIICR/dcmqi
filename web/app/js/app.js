@@ -98,8 +98,16 @@
       self.createJSONOutput = function() {
 
         var seriesAttributes = {
-          "ReaderID": "Reader1"
+          "ReaderID": $scope.seriesAttributes.ReaderID,
+          "SessionID" : $scope.seriesAttributes.SessionID,
+          "TimePointID" : $scope.seriesAttributes.TimePointID,
+          "SeriesDescription" : $scope.seriesAttributes.SeriesDescription,
+          "SeriesNumber" : $scope.seriesAttributes.SeriesNumber,
+          "InstanceNumber" : $scope.seriesAttributes.InstanceNumber
         };
+
+        if ($scope.seriesAttributes.BodyPartExamined.length > 0)
+          seriesAttributes["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
         var segmentAttributes = {};
 
@@ -193,6 +201,7 @@
   app.controller('AnatomicRegionController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.floatingLabel = "Anatomic Region";
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
     $http.get(anatomicRegionXMLPath).success(function (data) {
@@ -205,6 +214,7 @@
   app.controller('AnatomicRegionModifierController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.floatingLabel = "Modifier";
     self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
@@ -229,6 +239,7 @@
   app.controller('SegmentedPropertyCategoryCodeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.floatingLabel = "Segmented Category";
     self.selectionChangedEvent = "SegmentedPropertyCategorySelectionChanged";
 
     $http.get(segmentationCodesXMLPath).success(function (data) {
@@ -241,6 +252,7 @@
   app.controller('SegmentedPropertyTypeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.floatingLabel = "Type";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
 
@@ -268,6 +280,7 @@
   app.controller('SegmentedPropertyTypeModifierController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
+    self.floatingLabel = "Modifier";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
@@ -288,4 +301,11 @@
     });
   });
 
+
+  app.directive('customAutocomplete', function() {
+    return {
+      templateUrl: 'custom-autocomplete.html'
+    };
+  });
+  
 })(window.angular);
