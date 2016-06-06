@@ -7,7 +7,7 @@
     <body ng-controller="JSONSemanticsCreatorController as ctrl">
     <div layout="row">
         <div flex class="md-whiteframe-7dp md-padding" id="jsonForm">
-            <div class="md-display-1">Series Attributes</div>
+            <span class="md-title">Series Attributes</span>
             <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" layout="column" novalidate
                   class="customAutoComplete">
                 <!--Series Attributes -->
@@ -80,14 +80,14 @@
                 <!--Segment Attributes-->
                 <div layout="row">
                     <div>
-                        <div class="md-display-1">Segment Attributes</div>
+                        <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
                     </div>
                     <div>
                     <button ng-click="previous()" ng-disabled="!ctrl.previousSegmentExists">
-                        <ng-md-icon icon="keyboard_arrow_left" style="fill:black" size="32px"/>
+                        <ng-md-icon icon="keyboard_arrow_left" style="fill:black"/>
                     </button>
                     <button ng-click="next()" ng-disabled="!ctrl.nextSegmentExists">
-                        <ng-md-icon icon="keyboard_arrow_right" style="fill:black" size="32px"/>
+                        <ng-md-icon icon="keyboard_arrow_right" style="fill:black"/>
                     </button>
                     </div>
                 </div>
@@ -251,9 +251,11 @@
             </form>
         </div>
         <div flex class="md-whiteframe-7dp md-padding" id="jsonOutput">
-            <pre>
-                {{ output | json }}
-            </pre>
+            <div layout="row">
+                <pre>
+                    {{ output | json }}
+                </pre>
+            </div>
         </div>
     </div>
 
