@@ -1,39 +1,54 @@
 <html lang="en" ng-app="JSONSemanticsCreator">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Angular Material style sheet -->
         <link rel="stylesheet" href="../bower_components/angular-material/angular-material.min.css">
         <link rel="stylesheet" href="stylesheets/style.css">
     </head>
     <body ng-controller="JSONSemanticsCreatorController as ctrl">
     <div layout="row">
-        <div flex class="md-whiteframe-7dp" id="jsonForm">
+        <div flex class="md-whiteframe-7dp md-padding" id="jsonForm">
             <div class="md-display-1">Series Attributes</div>
-            <form name="jsonForm" layout="column">
+            <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" layout="column" novalidate
+                  class="customAutoComplete">
                 <!--Series Attributes -->
                 <div layout="row">
                     <div>
                         <md-input-container>
                             <label>ReaderID</label>
-                            <input ng-model="seriesAttributes.ReaderID">
+                            <input required name="ReaderID" ng-model="seriesAttributes.ReaderID" ng-maxlength="64">
+                            <div ng-messages="jsonForm.ReaderID.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a reader ID.</div>
+                            </div>
                         </md-input-container>
                     </div>
+                </div>
+                <div layout="row">
                     <div>
                         <md-input-container>
                             <label>SessionID</label>
-                            <input ng-model="seriesAttributes.SessionID">
+                            <input required name="SessionID" ng-model="seriesAttributes.SessionID" ng-maxlength="64">
+                            <div ng-messages="jsonForm.SessionID.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a session ID.</div>
+                            </div>
                         </md-input-container>
                     </div>
                     <div>
                         <md-input-container>
                             <label>TimePointID</label>
-                            <input ng-model="seriesAttributes.TimePointID">
+                            <input required name="TimePointID" ng-model="seriesAttributes.TimePointID" ng-maxlength="64">
+                            <div ng-messages="jsonForm.TimePointID.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a timepoint ID.</div>
+                            </div>
                         </md-input-container>
                     </div>
                     <div>
                         <md-input-container>
                             <label>InstanceNumber</label>
-                            <input ng-model="seriesAttributes.InstanceNumber">
+                            <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber" ng-pattern="/[0-9]$/">
+                            <div ng-messages="jsonForm.InstanceNumber.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply an instance number.</div>
+                                <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                            </div>
                         </md-input-container>
                     </div>
                 </div>
@@ -47,7 +62,11 @@
                     <div>
                         <md-input-container>
                             <label>SeriesNumber</label>
-                            <input ng-model="seriesAttributes.SeriesNumber">
+                            <input required type="number" name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber" ng-pattern="/[0-9]$/">
+                            <div ng-messages="jsonForm.SeriesNumber.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a series number.</div>
+                                <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                            </div>
                         </md-input-container>
                     </div>
                     <div>
@@ -59,12 +78,27 @@
                 </div>
 
                 <!--Segment Attributes-->
-                <div class="md-display-1">Segment Attributes</div>
+                <div layout="row">
+                    <div>
+                        <div class="md-display-1">Segment Attributes</div>
+                    </div>
+                    <div>
+                    <button ng-click="previous()" ng-disabled="!ctrl.previousSegmentExists">
+                        <ng-md-icon icon="keyboard_arrow_left" style="fill:black" size="32px"/>
+                    </button>
+                    <button ng-click="next()" ng-disabled="!ctrl.nextSegmentExists">
+                        <ng-md-icon icon="keyboard_arrow_right" style="fill:black" size="32px"/>
+                    </button>
+                    </div>
+                </div>
                 <div layout="row">
                     <div>
                         <md-input-container>
                             <label>LabelID</label>
-                            <input ng-model="segmentAttributes.LabelID">
+                            <input required type="number" name="LabelID" ng-model="segmentAttributes.LabelID" ng-pattern="/[0-9]$/">
+                            <div ng-messages="jsonForm.LabelID.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a label id.</div>
+                            </div>
                         </md-input-container>
                     </div>
                     <div>
@@ -75,9 +109,8 @@
                     </div>
                 </div>
                 <div layout="row">
-                    <div ng-controller="AnatomicRegionController as ctrl1" class="ng-scope">
-                        <md-autocomplete flex
-                            md-no-cache="ctrl1.noCache"
+                    <div ng-controller="AnatomicRegionController as ctrl1" class="ng-scope" flex>
+                        <md-autocomplete
                             md-selected-item="ctrl1.selectedItem"
                             md-search-text-change="ctrl.searchTextChange(ctrl1.searchText)"
                             md-search-text="ctrl1.searchText"
@@ -85,52 +118,77 @@
                             md-items="item in ctrl1.querySearch(ctrl1.searchText)"
                             md-item-text="item.display"
                             md-min-length="0"
-                            md-floating-label="Anatomic Region">
+                            md-floating-label="Anatomic Region"
+                            md-menu-class="autocomplete-custom-template">
                             <md-item-template>
-                                <span md-highlight-text="ctrl1.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                <span class="item-title">
+                                    <span> {{item.display}} </span>
+                                  </span>
+                                  <span class="item-metadata">
+                                    <span class="item-metastat">
+                                      <strong>{{item.contextGroupName}}</strong>
+                                    </span>
+                                  </span>
                             </md-item-template>
-                            <!--TODO: add tooltip-->
                         </md-autocomplete>
                     </div>
-                    <div ng-controller="AnatomicRegionModifierController as ctrl2" class="ng-scope">
-                        <md-autocomplete flex
-                                         md-no-cache="ctrl2.noCache"
-                         ng-disabled="ctrl2.isDisabled"
-                         md-selected-item="ctrl2.selectedItem"
-                         md-search-text-change="ctrl.searchTextChange(ctrl2.searchText)"
-                         md-search-text="ctrl2.searchText"
-                         md-selected-item-change="ctrl2.selectedItemChange(item)"
-                         md-items="item in ctrl2.querySearch(ctrl2.searchText)"
-                         md-item-text="item.display"
-                         md-min-length="0"
-                         md-floating-label="Modifier">
+                    <div ng-controller="AnatomicRegionModifierController as ctrl2" class="ng-scope" flex>
+                        <md-autocomplete
+                             md-no-cache="ctrl2.noCache"
+                             ng-disabled="ctrl2.isDisabled"
+                             md-selected-item="ctrl2.selectedItem"
+                             md-search-text-change="ctrl.searchTextChange(ctrl2.searchText)"
+                             md-search-text="ctrl2.searchText"
+                             md-selected-item-change="ctrl2.selectedItemChange(item)"
+                             md-items="item in ctrl2.querySearch(ctrl2.searchText)"
+                             md-item-text="item.display"
+                             md-min-length="0"
+                             md-floating-label="Modifier"
+                             md-menu-class="autocomplete-custom-template">
                             <md-item-template>
-                                <span md-highlight-text="ctrl2.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                <span class="item-title">
+                                    <span> {{item.display}} </span>
+                                  </span>
+                                  <span class="item-metadata">
+                                    <span class="item-metastat">
+                                      <strong>{{item.contextGroupName}}</strong>
+                                    </span>
+                                  </span>
                             </md-item-template>
                         </md-autocomplete>
                     </div>
                 </div>
                 <div layout="row">
-                    <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl3" class="ng-scope">
-                        <md-autocomplete flex required
-                                         md-no-cache="ctrl3.noCache"
-                                md-selected-item="ctrl3.selectedItem"
-                                md-search-text-change="ctrl3.searchTextChange(ctrl3.searchText)"
-                                md-search-text="ctrl3.searchText"
-                                md-selected-item-change="ctrl3.selectedItemChange(item)"
-                                md-items="item in ctrl3.querySearch(ctrl3.searchText)"
-                                md-item-text="item.display"
-                                md-min-length="0"
-                                md-floating-label="Segmented Category">
+                    <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl3" class="ng-scope" flex>
+                        <md-autocomplete required
+                            md-selected-item="ctrl3.selectedItem"
+                            md-search-text-change="ctrl3.searchTextChange(ctrl3.searchText)"
+                            md-search-text="ctrl3.searchText"
+                            md-selected-item-change="ctrl3.selectedItemChange(item)"
+                            md-items="item in ctrl3.querySearch(ctrl3.searchText)"
+                            md-item-text="item.display"
+                            md-min-length="0"
+                            md-floating-label="Segmented Category"
+                            md-menu-class="autocomplete-custom-template">
                             <md-item-template>
-                                <span md-highlight-text="ctrl3.searchText" md-highlight-flags="^i">
-                                    {{item.display}}
-                                </span>
+                                <span class="item-title">
+                                    <span> {{item.display}} </span>
+                                  </span>
+                                  <span class="item-metadata">
+                                    <span class="item-metastat">
+                                      <strong>{{item.contextGroupName}}</strong>
+                                    </span>
+                                  </span>
                             </md-item-template>
+                            <div ng-messages="searchText.$error" role="alert">
+                                <div ng-message="required" class="my-message">You must supply a label id.</div>
+                            </div>
                         </md-autocomplete>
                     </div>
-                    <div ng-controller="SegmentedPropertyTypeController as ctrl4" class="ng-scope">
-                        <md-autocomplete flex
+                </div>
+                <div layout="row">
+                    <div ng-controller="SegmentedPropertyTypeController as ctrl4" class="ng-scope" flex>
+                        <md-autocomplete
                                          md-no-cache="ctrl4.noCache"
                                          ng-disabled="ctrl4.isDisabled"
                                          md-selected-item="ctrl4.selectedItem"
@@ -139,27 +197,44 @@
                                          md-selected-item-change="ctrl4.selectedItemChange(item)"
                                          md-items="item in ctrl4.querySearch(ctrl4.searchText)"
                                          md-item-text="item.display"
+                                         md-item-
                                          md-min-length="0"
-                                         md-floating-label="Type">
+                                         md-floating-label="Type"
+                                         md-menu-class="autocomplete-custom-template">
                             <md-item-template>
-                                <span md-highlight-text="ctrl4.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                <span class="item-title">
+                                    <span> {{item.display}} </span>
+                                  </span>
+                                  <span class="item-metadata">
+                                    <span class="item-metastat">
+                                      <strong>{{item.contextGroupName}}</strong>
+                                    </span>
+                                  </span>
                             </md-item-template>
                         </md-autocomplete>
                     </div>
-                    <div ng-controller="SegmentedPropertyTypeModifierController as ctrl5" class="ng-scope">
-                        <md-autocomplete flex
-                                         md-no-cache="ctrl5.noCache"
-                                         ng-disabled="ctrl5.isDisabled"
-                                         md-selected-item="ctrl5.selectedItem"
-                                         md-search-text-change="ctrl5.searchTextChange(ctrl5.searchText)"
-                                         md-search-text="ctrl5.searchText"
-                                         md-selected-item-change="ctrl5.selectedItemChange(item)"
-                                         md-items="item in ctrl5.querySearch(ctrl5.searchText)"
-                                         md-item-text="item.display"
-                                         md-min-length="0"
-                                         md-floating-label="Modifier">
+                    <div ng-controller="SegmentedPropertyTypeModifierController as ctrl5" class="ng-scope" flex>
+                        <md-autocomplete
+                             md-no-cache="ctrl5.noCache"
+                             ng-disabled="ctrl5.isDisabled"
+                             md-selected-item="ctrl5.selectedItem"
+                             md-search-text-change="ctrl5.searchTextChange(ctrl5.searchText)"
+                             md-search-text="ctrl5.searchText"
+                             md-selected-item-change="ctrl5.selectedItemChange(item)"
+                             md-items="item in ctrl5.querySearch(ctrl5.searchText)"
+                             md-item-text="item.display"
+                             md-min-length="0"
+                             md-floating-label="Modifier"
+                             md-menu-class="autocomplete-custom-template">
                             <md-item-template>
-                                <span md-highlight-text="ctrl5.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                <span class="item-title">
+                                    <span> {{item.display}} </span>
+                                  </span>
+                                  <span class="item-metadata">
+                                    <span class="item-metastat">
+                                      <strong>{{item.contextGroupName}}</strong>
+                                    </span>
+                                  </span>
                             </md-item-template>
                         </md-autocomplete>
                     </div>
@@ -167,7 +242,7 @@
 
                 <div layout="row">
                     <div>
-                        <md-button class="md-raised md-primary">OK</md-button>
+                        <md-button class="md-raised md-primary" type="submit">OK</md-button>
                     </div>
                     <div>
                         <md-button class="md-raised">Reset</md-button>
@@ -175,17 +250,12 @@
                 </div>
             </form>
         </div>
-        <div flex class="md-whiteframe-7dp" id="jsonOutput">
-            <!--<ul>-->
-                <!--<li ng-repeat="code in segmentationCodes">-->
-                    <!--&lt;!&ndash;{{code._codeMeaning}} - {{code._codeValue}}&ndash;&gt;-->
-                    <!--{{code._codeMeaning}} -  -&#45;&#45;&#45;&#45;&#45;&#45; {{code.Modifier}}-->
-                <!--</li>-->
-            <!--</ul>-->
-            json output ...
+        <div flex class="md-whiteframe-7dp md-padding" id="jsonOutput">
+            <pre>
+                {{ output | json }}
+            </pre>
         </div>
     </div>
-
 
 
     <script src="../bower_components/angular/angular.min.js"></script>
@@ -194,9 +264,10 @@
     <script src="../bower_components/angular-messages/angular-messages.min.js"></script>
     <script src="../bower_components/angular-route/angular-route.min.js"></script>
     <script src="../bower_components/angular-material/angular-material.min.js"></script>
-    <script src="../bower_components/jsonld/js/jsonld.js"></script>
+    <script src="../bower_components/angular-material-icons/angular-material-icons.min.js"></script>
     <script src="../bower_components/x2js/xml2json.min.js"></script>
     <script src="../bower_components/angular-xml/angular-xml.min.js"></script>
+    <script src="../bower_components/jsonld/js/jsonld.js"></script>
 
     <script src="js/app.js"></script>
     </body>

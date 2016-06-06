@@ -3,3 +3,27 @@
     overflow: auto;
     margin: 2%;
 }
+
+.autocomplete-custom-template li {
+    border-bottom: 1px solid #ccc;
+    height: auto;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    white-space: normal;
+}
+.autocomplete-custom-template li:last-child {
+    border-bottom-width: 0;
+}
+.autocomplete-custom-template .item-title,
+.autocomplete-custom-template .item-metadata {
+    display: block;
+    line-height: 2;
+}
+
+.item-metadata {
+    font-size: 10px;
+}
+
+.item-title {
+    height: 18px;
+}

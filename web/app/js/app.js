@@ -3,31 +3,126 @@
   var anatomicRegionXMLPath = '../app/assets/AnatomicRegionAndModifier.xml';
   var segmentationCodesXMLPath = '../app/assets/SegmentationCategoryTypeModifier.xml';
 
-  var app = angular.module('JSONSemanticsCreator', ['ngMaterial', 'ngMessages', 'xml'])
+  var app = angular.module('JSONSemanticsCreator', ['ngMaterial', 'ngMessages', 'ngMdIcons', 'xml'])
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     });
 
-  app.controller('JSONSemanticsCreatorController', ['$scope',
-    function($scope) {
+  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log',
+    function($scope, $rootScope, $log) {
+
+      var self = this;
+      self.segmentedPropertyCategory = null;
+      self.segmentedPropertyType = null;
+      self.segmentedPropertyTypeModifier = null;
+      self.anatomicRegion = null;
+      self.anatomicRegionModifier = null;
+
+      $scope.submitted = false;
+
+      $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+        if (data.item) {
+          self.segmentedPropertyCategory = data.item.object;
+        }
+        $log.info(self.segmentedPropertyCategory)
+      });
+
+      $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
+        if (data.item) {
+          self.segmentedPropertyType = data.item.object;
+        }
+        $log.info(self.segmentedPropertyType)
+      });
+
+      $rootScope.$on("SegmentedPropertyTypeModifierSelectionChanged", function(event, data) {
+        if (data.item) {
+          self.segmentedPropertyTypeModifier = data.item.object;
+          $log.info(self.segmentedPropertyTypeModifier)
+        }
+      });
+
+      $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
+        if (data.item) {
+          self.anatomicRegion = data.item.object;
+        }
+        $log.info(self.anatomicRegion)
+      });
+
+      $rootScope.$on("AnatomicRegionModifierSelectionChanged", function(event, data) {
+        if (data.item) {
+          self.anatomicRegionModifier = data.item.object;
+        }
+        $log.info(self.anatomicRegionModifier)
+      });
+
+      $scope.submitForm = function(isValid) {
+        if (isValid) {
+          self.createJSONOutput();
+        } else {
+          $scope.output = "";
+        }
+      };
 
       $scope.seriesAttributes = {
         ReaderID : "Reader1",
         SessionID : "Session1",
         TimePointID : "1",
         SeriesDescription : "Segmentation",
-        SeriesNumber : "300",
-        InstanceNumber : "1",
+        SeriesNumber : 300,
+        InstanceNumber : 1,
         BodyPartExamined :  ""
       };
 
       $scope.segmentAttributes = {
-        LabelID: "1",
+        LabelID: 1,
         SegmentDescription: "" // not required
-        // SegmentedPropertyCategoryCode:
+      };
+
+      self.segmentAttributes = [];
+
+      self.previousSegmentExists = false;
+      self.nextSegmentExists = false;
+
+      $scope.output = {};
+
+      self.createJSONOutput = function() {
+
+        var seriesAttributes = {
+          "ReaderID": "Reader1"
+        };
+
+        var segmentAttributes = {};
+
+        segmentAttributes["LabelID"] = $scope.segmentAttributes.LabelID;
+        if ($scope.segmentAttributes.SegmentDescription.length > 0)
+          segmentAttributes["SegmentDescription"] = $scope.segmentAttributes.SegmentDescription;
+        if (self.anatomicRegion)
+          segmentAttributes["AnatomicRegion"] = getCodeSequenceAttributes(self.anatomicRegion);
+        if (self.anatomicRegionModifier)
+          segmentAttributes["AnatomicRegionModifier"] = getCodeSequenceAttributes(self.anatomicRegionModifier);
+        if (self.segmentedPropertyCategory)
+          segmentAttributes["SegmentedPropertyCategoryCode"] = getCodeSequenceAttributes(self.segmentedPropertyCategory);
+        if (self.segmentedPropertyType)
+          segmentAttributes["SegmentedPropertyType"] = getCodeSequenceAttributes(self.segmentedPropertyType);
+        if (self.segmentedPropertyTypeModifier)
+          segmentAttributes["SegmentedPropertyTypeModifier"] = getCodeSequenceAttributes(self.segmentedPropertyTypeModifier);
+
+        var doc = {
+          "seriesAttributes": seriesAttributes,
+          "segmentAttributes": segmentAttributes
+        };
+
+          $scope.output = doc;
       };
   }]);
 
+  function getCodeSequenceAttributes(codeSequence) {
+    if (codeSequence != null && codeSequence != undefined)
+      return {"codeValue":codeSequence._codeValue,
+              "codingSchemeDesignator":codeSequence._codingScheme,
+              "codeMeaning":codeSequence._codeMeaning}
+
+  }
 
   app.controller('CodeSequenceBaseController',
     function($self, $scope, $rootScope, $http, $log, $timeout, $q) {
@@ -62,8 +157,8 @@
 
       function createFilterFor(query) {
         var lowercaseQuery = angular.lowercase(query);
-        return function filterFn(state) {
-          return (state.value.indexOf(lowercaseQuery) === 0);
+        return function filterFn(item) {
+          return (item.value.indexOf(lowercaseQuery) != -1);
         };
       }
 
@@ -75,6 +170,7 @@
         return list.map(function (code) {
           return {
             value: code._codeMeaning.toLowerCase(),
+            contextGroupName : code._contextGroupName,
             display: code._codeMeaning,
             object: code
           };
@@ -100,6 +196,7 @@
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.isDisabled = true;
+    self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
     $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
       if (data.item) {
@@ -144,6 +241,9 @@
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
+          // angular.forEach(data.item.object.Type, function(value, key) {
+          //   console.log(value._codeMeaning);
+          // });
           self.mappedCodes = self.codesList2codeMeaning(data.item.object.Type);
         }
       } else {
@@ -159,6 +259,7 @@
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.isDisabled = true;
+    self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
     $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
       if (data.item) {
