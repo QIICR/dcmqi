@@ -8,8 +8,8 @@
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     });
 
-  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log',
-    function($scope, $rootScope, $log) {
+  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log', '$mdDialog',
+    function($scope, $rootScope, $log, $mdDialog) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -22,37 +22,32 @@
 
       $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
         if (data.item) {
-          self.segmentedPropertyCategory = data.item.object;
+          $scope.segmentAttributes.segmentedPropertyCategory = data.item.object;
         }
-        $log.info(self.segmentedPropertyCategory)
       });
 
       $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
         if (data.item) {
-          self.segmentedPropertyType = data.item.object;
+          $scope.segmentAttributes.segmentedPropertyType = data.item.object;
         }
-        $log.info(self.segmentedPropertyType)
       });
 
       $rootScope.$on("SegmentedPropertyTypeModifierSelectionChanged", function(event, data) {
         if (data.item) {
-          self.segmentedPropertyTypeModifier = data.item.object;
-          $log.info(self.segmentedPropertyTypeModifier)
+          $scope.segmentAttributes.segmentedPropertyTypeModifier = data.item.object;
         }
       });
 
       $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
         if (data.item) {
-          self.anatomicRegion = data.item.object;
+          $scope.segmentAttributes.anatomicRegion = data.item.object;
         }
-        $log.info(self.anatomicRegion)
       });
 
       $rootScope.$on("AnatomicRegionModifierSelectionChanged", function(event, data) {
         if (data.item) {
-          self.anatomicRegionModifier = data.item.object;
+          $scope.segmentAttributes.anatomicRegionModifier = data.item.object;
         }
-        $log.info(self.anatomicRegionModifier)
       });
 
       $scope.submitForm = function(isValid) {
@@ -75,24 +70,53 @@
 
       $scope.segmentAttributes = {
         LabelID: 1,
-        SegmentDescription: "" // not required
+        SegmentDescription: "",
+        AnatomicRegion: null,
+        AnatomicRegionModifier: null,
+        SegmentedPropertyCategoryCode: null,
+        SegmentedPropertyType: null,
+        SegmentedPropertyTypeModifier: null
       };
 
-      self.segmentAttributes = [];
+      self.segments = [];
 
       self.previousSegmentExists = false;
       self.nextSegmentExists = false;
 
-      $scope.output = {};
+      $scope.output = "";
 
-      $scope.next = function() {
-        // TODO: create new segment entry here take current input data and add to class
-        // if ()
-        self.previousSegmentExists = true;
+      $scope.createSegment = function() {
+        if (!self.segmentAlreadyExists()) {
+          var clone = angular.extend({}, $scope.segmentAttributes);
+          self.segments.push(clone);
+          $rootScope.$emit("OnSegmentAdded", {});
+          $scope.segmentAttributes.LabelID = "";
+          $scope.segmentAttributes.SegmentDescription = "";
+        } else {
+          showAlert("Segment LabelID already exists",
+                    "A segment with LabelID " + $scope.segmentAttributes.LabelID + " already exists.")
+        }
       };
 
-      $scope.previous = function() {
-        self.nextSegmentExists = false;
+      showAlert = function(title, message) {
+        $mdDialog.show(
+          $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title(title)
+            .textContent(message)
+            .ok('OK')
+        );
+      };
+
+      self.segmentAlreadyExists = function() {
+        var exists = false;
+        angular.forEach(self.segments, function(value, key) {
+          if(value.LabelID == $scope.segmentAttributes.LabelID) {
+            exists = true;
+          }
+        });
+        return exists;
       };
 
       self.createJSONOutput = function() {
@@ -109,21 +133,24 @@
         if ($scope.seriesAttributes.BodyPartExamined.length > 0)
           seriesAttributes["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
-        var segmentAttributes = {};
-
-        segmentAttributes["LabelID"] = $scope.segmentAttributes.LabelID;
-        if ($scope.segmentAttributes.SegmentDescription.length > 0)
-          segmentAttributes["SegmentDescription"] = $scope.segmentAttributes.SegmentDescription;
-        if (self.anatomicRegion)
-          segmentAttributes["AnatomicRegion"] = getCodeSequenceAttributes(self.anatomicRegion);
-        if (self.anatomicRegionModifier)
-          segmentAttributes["AnatomicRegionModifier"] = getCodeSequenceAttributes(self.anatomicRegionModifier);
-        if (self.segmentedPropertyCategory)
-          segmentAttributes["SegmentedPropertyCategoryCode"] = getCodeSequenceAttributes(self.segmentedPropertyCategory);
-        if (self.segmentedPropertyType)
-          segmentAttributes["SegmentedPropertyType"] = getCodeSequenceAttributes(self.segmentedPropertyType);
-        if (self.segmentedPropertyTypeModifier)
-          segmentAttributes["SegmentedPropertyTypeModifier"] = getCodeSequenceAttributes(self.segmentedPropertyTypeModifier);
+        var segmentAttributes = [];
+        angular.forEach(self.segments, function(value, key) {
+          var attributes = {};
+          attributes["LabelID"] = value.LabelID;
+          if (value.SegmentDescription.length > 0)
+            attributes["SegmentDescription"] = value.SegmentDescription;
+          if (value.anatomicRegion)
+            attributes["AnatomicRegion"] = getCodeSequenceAttributes(value.anatomicRegion);
+          if (value.anatomicRegionModifier)
+            attributes["AnatomicRegionModifier"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
+          if (value.segmentedPropertyCategory)
+            attributes["SegmentedPropertyCategoryCode"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
+          if (value.segmentedPropertyType)
+            attributes["SegmentedPropertyType"] = getCodeSequenceAttributes(value.segmentedPropertyType);
+          if (value.segmentedPropertyTypeModifier)
+            attributes["SegmentedPropertyTypeModifier"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
+          segmentAttributes.push(attributes);
+        });
 
         var doc = {
           "seriesAttributes": seriesAttributes,
@@ -139,7 +166,6 @@
       return {"codeValue":codeSequence._codeValue,
               "codingSchemeDesignator":codeSequence._codingScheme,
               "codeMeaning":codeSequence._codeMeaning}
-
   }
 
   app.controller('CodeSequenceBaseController',
@@ -165,9 +191,11 @@
           return results;
         }
       }
+
       function searchTextChange(text) {
         // $log.info('Text changed to ' + text);
       }
+
       function selectedItemChange(item) {
         // $log.info('Item changed to ' + JSON.stringify(item));
         $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem});
@@ -193,10 +221,9 @@
             object: code
           };
         })
-      }
+      };
     }
   );
-
 
   app.controller('AnatomicRegionController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
@@ -207,6 +234,10 @@
     $http.get(anatomicRegionXMLPath).success(function (data) {
       $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
       self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+    });
+
+    $rootScope.$on("OnSegmentAdded", function(event, data) {
+      self.searchText = "";
     });
   });
 
@@ -247,6 +278,10 @@
       $scope.segmentationCodes = data.SegmentationCodes.Category;
       self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
     });
+
+    $rootScope.$on("OnSegmentAdded", function(event, data) {
+      self.searchText = "";
+    });
   });
 
 
@@ -265,9 +300,6 @@
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          // angular.forEach(data.item.object.Type, function(value, key) {
-          //   console.log(value._codeMeaning);
-          // });
           self.mappedCodes = self.codesList2codeMeaning(data.item.object.Type);
         }
       } else {

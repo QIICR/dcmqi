@@ -83,17 +83,12 @@
                         <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
                     </div>
                     <div>
-                        <button ng-click="previous()" ng-hide="!ctrl.previousSegmentExists">
-                            <ng-md-icon icon="keyboard_arrow_left" style="fill:black"/>
+                        <button ng-click="createSegment()" ng-disabled="jsonForm.$invalid">
+                            <ng-md-icon icon="add" style="fill:black"/>
                         </button>
-                        <button ng-disabled="true" ng-hide="ctrl.previousSegmentExists">
-                            <ng-md-icon icon="keyboard_arrow_left" style="fill:grey"/>
-                        </button>
-                        <button ng-click="next()" ng-hide="!ctrl.nextSegmentExists">
-                            <ng-md-icon icon="keyboard_arrow_right" style="fill:black"/>
-                        </button>
-                        <button ng-disabled="true" ng-hide="ctrl.nextSegmentExists">
-                            <ng-md-icon icon="keyboard_arrow_right" style="fill:grey"/>
+                        <button ng-click="deleteSegment()" >
+                            <!--ng-disabled="!ctrl.nextSegmentExists">-->
+                            <ng-md-icon icon="delete" style="fill:black"/>
                         </button>
                     </div>
                 </div>
