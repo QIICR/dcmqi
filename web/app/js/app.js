@@ -20,36 +20,6 @@
 
       $scope.submitted = false;
 
-      $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
-        if (data.item) {
-          $scope.segmentAttributes.segmentedPropertyCategory = data.item.object;
-        }
-      });
-
-      $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
-        if (data.item) {
-          $scope.segmentAttributes.segmentedPropertyType = data.item.object;
-        }
-      });
-
-      $rootScope.$on("SegmentedPropertyTypeModifierSelectionChanged", function(event, data) {
-        if (data.item) {
-          $scope.segmentAttributes.segmentedPropertyTypeModifier = data.item.object;
-        }
-      });
-
-      $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
-        if (data.item) {
-          $scope.segmentAttributes.anatomicRegion = data.item.object;
-        }
-      });
-
-      $rootScope.$on("AnatomicRegionModifierSelectionChanged", function(event, data) {
-        if (data.item) {
-          $scope.segmentAttributes.anatomicRegionModifier = data.item.object;
-        }
-      });
-
       $scope.submitForm = function(isValid) {
         if (isValid) {
           self.createJSONOutput();
@@ -78,7 +48,9 @@
         SegmentedPropertyTypeModifier: null
       };
 
-      self.segments = [];
+      var initialSegment = angular.extend({}, $scope.segmentAttributes);
+
+      $scope.segments = [initialSegment];
 
       self.previousSegmentExists = false;
       self.nextSegmentExists = false;
@@ -86,16 +58,14 @@
       $scope.output = "";
 
       $scope.createSegment = function() {
-        if (!self.segmentAlreadyExists()) {
-          var clone = angular.extend({}, $scope.segmentAttributes);
-          self.segments.push(clone);
-          $rootScope.$emit("OnSegmentAdded", {});
-          $scope.segmentAttributes.LabelID = "";
-          $scope.segmentAttributes.SegmentDescription = "";
-        } else {
-          showAlert("Segment LabelID already exists",
-                    "A segment with LabelID " + $scope.segmentAttributes.LabelID + " already exists.")
-        }
+        $scope.segmentAttributes.LabelID += 1;
+        var clone = angular.extend({}, $scope.segmentAttributes);
+        $scope.segments.push(clone);
+        // $rootScope.$emit("OnSegmentAdded", {});
+      };
+
+      $scope.deleteSegment = function() {
+        //TODO: confirm dialog for deletion wiht further information and maybe a back and forth button
       };
 
       showAlert = function(title, message) {
@@ -109,10 +79,10 @@
         );
       };
 
-      self.segmentAlreadyExists = function() {
+      $scope.segmentAlreadyExists = function(segment) {
         var exists = false;
-        angular.forEach(self.segments, function(value, key) {
-          if(value.LabelID == $scope.segmentAttributes.LabelID) {
+        angular.forEach($scope.segments, function(value, key) {
+          if(value.LabelID == segment.LabelID && value != segment) {
             exists = true;
           }
         });
@@ -134,7 +104,7 @@
           seriesAttributes["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
         var segmentAttributes = [];
-        angular.forEach(self.segments, function(value, key) {
+        angular.forEach($scope.segments, function(value, key) {
           var attributes = {};
           attributes["LabelID"] = value.LabelID;
           if (value.SegmentDescription.length > 0)
@@ -198,7 +168,7 @@
 
       function selectedItemChange(item) {
         // $log.info('Item changed to ' + JSON.stringify(item));
-        $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem});
+        $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
       }
 
       function createFilterFor(query) {
@@ -231,13 +201,14 @@
     self.floatingLabel = "Anatomic Region";
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
+    self.selectedItemChange = function(item) {
+      $scope.segment.anatomicRegion = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
     $http.get(anatomicRegionXMLPath).success(function (data) {
       $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
       self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
-    });
-
-    $rootScope.$on("OnSegmentAdded", function(event, data) {
-      self.searchText = "";
     });
   });
 
@@ -249,7 +220,15 @@
     self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
+    self.selectedItemChange = function(item) {
+      $scope.segment.anatomicRegionModifier = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
     $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
+      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
+        return;
+      }
       if (data.item) {
         self.isDisabled = data.item.object.Modifier === undefined;
         if (data.item.object.Modifier === undefined) {
@@ -266,7 +245,6 @@
     });
   });
 
-
   app.controller('SegmentedPropertyCategoryCodeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
@@ -274,13 +252,14 @@
     self.floatingLabel = "Segmented Category";
     self.selectionChangedEvent = "SegmentedPropertyCategorySelectionChanged";
 
+    self.selectedItemChange = function(item) {
+      $scope.segment.segmentedPropertyCategory = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
     $http.get(segmentationCodesXMLPath).success(function (data) {
       $scope.segmentationCodes = data.SegmentationCodes.Category;
       self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
-    });
-
-    $rootScope.$on("OnSegmentAdded", function(event, data) {
-      self.searchText = "";
     });
   });
 
@@ -293,7 +272,15 @@
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
 
+    self.selectedItemChange = function(item) {
+      $scope.segment.segmentedPropertyType = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
+        return;
+      }
       if (data.item) {
         self.isDisabled = data.item.object.Type === undefined;
         if (data.item.object.Type === undefined) {
@@ -318,7 +305,15 @@
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
+    self.selectedItemChange = function(item) {
+      $scope.segment.segmentedPropertyTypeModifier = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
     $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
+      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
+        return;
+      }
       if (data.item) {
         self.isDisabled = data.item.object.Modifier === undefined;
         if (data.item.object.Modifier === undefined) {
@@ -339,6 +334,26 @@
   app.directive('customAutocomplete', function() {
     return {
       templateUrl: 'custom-autocomplete.html'
+    };
+  });
+
+  app.directive("nonExistentLabel", function() {
+    return {
+      restrict: "A",
+
+      require: "ngModel",
+
+      link: function(scope, element, attributes, ngModel) {
+        ngModel.$validators.nonExistentLabel = function(modelValue) {
+          var exists = false;
+          angular.forEach(scope.segments, function(value, key) {
+            if(value.LabelID == modelValue && value != scope.segment) {
+              exists = true;
+            }
+          });
+          return !exists;
+        }
+      }
     };
   });
   

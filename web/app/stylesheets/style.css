@@ -1,7 +1,14 @@
 #jsonForm, #jsonOutput {
-    height: 90%;
+    height: 95%;
     overflow: auto;
-    margin: 2%;
+}
+
+#jsonForm {
+    margin-right: 0.5%;
+}
+
+#jsonOutput {
+    margin-left: 0.5%;
 }
 
 .autocomplete-custom-template li {
