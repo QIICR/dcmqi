@@ -52,20 +52,34 @@
 
       $scope.segments = [initialSegment];
 
-      self.previousSegmentExists = false;
       self.nextSegmentExists = false;
 
       $scope.output = "";
 
-      $scope.createSegment = function() {
+      $scope.currentIndex = 0;
+
+      $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
         var clone = angular.extend({}, $scope.segmentAttributes);
         $scope.segments.push(clone);
+        $scope.currentIndex += 1;
         // $rootScope.$emit("OnSegmentAdded", {});
       };
 
-      $scope.deleteSegment = function() {
-        //TODO: confirm dialog for deletion wiht further information and maybe a back and forth button
+      $scope.removeSegment = function() {
+        $scope.segments.splice($scope.currentIndex, 1);
+        if ($scope.currentIndex-1 < 0)
+          $scope.currentIndex = 0
+        else
+          $scope.currentIndex -= 1
+      };
+
+      $scope.previousSegment = function() {
+        $scope.currentIndex -= 1;
+      };
+
+      $scope.nextSegment = function() {
+        $scope.currentIndex += 1;
       };
 
       showAlert = function(title, message) {

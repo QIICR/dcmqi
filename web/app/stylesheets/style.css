@@ -34,3 +34,7 @@
 .item-title {
     height: 18px;
 }
+
+fieldset {
+    border: 0px;
+}

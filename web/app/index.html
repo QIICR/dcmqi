@@ -13,67 +13,71 @@
                       class="customAutoComplete">
                     <!--Series Attributes -->
                     <div layout="row">
-                        <div>
-                            <md-input-container>
-                                <label>ReaderID</label>
-                                <input required name="ReaderID" ng-model="seriesAttributes.ReaderID" ng-maxlength="64">
-                                <div ng-messages="jsonForm.ReaderID.$error" role="alert">
-                                    <div ng-message="required" class="my-message">You must supply a reader ID.</div>
+                        <fieldset flex>
+                            <div layout="row">
+                                <div>
+                                    <md-input-container>
+                                        <label>ReaderID</label>
+                                        <input required name="ReaderID" ng-model="seriesAttributes.ReaderID" ng-maxlength="64">
+                                        <div ng-messages="jsonForm.ReaderID.$error" role="alert">
+                                            <div ng-message="required" class="my-message">You must supply a reader ID.</div>
+                                        </div>
+                                    </md-input-container>
                                 </div>
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container>
-                                <label>SessionID</label>
-                                <input required name="SessionID" ng-model="seriesAttributes.SessionID" ng-maxlength="64">
-                                <div ng-messages="jsonForm.SessionID.$error" role="alert">
-                                    <div ng-message="required" class="my-message">You must supply a session ID.</div>
+                                <div>
+                                    <md-input-container>
+                                        <label>SessionID</label>
+                                        <input required name="SessionID" ng-model="seriesAttributes.SessionID" ng-maxlength="64">
+                                        <div ng-messages="jsonForm.SessionID.$error" role="alert">
+                                            <div ng-message="required" class="my-message">You must supply a session ID.</div>
+                                        </div>
+                                    </md-input-container>
                                 </div>
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container>
-                                <label>TimePointID</label>
-                                <input required name="TimePointID" ng-model="seriesAttributes.TimePointID" ng-maxlength="64">
-                                <div ng-messages="jsonForm.TimePointID.$error" role="alert">
-                                    <div ng-message="required" class="my-message">You must supply a timepoint ID.</div>
+                                <div>
+                                    <md-input-container>
+                                        <label>TimePointID</label>
+                                        <input required name="TimePointID" ng-model="seriesAttributes.TimePointID" ng-maxlength="64">
+                                        <div ng-messages="jsonForm.TimePointID.$error" role="alert">
+                                            <div ng-message="required" class="my-message">You must supply a timepoint ID.</div>
+                                        </div>
+                                    </md-input-container>
                                 </div>
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container>
-                                <label>InstanceNumber</label>
-                                <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber" ng-pattern="/[0-9]$/">
-                                <div ng-messages="jsonForm.InstanceNumber.$error" role="alert">
-                                    <div ng-message="required" class="my-message">You must supply an instance number.</div>
-                                    <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                                <div>
+                                    <md-input-container>
+                                        <label>InstanceNumber</label>
+                                        <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber" ng-pattern="/[0-9]$/">
+                                        <div ng-messages="jsonForm.InstanceNumber.$error" role="alert">
+                                            <div ng-message="required" class="my-message">You must supply an instance number.</div>
+                                            <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                                        </div>
+                                    </md-input-container>
                                 </div>
-                            </md-input-container>
-                        </div>
-                    </div>
-                    <div layout="row">
-                        <div>
-                            <md-input-container>
-                                <label>SeriesDescription</label>
-                                <input ng-model="seriesAttributes.SeriesDescription">
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container>
-                                <label>SeriesNumber</label>
-                                <input required type="number" name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber" ng-pattern="/[0-9]$/">
-                                <div ng-messages="jsonForm.SeriesNumber.$error" role="alert">
-                                    <div ng-message="required" class="my-message">You must supply a series number.</div>
-                                    <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                            </div>
+                            <div layout="row">
+                                <div>
+                                    <md-input-container>
+                                        <label>SeriesDescription</label>
+                                        <input ng-model="seriesAttributes.SeriesDescription">
+                                    </md-input-container>
                                 </div>
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container>
-                                <label>BodyPartExamined</label>
-                                <input ng-model="seriesAttributes.BodyPartExamined">
-                            </md-input-container>
-                        </div>
+                                <div>
+                                    <md-input-container>
+                                        <label>SeriesNumber</label>
+                                        <input required type="number" name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber" ng-pattern="/[0-9]$/">
+                                        <div ng-messages="jsonForm.SeriesNumber.$error" role="alert">
+                                            <div ng-message="required" class="my-message">You must supply a series number.</div>
+                                            <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
+                                <div>
+                                    <md-input-container>
+                                        <label>BodyPartExamined</label>
+                                        <input ng-model="seriesAttributes.BodyPartExamined">
+                                    </md-input-container>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
 
                     <!--Segment Attributes-->
@@ -82,17 +86,37 @@
                             <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
                         </div>
                         <div>
-                            <button ng-click="createSegment()">
+                            <button ng-click="previousSegment()" ng-disabled="segments.length == 1 || currentIndex == 0">
+                                <div ng-show="segments.length == 1  || currentIndex == 0">
+                                    <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length > 1  && currentIndex != 0">
+                                    <ng-md-icon  icon="keyboard_arrow_left" style="fill:black"/>
+                                </div>
+                            </button>
+                            <button ng-click="nextSegment()" ng-disabled="segments.length == 1 || currentIndex == segments.length-1">
+                                <div ng-show="segments.length == 1 || currentIndex == segments.length-1">
+                                    <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length > 1 && currentIndex < segments.length-1">
+                                    <ng-md-icon  icon="keyboard_arrow_right" style="fill:black"/>
+                                </div>
+                            </button>
+                            <button ng-click="addSegment()">
                                 <ng-md-icon icon="add" style="fill:black"/>
                             </button>
-                            <button ng-click="deleteSegment()" >
-                                <!--ng-disabled="!ctrl.nextSegmentExists">-->
-                                <ng-md-icon icon="delete" style="fill:black"/>
+                            <button ng-click="removeSegment()" ng-disabled="segments.length == 1">
+                                <div ng-show="segments.length == 1">
+                                    <ng-md-icon  icon="delete" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length != 1">
+                                    <ng-md-icon  icon="delete" style="fill:black"/>
+                                </div>
                             </button>
                         </div>
                     </div>
                     <div layout="row">
-                        <fieldset data-ng-repeat="segment in segments" flex>
+                        <fieldset data-ng-repeat="segment in segments" ng-show="currentIndex == $index" flex>
                             <div layout="row">
                                 <div>
                                     <md-input-container>
