@@ -53,29 +53,28 @@
 
       $scope.segments = [initialSegment];
       $scope.output = "";
-      $scope.currentIndex = 0;
 
       $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
         var clone = angular.extend({}, $scope.segmentAttributes);
         $scope.segments.push(clone);
-        $scope.currentIndex = $scope.segments.length-1;
+        $scope.selectedIndex = $scope.segments.length-1;
       };
 
       $scope.removeSegment = function() {
-        $scope.segments.splice($scope.currentIndex, 1);
-        if ($scope.currentIndex-1 < 0)
-          $scope.currentIndex = 0;
+        $scope.segments.splice($scope.selectedIndex, 1);
+        if ($scope.selectedIndex-1 < 0)
+          $scope.selectedIndex = 0;
         else
-          $scope.currentIndex -= 1;
+          $scope.selectedIndex -= 1;
       };
 
       $scope.previousSegment = function() {
-        $scope.currentIndex -= 1;
+        $scope.selectedIndex -= 1;
       };
 
       $scope.nextSegment = function() {
-        $scope.currentIndex += 1;
+        $scope.selectedIndex += 1;
       };
 
       showAlert = function(title, message) {
