@@ -4,13 +4,22 @@
   var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
 
   var app = angular.module('JSONSemanticsCreator',
-    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard'])
+    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard', 'ui-notification'])
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
+    })
+    .config(function(NotificationProvider) {
+      NotificationProvider.setOptions({
+        delay: 5000,
+        startTop: 10,
+        startRight: 10,
+        positionX: 'right',
+        positionY: 'bottom'
+      });
     });
 
-  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log', '$mdDialog',
-    function($scope, $rootScope, $log, $mdDialog) {
+  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log', '$mdDialog', '$timeout', 'Notification',
+    function($scope, $rootScope, $log, $mdDialog, $timeout, Notification) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -19,13 +28,11 @@
       self.anatomicRegion = null;
       self.anatomicRegionModifier = null;
 
-      $scope.submitted = false;
-
       $scope.submitForm = function(isValid) {
         if (isValid) {
           self.createJSONOutput();
         } else {
-          $scope.output = "";
+          self.showErrors();
         }
       };
 
@@ -84,15 +91,33 @@
         $scope.selectedIndex += 1;
       };
 
-      showAlert = function(title, message) {
-        $mdDialog.show(
-          $mdDialog.alert()
-            .parent(angular.element(document.querySelector('#popupContainer')))
-            .clickOutsideToClose(true)
-            .title(title)
-            .textContent(message)
-            .ok('OK')
-        );
+      // $timeout(function() {
+      //   $scope.$watch('jsonForm.$valid',function(newValue, oldvalue) {
+      //     $scope.jsonForm.$submitted = true;
+      //     if(newValue == true) {
+      //       $timeout(function() {
+      //         self.createJSONOutput();
+      //       }, 500);
+      //       //Can do a ajax model submit.
+      //     } else {
+      //       self.showErrors();
+      //     }
+      //   });
+      // }, 1000);
+
+      $scope.error = function(message) {
+        Notification.error(message);
+      };
+
+      self.showErrors = function() {
+        $scope.output = "";
+        angular.forEach($scope.jsonForm.$error.required, function (error, key) {
+          var elements = error.$name.split("_");
+          var message = "[MISSING]: " + elements[0];
+          if (elements[1] != undefined)
+            message += " for segment with label id " + elements[1];
+          $scope.error(message);
+        });
       };
 
       $scope.segmentAlreadyExists = function(segment) {
@@ -143,7 +168,7 @@
           "SegmentAttributes": segmentAttributes
         };
 
-          $scope.output = doc;
+        $scope.output = doc;
       };
   }]);
 
@@ -165,6 +190,10 @@
       self.selectedItemChange = selectedItemChange;
       self.searchTextChange   = searchTextChange;
       self.selectionChangedEvent = "";
+
+      self.getName = function() {
+        return self.floatingLabel.replace(" ", "");
+      };
 
       function querySearch (query) {
         var results = query ? self.mappedCodes.filter( createFilterFor(query) ) : self.mappedCodes,
@@ -232,7 +261,7 @@
   app.controller('AnatomicRegionModifierController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
-    self.floatingLabel = "Modifier";
+    self.floatingLabel = "Anatomic Region Modifier";
     self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
@@ -284,7 +313,7 @@
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.required = true;
-    self.floatingLabel = "Type";
+    self.floatingLabel = "Segmented Property Type";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
 
@@ -317,7 +346,7 @@
   app.controller('SegmentedPropertyTypeModifierController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
-    self.floatingLabel = "Modifier";
+    self.floatingLabel = "Segmented Property Type Modifier";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 

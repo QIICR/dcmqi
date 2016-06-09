@@ -2,6 +2,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="bower_components/angular-ui-notification/dist/angular-ui-notification.min.css">
         <link rel="stylesheet" href="stylesheets/style.css">
     </head>
     <body ng-controller="JSONSemanticsCreatorController as ctrl">
@@ -166,7 +167,7 @@
                     </div>
                     <div layout="row">
                         <div>
-                            <md-button class="md-raised md-primary" type="submit">OK</md-button>
+                            <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
                         </div>
                         <div>
                             <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
@@ -199,6 +200,7 @@
     <script src="bower_components/angular-route/angular-route.min.js"></script>
     <script src="bower_components/angular-material/angular-material.min.js"></script>
     <script src="bower_components/angular-material-icons/angular-material-icons.min.js"></script>
+    <script src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
     <script src="bower_components/clipboard/dist/clipboard.min.js"></script>
     <script src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
     <script src="bower_components/x2js/xml2json.min.js"></script>
