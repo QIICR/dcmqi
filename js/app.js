@@ -41,6 +41,7 @@
         $scope.segmentAttributes.LabelID = 1;
         $scope.segments.length = 0;
         $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
+        $scope.output = undefined;
       };
 
       var seriesAttributesDefaults = {
@@ -66,12 +67,11 @@
       };
 
       $scope.segments = [angular.extend({}, $scope.segmentAttributes)];
-      $scope.output = "";
+      $scope.output = undefined;
 
       $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
-        var clone = angular.extend({}, $scope.segmentAttributes);
-        $scope.segments.push(clone);
+        $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
         $scope.selectedIndex = $scope.segments.length-1;
       };
 
