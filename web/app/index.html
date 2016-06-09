@@ -87,6 +87,7 @@
                         </div>
                         <div>
                             <button ng-click="previousSegment()" ng-disabled="segments.length == 1 || currentIndex == 0">
+                                <md-tooltip md-direction="bottom">Previous segment</md-tooltip>
                                 <div ng-show="segments.length == 1  || currentIndex == 0">
                                     <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
                                 </div>
@@ -95,6 +96,7 @@
                                 </div>
                             </button>
                             <button ng-click="nextSegment()" ng-disabled="segments.length == 1 || currentIndex == segments.length-1">
+                                <md-tooltip md-direction="bottom">Next segment</md-tooltip>
                                 <div ng-show="segments.length == 1 || currentIndex == segments.length-1">
                                     <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
                                 </div>
@@ -103,9 +105,11 @@
                                 </div>
                             </button>
                             <button ng-click="addSegment()">
+                                <md-tooltip md-direction="bottom">Add segment</md-tooltip>
                                 <ng-md-icon icon="add" style="fill:black"/>
                             </button>
                             <button ng-click="removeSegment()" ng-disabled="segments.length == 1">
+                                <md-tooltip md-direction="bottom">Remove segment</md-tooltip>
                                 <div ng-show="segments.length == 1">
                                     <ng-md-icon  icon="delete" style="fill:grey"/>
                                 </div>
@@ -170,9 +174,17 @@
             </div>
             <div flex class="md-whiteframe-7dp md-padding" id="jsonOutput">
                 <div layout="row">
-                    <pre>
-                        {{ output | json }}
-                    </pre>
+                    <div flex>
+                        <pre>
+                            {{ output | json }}
+                        </pre>
+                    </div>
+                    <div>
+                        <md-button class="md-fab md-mini md-primary" ngclipboard ngclipboard data-clipboard-text="{{ output | json }}">
+                            <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
+                            <ng-md-icon icon="content_copy" style="fill:black"/>
+                        </md-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,6 +197,8 @@
     <script src="bower_components/angular-route/angular-route.min.js"></script>
     <script src="bower_components/angular-material/angular-material.min.js"></script>
     <script src="bower_components/angular-material-icons/angular-material-icons.min.js"></script>
+    <script src="bower_components/clipboard/dist/clipboard.min.js"></script>
+    <script src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
     <script src="bower_components/x2js/xml2json.min.js"></script>
     <script src="bower_components/angular-xml/angular-xml.min.js"></script>
     <script src="bower_components/jsonld/js/jsonld.js"></script>

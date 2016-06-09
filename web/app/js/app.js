@@ -3,7 +3,8 @@
   var anatomicRegionXMLPath = 'assets/AnatomicRegionAndModifier.xml';
   var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
 
-  var app = angular.module('JSONSemanticsCreator', ['ngMaterial', 'ngMessages', 'ngMdIcons', 'xml'])
+  var app = angular.module('JSONSemanticsCreator',
+    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard'])
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     });
@@ -51,27 +52,22 @@
       var initialSegment = angular.extend({}, $scope.segmentAttributes);
 
       $scope.segments = [initialSegment];
-
-      self.nextSegmentExists = false;
-
       $scope.output = "";
-
       $scope.currentIndex = 0;
 
       $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
         var clone = angular.extend({}, $scope.segmentAttributes);
         $scope.segments.push(clone);
-        $scope.currentIndex += 1;
-        // $rootScope.$emit("OnSegmentAdded", {});
+        $scope.currentIndex = $scope.segments.length-1;
       };
 
       $scope.removeSegment = function() {
         $scope.segments.splice($scope.currentIndex, 1);
         if ($scope.currentIndex-1 < 0)
-          $scope.currentIndex = 0
+          $scope.currentIndex = 0;
         else
-          $scope.currentIndex -= 1
+          $scope.currentIndex -= 1;
       };
 
       $scope.previousSegment = function() {
@@ -370,5 +366,5 @@
       }
     };
   });
-  
+
 })(window.angular);
