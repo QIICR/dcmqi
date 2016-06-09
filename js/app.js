@@ -81,6 +81,7 @@
           $scope.selectedIndex = 0;
         else
           $scope.selectedIndex -= 1;
+        $scope.output = undefined;
       };
 
       $scope.previousSegment = function() {
