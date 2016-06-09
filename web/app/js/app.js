@@ -119,21 +119,21 @@
           if (value.SegmentDescription.length > 0)
             attributes["SegmentDescription"] = value.SegmentDescription;
           if (value.anatomicRegion)
-            attributes["AnatomicRegion"] = getCodeSequenceAttributes(value.anatomicRegion);
+            attributes["AnatomicRegionCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
           if (value.anatomicRegionModifier)
-            attributes["AnatomicRegionModifier"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
+            attributes["AnatomicRegionModifierCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
           if (value.segmentedPropertyCategory)
-            attributes["SegmentedPropertyCategoryCode"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
+            attributes["SegmentedPropertyCategoryCodeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
           if (value.segmentedPropertyType)
-            attributes["SegmentedPropertyType"] = getCodeSequenceAttributes(value.segmentedPropertyType);
+            attributes["SegmentedPropertyTypeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyType);
           if (value.segmentedPropertyTypeModifier)
-            attributes["SegmentedPropertyTypeModifier"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
+            attributes["SegmentedPropertyTypeModifierCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
           segmentAttributes.push(attributes);
         });
 
         var doc = {
-          "seriesAttributes": seriesAttributes,
-          "segmentAttributes": segmentAttributes
+          "SeriesAttributes": seriesAttributes,
+          "SegmentAttributes": segmentAttributes
         };
 
           $scope.output = doc;
@@ -142,9 +142,9 @@
 
   function getCodeSequenceAttributes(codeSequence) {
     if (codeSequence != null && codeSequence != undefined)
-      return {"codeValue":codeSequence._codeValue,
-              "codingSchemeDesignator":codeSequence._codingScheme,
-              "codeMeaning":codeSequence._codeMeaning}
+      return {"CodeValue":codeSequence._codeValue,
+              "CodingSchemeDesignator":codeSequence._codingScheme,
+              "CodeMeaning":codeSequence._codeMeaning}
   }
 
   app.controller('CodeSequenceBaseController',
