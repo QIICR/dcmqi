@@ -1,0 +1,15 @@
+{
+  "name": "es6-promise",
+  "version": "2.2.0",
+  "main": "./promise.js",
+  "homepage": "https://github.com/components/es6-promise",
+  "_release": "2.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.2.0",
+    "commit": "c0628df34f5a2df1b2f7b412304a776b278fff5a"
+  },
+  "_source": "https://github.com/components/es6-promise.git",
+  "_target": "^2.0.0",
+  "_originalSource": "es6-promise"
+}

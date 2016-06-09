@@ -1,0 +1,23 @@
+{
+  "name": "angular-xml",
+  "version": "2.2.1",
+  "main": "angular-xml.js",
+  "ignore": [
+    "**/*.swp",
+    ".gitignore",
+    "components",
+    "git-hooks",
+    "Gruntfile.js",
+    "node_modules",
+    "package.json",
+    "README.md",
+    "test"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.2",
+    "angular-mocks": "~1.4.2"
+  },
+  "dependencies": {
+    "x2js": "~1.1.7"
+  }
+}

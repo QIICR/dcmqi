@@ -1,0 +1,23 @@
+{
+  "name": "abdmob/x2js",
+  "version": "1.1.7",
+  "main": "xml2json.min.js",
+  "description": "XML <=> JSON mapping/converting library",
+  "license": "Apache Licence v2",
+  "ignore": [
+    ".hg*",
+    ".project",
+    "*.html",
+    "**/*.txt"
+  ],
+  "homepage": "https://github.com/abdmob/x2js",
+  "_release": "1.1.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.7",
+    "commit": "7536cb4bf577f989168b052cb06e683600a5bfed"
+  },
+  "_source": "https://github.com/abdmob/x2js.git",
+  "_target": "~1.1.7",
+  "_originalSource": "x2js"
+}

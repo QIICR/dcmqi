@@ -1,0 +1,7 @@
+{
+  "@context": [
+    "/context-1.jsonld",
+    "/context-2.jsonld",
+    "/context-3.jsonld"
+  ] 
+}

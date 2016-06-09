@@ -1,0 +1,75 @@
+{
+  "name": "jsonld",
+  "version": "0.4.11",
+  "description": "A JSON-LD Processor and API implementation in JavaScript.",
+  "homepage": "http://github.com/digitalbazaar/jsonld.js",
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "http://digitalbazaar.com/"
+  },
+  "contributors": [
+    {
+      "name": "Dave Longley",
+      "email": "dlongley@digitalbazaar.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/digitalbazaar/jsonld.js"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/jsonld.js/issues",
+    "email": "support@digitalbazaar.com"
+  },
+  "license": "BSD-3-Clause",
+  "main": "js/jsonld.js",
+  "dependencies": {
+    "es6-promise": "^2.0.0",
+    "pkginfo": "~0.4.0",
+    "request": "^2.61.0",
+    "xmldom": "0.1.19"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "commander": "^2.8.0",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "istanbul": "^0.4.3",
+    "jscs": "^3.0.0",
+    "jshint": "^2.9.1",
+    "mocha": "^2.3.4",
+    "mocha-phantomjs": "~3.5.6",
+    "phantomjs": "~1.9.18"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "keywords": [
+    "JSON",
+    "Linked Data",
+    "JSON-LD",
+    "RDF",
+    "Semantic Web",
+    "jsonld"
+  ],
+  "scripts": {
+    "test-local": "make test-local",
+    "test-node": "make test-node",
+    "test-browser": "make test-browser",
+    "test": "make test",
+    "coverage": "make test-coverage",
+    "jscs": "jscs js/jsonld.js tests/*.js",
+    "jshint": "jshint js/jsonld.js tests/*.js"
+  },
+  "browser": {
+    "crypto": "./browser/ignore.js",
+    "http": "./browser/ignore.js",
+    "jsonld-request": "./browser/ignore.js",
+    "pkginfo": "./browser/ignore.js",
+    "request": "./browser/ignore.js",
+    "url": "./browser/ignore.js",
+    "util": "./browser/ignore.js",
+    "xmldom": "./browser/ignore.js"
+  }
+}
