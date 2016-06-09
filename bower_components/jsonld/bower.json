@@ -1,0 +1,17 @@
+{
+  "name": "jsonld",
+  "version": "0.4.11",
+  "description": "A JSON-LD Processor and API implementation in JavaScript.",
+  "authors": [
+    "Digital Bazaar, Inc."
+  ],
+  "license": "BSD",
+  "main": ["js/jsonld.js"],
+  "dependencies": {
+    "es6-promise": "^2.0.0"
+  },
+  "ignore": [
+    "node_modules",
+    "bower_components"
+  ]
+}

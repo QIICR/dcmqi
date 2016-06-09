@@ -1,0 +1,26 @@
+<md-autocomplete
+    ng-required="ctrl.required"
+    md-no-cache="ctrl.noCache"
+    ng-disabled="ctrl.isDisabled"
+    md-selected-item="ctrl.selectedItem"
+    md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+    md-search-text="ctrl.searchText"
+    md-selected-item-change="ctrl.selectedItemChange(item)"
+    md-items="item in ctrl.querySearch(ctrl.searchText)"
+    md-item-text="item.display"
+    md-min-length="0"
+    md-input-id = "{{ctrl.floatingLabel}}_{{segment.LabelID}}"
+    md-input-name = "{{ctrl.floatingLabel}}_{{segment.LabelID}}"
+    md-floating-label="{{ctrl.floatingLabel}}"
+    md-menu-class="autocomplete-custom-template">
+    <md-item-template>
+        <span class="item-title">
+            <span> {{item.display}} </span>
+        </span>
+        <span class="item-metadata">
+            <span class="item-metastat">
+              <strong>{{item.contextGroupName}}</strong>
+            </span>
+        </span>
+    </md-item-template>
+</md-autocomplete>
