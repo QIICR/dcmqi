@@ -117,14 +117,14 @@
                     </div>
                     <div layout="row">
                         <div flex>
-                            <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
+                            <md-tabs md-selected="selectedIndex" md-dynamic-height md-autoselect>
                                 <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
-                                    <md-tab-template layout="column" layout-fill>
+                                    <md-tab-template layout="column">
                                         <div layout="row">
                                             <div>
                                                 <md-input-container>
                                                     <label>LabelID</label>
-                                                    <input required type="number" name="LabelID" ng-model="segment.LabelID" min="0" ng-pattern="/[0-9]$/" non-Existent-Label>
+                                                    <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/" non-Existent-Label>
                                                     <div ng-messages="jsonForm.LabelID.$error" role="alert">
                                                         <div ng-message="required" class="my-message">You must supply a label id.</div>
                                                         <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
