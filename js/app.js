@@ -29,7 +29,14 @@
         }
       };
 
-      $scope.seriesAttributes = {
+      $scope.resetForm = function() {
+        $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
+        $scope.segmentAttributes.LabelID = 1;
+        $scope.segments.length = 0;
+        $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
+      };
+
+      var seriesAttributesDefaults = {
         ReaderID : "Reader1",
         SessionID : "Session1",
         TimePointID : "1",
@@ -38,6 +45,8 @@
         InstanceNumber : 1,
         BodyPartExamined :  ""
       };
+
+      $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
 
       $scope.segmentAttributes = {
         LabelID: 1,
@@ -49,9 +58,7 @@
         SegmentedPropertyTypeModifier: null
       };
 
-      var initialSegment = angular.extend({}, $scope.segmentAttributes);
-
-      $scope.segments = [initialSegment];
+      $scope.segments = [angular.extend({}, $scope.segmentAttributes)];
       $scope.output = "";
 
       $scope.addSegment = function() {

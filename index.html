@@ -169,7 +169,7 @@
                             <md-button class="md-raised md-primary" type="submit">OK</md-button>
                         </div>
                         <div>
-                            <md-button class="md-raised">Reset</md-button>
+                            <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
                         </div>
                     </div>
                 </form>
@@ -184,7 +184,7 @@
                     <div>
                         <md-button class="md-fab md-mini md-primary" ngclipboard ngclipboard data-clipboard-text="{{ output | json }}">
                             <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
-                            <ng-md-icon icon="content_copy" style="fill:black"/>
+                            <ng-md-icon icon="content_copy" style="fill:white"/>
                         </md-button>
                     </div>
                 </div>
