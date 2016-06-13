@@ -111,7 +111,7 @@
       };
 
       self.showErrors = function() {
-        $scope.output = "";
+        $scope.output = undefined;
         angular.forEach($scope.jsonForm.$error.required, function (error, key) {
           var elements = error.$name.split("_");
           var message = "[MISSING]: " + elements[0];
