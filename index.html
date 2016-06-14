@@ -118,7 +118,7 @@
                     </div>
                     <div layout="row">
                         <div flex>
-                            <md-tabs md-selected="selectedIndex" md-dynamic-height md-autoselect>
+                            <md-tabs md-selected="selectedIndex" style="min-height: 500px;" md-autoselect>
                                 <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
                                     <md-tab-template layout="column">
                                         <div layout="row">
@@ -183,7 +183,7 @@
                         </pre>
                     </div>
                     <div>
-                        <md-button class="md-fab md-mini md-primary" ngclipboard ngclipboard data-clipboard-text="{{ output | json }}">
+                        <md-button class="md-fab md-mini md-primary" ngclipboard data-clipboard-text="{{ output | json }}">
                             <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
                             <ng-md-icon icon="content_copy" style="fill:white"/>
                         </md-button>
