@@ -1,0 +1,31 @@
+{
+  "seriesAttributes": {
+    "ReaderID": "Reader1",
+    "SessionID": "Session1",
+    "TimePointID": "1",
+    "SeriesDescription": "Segmentation",
+    "SeriesNumber": "300",
+    "InstanceNumber": "1"
+  },
+  "segmentAttributes": [{
+    "LabelID": 216,
+    "SegmentDescription": "Liver Segmentation",
+    "SegmentedPropertyCategoryCode": {
+      "codeValue": "T-D0050",
+      "codingSchemeDesignator": "SRT",
+      "codeMeaning": "Tissue"
+    },
+    "SegmentedPropertyType": {
+      "codeValue": "T-62000",
+      "codingSchemeDesignator": "SRT",
+      "codeMeaning": "Liver"
+    },
+    "SegmentAlgorithmType": "SEMIAUTOMATIC",
+    "SegmentAlgorithmName": "SlicerEditor",
+    "RecommendedDisplayRGBValue": [
+      "221",
+      "130",
+      "101"
+    ]
+  }]
+}

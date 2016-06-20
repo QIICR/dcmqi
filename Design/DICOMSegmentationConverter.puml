@@ -1,0 +1,99 @@
+@startuml
+
+title ITK image -> DCM segmentation, DCM segmentation -> ITK image
+
+package Metadata <<Rectangle>> {
+    package JSON-LD as JSON <<Database>> {
+        note as metaNote
+          - series
+          - segment(s)
+        end note
+    }
+}
+
+package Segmentation(s) <<Rectangle>>{
+    package NRRD <<Database>> {
+    }
+    package ITK <<Database>> {
+    }
+    package DICOM <<Database>>{
+    }
+}
+
+package ReferenceImage(s) as ReferenceImage <<Rectangle>> {
+    package DICOM as DICOM1 <<Database>>{
+    }
+}
+
+package dcmqi {
+
+    ImageSEGConverter ---* JSONMetaInformationHandler: use
+    ImageSEGConverter ---* Helper : use
+
+    JSONMetaInformationHandler -* SegmentAttributes : use
+
+    JSONMetaInformationHandler <-> JSON : read/write
+    ImageSEGConverter <-> DICOM: read/write
+    ImageSEGConverter <- DICOM1: read
+
+    ImageSEGConverter <- ITK: read
+    ImageSEGConverter -> NRRD: write
+
+    SegmentAttributes -*  Helper : use
+}
+
+class Helper {
+    + {static} tokenizeString(string str, vector<string> &tokens, string delimiter): void
+    + {static} splitString(string str, string &head, string &tail, string delimiter): void
+    + {static} floatToStrScientific(float f): string
+---
+    + {static} stringToCodeSequenceMacro(std::string str): CodeSequenceMacro
+    + {static} stringToDSRCodedEntryValue(std::string str): DSRCodedEntryValue
+---
+    + {static} getCIEXYZFromRGB(unsigned *rgb, float *cieXYZ): float*
+    + {static} getRGBFromCIEXYZ(float* cieXYZ, unsigned *rgb): unsigned*
+    + {static} getCIELabFromCIEXYZ(float *cieXYZ, float *cieLab): float*
+    + {static} getCIEXYZFromCIELab(float *cieLab, float *cieXYZ): float*
+    + {static} getIntegerScaledCIELabFromCIELab(float *cieLab, unsigned *cieLabScaled): unsigned*
+    + {static} getCIELabFromIntegerScaledCIELab(unsigned* cieLabScaled, float* cieLab): float*
+}
+
+class ImageSEGConverter {
+    + {static} itkimage2dcmSegmentation(dcmImages, itkimages, jsonMetaFile, outputFileName)
+    + {static} dcmSegmentation2itkimage(dcmImage, ...)
+---
+    - allOtherMethods()
+}
+
+class JSONMetaInformationHandler {
+    + attributes : SegmentAttributes[]
+    - filename : const char*
+---
+    + JSONMetaInformationHandler()
+    + JSONMetaInformationHandler(const char* filename)
+    + write(const char* filename) : bool
+---
+    - read() : bool
+    - readSeriesAttributes(const Json::Value &root) : void
+    - readSegmentAttributes(const Json::Value &root) : void
+}
+
+class SegmentAttributes {
+    - labelID : unsigned
+    - segmentDescription : string
+    - segmentAlgorithmType :string
+    - segmentAlgorithmName : string
+    - recommendedDisplayRGBValue : unsigned[3]
+    - anatomicRegion : CodeSequenceMacro
+    - anatomicRegionModifier : CodeSequenceMacro
+    - segmentedPropertyCategoryCode : CodeSequenceMacro
+    - segmentedPropertyType : CodeSequenceMacro
+    - segmentedPropertyTypeModifier : CodeSequenceMacro
+---
+    + setter(...) : void
+    + getter() : whateverType
+    + setLabelID(unsigned labelID) : void
+    + PrintSelf() : void
+}
+
+@enduml

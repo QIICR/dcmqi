@@ -18,15 +18,15 @@
       <description>File name of the SEG object.</description>
     </file>
 
-    <boolean>
-      <name>combineSegments</name>
-      <flag>c</flag>
-      <longflag>combine</longflag>
-      <label>Combine segments</label>
-      <channel>input</channel>
-      <default>0</default>
-      <description>Combine segments into one output file. This option will cause warnings to be printed on the console in case segments overlap and are overwritten. For now, always split into separate files.</description>
-    </boolean>
+    <!--<boolean>-->
+      <!--<name>combineSegments</name>-->
+      <!--<flag>c</flag>-->
+      <!--<longflag>combine</longflag>-->
+      <!--<label>Combine segments</label>-->
+      <!--<channel>input</channel>-->
+      <!--<default>0</default>-->
+      <!--<description>Combine segments into one output file. This option will cause warnings to be printed on the console in case segments overlap and are overwritten. For now, always split into separate files.</description>-->
+    <!--</boolean>-->
 
     <file>
       <name>outputDirName</name>

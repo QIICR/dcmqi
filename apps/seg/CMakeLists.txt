@@ -13,7 +13,19 @@ set(COMMON_TARGET_LIBRARIES
 set(MODULE_NAME segimage2itkimage)
 
 set(MODULE_SRCS
-  ${MODULE_NAME}.cxx)
+  ${MODULE_NAME}.cxx
+  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
+  Exceptions.h
+  Helper.h
+  Helper.cpp
+  ImageSEGConverter.h
+  ImageSEGConverter.cpp
+  JSONMetaInformationHandler.h
+  JSONMetaInformationHandler.cpp
+  SegmentAttributes.h
+  SegmentAttributes.cpp
+  QIICRUIDs.h
+  preproc.h)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
@@ -27,20 +39,23 @@ SEMMacroBuildCLI(
   INSTALL_LIBRARY_DESTINATION ${CMAKE_BINARY_DIR}
   INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
-
-add_test(NAME ${MODULE_NAME}_hello
-   COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
-add_test(NAME ${MODULE_NAME}_makeNRRD
-   COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
-   ${CMAKE_SOURCE_DIR}/data/ct-3slice/liver.dcm
-   ${TEMP_DIR})
-
 
 set(MODULE_NAME itkimage2segimage)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
-  QIICRUIDs.h)
+  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
+  Exceptions.h
+  Helper.h
+  Helper.cpp
+  ImageSEGConverter.h
+  ImageSEGConverter.cpp
+  JSONMetaInformationHandler.h
+  JSONMetaInformationHandler.cpp
+  SegmentAttributes.h
+  SegmentAttributes.cpp
+  QIICRUIDs.h
+  preproc.h)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
@@ -55,13 +70,4 @@ SEMMacroBuildCLI(
   INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
 
-add_test(NAME ${MODULE_NAME}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
-add_test(NAME ${MODULE_NAME}_makeSEG
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
-         --seriesNumber 1 --seriesDescription "Liver Segmentation"
-         --labelAttributesFiles ${CMAKE_SOURCE_DIR}/doc/sample.info
-         --segImageFiles ${CMAKE_SOURCE_DIR}/data/ct-3slice/liver_seg.nrrd
-         --dicomImageFiles ${CMAKE_SOURCE_DIR}/data/ct-3slice/01.dcm,${CMAKE_SOURCE_DIR}/data/ct-3slice/02.dcm,${CMAKE_SOURCE_DIR}/data/ct-3slice/03.dcm
-         --segDICOMFile ${TEMP_DIR}/liver.dcm
-       )
+add_subdirectory(Testing)
