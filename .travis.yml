@@ -10,8 +10,8 @@ before_script:
 - clang --version
 - mkdir /Users/travis/build/QIICR/dcmqi-build
 - cd /Users/travis/build/QIICR
-- wget https://dl.dropboxusercontent.com/u/3770904/dicom3tools_macexe_1.00.snapshot.20160402132920.zip
-- tar zxf dicom3tools_macexe_1.00.snapshot.20160402132920.zip
+- wget https://dl.dropboxusercontent.com/u/3770904/dicom3tools_macexe_1.00.snapshot.20160516104835.tar.bz2
+- tar zxf dicom3tools_macexe_1.00.snapshot.20160516104835.tar.bz2
 - wget https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz
 - tar zxf cmake-3.4.3.tar.gz
 - cd cmake-3.4.3
