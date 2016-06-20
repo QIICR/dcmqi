@@ -24,7 +24,7 @@ before_build:
   - cmd: git clone https://github.com/fedorov/SlicerExecutionModel.git SlicerExecutionModel
   - cmd: cd c:\SlicerExecutionModel
   - cmd: git checkout dcmqi-311eff
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.4/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.5/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
   - cmd: 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
   - cmd: mkdir c:\dcmqi\dcmqi-build
   - cmd: cd c:\dcmqi\dcmqi-build
