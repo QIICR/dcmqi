@@ -3,6 +3,7 @@ set(COMMON_INCLUDE_DIRECTORIES
   ${ITK_INCLUDE_DIRS}
   ${ITK_INSTALL_PREFIX}/include/vxl/core
   ${ITK_INSTALL_PREFIX}/include/vxl/vcl
+  ${DCMQI_SOURCE_DIR}/lib
   )
 
 set(COMMON_TARGET_LIBRARIES
@@ -15,17 +16,17 @@ set(MODULE_NAME segimage2itkimage)
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
-  Exceptions.h
-  Helper.h
-  Helper.cpp
-  ImageSEGConverter.h
-  ImageSEGConverter.cpp
-  JSONMetaInformationHandler.h
-  JSONMetaInformationHandler.cpp
-  SegmentAttributes.h
-  SegmentAttributes.cpp
-  QIICRUIDs.h
-  preproc.h)
+  ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
+  ${CMAKE_SOURCE_DIR}/lib/Helper.h
+  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
+  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
+  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.cpp
+  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.h
+  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.cpp
+  ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
+  ${CMAKE_SOURCE_DIR}/lib/preproc.h)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
@@ -45,17 +46,17 @@ set(MODULE_NAME itkimage2segimage)
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
-  Exceptions.h
-  Helper.h
-  Helper.cpp
-  ImageSEGConverter.h
-  ImageSEGConverter.cpp
-  JSONMetaInformationHandler.h
-  JSONMetaInformationHandler.cpp
-  SegmentAttributes.h
-  SegmentAttributes.cpp
-  QIICRUIDs.h
-  preproc.h)
+  ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
+  ${CMAKE_SOURCE_DIR}/lib/Helper.h
+  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
+  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
+  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.cpp
+  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.h
+  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.cpp
+  ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
+  ${CMAKE_SOURCE_DIR}/lib/preproc.h)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}

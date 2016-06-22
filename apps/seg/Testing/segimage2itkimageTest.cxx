@@ -1,4 +1,4 @@
-#include "../itkTestMain.h"
+#include "itkTestMain.h"
 
 #ifdef WIN32
 #define MODULE_IMPORT __declspec(dllimport)
