@@ -5,9 +5,14 @@
 namespace dcmqi {
 
     int ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                                             const char *metaDataFileName, const char *outputFileName) {
+                                             const std::string &metaDataFileName, const std::string &outputFileName) {
 
         ReaderType::Pointer reader = ReaderType::New();
+
+        if (segmentationFileNames.empty() || dicomImageFileNames.empty() || metaDataFileName.empty() || outputFileName.empty() )
+        {
+          return EXIT_FAILURE;
+        }
         reader->SetFileName(segmentationFileNames[0].c_str());
         reader->Update();
         ImageType::Pointer labelImage = reader->GetOutput();
@@ -15,7 +20,7 @@ namespace dcmqi {
         ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
         cout << "Input image size: " << inputSize << endl;
 
-        JSONMetaInformationHandler metaInfo(metaDataFileName);
+        JSONMetaInformationHandler metaInfo(metaDataFileName.c_str());
 
         IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
         ContentIdentificationMacro ident = createContentIdentificationInformation();
@@ -440,16 +445,16 @@ namespace dcmqi {
     DcmFileFormat segdocFF(&segdocDataset);
     bool compress = false; // TODO: remove hardcoded
     if(compress){
-        CHECK_COND(segdocFF.saveFile(outputFileName, EXS_DeflatedLittleEndianExplicit));
+        CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
     } else {
-        CHECK_COND(segdocFF.saveFile(outputFileName, EXS_LittleEndianExplicit));
+        CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
     }
 
     COUT << "Saved segmentation as " << outputFileName << endl;
         return EXIT_SUCCESS;
     }
 
-    int ImageSEGConverter::dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName) {
+    int ImageSEGConverter::dcmSegmentation2itkimage(const std::string &inputSEGFileName, const std::string &outputDirName) {
 
         DcmRLEDecoderRegistration::registerCodecs();
 
@@ -457,7 +462,7 @@ namespace dcmqi {
 
         DcmFileFormat segFF;
         DcmDataset *segDataset = NULL;
-        if(segFF.loadFile(inputSEGFileName).good()){
+        if(segFF.loadFile(inputSEGFileName.c_str()).good()){
             segDataset = segFF.getDataset();
         } else {
             cerr << "Failed to read input " << endl;
@@ -465,7 +470,7 @@ namespace dcmqi {
         }
 
         DcmSegmentation *segdoc = NULL;
-        OFCondition cond = DcmSegmentation::loadFile(inputSEGFileName, segdoc);
+        OFCondition cond = DcmSegmentation::loadFile(inputSEGFileName.c_str(), segdoc);
         if(!segdoc){
             cerr << "Failed to load seg! " << cond.text() << endl;
             return EXIT_FAILURE;

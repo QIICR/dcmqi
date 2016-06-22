@@ -65,9 +65,9 @@ namespace dcmqi {
 
     public:
         static int itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                                             const char *metaDataFileName, const char *outputFileName);
+                                             const std::string &metaDataFileName, const std::string &outputFileName);
 
-        static int dcmSegmentation2itkimage(const char *inputSEGFileName, const char *outputDirName);
+        static int dcmSegmentation2itkimage(const string &inputSEGFileName, const string &outputDirName);
         static int CHECK_COND(const OFCondition& condition);
 
     private:
