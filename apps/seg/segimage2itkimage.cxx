@@ -6,5 +6,5 @@
 int main(int argc, char *argv[])
 {
   PARSE_ARGS;
-  return dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(inputSEGFileName.c_str(), outputDirName.c_str());
+  return dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(inputSEGFileName, outputDirName);
 }
