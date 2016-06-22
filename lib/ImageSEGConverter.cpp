@@ -9,6 +9,10 @@ namespace dcmqi {
 
         ReaderType::Pointer reader = ReaderType::New();
 
+        if (segmentationFileNames.empty() || dicomImageFileNames.empty() || metaDataFileName.empty() || outputFileName.empty() )
+        {
+          return EXIT_FAILURE;
+        }
         reader->SetFileName(segmentationFileNames[0].c_str());
         reader->Update();
         ImageType::Pointer labelImage = reader->GetOutput();
