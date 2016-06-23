@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics.Converters</category>
+  <title>Encode DICOM Parametric Map</title>
+  <description>Create DICOM Parametric Map Image object from non-DICOM images</description>
+  <version></version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+<acknowledgements></acknowledgements>
+
+<parameters>
+    <string-vector>
+      <name>inputDICOMImageFileNames</name>
+      <label>DICOM images file names</label>
+      <channel>input</channel>
+      <longflag>dicomImageFiles</longflag>
+      <description>List of DICOM images that correspond to the image that was segmented.</description>
+    </string-vector>
+
+    <string-vector>
+      <name>inputParametricMapFileNames</name>
+      <label>Parametric Map file names</label>
+      <channel>input</channel>
+      <longflag>segImageFiles</longflag>
+      <description>File names of the parametric map images in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
+    </string-vector>
+
+    <file>
+      <name>metaDataFileName</name>
+      <label>JSON metadata file</label>
+      <channel>input</channel>
+      <longflag>metaDataFileName</longflag>
+      <description>File names of the text files containing metadata attributes.</description>
+    </file>
+
+    <file>
+      <name>outputParaMapFileName</name>
+      <label>Parametric map file name</label>
+      <channel>output</channel>
+      <longflag>parametricMapOutputFilename</longflag>
+      <description>File name of the parametric map object that will keep the result.</description>
+    </file>
+  </parameters>
+
+</executable>

@@ -19,6 +19,8 @@ set(MODULE_SRCS
   ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
   ${CMAKE_SOURCE_DIR}/lib/Helper.h
   ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
+  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
+  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
   ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
@@ -49,6 +51,8 @@ set(MODULE_SRCS
   ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
   ${CMAKE_SOURCE_DIR}/lib/Helper.h
   ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
+  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
+  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
   ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
