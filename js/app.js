@@ -185,7 +185,7 @@
           if (value.segmentedPropertyTypeModifier)
             attributes["SegmentedPropertyTypeModifierCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
           if (value.RecommendedDisplayRGBValue.color)
-            attributes["RecommendedDisplayRGBValue"] = value.RecommendedDisplayRGBValue.color;
+            attributes["RecommendedDisplayRGBValue"] = self.rgbToArray(value.RecommendedDisplayRGBValue.color);
           segmentAttributes.push(attributes);
         });
 
@@ -196,6 +196,12 @@
 
         $scope.output = doc;
       };
+
+      self.rgbToArray = function(str) {
+        var rgb = str.replace("rgb(", "").replace(")", "").split(",");
+        return [rgb[0], rgb[1], rgb[2]];
+      }
+
   }]);
 
   function getCodeSequenceAttributes(codeSequence) {
