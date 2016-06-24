@@ -4,7 +4,7 @@
   var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
 
   var app = angular.module('JSONSemanticsCreator',
-    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard', 'ui-notification'])
+    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker'])
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     })
@@ -54,6 +54,24 @@
         BodyPartExamined :  ""
       };
 
+      var colorPickerDefaultOptions = {
+        clickOutsideToClose: true,
+        openOnInput: true,
+        mdColorAlphaChannel: false,
+        mdColorClearButton: false,
+        mdColorSliders: false,
+        mdColorHistory: false,
+        mdColorGenericPalette: false,
+        mdColorMaterialPalette:false,
+        mdColorHex: false,
+        mdColorHsl: false
+      };
+
+      var defaultRecommendedDisplayValue = {
+        color: 'rgb(128, 174, 128)',
+        backgroundOptions: angular.extend({}, colorPickerDefaultOptions)
+      };
+
       $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
 
       $scope.segmentAttributes = {
@@ -63,16 +81,21 @@
         AnatomicRegionModifier: null,
         SegmentedPropertyCategoryCode: null,
         SegmentedPropertyType: null,
-        SegmentedPropertyTypeModifier: null
+        SegmentedPropertyTypeModifier: null,
+        RecommendedDisplayRGBValue: angular.extend({}, defaultRecommendedDisplayValue)
       };
 
-      $scope.segments = [angular.extend({}, $scope.segmentAttributes)];
+      var segment = angular.extend({}, $scope.segmentAttributes);
+      $scope.segments = [segment];
       $scope.output = undefined;
 
       $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
-        $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
+        var segment = angular.extend({}, $scope.segmentAttributes);
+        segment.RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
+        $scope.segments.push(segment);
         $scope.selectedIndex = $scope.segments.length-1;
+        console.log($scope.segments)
       };
 
       $scope.removeSegment = function() {
@@ -81,6 +104,7 @@
           $scope.selectedIndex = 0;
         else
           $scope.selectedIndex -= 1;
+        $scope.output = undefined;
       };
 
       $scope.previousSegment = function() {
@@ -110,7 +134,7 @@
       };
 
       self.showErrors = function() {
-        $scope.output = "";
+        $scope.output = undefined;
         angular.forEach($scope.jsonForm.$error.required, function (error, key) {
           var elements = error.$name.split("_");
           var message = "[MISSING]: " + elements[0];
@@ -160,6 +184,8 @@
             attributes["SegmentedPropertyTypeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyType);
           if (value.segmentedPropertyTypeModifier)
             attributes["SegmentedPropertyTypeModifierCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
+          if (value.RecommendedDisplayRGBValue.color)
+            attributes["RecommendedDisplayRGBValue"] = self.rgbToArray(value.RecommendedDisplayRGBValue.color);
           segmentAttributes.push(attributes);
         });
 
@@ -170,6 +196,12 @@
 
         $scope.output = doc;
       };
+
+      self.rgbToArray = function(str) {
+        var rgb = str.replace("rgb(", "").replace(")", "").split(", ");
+        return [rgb[0], rgb[1], rgb[2]];
+      }
+
   }]);
 
   function getCodeSequenceAttributes(codeSequence) {
