@@ -250,4 +250,11 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp)
 set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
 
+# utilities
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/util/cliwrap.py
+  ${DCMQI_INSTALL_BIN_DIR}
+  COPYONLY
+  )
+
 add_subdirectory("apps")

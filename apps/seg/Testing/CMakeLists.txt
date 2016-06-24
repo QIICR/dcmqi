@@ -31,3 +31,11 @@ add_test(NAME ${MODULE_NAME}_makeSEG
         --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
         --segDICOMFile ${TEMP_DIR}/liver.dcm
        )
+
+add_test(NAME ${MODULE_NAME}_BrainlabExampleSEG1
+         COMMAND
+         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/cliwrap.py
+           ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/segimage2itkimage
+           http://ipfs.io/ipfs/QmTftaDyQCNFsceFwR2kkRMdz5VBbCzzD64VVEWiKRA2Go/BLSEGTest1/SEG/brainlab.dcm
+           ${TEMP_DIR}
+       )
