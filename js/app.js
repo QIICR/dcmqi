@@ -68,7 +68,7 @@
       };
 
       var defaultRecommendedDisplayValue = {
-        color: 'rgb(128,174,128)',
+        color: 'rgb(128, 174, 128)',
         backgroundOptions: angular.extend({}, colorPickerDefaultOptions)
       };
 
@@ -198,7 +198,7 @@
       };
 
       self.rgbToArray = function(str) {
-        var rgb = str.replace("rgb(", "").replace(")", "").split(",");
+        var rgb = str.replace("rgb(", "").replace(")", "").split(", ");
         return [rgb[0], rgb[1], rgb[2]];
       }
 
