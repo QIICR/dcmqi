@@ -10,14 +10,11 @@
 
 #include "dcmtk/oflog/loglevel.h"
 
-// UIDs
-#include "QIICRUIDs.h"
-
 #include "dcmqiVersionConfigure.h"
 
-#include "preproc.h"
+#include "ConverterBase.h"
 
-#include "Exceptions.h"
+#include "JSONMetaInformationHandlerBase.h"
 
 using namespace std;
 
@@ -25,12 +22,10 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 namespace dcmqi {
 
-    class ParaMapConverter {
+    class ParaMapConverter : public ConverterBase {
 
     public:
-
-        static int itkimage2dcmParaMap(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                                                  const char *metaDataFileName, const char *outputFileName);
+        static int itkimage2dcmParaMap(const char* inputFileName, const char *metaDataFileName, const char *outputFileName);
     };
 
 }

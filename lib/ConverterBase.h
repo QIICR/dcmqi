@@ -13,6 +13,13 @@
 
 #include "Exceptions.h"
 
+#include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
+#include <itkLabelImageToLabelMapFilter.h>
+
+typedef short PixelType;
+typedef itk::Image<PixelType, 3> ImageType;
+typedef itk::ImageFileReader<ImageType> ReaderType;
 
 using namespace std;
 

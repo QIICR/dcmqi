@@ -4,18 +4,17 @@
 
 namespace dcmqi {
 
-    int ParaMapConverter::itkimage2dcmParaMap(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                                              const char *metaDataFileName, const char *outputFileName) {
+    int ParaMapConverter::itkimage2dcmParaMap(const char* inputFileName, const char *metaDataFileName, const char *outputFileName) {
 
-//        ReaderType::Pointer reader = ReaderType::New();
-//        reader->SetFileName(segmentationFileNames[0].c_str());
-//        reader->Update();
-//        ImageType::Pointer labelImage = reader->GetOutput();
-//
-//        ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
-//        cout << "Input image size: " << inputSize << endl;
-//
-//        JSONMetaInformationHandler metaInfo(metaDataFileName);
+        ReaderType::Pointer reader = ReaderType::New();
+        reader->SetFileName(inputFileName);
+        reader->Update();
+        ImageType::Pointer labelImage = reader->GetOutput();
+
+        ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
+        cout << "Input image size: " << inputSize << endl;
+
+//        JSONMetaInformationHandlerBase metaInfo(metaDataFileName);
 //
 //        IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
 //        ContentIdentificationMacro ident = createContentIdentificationInformation();

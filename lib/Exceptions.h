@@ -22,9 +22,17 @@ namespace dcmqi {
         }
     };
 
+
     class DCMQIImagePositionPatientMapsOutsideITKException : public runtime_error {
     public:
         DCMQIImagePositionPatientMapsOutsideITKException(const char* m) : std::runtime_error(m) { }
+    };
+
+
+    class JSONReadErrorException : public exception {
+        virtual const char *what() const throw() {
+            return "JSON Exception: file could not be read.";
+        }
     };
 }
 

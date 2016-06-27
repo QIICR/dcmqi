@@ -10,21 +10,13 @@
 <acknowledgements></acknowledgements>
 
 <parameters>
-    <string-vector>
-      <name>inputDICOMImageFileNames</name>
-      <label>DICOM images file names</label>
+    <file>
+      <name>inputFileName</name>
+      <label>Parametric Map file name</label>
       <channel>input</channel>
-      <longflag>dicomImageFiles</longflag>
-      <description>List of DICOM images that correspond to the image that was segmented.</description>
-    </string-vector>
-
-    <string-vector>
-      <name>inputParametricMapFileNames</name>
-      <label>Parametric Map file names</label>
-      <channel>input</channel>
-      <longflag>segImageFiles</longflag>
-      <description>File names of the parametric map images in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
-    </string-vector>
+      <longflag>parametricMapInputFileName</longflag>
+      <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
+    </file>
 
     <file>
       <name>metaDataFileName</name>

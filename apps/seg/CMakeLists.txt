@@ -6,15 +6,7 @@ set(COMMON_INCLUDE_DIRECTORIES
   ${DCMQI_SOURCE_DIR}/lib
   )
 
-set(COMMON_TARGET_LIBRARIES
-  ${DCMTK_LIBRARIES}
-  ${ITK_LIBRARIES}
-  )
-
-set(MODULE_NAME segimage2itkimage)
-
-set(MODULE_SRCS
-  ${MODULE_NAME}.cxx
+set(COMMON_DCMQI_LIB_SOURCES
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
   ${CMAKE_SOURCE_DIR}/lib/Helper.h
@@ -23,17 +15,31 @@ set(MODULE_SRCS
   ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
   ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.h
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONSegmentationMetaInformationHandler.h
+  ${CMAKE_SOURCE_DIR}/lib/JSONSegmentationMetaInformationHandler.cpp
   ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.h
   ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.cpp
+  ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.h
+  ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.cpp
   ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
   ${CMAKE_SOURCE_DIR}/lib/preproc.h)
+
+set(COMMON_TARGET_LIBRARIES
+  ${DCMTK_LIBRARIES}
+  ${ITK_LIBRARIES}
+  )
+
+set(MODULE_NAME segimage2itkimage)
+
+set(MODULE_SRCS
+  ${MODULE_NAME}.cxx)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
-  ADDITIONAL_SRCS ${MODULE_SRCS}
+  ADDITIONAL_SRCS ${MODULE_SRCS} ${COMMON_DCMQI_LIB_SOURCES}
   TARGET_LIBRARIES ${COMMON_TARGET_LIBRARIES}
   RUNTIME_OUTPUT_DIRECTORY        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
   LIBRARY_OUTPUT_DIRECTORY        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
@@ -46,26 +52,12 @@ SEMMacroBuildCLI(
 set(MODULE_NAME itkimage2segimage)
 
 set(MODULE_SRCS
-  ${MODULE_NAME}.cxx
-  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
-  ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
-  ${CMAKE_SOURCE_DIR}/lib/Helper.h
-  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
-  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandler.cpp
-  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.h
-  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.cpp
-  ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
-  ${CMAKE_SOURCE_DIR}/lib/preproc.h)
+  ${MODULE_NAME}.cxx)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
-  ADDITIONAL_SRCS ${MODULE_SRCS}
+  ADDITIONAL_SRCS ${MODULE_SRCS} ${COMMON_DCMQI_LIB_SOURCES}
   TARGET_LIBRARIES ${COMMON_TARGET_LIBRARIES}
   RUNTIME_OUTPUT_DIRECTORY        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
   LIBRARY_OUTPUT_DIRECTORY        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
