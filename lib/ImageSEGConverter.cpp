@@ -399,7 +399,8 @@ namespace dcmqi {
     COUT << "Saving the result to " << outputFileName << OFendl;
     //segdoc->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
 
-		segdoc->getSeries().setSeriesNumber(metaInfo.seriesNumber.c_str());
+    IODSegmentationSeriesModule& segmentationSeriesModule = segdoc->getSegmentationSeries();
+    segmentationSeriesModule.setSeriesNumber(metaInfo.seriesAttributes->getSeriesNumber().c_str());
     CHECK_COND(segdoc->writeDataset(segdocDataset));
 
     // Set reader/session/timepoint information
