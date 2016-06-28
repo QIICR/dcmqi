@@ -4,12 +4,13 @@
 namespace dcmqi {
 
     IODGeneralEquipmentModule::EquipmentInfo ConverterBase::getEquipmentInfo() {
-        IODGeneralEquipmentModule::EquipmentInfo eq;
-        eq.m_Manufacturer = "QIICR";
-        eq.m_DeviceSerialNumber = "0";
-        eq.m_ManufacturerModelName = dcmqi_WC_URL;
-        eq.m_SoftwareVersions = dcmqi_WC_REVISION;
-        return eq;
+        return IODGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
+                                                        QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
+    }
+
+    IODEnhGeneralEquipmentModule::EquipmentInfo ConverterBase::getEnhEquipmentInfo() {
+        return IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
+        QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
     }
 
     ContentIdentificationMacro ConverterBase::createContentIdentificationInformation() {

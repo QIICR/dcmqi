@@ -3,10 +3,12 @@
 
 #include <vector>
 #include <dcmtk/dcmiod/iodmacro.h>
+#include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modequipment.h>
 
 // UIDs
 #include "QIICRUIDs.h"
+#include "QIICRConstants.h"
 
 // versioning
 #include "dcmqiVersionConfigure.h"
@@ -32,6 +34,7 @@ namespace dcmqi {
 
     protected:
         static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
+        static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
         static ContentIdentificationMacro createContentIdentificationInformation();
     };
 

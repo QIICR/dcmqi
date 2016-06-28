@@ -12,6 +12,8 @@
 
 #include "dcmqiVersionConfigure.h"
 
+#include "dcmtk/dcmpmap/dpmparametricmapiod.h"
+
 #include "ConverterBase.h"
 
 #include "JSONParametricMapMetaInformationHandler.h"

@@ -27,6 +27,7 @@ set(MODULE_SRCS
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
   ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
+  ${CMAKE_SOURCE_DIR}/lib/QIICRConstants.h
   ${CMAKE_SOURCE_DIR}/lib/preproc.h)
 
 SEMMacroBuildCLI(

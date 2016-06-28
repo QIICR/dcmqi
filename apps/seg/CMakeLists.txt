@@ -24,6 +24,7 @@ set(COMMON_DCMQI_LIB_SOURCES
   ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.h
   ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.cpp
   ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
+  ${CMAKE_SOURCE_DIR}/lib/QIICRConstants.h
   ${CMAKE_SOURCE_DIR}/lib/preproc.h)
 
 set(COMMON_TARGET_LIBRARIES

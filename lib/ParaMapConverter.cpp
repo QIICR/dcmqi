@@ -11,28 +11,33 @@ namespace dcmqi {
         ReaderType::Pointer reader = ReaderType::New();
         reader->SetFileName(inputFileName.c_str());
         reader->Update();
-        ImageType::Pointer labelImage = reader->GetOutput();
+        ImageType::Pointer parametricMapImage = reader->GetOutput();
 
-        ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
+        ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
         cout << "Input image size: " << inputSize << endl;
 
         JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
+        metaInfo.read();
 
-//        IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
-//        ContentIdentificationMacro ident = createContentIdentificationInformation();
-//        CHECK_COND(ident.setInstanceNumber(metaInfo.instanceNumber.c_str()));
+        IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
+        ContentIdentificationMacro contentID = createContentIdentificationInformation();
+        CHECK_COND(contentID.setInstanceNumber(metaInfo.seriesAttributes->getInstanceNumber().c_str()));
 
-//
-//        /* Create new segmentation document */
-//        DcmDataset segdocDataset;
-//        DcmSegmentation *segdoc = NULL;
-//
-//        CHECK_COND(DcmSegmentation::createBinarySegmentation(
-//                segdoc,   // resulting segmentation
-//                inputSize[1],      // rows
-//                inputSize[0],      // columns
-//                eq,       // equipment
-//                ident));   // content identification
+        DcmDataset pMapDocDataset;
+        DPMParametricMapFloat *pMapDoc = NULL;
+
+        // TODO: following should maybe be moved to meta info
+        OFString imageFlavor = "VOLUME";
+        OFString pixContrast = "MTT";
+        DPMTypes::ContentQualification contQual = DPMTypes::CQ_RESEARCH;
+        OFString modality = "MR";
+
+
+        CHECK_COND(DPMParametricMapFloat::create(pMapDoc, modality, metaInfo.seriesAttributes->getSeriesNumber().c_str(),
+                                metaInfo.seriesAttributes->getInstanceNumber().c_str(),
+                                inputSize[0], inputSize[1], eq, contentID,
+                                imageFlavor, pixContrast, contQual));
+
 //
 //        /* Import patient and study from existing file */
 //        CHECK_COND(segdoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
@@ -48,7 +53,7 @@ namespace dcmqi {
 //
 //        /* Initialize shared functional groups */
 //        FGInterface &segFGInt = segdoc->getFunctionalGroups();
-//        vector<int> slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
+//        vector<int> slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, parametricMapImage);
 //
 //        const unsigned frameSize = inputSize[0] * inputSize[1];
 //
@@ -57,7 +62,7 @@ namespace dcmqi {
 //        {
 //            OFString imageOrientationPatientStr;
 //
-//            ImageType::DirectionType labelDirMatrix = labelImage->GetDirection();
+//            ImageType::DirectionType labelDirMatrix = parametricMapImage->GetDirection();
 //
 //            cout << "Directions: " << labelDirMatrix << endl;
 //
@@ -79,7 +84,7 @@ namespace dcmqi {
 //        {
 //            FGPixelMeasures *pixmsr = new FGPixelMeasures();
 //
-//            ImageType::SpacingType labelSpacing = labelImage->GetSpacing();
+//            ImageType::SpacingType labelSpacing = parametricMapImage->GetSpacing();
 //            ostringstream spacingSStream;
 //            spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
 //            CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -130,9 +135,9 @@ namespace dcmqi {
 //            LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
 //            reader->SetFileName(segmentationFileNames[segFileNumber]);
 //            reader->Update();
-//            ImageType::Pointer labelImage = reader->GetOutput();
+//            ImageType::Pointer parametricMapImage = reader->GetOutput();
 //
-//            l2lm->SetInput(labelImage);
+//            l2lm->SetInput(parametricMapImage);
 //            l2lm->Update();
 //
 //            typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
@@ -287,14 +292,14 @@ namespace dcmqi {
 //                        ImageType::IndexType sliceOriginIndex;
 //                        sliceOriginIndex.Fill(0);
 //                        sliceOriginIndex[2] = sliceNumber;
-//                        labelImage->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
+//                        parametricMapImage->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
 //                        ostringstream pppSStream;
 //                        if(sliceNumber>0){
 //                            ImageType::PointType prevOrigin;
 //                            ImageType::IndexType prevIndex;
 //                            prevIndex.Fill(0);
 //                            prevIndex[2] = sliceNumber-1;
-//                            labelImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
+//                            parametricMapImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
 //                        }
 //                        fgppp->setImagePositionPatient(
 //                                Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
@@ -320,7 +325,7 @@ namespace dcmqi {
 //                        sliceRegion.SetSize(sliceSize);
 //
 //                        unsigned framePixelCnt = 0;
-//                        itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(labelImage, sliceRegion);
+//                        itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(parametricMapImage, sliceRegion);
 //                        for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
 //                            if(sliceIterator.Get() == label){
 //                                frameData[framePixelCnt] = 1;
@@ -393,13 +398,13 @@ namespace dcmqi {
 //    COUT << "Saving the result to " << outputFileName << OFendl;
 //    //segdoc->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
 //
-//    CHECK_COND(segdoc->writeDataset(segdocDataset));
+//    CHECK_COND(segdoc->writeDataset(pMapDocDataset));
 //
 //    // Set reader/session/timepoint information
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.readerID.c_str()));
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.sessionID.c_str()));
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.timePointID.c_str()));
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, "UIowa"));
+//    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.readerID.c_str()));
+//    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.sessionID.c_str()));
+//    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.timePointID.c_str()));
+//    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, "UIowa"));
 //
 //    // populate BodyPartExamined
 //    {
@@ -418,7 +423,7 @@ namespace dcmqi {
 //            bodyPartAssigned = bodyPartStr.c_str();
 //
 //        if(bodyPartAssigned.size())
-//            CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+//            CHECK_COND(pMapDocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
 //    }
 //
 //    // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
@@ -429,16 +434,16 @@ namespace dcmqi {
 //        DcmDate::getCurrentDate(contentDate);
 //        DcmTime::getCurrentTime(contentTime);
 //
-//        segdocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
-//        segdocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
-//        segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
-//        segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
 //
-//        segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.seriesDescription.c_str());
-//        segdocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.seriesNumber.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.seriesDescription.c_str());
+//        pMapDocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.seriesNumber.c_str());
 //    }
 //
-//    DcmFileFormat segdocFF(&segdocDataset);
+//    DcmFileFormat segdocFF(&pMapDocDataset);
 //    bool compress = false; // TODO: remove hardcoded
 //    if(compress){
 //        CHECK_COND(segdocFF.saveFile(outputFileName, EXS_DeflatedLittleEndianExplicit));
@@ -469,7 +474,7 @@ namespace dcmqi {
 //    }
 //
 //    vector<int> ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-//                                                                              const itk::Image<short, 3>::Pointer &labelImage) {
+//                                                                              const itk::Image<short, 3>::Pointer &parametricMapImage) {
 //        // Find mapping from the segmentation slice number to the derivation image
 //        // Assume that orientation of the segmentation is the same as the source series
 //        vector<int> slice2derimg(dicomImageFileNames.size());
@@ -485,7 +490,7 @@ namespace dcmqi {
 //                CHECK_COND(sliceDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
 //                ippPoint[j] = atof(ippStr.c_str());
 //            }
-//            if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
+//            if(!parametricMapImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
 //                cout << "image position: " << ippPoint << endl;
 //                cerr << "ippIndex: " << ippIndex << endl;
 //                throw DCMQIImagePositionPatientMapsOutsideITKException("ImagePositionPatient maps outside the ITK image!");
