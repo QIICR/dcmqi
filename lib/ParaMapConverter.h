@@ -14,7 +14,7 @@
 
 #include "ConverterBase.h"
 
-#include "JSONMetaInformationHandlerBase.h"
+#include "JSONParametricMapMetaInformationHandler.h"
 
 using namespace std;
 
@@ -25,7 +25,10 @@ namespace dcmqi {
     class ParaMapConverter : public ConverterBase {
 
     public:
-        static int itkimage2dcmParaMap(const char* inputFileName, const char *metaDataFileName, const char *outputFileName);
+        static int itkimage2dcmParaMap(const string &inputFileName, const string &metaDataFileName,
+                                       const string &outputFileName);
+
+        static int paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName);
     };
 
 }

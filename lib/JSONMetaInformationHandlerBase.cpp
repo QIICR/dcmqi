@@ -46,9 +46,9 @@ namespace dcmqi {
 
     Json::Value JSONMetaInformationHandlerBase::codeSequence2Json(CodeSequenceMacro *codeSequence) {
         Json::Value value;
-        value["codeValue"] = SegmentAttributes::getCodeSequenceValue(codeSequence);
-        value["codingSchemeDesignator"] = SegmentAttributes::getCodeSequenceDesignator(codeSequence);
-        value["codeMeaning"] = SegmentAttributes::getCodeSequenceMeaning(codeSequence);
+        value["codeValue"] = getCodeSequenceValue(codeSequence);
+        value["codingSchemeDesignator"] = getCodeSequenceDesignator(codeSequence);
+        value["codeMeaning"] = getCodeSequenceMeaning(codeSequence);
         return value;
     }
 
@@ -66,6 +66,24 @@ namespace dcmqi {
     bool JSONMetaInformationHandlerBase::isValid(string filename) {
         // TODO: add validation of json file here
         return true;
+    }
+
+    string JSONMetaInformationHandlerBase::getCodeSequenceValue(CodeSequenceMacro* codeSequence) {
+        OFString value;
+        codeSequence->getCodeValue(value);
+        return value.c_str();
+    }
+
+    string JSONMetaInformationHandlerBase::getCodeSequenceDesignator(CodeSequenceMacro* codeSequence) {
+        OFString designator;
+        codeSequence->getCodingSchemeDesignator(designator);
+        return designator.c_str();
+    }
+
+    string JSONMetaInformationHandlerBase::getCodeSequenceMeaning(CodeSequenceMacro* codeSequence) {
+        OFString meaning;
+        codeSequence->getCodeMeaning(meaning);
+        return meaning.c_str();
     }
 
 }

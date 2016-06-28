@@ -19,6 +19,11 @@ set(MODULE_SRCS
   ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
   ${CMAKE_SOURCE_DIR}/lib/ParaMapConverter.h
   ${CMAKE_SOURCE_DIR}/lib/ParaMapConverter.cpp
+  ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.h
+  ${CMAKE_SOURCE_DIR}/lib/SeriesAttributes.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.h
+  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.cpp
+  ${CMAKE_SOURCE_DIR}/lib/JSONParametricMapMetaInformationHandler.h
   ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
   ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h

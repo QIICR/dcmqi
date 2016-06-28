@@ -1,21 +1,23 @@
 #include "ParaMapConverter.h"
-#include <iostream>
 
+
+using namespace std;
 
 namespace dcmqi {
 
-    int ParaMapConverter::itkimage2dcmParaMap(const char* inputFileName, const char *metaDataFileName, const char *outputFileName) {
+    int ParaMapConverter::itkimage2dcmParaMap(const string &inputFileName, const string &metaDataFileName,
+                                              const string &outputFileName) {
 
         ReaderType::Pointer reader = ReaderType::New();
-        reader->SetFileName(inputFileName);
+        reader->SetFileName(inputFileName.c_str());
         reader->Update();
         ImageType::Pointer labelImage = reader->GetOutput();
 
         ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
         cout << "Input image size: " << inputSize << endl;
 
-//        JSONMetaInformationHandlerBase metaInfo(metaDataFileName);
-//
+        JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
+
 //        IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
 //        ContentIdentificationMacro ident = createContentIdentificationInformation();
 //        CHECK_COND(ident.setInstanceNumber(metaInfo.instanceNumber.c_str()));
@@ -678,7 +680,11 @@ namespace dcmqi {
 //        cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
 //        cout << "Origin: " << imageOrigin << endl;
 
-        return 0;
+        return EXIT_SUCCESS;
+    }
+
+    int ParaMapConverter::paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName) {
+        return EXIT_SUCCESS;
     }
 }
 

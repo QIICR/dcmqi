@@ -50,10 +50,6 @@ namespace dcmqi {
         CodeSequenceMacro* getSegmentedPropertyTypeModifier() const { return segmentedPropertyTypeModifier; }
         CodeSequenceMacro* getAnatomicRegionModifier() const { return anatomicRegionModifier; }
 
-        static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
-        static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
-        static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
-
         void PrintSelf();
 
     private:

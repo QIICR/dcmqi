@@ -26,6 +26,10 @@ namespace dcmqi {
         virtual void read();
         virtual bool write(string filename)=0;
 
+        static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
+        static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
+        static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
+
     protected:
         bool isValid(string filename);
 

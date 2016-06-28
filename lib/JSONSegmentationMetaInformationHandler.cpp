@@ -5,7 +5,7 @@ using namespace std;
 namespace dcmqi {
 
     JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string filename)
-            : dcmqi::JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename) {
+            : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename) {
     }
 
     JSONSegmentationMetaInformationHandler::~JSONSegmentationMetaInformationHandler() {
@@ -51,7 +51,7 @@ namespace dcmqi {
         return true;
     }
 
-    Json::Value dcmqi::JSONSegmentationMetaInformationHandler::writeSegmentAttributes() {
+    Json::Value JSONSegmentationMetaInformationHandler::writeSegmentAttributes() {
         Json::Value values(Json::arrayValue);
         for (vector<SegmentAttributes *>::iterator it = segmentsAttributes.begin();
              it != segmentsAttributes.end(); ++it) {
@@ -87,7 +87,7 @@ namespace dcmqi {
         return values;
     }
 
-    SegmentAttributes *dcmqi::JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
+    SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
         for (vector<SegmentAttributes *>::iterator it = this->segmentsAttributes.begin();
              it != this->segmentsAttributes.end(); ++it) {
             SegmentAttributes *segmentAttributes = *it;

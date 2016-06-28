@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics.Converters</category>
+  <title>Encode DICOM Parametric Map</title>
+  <description>Create itk image from DICOM Parametric Map Image object.</description>
+  <version></version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+<acknowledgements></acknowledgements>
+
+<parameters>
+    <file>
+      <name>inputFileName</name>
+      <label>Parametric Map DICOM file name</label>
+      <channel>input</channel>
+      <longflag>parametricMapInputFileName</longflag>
+      <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
+    </file>
+
+    <file>
+        <name>outputDirName</name>
+        <label>Output directory name</label>
+        <channel>input</channel>
+        <index>1</index>
+        <description>Directory to store parametric map as NRRD file.</description>
+    </file>
+  </parameters>
+
+</executable>
