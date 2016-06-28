@@ -3,25 +3,22 @@
 
 namespace dcmqi {
 
-    JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase() {
+    JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase()
+            : seriesAttributes(new SeriesAttributes()){
     }
 
-    JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(const char *filename) {
-        this->filename = filename;
-        if (!this->read()) {
-            JSONReadErrorException jsonException;
-            throw jsonException;
-        }
+    JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(string filename)
+            : seriesAttributes(new SeriesAttributes()), filename(filename){
     }
 
     JSONMetaInformationHandlerBase::~JSONMetaInformationHandlerBase() {
-        if (this->seriesAttributes) {
+        if (this->seriesAttributes != NULL) {
             delete this->seriesAttributes;
         }
     }
 
-    bool JSONMetaInformationHandlerBase ::read() {
-        if (this->filename != NULL && this->isValid(this->filename)) {
+    void JSONMetaInformationHandlerBase ::read() {
+        if (this->filename.size() && this->isValid(this->filename)) {
             try {
                 ifstream metainfoStream(this->filename, ios_base::binary);
                 Json::Value root;
@@ -29,11 +26,10 @@ namespace dcmqi {
                 this->readSeriesAttributes(root);
             } catch (exception& e) {
                 cout << e.what() << '\n';
-                return false;
+                throw JSONReadErrorException();
             }
-            return true;
-        }
-        return false;
+        } else
+            throw JSONReadErrorException();
     }
 
     Json::Value JSONMetaInformationHandlerBase::writeSeriesAttributes() {
@@ -58,8 +54,6 @@ namespace dcmqi {
 
     void JSONMetaInformationHandlerBase::readSeriesAttributes(const Json::Value &root) {
         Json::Value seriesAttributes = root["seriesAttributes"];
-        if (!this->seriesAttributes)
-            this->seriesAttributes = new SeriesAttributes();
         this->seriesAttributes->setReaderID(seriesAttributes.get("ReaderID", "Reader1").asString());
         this->seriesAttributes->setSessionID(seriesAttributes.get("SessionID", "Session1").asString());
         this->seriesAttributes->setTimePointID(seriesAttributes.get("TimePointID", "1").asString());
@@ -69,7 +63,7 @@ namespace dcmqi {
         this->seriesAttributes->setBodyPartExamined(seriesAttributes.get("BodyPartExamined", "").asString());
     }
 
-    bool JSONMetaInformationHandlerBase::isValid(const char *filename) {
+    bool JSONMetaInformationHandlerBase::isValid(string filename) {
         // TODO: add validation of json file here
         return true;
     }

@@ -6,6 +6,6 @@
 int main(int argc, char *argv[])
 {
     PARSE_ARGS;
-    return dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(inputDICOMImageFileNames, inputSegmentationsFileNames,
-                                           metaDataFileName, outputSEGFileName);
+    return dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dicomImageFiles, segImageFiles, metaDataFileName,
+                                                              outputSEGFileName);
 }

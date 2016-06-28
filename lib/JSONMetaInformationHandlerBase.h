@@ -18,17 +18,18 @@ namespace dcmqi {
 
     public:
         JSONMetaInformationHandlerBase();
-        JSONMetaInformationHandlerBase(const char *filename);
+        JSONMetaInformationHandlerBase(string filename);
         ~JSONMetaInformationHandlerBase();
 
         SeriesAttributes *seriesAttributes;
 
+        virtual void read();
+        virtual bool write(string filename)=0;
+
     protected:
-        bool isValid(const char *filename);
+        bool isValid(string filename);
 
-        const char *filename;
-
-        virtual bool read();
+        string filename;
 
         virtual void readSeriesAttributes(const Json::Value &root);
 

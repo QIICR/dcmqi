@@ -9,23 +9,23 @@ namespace dcmqi {
 
     class JSONSegmentationMetaInformationHandler : public JSONMetaInformationHandlerBase {
 
-    protected:
-        bool read();
-
-        Json::Value writeSegmentAttributes();
-
-        void readSegmentAttributes(const Json::Value &root);
-
     public:
         JSONSegmentationMetaInformationHandler(){}
-        JSONSegmentationMetaInformationHandler(const char *filename);
+        JSONSegmentationMetaInformationHandler(string filename);
         ~JSONSegmentationMetaInformationHandler();
 
         vector<SegmentAttributes*> segmentsAttributes;
 
-        bool write(const char *filename);
+        virtual void read();
+        virtual bool write(string filename);
 
         SegmentAttributes* createAndGetNewSegment(unsigned labelID);
+
+    protected:
+
+        Json::Value writeSegmentAttributes();
+
+        void readSegmentAttributes(const Json::Value &root);
     };
 
 }
