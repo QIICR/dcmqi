@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id" : "http://qiicr.org/schema/dcmqi/seg_schema.json",
+  "id" : "http://qiicr.org/schema/dcmqi/seg-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
   "definitions" : {
