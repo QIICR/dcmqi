@@ -1,7 +1,7 @@
 {
   "@context": {
     "ClinicalTrialSeriesID" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html#para_87c4e314-1f60-49f3-a379-5f6926316ec0",
-    "ContentCreatorName" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html#para_1d93f33c-3935-49db-97c0-2dcad981f4aa",
+    "ContentCreatorName" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_10.9.html#para_b9e99147-90d0-40b4-a6ed-b86872a0911d",
     "readerID" : "ContentCreatorName",
     "sessionID" : "ClinicalTrialSeriesID",
     "ClinicalTrialTimePointID" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.2.3.html#para_4d2ee376-92b4-4f23-9560-4fd0f5af77ad",
