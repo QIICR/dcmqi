@@ -12,8 +12,8 @@ dependencies:
     - sudo apt-get update; sudo apt-get install cmake
   post:
     - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
-    - cd ~/dcmqi-build && ctest -D ExperimentalTest --no-compress-output
-    - python ../dcmqi/util/convert.py ~/dcmqi-build ../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
+    - cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest --no-compress-output
+    - python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
 test:
   post:
     - mkdir -p ${CIRCLE_TEST_REPORTS}/junit
