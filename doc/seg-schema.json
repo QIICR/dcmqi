@@ -39,19 +39,19 @@
     "type" : "object",
     "properties" : {
 
-      "readerID":
+      "ContentCreatorName":
       { "allOf" :
         [{"$ref" : "#/definitions/PN"},
         {"properties" : {"default" : "Reader1"}}]
       },
 
-      "sessionID":
+      "ClinicalTrialSeriesID":
       { "allOf" :
         [{"$ref" : "#/definitions/LO"},
         {"properties" : {"default" : "Session1"}}]
       },
 
-      "timePointID":
+      "ClinicalTrialTimePointID":
       { "allOf" :
         [{"$ref" : "#/definitions/LO"},
         {"properties" : {"default" : "1"}}]
