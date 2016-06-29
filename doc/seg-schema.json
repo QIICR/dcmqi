@@ -3,81 +3,49 @@
   "id" : "http://qiicr.org/schema/dcmqi/seg-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "definitions" : {
-    "PN" : {
-      "type" : "string",
-      "maxLength" : 64
-    },
-    "CS" : {
-      "type" : "string",
-      "maxLength" : 16
-    },
-    "IS" : {
-      "type" : "string",
-      "maxLength" : 12
-    },
-    "LO" : {
-      "type" : "string",
-      "maxLength" : 64
-    },
-    "SH" : {
-      "type" : "string",
-      "maxLength" : 64
-    },
-    "codeSequence" : {
-      "type" : "object",
-      "properties" : {
-        "CodeValue" : { "type" : "SH", "default" : "T-D0050"},
-        "CodingSchemeDesignator" : { "type":"SH", "default" : "SRT"},
-        "CodeMeaning" : { "type":"LO", "default" : "Tissue"}
-      },
-      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"]
-    }
-  },
-
   "seriesAttributes": {
     "type" : "object",
     "properties" : {
 
       "ContentCreatorName":
       { "allOf" :
-        [{"$ref" : "#/definitions/PN"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/PN"},
         {"properties" : {"default" : "Reader1"}}]
       },
 
       "ClinicalTrialSeriesID":
       { "allOf" :
-        [{"$ref" : "#/definitions/LO"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
         {"properties" : {"default" : "Session1"}}]
       },
 
       "ClinicalTrialTimePointID":
       { "allOf" :
-        [{"$ref" : "#/definitions/LO"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
         {"properties" : {"default" : "1"}}]
       },
 
       "SeriesDescription":
       { "allOf" :
-        [{"$ref" : "#/definitions/LO"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
         {"properties" : {"default" : "Segmentation"}}]
       },
 
       "SeriesNumber":
       { "allOf" :
-        [{"$ref" : "#/definitions/IS"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
         {"properties" : {"default" : "300"}}]
       },
 
       "InstanceNumber":
       { "allOf" :
-        [{"$ref" : "#/definitions/IS"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
         {"properties" : {"default" : "1"}}]
       },
 
       "BodyPartExamined":
       { "allOf" :
-        [{"$ref" : "#/definitions/CS"},
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
         {"properties" : {"default" : ""}}]
       }
     }
@@ -93,7 +61,7 @@
 
         "SegmentedPropertyCategoryCodeSequence": {
           "allOf" : [
-            {"$ref" : "#/definitions/codeSequence"},
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"},
             {"properties" :
              {"CodeValue" : {"default": "T-D0050"},
               "CodingSchemeDesignator" : {"default": "SRT"},
@@ -105,7 +73,7 @@
 
         "SegmentedPropertyTypeCodeSequence": {
           "allOf" : [
-            {"$ref" : "#/definitions/codeSequence"},
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"},
             {"properties" :
               {"CodeValue" : {"default": "T-D0050"},
               "CodingSchemeDesignator" : {"default": "SRT"},
@@ -116,24 +84,27 @@
         },
 
         "SegmentedPropertyTypeModifierCodeSequence" : {
-          "$ref" : "#/definitions/codeSequence",
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
           "required" : false
         },
 
         "AnatomicRegionSequence" : {
-          "$ref" : "#/definitions/codeSequence",
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
           "required" : false
         },
 
         "AnatomicRegionModifierSequence" : {
-          "$ref" : "#/definitions/codeSequence",
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
           "required" : false
         },
 
         "SegmentAlgorithmType": {
-          "type" : "string",
-          "enum" : ["AUTOMATIC","MANUAL","SEMIAUTOMATIC"],
-          "default" : "SEMIAUTOMATIC"
+          "allOf" : [
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
+            {"enum" : ["AUTOMATIC","MANUAL","SEMIAUTOMATIC"]},
+            {"default" : "SEMIAUTOMATIC"}
+          ],
+          "required" : true,
         },
 
         "SegmentAlgorithmName": { "type" : "LO"},
@@ -141,9 +112,10 @@
           "type": "array",
           "minItems" : 3,
           "maxItems" : 3,
-          "items" : { "type" : "US"},
+          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
           "default" : ["128","174","128"]
-        }
+        },
+        "required" : false,
       }
     }
   }

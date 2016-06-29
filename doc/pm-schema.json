@@ -1,61 +1,49 @@
 {
-  "$schema": "http://qiicr.org/schema/dcmqi/",
-  "id" : "http://qiicr.org/schema/dcmqi/itk2seg_schema.json",
-  "@context": {
-    "ClinicalTrialSeriesID" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html#para_87c4e314-1f60-49f3-a379-5f6926316ec0",
-    "ContentCreatorName" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html#para_1d93f33c-3935-49db-97c0-2dcad981f4aa",
-    "ReaderID" : "ContentCreatorName",
-    "SessionID" : "ClinicalTrialSeriesID",
-    "ClinicalTrialTimePointID" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.2.3.html#para_4d2ee376-92b4-4f23-9560-4fd0f5af77ad",
-    "TimePointID" : "ClinicalTrialTimePointID",
-    "SeriesDescription" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.3.html#para_5fe2ee7d-82fc-44e4-893b-eecb8eb89550",
-    "SeriesNumber" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.8.html#para_cf392e6c-ab22-41a7-90ce-cf16145dc849",
-    "InstanceNumber" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.25.7.html#para_7fafd030-a830-4d66-92c6-9666f07e4b7c",
-    "BodyPartExamined" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.30.html#para_fb9f04d7-fc83-41a7-b386-a5fe32201d14",
-    "LO" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_5184abc4-043b-422d-8d27-8955f439cdb8",
-    "IS" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_87637987-925d-448a-88ee-91f403f6702d",
-    "CS" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_86aefa1f-fc71-4742-82b9-29934b10466a",
-    "PN" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_33c3c135-889d-43ab-bd7c-33e8baf2cf4e"
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id" : "http://qiicr.org/schema/dcmqi/pm-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "SeriesDescription":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+    {"properties" : {"default" : "Segmentation"}}]
   },
 
-  "seriesAttributes": {
-    "type" : "object",
-    "properties" : {
-      "ReaderID": { "type" : "PN", "default" : "Reader1"},
-      "SessionID": { "type" : "LO", "default" : "Session1"},
-      "TimePointID": { "type" : "LO", "default" : "1"},
-      "SeriesDescription": { "type" : "LO", "default" : "Segmentation"},
-      "SeriesNumber": { "type" : "IS", "default" : "300"},
-      "InstanceNumber": { "type" : "IS", "default" : "1"},
-      "BodyPartExamined": { "type" : "CS", "default" : ""},
+  "SeriesNumber":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+    {"properties" : {"default" : "300"}}]
+  },
 
-      "QuantityValueCode" : {
-        "type" : "object",
-        "properties" : {
-          "codeValue" : { "type" : "string"},
-          "codingSchemeDesignator" : { "type":"string"},
-          "codeMeaning" : { "type":"string"}
-        },
-        "required" : false
-      },
-      "MeasurementUnitsCode" : {
-        "type" : "object",
-        "properties" : {
-          "codeValue" : { "type" : "string"},
-          "codingSchemeDesignator" : { "type":"string"},
-          "codeMeaning" : { "type":"string"}
-        },
-        "required" : false
-      },
-      "MeasurementMethodCode" : {
-        "type" : "object",
-        "properties" : {
-          "codeValue" : { "type" : "string"},
-          "codingSchemeDesignator" : { "type":"string"},
-          "codeMeaning" : { "type":"string"},
-        },
-        "required" : false
-      }
-    }
+  "InstanceNumber":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+    {"properties" : {"default" : "1"}}]
+  },
+
+  "BodyPartExamined":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
+    {"properties" : {"default" : ""}}]
+  },
+
+  "QuantityValueCode" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    "required" : false
+  },
+
+  "MeasurementUnitsCode" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    "required" : false
+  },
+
+  "MeasurementMethodCode" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    "required" : false
+  },
+
+  "DerivedPixelContrast" : {
+    "enum" : ["ADDITION", "DIVISION", "MASKED", "MAXIMUM", "MEAN", "MINIMUM", "MTT", "MULTIPLICATION", "RCBF", "RCBV", "RESAMPLED", "STD_DEVIATION", "SUBTRACTION", "T_TEST", "TTP", "Z_SCORE", "MIXED", "ADC", "DIFFUSION", "DIFFUSION_ANISO", "DIFFUSION_ATTND", "DIFFUSION_ISO", "FAT", "FAT_FRACTION", "FIELD_MAP", "IN_PHASE", "METABOLITE_MAP", "NEI", "OUT_OF_PHASE", "PERFUSION_ASL", "R_COEFFICIENT", "R2_MAP", "R2_STAR_MAP", "RHO", "SCM", "SNR_MAP", "T1_MAP", "T2_STAR_MAP", "T2_MAP", "TCS", "TEMPERATURE", "VELOCITY", "WATER", "WATER_FRACTION"],
+    "required" : true
   }
 }
