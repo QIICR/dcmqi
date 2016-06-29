@@ -14,7 +14,7 @@
       <name>inputFileName</name>
       <label>Parametric Map file name</label>
       <channel>input</channel>
-      <longflag>parametricMapInputFileName</longflag>
+      <longflag>inputFileName</longflag>
       <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
     </file>
 
@@ -30,7 +30,7 @@
       <name>outputParaMapFileName</name>
       <label>Parametric map file name</label>
       <channel>output</channel>
-      <longflag>parametricMapOutputFilename</longflag>
+      <longflag>outputParaMapFileName</longflag>
       <description>File name of the parametric map object that will keep the result.</description>
     </file>
   </parameters>

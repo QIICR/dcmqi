@@ -2,9 +2,15 @@
 #define DCMQI_CONVERTERBASE_H
 
 #include <vector>
+#include "vnl/vnl_cross.h"
+
 #include <dcmtk/dcmiod/iodmacro.h>
 #include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modequipment.h>
+#include <dcmtk/dcmfg/fginterface.h>
+#include <dcmtk/dcmfg/fgplanor.h>
+#include <dcmtk/dcmfg/fgplanpo.h>
+#include <dcmtk/dcmfg/fgpixmsr.h>
 
 // UIDs
 #include "QIICRUIDs.h"
@@ -18,10 +24,6 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkLabelImageToLabelMapFilter.h>
-
-typedef short PixelType;
-typedef itk::Image<PixelType, 3> ImageType;
-typedef itk::ImageFileReader<ImageType> ReaderType;
 
 using namespace std;
 

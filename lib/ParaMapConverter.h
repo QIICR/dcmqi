@@ -14,9 +14,13 @@
 
 #include "dcmtk/dcmpmap/dpmparametricmapiod.h"
 
+#include "JSONParametricMapMetaInformationHandler.h"
+
 #include "ConverterBase.h"
 
-#include "JSONParametricMapMetaInformationHandler.h"
+typedef float PixelType;
+typedef itk::Image<PixelType, 3> ImageType;
+typedef itk::ImageFileReader<ImageType> ReaderType;
 
 using namespace std;
 
@@ -31,6 +35,9 @@ namespace dcmqi {
                                        const string &outputFileName);
 
         static int paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName);
+    protected:
+        static OFCondition addFrame(DPMParametricMapFloat *map, const ImageType::Pointer &parametricMapImage,
+                                    const unsigned long frameNo);
     };
 
 }

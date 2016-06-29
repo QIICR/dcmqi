@@ -15,6 +15,8 @@ set(MODULE_NAME itkimage2paramap)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx
+  ${CMAKE_SOURCE_DIR}/lib/Helper.h
+  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
   ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
   ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
   ${CMAKE_SOURCE_DIR}/lib/ParaMapConverter.h
@@ -73,4 +75,4 @@ SEMMacroBuildCLI(
 #  INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
 #  )
 #
-#add_subdirectory(Testing)
+add_subdirectory(Testing)
