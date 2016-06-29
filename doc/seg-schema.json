@@ -107,15 +107,28 @@
           "required" : true,
         },
 
-        "SegmentAlgorithmName": { "type" : "LO"},
-        "RecommendedDisplayRGBValue": {
+        "SegmentAlgorithmName": {
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"
+        },
+
+        "recommendedDisplayRGBValue": {
           "type": "array",
           "minItems" : 3,
           "maxItems" : 3,
-          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
-          "default" : ["128","174","128"]
-        },
-        "required" : false,
+          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/US"},
+          "default" : ["128","174","128"],
+          "required" : false
+        }
+
+        "RecommendedDisplayCIELabValue": {
+          "type": "array",
+          "minItems" : 3,
+          "maxItems" : 3,
+          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/US"},
+          "default" : ["128","174","128"],
+          "required" : false
+        }
+
       }
     }
   }
