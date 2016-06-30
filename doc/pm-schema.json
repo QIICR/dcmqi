@@ -42,6 +42,11 @@
     "required" : false
   },
 
+  "RealWorldValueSlope" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/FD",
+    "default" : "1.0"
+  },
+
   "DerivedPixelContrast" : {
     "enum" : ["ADDITION", "DIVISION", "MASKED", "MAXIMUM", "MEAN", "MINIMUM", "MTT", "MULTIPLICATION", "RCBF", "RCBV", "RESAMPLED", "STD_DEVIATION", "SUBTRACTION", "T_TEST", "TTP", "Z_SCORE", "MIXED", "ADC", "DIFFUSION", "DIFFUSION_ANISO", "DIFFUSION_ATTND", "DIFFUSION_ISO", "FAT", "FAT_FRACTION", "FIELD_MAP", "IN_PHASE", "METABOLITE_MAP", "NEI", "OUT_OF_PHASE", "PERFUSION_ASL", "R_COEFFICIENT", "R2_MAP", "R2_STAR_MAP", "RHO", "SCM", "SNR_MAP", "T1_MAP", "T2_STAR_MAP", "T2_MAP", "TCS", "TEMPERATURE", "VELOCITY", "WATER", "WATER_FRACTION"],
     "required" : true
