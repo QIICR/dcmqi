@@ -1,0 +1,24 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "definitions" : {
+
+    "TEXT" : {
+      "type" : "string"
+    },
+
+    "UIDREF" : {
+      "type" : "string"
+    },
+
+    "CODE" : {
+      "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+    },
+
+    "NUM" : {
+      "type" : "number"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id" : "http://qiicr.org/schema/dcmqi/sr-tid1500-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "definitions" : {
+    "measurementItem" : {
+      "type" : "object",
+      "properties" : {
+        "value" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/NUM"},
+        "quantity" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
+        "units" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
+        "derivation" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"}
+      }
+    },
+
+    "MeasurementGroup" : {
+      "type" : "object",
+      "properties" : {
+
+        "TrackingIdentifier" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/TEXT"},
+        "TrackingUniqueIdentifier" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"},
+        "ReferencedSegment" : {"type" : "number"},
+        "SourceSeriesForImageSegmentation" : { "type" :
+          "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF" },
+        "rwvmMapUsedForMeasurement" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF" },
+        "MeasurementMethod" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
+        "FindingSite" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
+
+        "measurementItems" : {
+          "type" : "array",
+          "minItems" : 1,
+          "items" : { "$ref" : "#/measurementItem"}
+        }
+      }
+    },
+
+    "referencedImageFileNames" : {
+      "type" : "array",
+      "items" : { "type" : "string"}
+    }
+  },
+
+  "SeriesDescription":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+    {"properties" : {"default" : "Measurements"}}]
+  },
+
+  "SeriesNumber":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+    {"properties" : {"default" : "400"}}]
+  },
+
+  "InstanceNumber":
+  { "allOf" :
+    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+    {"properties" : {"default" : "1"}}]
+  },
+
+  "Measurements" : {
+    "type" : "array",
+    "minItems" : 1,
+    "items" : { "$ref" : "#/MeasurementGroup"}
+  }
+}
