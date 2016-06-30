@@ -1,0 +1,21 @@
+{
+  "@schema" : "http://qiicr.org/schema/dcmqi/pm-schema.json",
+
+  "SeriesDescription": "Apparent Diffusion Coefficient",
+  "SeriesNumber": "701",
+  "InstanceNumber": "1",
+  "BodyPartExamined" : "PROSTATE",
+
+  "QuantityValueCode": {
+    "codeValue": "113041",
+    "codingSchemeDesignator": "DCM",
+    "codeMeaning": "Apparent Diffusion Coefficient"
+  },
+  "QuantityUnitsCode": {
+    "codeValue": "mm2/s",
+    "codingSchemeDesignator": "UCUM",
+    "codeMeaning": "square millimeter per second"
+  },
+  "RealWorldValueSlope" : "10e-6",
+  "DerivedPixelContrast" : "ADC"
+}

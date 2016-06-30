@@ -1,8 +1,10 @@
 {
+  "@schema" : "http://qiicr.org/schema/dcmqi/seg-schema.json",
+
   "seriesAttributes": {
-    "ReaderID": "Reader1",
-    "SessionID": "Session1",
-    "TimePointID": "1",
+    "ContentCreatorName": "Reader1",
+    "ClinicalTrialSeriesID": "Session1",
+    "ClinicalTrialTimePointID": "1",
     "SeriesDescription": "Segmentation",
     "SeriesNumber": "300",
     "InstanceNumber": "1"

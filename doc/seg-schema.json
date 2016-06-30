@@ -1,0 +1,134 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id" : "http://qiicr.org/schema/dcmqi/seg-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "seriesAttributes": {
+    "type" : "object",
+    "properties" : {
+
+      "ContentCreatorName":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/PN"},
+        {"properties" : {"default" : "Reader1"}}]
+      },
+
+      "ClinicalTrialSeriesID":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+        {"properties" : {"default" : "Session1"}}]
+      },
+
+      "ClinicalTrialTimePointID":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+        {"properties" : {"default" : "1"}}]
+      },
+
+      "SeriesDescription":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+        {"properties" : {"default" : "Segmentation"}}]
+      },
+
+      "SeriesNumber":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+        {"properties" : {"default" : "300"}}]
+      },
+
+      "InstanceNumber":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
+        {"properties" : {"default" : "1"}}]
+      },
+
+      "BodyPartExamined":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
+        {"properties" : {"default" : ""}}]
+      }
+    }
+  },
+
+  "segmentAttributes": {
+    "type" : "array",
+    "items" : {
+      "type" : "object",
+      "properties" : {
+        "LabelID": { "type" : "number", "default" : 1},
+        "SegmentDescription": { "type" : "string", "required" : false},
+
+        "SegmentedPropertyCategoryCodeSequence": {
+          "allOf" : [
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"},
+            {"properties" :
+             {"CodeValue" : {"default": "T-D0050"},
+              "CodingSchemeDesignator" : {"default": "SRT"},
+              "CodeMeaning" : {"default": "Tissue"}},
+            }
+          ],
+          "required" : true,
+        },
+
+        "SegmentedPropertyTypeCodeSequence": {
+          "allOf" : [
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"},
+            {"properties" :
+              {"CodeValue" : {"default": "T-D0050"},
+              "CodingSchemeDesignator" : {"default": "SRT"},
+              "CodeMeaning" : {"default": "Tissue"}},
+            }
+          ],
+          "required" : true,
+        },
+
+        "SegmentedPropertyTypeModifierCodeSequence" : {
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+          "required" : false
+        },
+
+        "AnatomicRegionSequence" : {
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+          "required" : false
+        },
+
+        "AnatomicRegionModifierSequence" : {
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+          "required" : false
+        },
+
+        "SegmentAlgorithmType": {
+          "allOf" : [
+            {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
+            {"enum" : ["AUTOMATIC","MANUAL","SEMIAUTOMATIC"]},
+            {"default" : "SEMIAUTOMATIC"}
+          ],
+          "required" : true,
+        },
+
+        "SegmentAlgorithmName": {
+          "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"
+        },
+
+        "recommendedDisplayRGBValue": {
+          "type": "array",
+          "minItems" : 3,
+          "maxItems" : 3,
+          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/US"},
+          "default" : ["128","174","128"],
+          "required" : false
+        },
+
+        "RecommendedDisplayCIELabValue": {
+          "type": "array",
+          "minItems" : 3,
+          "maxItems" : 3,
+          "items" : { "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/US"},
+          "default" : ["43803","26565","37722"],
+          "required" : false
+        }
+      }
+    }
+  }
+}

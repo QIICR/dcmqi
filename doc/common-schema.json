@@ -1,0 +1,37 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id" : "http://qiicr.org/schema/dcmqi/common-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "definitions" : {
+    "PN" : {
+      "type" : "string",
+      "maxLength" : 64
+    },
+    "CS" : {
+      "type" : "string",
+      "maxLength" : 16
+    },
+    "IS" : {
+      "type" : "string",
+      "maxLength" : 12
+    },
+    "LO" : {
+      "type" : "string",
+      "maxLength" : 64
+    },
+    "SH" : {
+      "type" : "string",
+      "maxLength" : 64
+    },
+    "codeSequence" : {
+      "type" : "object",
+      "properties" : {
+        "CodeValue" : { "type" : "SH", "default" : "T-D0050"},
+        "CodingSchemeDesignator" : { "type":"SH", "default" : "SRT"},
+        "CodeMeaning" : { "type":"LO", "default" : "Tissue"}
+      },
+      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"]
+    }
+  }
+}
