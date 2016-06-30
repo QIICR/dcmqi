@@ -31,7 +31,7 @@ namespace dcmqi {
     class ParaMapConverter : public ConverterBase {
 
     public:
-        static int itkimage2dcmParaMap(const string &inputFileName, const string &metaDataFileName,
+        static int itkimage2dcmParaMap(const string &inputFileName, const string &dicomImageFileName, const string &metaDataFileName,
                                        const string &outputFileName);
 
         static int paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName);

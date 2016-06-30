@@ -6,7 +6,7 @@ using namespace std;
 
 namespace dcmqi {
 
-    int ParaMapConverter::itkimage2dcmParaMap(const string &inputFileName, const string &metaDataFileName,
+    int ParaMapConverter::itkimage2dcmParaMap(const string &inputFileName, const string &dicomImageFileName, const string &metaDataFileName,
                                               const string &outputFileName) {
 
         ReaderType::Pointer reader = ReaderType::New();
@@ -39,8 +39,9 @@ namespace dcmqi {
                                                  inputSize[0], inputSize[1], eq, contentID,
                                                  imageFlavor, pixContrast, contQual));
 
-        /* Import patient and study from existing file */
-//        CHECK_COND(segdoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+        if (!dicomImageFileName.empty())
+            cout << "using dicom source image" << endl;
+//            CHECK_COND(pMapDoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
 
         /* Initialize dimension module */
         char dimUID[128];
@@ -197,28 +198,25 @@ namespace dcmqi {
         OFunique_ptr<FGFrameContent > fgFracon(new FGFrameContent);
         OFunique_ptr<FGRealWorldValueMapping> fgRVWM(new FGRealWorldValueMapping());
         FGRealWorldValueMapping::RWVMItem* rvwmItemSimple = new FGRealWorldValueMapping::RWVMItem();
-        // FGRealWorldValueMapping::RWVMItem* rvwmItemLUT = new FGRealWorldValueMapping::RWVMItem();
+//        FGRealWorldValueMapping::RWVMItem* rvwmItemLUT = new FGRealWorldValueMapping::RWVMItem();
         if (!fgPlanePos  || !fgFracon || !fgRVWM || !rvwmItemSimple )
         {
             delete[] data;
             return EC_MemoryExhausted;
         }
-        // Fill in functional group values
 
         // Real World Value Mapping
+        // TODO: this should also go into meta information? And since it is the same for all, I can create one vector and then add it for each frame
         rvwmItemSimple->setRealWorldValueSlope(10);
         rvwmItemSimple->setRealWorldValueIntercept(0);
-
-        // TODO: get from meta information
         rvwmItemSimple->getMeasurementUnitsCode().set("{Particles}/[100]g{Tissue}", "UCUM", "number particles per 100 gram of tissue");
         rvwmItemSimple->setLUTExplanation("We are mapping trash to junk.");
         rvwmItemSimple->setLUTLabel("Just testing");
-
+        ContentItemMacro* quantity = new ContentItemMacro;
         CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
         CodeSequenceMacro* qSpec = new CodeSequenceMacro("110805", "SRT", "T2 Weighted MR Signal Intensity");
-        ContentItemMacro* quantity = new ContentItemMacro;
 
-        if (!quantity || !qSpec || !quantity)
+        if (!quantity || !qSpec || !qCodeName)
         {
             delete[] data;
             return EC_MemoryExhausted;

@@ -19,6 +19,15 @@
     </file>
 
     <file>
+        <name>dicomImageFileName</name>
+        <label>DICOM images file name</label>
+        <channel>input</channel>
+        <longflag>dicomImageFileName</longflag>
+        <default></default>
+        <description>File name of the DICOM image file which has been used </description>
+    </file>
+
+    <file>
       <name>metaDataFileName</name>
       <label>JSON metadata file</label>
       <channel>input</channel>
