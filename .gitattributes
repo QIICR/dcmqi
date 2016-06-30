@@ -1,1 +1,2 @@
+data/BLTests/** filter=lfs diff=lfs merge=lfs -text
 data/BLTests filter=lfs diff=lfs merge=lfs -text
