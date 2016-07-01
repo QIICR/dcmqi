@@ -5,8 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    PARSE_ARGS;
+  PARSE_ARGS;
 
-    return dcmqi::ParaMapConverter::paraMap2itkimage(inputFileName.c_str(), metaDataFileName.c_str(),
-                                                     outputParaMapFileName.c_str());
+  return dcmqi::ParaMapConverter::paraMap2itkimage(inputFileName, metaDataFileName, outputParaMapFileName);
 }

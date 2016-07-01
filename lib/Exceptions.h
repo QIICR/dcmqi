@@ -16,30 +16,30 @@ using namespace std;
 
 namespace dcmqi {
 
-    class OFConditionBadException : public exception {
-        virtual const char *what() const throw() {
-            return "DICOM Exception: ";
-        }
-    };
+  class OFConditionBadException : public exception {
+		virtual const char *what() const throw() {
+			return "DICOM Exception: ";
+		}
+  };
 
 
-    class DCMQIImagePositionPatientMapsOutsideITKException : public runtime_error {
-    public:
-        DCMQIImagePositionPatientMapsOutsideITKException(const char* m) : std::runtime_error(m) { }
-    };
+  class DCMQIImagePositionPatientMapsOutsideITKException : public runtime_error {
+		public:
+			DCMQIImagePositionPatientMapsOutsideITKException(const char* m) : std::runtime_error(m) { }
+  };
 
 
-    class JSONReadErrorException : public exception {
-        virtual const char *what() const throw() {
-            return "JSON Exception: file could not be read.";
-        }
-    };
+  class JSONReadErrorException : public exception {
+		virtual const char *what() const throw() {
+			return "JSON Exception: file could not be read.";
+		}
+  };
 
-    class CodeSequenceValueException : public exception {
-        virtual const char *what() const throw() {
-            return "CodeSequence Exception: missing value in code sequence";
-        }
-    };
+  class CodeSequenceValueException : public exception {
+		virtual const char *what() const throw() {
+			return "CodeSequence Exception: missing value in code sequence";
+		}
+  };
 }
 
 #endif //DCMQI_EXCEPTIONS_H

@@ -29,16 +29,16 @@ using namespace std;
 
 namespace dcmqi {
 
-    class ConverterBase {
+  class ConverterBase {
 
-    public:
-        static int CHECK_COND(const OFCondition& condition);
+  public:
+		static int CHECK_COND(const OFCondition& condition);
 
-    protected:
-        static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
-        static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
-        static ContentIdentificationMacro createContentIdentificationInformation();
-    };
+  protected:
+		static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
+		static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
+		static ContentIdentificationMacro createContentIdentificationInformation();
+  };
 
 }
 
