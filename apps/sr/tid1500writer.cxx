@@ -115,7 +115,7 @@ int main(int argc, char** argv){
 
   DSRDocument doc;
   std::cout << "Setting tree from the report" << std::endl;
-  OFCondition cond = doc.setTreeFromRootTemplate(report, OFFalse /*expandTree*/);
+  OFCondition cond = doc.setTreeFromRootTemplate(report, OFTrue /*expandTree*/);
   if(cond.bad()){
     std::cout << "Failure: " << cond.text() << std::endl;
     return -1;
@@ -125,10 +125,10 @@ int main(int argc, char** argv){
 
   std::cout << "About to write the document" << std::endl;
   if(outputFileName.size()){
-    DcmFileFormat *ff = new DcmFileFormat();
-    DcmDataset *ds = ff->getDataset();
-    doc.write(*ds);
-    ff->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
+    DcmFileFormat ff;
+    CHECK_COND(doc.write(*ff.getDataset()));
+    OFCHECK(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit).good());
+    std::cout << "SR saved!" << std::endl;
   }
 
 #if 0
