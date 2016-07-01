@@ -2,17 +2,15 @@
 #define DCMQI_PARAMAP_CONVERTER_H
 
 #include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
-
-#include <vector>
-
+#include "dcmtk/dcmpmap/dpmparametricmapiod.h"
+#include "dcmtk/oflog/loglevel.h"
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/oflog/oflog.h"
 
-#include "dcmtk/oflog/loglevel.h"
+#include <stdlib.h>
+#include <vector>
 
 #include "dcmqiVersionConfigure.h"
-
-#include "dcmtk/dcmpmap/dpmparametricmapiod.h"
 
 #include "JSONParametricMapMetaInformationHandler.h"
 
@@ -37,7 +35,7 @@ namespace dcmqi {
         static int paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName);
     protected:
         static OFCondition addFrame(DPMParametricMapFloat *map, const ImageType::Pointer &parametricMapImage,
-                                    const unsigned long frameNo);
+                                    const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
     };
 
 }

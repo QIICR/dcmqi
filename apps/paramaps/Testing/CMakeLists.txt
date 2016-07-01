@@ -1,4 +1,4 @@
-set(BASELINE ${CMAKE_SOURCE_DIR}/data/ct-3slice/)
+set(BASELINE ${CMAKE_SOURCE_DIR}/data/paramaps/)
 include_directories(${ITK_INCLUDE_DIRS})
 
 set(MODULE_NAME itkimage2paramap)
@@ -13,7 +13,7 @@ add_test(NAME ${MODULE_NAME}_hello
 add_test(NAME ${MODULE_NAME}_makeParametricMap
          COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
         --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/pm-example.json
-        --inputFileName ${BASELINE}/liver_seg.nrrd
+        --inputFileName ${BASELINE}/pm-example.nrrd
         --outputParaMapFileName ${TEMP_DIR}/paramap.dcm
        )
 

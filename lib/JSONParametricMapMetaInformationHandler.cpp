@@ -7,15 +7,42 @@ namespace dcmqi {
     }
 
     JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string filename)
-        : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename){
-    };
+        : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename),
+          measurementUnitsCode(NULL), measurementMethodCode(NULL), quantityValueCode(NULL) {
+    }
 
     JSONParametricMapMetaInformationHandler::~JSONParametricMapMetaInformationHandler() {
+        if (this->measurementUnitsCode)
+            delete this->measurementUnitsCode;
+        if (this->measurementMethodCode)
+            delete this->measurementMethodCode;
         if (this->quantityValueCode)
             delete this->quantityValueCode;
-        if (this->quantityUnitsCode)
-            delete this->quantityUnitsCode;
+    }
+
+    void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const string& value) {
+        this->realWorldValueSlope = value;
     };
+
+    void JSONParametricMapMetaInformationHandler::setDerivedPixelContrast(const string& value) {
+        this->derivedPixelContrast = value;
+    };
+
+    void JSONParametricMapMetaInformationHandler::setMeasurementUnitsCode(const string& code, const string& designator, const string& meaning) {
+        this->measurementUnitsCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void JSONParametricMapMetaInformationHandler::setMeasurementUnitsCode(const CodeSequenceMacro& codeSequence) {
+        this->measurementUnitsCode = new CodeSequenceMacro(codeSequence);
+    }
+
+    void JSONParametricMapMetaInformationHandler::setMeasurementMethodCode(const string& code, const string& designator, const string& meaning) {
+        this->measurementMethodCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
+    void JSONParametricMapMetaInformationHandler::setMeasurementMethodCode(const CodeSequenceMacro& codeSequence) {
+        this->measurementMethodCode = new CodeSequenceMacro(codeSequence);
+    }
 
     void JSONParametricMapMetaInformationHandler::setQuantityValueCode(const string& code, const string& designator, const string& meaning) {
         this->quantityValueCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
@@ -23,14 +50,6 @@ namespace dcmqi {
 
     void JSONParametricMapMetaInformationHandler::setQuantityValueCode(const CodeSequenceMacro& codeSequence) {
         this->quantityValueCode = new CodeSequenceMacro(codeSequence);
-    }
-
-    void JSONParametricMapMetaInformationHandler::setQuantityUnitsCode(const string& code, const string& designator, const string& meaning) {
-        this->quantityUnitsCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
-    }
-
-    void JSONParametricMapMetaInformationHandler::setQuantityUnitsCode(const CodeSequenceMacro& codeSequence) {
-        this->quantityUnitsCode = new CodeSequenceMacro(codeSequence);
     }
 
     void JSONParametricMapMetaInformationHandler ::read() {
@@ -53,12 +72,20 @@ namespace dcmqi {
                                                elem.get("codeMeaning", "").asString());
                 }
 
-                elem = root["QuantityUnitsCode"];
+                elem = root["MeasurementUnitsCode"];
                 if (!elem.isNull()) {
-                    this->setQuantityUnitsCode(elem.get("codeValue", "").asString(),
-                                               elem.get("codingSchemeDesignator", "").asString(),
-                                               elem.get("codeMeaning", "").asString());
+                    this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
+                                                  elem.get("codingSchemeDesignator", "").asString(),
+                                                  elem.get("codeMeaning", "").asString());
                 }
+
+                elem = root["MeasurementMethodCode"];
+                if (!elem.isNull()) {
+                    this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
+                                                   elem.get("codingSchemeDesignator", "").asString(),
+                                                   elem.get("codeMeaning", "").asString());
+                }
+
             } catch (exception& e) {
                 cout << e.what() << '\n';
                 throw JSONReadErrorException();
@@ -79,11 +106,12 @@ namespace dcmqi {
         data["RealWorldValueSlope"] = this->realWorldValueSlope;
         data["DerivedPixelContrast"] = this->derivedPixelContrast;
 
+        if (this->measurementUnitsCode)
+            data["MeasurementUnitsCode"] = codeSequence2Json(this->measurementUnitsCode);
+        if (this->measurementMethodCode)
+            data["MeasurementMethodCode"] = codeSequence2Json(this->measurementMethodCode);
         if (this->quantityValueCode)
             data["QuantityValueCode"] = codeSequence2Json(this->quantityValueCode);
-
-        if (this->quantityUnitsCode)
-            data["QuantityUnitsCode"] = codeSequence2Json(this->quantityUnitsCode);
 
         Json::StyledWriter styledWriter;
         outputFile << styledWriter.write(data);

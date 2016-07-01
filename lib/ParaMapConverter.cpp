@@ -101,7 +101,7 @@ namespace dcmqi {
         CHECK_COND(pMapDoc->addForAllFrames(frameTypeFG));
 
         for (unsigned long f = 0; result.good() && (f < inputSize[2]); f++) {
-            result = addFrame(pMapDoc, parametricMapImage, f);
+            result = addFrame(pMapDoc, parametricMapImage, metaInfo, f);
         }
 
     COUT << "Successfully created parametric map document" << OFendl;
@@ -153,7 +153,7 @@ namespace dcmqi {
     }
 
     OFCondition ParaMapConverter::addFrame(DPMParametricMapFloat *map, const ImageType::Pointer &parametricMapImage,
-                                           const unsigned long frameNo)
+                                           const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo)
     {
         ImageType::RegionType sliceRegion;
         ImageType::IndexType sliceIndex;
@@ -186,6 +186,7 @@ namespace dcmqi {
         }
 
         // Create functional groups
+        // TODO: needs to be populated by meta information json file
         OFVector<FGBase*> groups;
         OFunique_ptr<FGPlanePosPatient> fgPlanePos(new FGPlanePosPatient);
         OFunique_ptr<FGFrameContent > fgFracon(new FGFrameContent);
@@ -199,10 +200,15 @@ namespace dcmqi {
         }
 
         // Real World Value Mapping
-        // TODO: this should also go into meta information? And since it is the same for all, I can create one vector and then add it for each frame
-        rvwmItemSimple->setRealWorldValueSlope(10);
+        rvwmItemSimple->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
         rvwmItemSimple->setRealWorldValueIntercept(0);
-        rvwmItemSimple->getMeasurementUnitsCode().set("{Particles}/[100]g{Tissue}", "UCUM", "number particles per 100 gram of tissue");
+
+        CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
+        if (measurementUnitCode != NULL) {
+            rvwmItemSimple->getMeasurementUnitsCode().set(metaInfo.getCodeSequenceValue(measurementUnitCode).c_str(),
+                                                          metaInfo.getCodeSequenceDesignator(measurementUnitCode).c_str(),
+                                                          metaInfo.getCodeSequenceMeaning(measurementUnitCode).c_str());
+        }
         rvwmItemSimple->setLUTExplanation("We are mapping trash to junk.");
         rvwmItemSimple->setLUTLabel("Just testing");
         ContentItemMacro* quantity = new ContentItemMacro;
@@ -233,7 +239,6 @@ namespace dcmqi {
         // Add frame with related groups
         if (result.good())
         {
-            // Add frame
             groups.push_back(fgPlanePos.get());
             groups.push_back(fgFracon.get());
             groups.push_back(fgRVWM.get());
