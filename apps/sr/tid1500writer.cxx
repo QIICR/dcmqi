@@ -1,45 +1,37 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include "TID1500Converter.h"
 
-// DCMTK includes
-#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include <Exceptions.h>
 
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/dcmsr/dsrdoc.h"
-#include "dcmtk/dcmdata/dcuid.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmdata/dcdeftag.h"
-#include "dcmtk/dcmsr/dsriodcc.h"
-#include "dcmtk/dcmiod/modhelp.h"
-//#include "dcmtk/dcmdata/modhelp.h"
+#include "tid1500writerCLP.h"
 
-#include "dcmtk/ofstd/oftest.h"
+#define CHECK_COND(condition) \
+  do { \
+    if (condition.bad()) { \
+      std::cerr << "Condition failed: " << condition.text() << " in " __FILE__ << ":" << __LINE__ << std::endl; \
+      throw -1; \
+    } \
+  } while (0);
 
-#include "dcmtk/dcmsr/dsrdoctr.h"
-#include "dcmtk/dcmsr/dsrcontn.h"
-#include "dcmtk/dcmsr/dsrnumtn.h"
-#include "dcmtk/dcmsr/dsruidtn.h"
-#include "dcmtk/dcmsr/dsrtextn.h"
-#include "dcmtk/dcmsr/dsrcodtn.h"
-#include "dcmtk/dcmsr/dsrimgtn.h"
-#include "dcmtk/dcmsr/dsrcomtn.h"
-#include "dcmtk/dcmsr/dsrpnmtn.h"
-
-#include "dcmtk/dcmsr/codes/dcm.h"
-#include "dcmtk/dcmsr/codes/srt.h"
-#include "dcmtk/dcmsr/cmr/tid1500.h"
-
-#include "json/json.h"
-
-#include "tid1500converterCLP.h"
+#define CHECK_BOOL(condition) \
+  do { \
+    if (!condition) { \
+      std::cerr << "Expected True in " __FILE__ << ":" << __LINE__ << " " << std::cout; \
+      throw -1; \
+    } \
+  } while (0);
 
 int main(int argc, char** argv){
   PARSE_ARGS;
 
-  Json::Value root;
-  std::fstream test("test.json", std::ifstream::binary);
-  test >> root;
+  Json::Value metaRoot;
+
+  try {
+      ifstream metainfoStream(metaDataFileName.c_str(), ifstream::binary);
+      metainfoStream >> metaRoot;
+  } catch (exception& e) {
+      cout << e.what() << '\n';
+      return -1;
+  }
 
   TID1500_MeasurementReport report(CMR_CID7021::ImagingMeasurementReport);
   DSRCodedEntryValue title;
@@ -51,8 +43,95 @@ int main(int argc, char** argv){
   OFCHECK(report.setLanguage(CID5000_Languages::English).good());
 
   /* set details on the observation context */
+  // TODO - parameterize
   OFCHECK(report.getObservationContext().addPersonObserver("Doe^Jane", "Some Organization").good());
 
+  // TODO - image library (note: invalid document if no Image Library present)
+  OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
+
+  // TODO
+  //  - this is a very narrow procedure code
+  //  - discuss with Jörg - need to be able to use private code
+  //  - discuss with David - generic parameter
+  OFCHECK(report.addProcedureReported(CMR_CID100::PETWholeBody).good());
+
+  CHECK_BOOL(report.isValid());
+
+  std::cout << "Total measurement groups: " << metaRoot["Measurements"].size() << std::endl;
+
+  for(int i=0;i<metaRoot["Measurements"].size();i++){
+    Json::Value measurementGroup = metaRoot["Measurements"][i]["MeasurementGroup"];
+
+    OFCHECK(report.addVolumetricROIMeasurements().good());
+    /* fill volumetric ROI measurements with data */
+    TID1500_MeasurementReport::TID1411_Measurements &measurements =   report.getVolumetricROIMeasurements();
+    //std::cout << measurementGroup["TrackingIdentifier"] << std::endl;
+    OFCHECK(measurements.setTrackingIdentifier(measurementGroup["TrackingIdentifier"].asString().c_str()).good());
+
+    // TODO - init tracking UID if not provided by the user, or populate
+
+    OFCHECK(measurements.setSourceSeriesForSegmentation(measurementGroup["SourceSeriesForImageSegmentation"].asString().c_str()).good());
+
+    OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_RealWorldValueMappingStorage, measurementGroup["rwvmMapUsedForMeasurement"].asCString())).good());
+
+    DSRImageReferenceValue segment(UID_SegmentationStorage, measurementGroup["SourceSeriesForImageSegmentation"].asString().c_str());
+    segment.getSegmentList().addItem(measurementGroup["ReferencedSegment"].asInt());
+    OFCHECK(measurements.setReferencedSegment(segment).good());
+
+    // TODO - a good cndidate to factor out
+    DSRBasicCodedEntry findingCode(measurementGroup["Finding"]["codeValue"].asCString(),
+      measurementGroup["Finding"]["codingSchemeDesignator"].asCString(),
+      measurementGroup["Finding"]["codeMeaning"].asCString());
+    OFCHECK(measurements.setFinding(findingCode).good());
+
+    DSRBasicCodedEntry findingSiteCode(measurementGroup["FindingSite"]["codeValue"].asCString(),
+      measurementGroup["FindingSite"]["codingSchemeDesignator"].asCString(),
+      measurementGroup["FindingSite"]["codeMeaning"].asCString());
+    OFCHECK(measurements.setFindingSite(findingSiteCode).good());
+
+    DSRCodedEntryValue measurementMethodCode(measurementGroup["MeasurementMethod"]["codeValue"].asCString(),
+      measurementGroup["MeasurementMethod"]["codingSchemeDesignator"].asCString(),
+      measurementGroup["MeasurementMethod"]["codeMeaning"].asCString());
+    OFCHECK(measurements.setMeasurementMethod(measurementMethodCode).good());
+
+    // TODO - handle conditional items!
+    for(int j=0;j<measurementGroup["measurementItems"].size();j++){
+      Json::Value measurement = measurementGroup["measurementItems"][j];
+      DSRCodedEntryValue quantityCode(measurement["quantity"]["codeValue"].asCString(),
+        measurement["quantity"]["codingSchemeDesignator"].asCString(),
+        measurement["quantity"]["codeMeaning"].asCString());
+      DSRCodedEntryValue unitsCode(measurement["units"]["codeValue"].asCString(),
+        measurement["units"]["codingSchemeDesignator"].asCString(),
+        measurement["units"]["codeMeaning"].asCString());
+      //CMR_TID1411_in_TID1500::MeasurementValue numVal(measurement["value"],
+      //  DSRCodedEntryValue());
+      // TODO - add measurement method and derivation!
+      const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), unitsCode);
+      measurements.addMeasurement(quantityCode, numValue);
+    }
+  }
+
+  CHECK_BOOL(report.isValid());
+
+  DSRDocument doc;
+  std::cout << "Setting tree from the report" << std::endl;
+  OFCondition cond = doc.setTreeFromRootTemplate(report, OFFalse /*expandTree*/);
+  if(cond.bad()){
+    std::cout << "Failure: " << cond.text() << std::endl;
+    return -1;
+  }
+
+  OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);
+
+  std::cout << "About to write the document" << std::endl;
+  if(outputFileName.size()){
+    DcmFileFormat *ff = new DcmFileFormat();
+    DcmDataset *ds = ff->getDataset();
+    doc.write(*ds);
+    ff->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
+  }
+
+#if 0
   /* create new image library (only needed after clear) */
   OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
   /* set two values for "procedure reported" */
@@ -160,7 +239,7 @@ int main(int argc, char** argv){
   DcmDataset *ds = ff->getDataset();
   doc.write(*ds);
   ff->saveFile(outputSRFileName.c_str(), EXS_LittleEndianExplicit);
-
+#endif
 
   return 0;
 }

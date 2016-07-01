@@ -1,4 +1,4 @@
-set(MODULE_NAME tid1500converter)
+set(MODULE_NAME tid1500writer)
 
 set(MODULE_SRCS
   ${MODULE_NAME}.cxx)
@@ -23,3 +23,5 @@ SEMMacroBuildCLI(
   INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   EXECUTABLE_ONLY
   )
+
+add_subdirectory(Testing)

@@ -18,6 +18,13 @@
         "codingSchemeDesignator": "DCM",
         "codeMeaning": "SUV body weight calculation method"
       },
+
+      "Finding" : {
+        "codeValue": "M-80003",
+        "codingSchemeDesignator": "SRT",
+        "codeMeaning": "Neoplasm, Primary"
+      },
+
       "FindingSite" : {
         "codeValue": "T-00317",
         "codingSchemeDesignator": "SRT",

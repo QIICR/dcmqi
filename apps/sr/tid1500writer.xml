@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics</category>
+  <title>DICOM Measurements reporting</title>
+  <description></description>
+  <version></version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Andrey Fedorov, BWH</contributor>
+<acknowledgements></acknowledgements>
+
+<parameters>
+
+  <file>
+    <name>metaDataFileName</name>
+    <label>JSON metadata file</label>
+    <channel>input</channel>
+    <longflag>metaDataFileName</longflag>
+  </file>
+
+  <file>
+    <name>outputFileName</name>
+    <label>Output DICOM SR file name</label>
+    <channel>output</channel>
+    <longflag>outputFileName</longflag>
+  </file>
+
+</parameters>
+
+</executable>
