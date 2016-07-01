@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkTestingComparisonImageFilter_h
-#define __itkTestingComparisonImageFilter_h
+#ifndef itkTestingComparisonImageFilter_h
+#define itkTestingComparisonImageFilter_h
 
 #include "itkArray.h"
 #include "itkNumericTraits.h"
@@ -24,8 +24,8 @@
 
 namespace itk
 {
-namespace Testing
-{
+    namespace Testing
+    {
 /** \class ComparisonImageFilter
  * \brief Implements comparison between two images.
  *
@@ -38,113 +38,120 @@ namespace Testing
  * \ingroup IntensityImageFilters   MultiThreaded
  * \ingroup ITKTestKernel
  */
-template <class TInputImage, class TOutputImage>
-class ComparisonImageFilter :
-  public         ImageSource<TOutputImage>
-{
-public:
-  /** Standard class typedefs. */
-  typedef ComparisonImageFilter     Self;
-  typedef ImageSource<TOutputImage> Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+        template< typename TInputImage, typename TOutputImage >
+        class ComparisonImageFilter:
+                public ImageSource< TOutputImage >
+        {
+        public:
+            /** Standard class typedefs. */
+            typedef ComparisonImageFilter             Self;
+            typedef ImageSource< TOutputImage >       Superclass;
+            typedef SmartPointer< Self >              Pointer;
+            typedef SmartPointer< const Self >        ConstPointer;
 
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+            /** Method for creation through the object factory. */
+            itkNewMacro(Self);
 
-  /** Run-time type information (and related methods). */
-  itkTypeMacro(ComparisonImageFilter, ImageSource);
+            /** Run-time type information (and related methods). */
+            itkTypeMacro(ComparisonImageFilter, ImageSource);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                       InputImageType;
-  typedef TOutputImage                                      OutputImageType;
-  typedef typename OutputImageType::PixelType               OutputPixelType;
-  typedef typename OutputImageType::RegionType              OutputImageRegionType;
-  typedef typename NumericTraits<OutputPixelType>::RealType RealType;
-  typedef typename NumericTraits<RealType>::AccumulateType  AccumulateType;
+            /** Some convenient typedefs. */
+            typedef TInputImage                                         InputImageType;
+            typedef typename InputImageType::PixelType                  InputPixelType;
+            typedef TOutputImage                                        OutputImageType;
+            typedef typename OutputImageType::PixelType                 OutputPixelType;
+            typedef typename OutputImageType::RegionType                OutputImageRegionType;
+            typedef typename NumericTraits< OutputPixelType >::RealType RealType;
+            typedef typename NumericTraits< RealType >::AccumulateType  AccumulateType;
 
-  /** Set the valid image input.  This will be input 0.  */
-  virtual void SetValidInput(const InputImageType *validImage);
+            /** Set the valid image input.  This will be input 0.  */
+            virtual void SetValidInput(const InputImageType *validImage);
 
-  /** Set the test image input.  This will be input 1.  */
-  virtual void SetTestInput(const InputImageType *testImage);
+            /** Set the test image input.  This will be input 1.  */
+            virtual void SetTestInput(const InputImageType *testImage);
 
-  /** Set/Get the maximum distance away to look for a matching pixel.
-      Default is 0. */
-  itkSetMacro(ToleranceRadius, int);
-  itkGetConstMacro(ToleranceRadius, int);
+            /** Set/Get the maximum distance away to look for a matching pixel.
+                Default is 0. */
+            itkSetMacro(ToleranceRadius, int);
+            itkGetConstMacro(ToleranceRadius, int);
 
-  /** Set/Get the minimum threshold for pixels to be different.
-      Default is 0. */
-  itkSetMacro(DifferenceThreshold, OutputPixelType);
-  itkGetConstMacro(DifferenceThreshold, OutputPixelType);
+            /** Set/Get the minimum threshold for pixels to be different.
+                Default is 0. */
+            itkSetMacro(DifferenceThreshold, OutputPixelType);
+            itkGetConstMacro(DifferenceThreshold, OutputPixelType);
 
-  /** Set/Get ignore boundary pixels.  Useful when resampling may have
-   *    introduced difference pixel values along the image edge
-   *    Default = false */
-  itkSetMacro(IgnoreBoundaryPixels, bool);
-  itkGetConstMacro(IgnoreBoundaryPixels, bool);
+            /** Set/Get ignore boundary pixels.  Useful when resampling may have
+             *    introduced difference pixel values along the image edge
+             *    Default = false */
+            itkSetMacro(IgnoreBoundaryPixels, bool);
+            itkGetConstMacro(IgnoreBoundaryPixels, bool);
 
-  /** Get parameters of the difference image after execution.  */
-  itkGetConstMacro(MeanDifference, RealType);
-  itkGetConstMacro(TotalDifference, AccumulateType);
-  itkGetConstMacro(NumberOfPixelsWithDifferences, SizeValueType);
+            /** Get statistical attributes for those pixels which exceed the
+             * tolerance and radius parameters */
+            itkGetConstMacro(MinimumDifference, OutputPixelType);
+            itkGetConstMacro(MaximumDifference, OutputPixelType);
+            itkGetConstMacro(MeanDifference, RealType);
+            itkGetConstMacro(TotalDifference, AccumulateType);
+            itkGetConstMacro(NumberOfPixelsWithDifferences, SizeValueType);
 
-  /** Set/Get the image input of this process object.  */
-  virtual void SetInput(const TInputImage *image);
+            /** Set/Get the image input of this process object.  */
+            using Superclass::SetInput;
+            virtual void SetInput(const TInputImage *image);
+            virtual void SetInput(unsigned int, const TInputImage *image);
+            const TInputImage * GetInput() const;
+            const TInputImage * GetInput(unsigned int idx) const;
 
-  virtual void SetInput(unsigned int, const TInputImage *image);
+        protected:
+            ComparisonImageFilter();
+            virtual ~ComparisonImageFilter() {}
 
-  const TInputImage * GetInput(void) const;
+            void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
 
-  const TInputImage * GetInput(unsigned int idx) const;
+            /** ComparisonImageFilter can be implemented as a multithreaded
+             * filter.  Therefore, this implementation provides a
+             * ThreadedGenerateData() routine which is called for each
+             * processing thread. The output image data is allocated
+             * automatically by the superclass prior to calling
+             * ThreadedGenerateData().  ThreadedGenerateData can only write to
+             * the portion of the output image specified by the parameter
+             * "outputRegionForThread"
+             */
+            void ThreadedGenerateData(const OutputImageRegionType & threadRegion,
+                                      ThreadIdType threadId) ITK_OVERRIDE;
 
-protected:
-  ComparisonImageFilter();
-  virtual ~ComparisonImageFilter()
-  {
-  }
+            void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+            void AfterThreadedGenerateData() ITK_OVERRIDE;
 
-  /** ComparisonImageFilter can be implemented as a multithreaded
-   * filter.  Therefore, this implementation provides a
-   * ThreadedGenerateData() routine which is called for each
-   * processing thread. The output image data is allocated
-   * automatically by the superclass prior to calling
-   * ThreadedGenerateData().  ThreadedGenerateData can only write to
-   * the portion of the output image specified by the parameter
-   * "outputRegionForThread"
-   */
-  virtual void ThreadedGenerateData(const OutputImageRegionType & threadRegion, int threadId);
+            OutputPixelType m_DifferenceThreshold;
 
-  virtual void BeforeThreadedGenerateData();
+            RealType        m_MeanDifference;
+            OutputPixelType m_MinimumDifference;
+            OutputPixelType m_MaximumDifference;
 
-  virtual void AfterThreadedGenerateData();
+            AccumulateType m_TotalDifference;
 
-  OutputPixelType m_DifferenceThreshold;
+            SizeValueType m_NumberOfPixelsWithDifferences;
 
-  RealType m_MeanDifference;
+            int m_ToleranceRadius;
 
-  AccumulateType m_TotalDifference;
+            Array< AccumulateType >    m_ThreadDifferenceSum;
+            Array< SizeValueType >     m_ThreadNumberOfPixels;
 
-  SizeValueType m_NumberOfPixelsWithDifferences;
+            Array< OutputPixelType >    m_ThreadMinimumDifference;
+            Array< OutputPixelType >    m_ThreadMaximumDifference;
 
-  int m_ToleranceRadius;
+        private:
+//            ITK_DISALLOW_COPY_AND_ASSIGN(ComparisonImageFilter);
 
-  Array<AccumulateType> m_ThreadDifferenceSum;
-  Array<SizeValueType>  m_ThreadNumberOfPixels;
-private:
-  ComparisonImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);        // purposely not implemented
-
-  bool m_IgnoreBoundaryPixels;
-};
-} // end namespace Testing
+            bool m_IgnoreBoundaryPixels;
+        };
+    } // end namespace Testing
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkTestingComparisonImageFilter.hxx"
 #endif
+
 
 #endif
