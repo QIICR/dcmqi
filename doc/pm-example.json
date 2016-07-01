@@ -11,7 +11,7 @@
     "codingSchemeDesignator": "DCM",
     "codeMeaning": "Apparent Diffusion Coefficient"
   },
-  "QuantityUnitsCode": {
+  "MeasurementUnitsCode": {
     "codeValue": "mm2/s",
     "codingSchemeDesignator": "UCUM",
     "codeMeaning": "square millimeter per second"
