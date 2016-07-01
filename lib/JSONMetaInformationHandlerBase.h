@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include "SeriesAttributes.h"
 #include "SegmentAttributes.h"
 #include "Exceptions.h"
 
@@ -19,11 +18,19 @@ namespace dcmqi {
     public:
         JSONMetaInformationHandlerBase();
         JSONMetaInformationHandlerBase(string filename);
-        ~JSONMetaInformationHandlerBase();
+        virtual ~JSONMetaInformationHandlerBase();
 
-        SeriesAttributes *seriesAttributes;
+        void setSeriesDescription(const string &seriesDescription);
+        void setSeriesNumber(const string &seriesNumber);
+        void setInstanceNumber(const string &instanceNumber);
+        void setBodyPartExamined(const string &bodyPartExamined);
 
-        virtual void read();
+        string getSeriesDescription() const { return seriesDescription; }
+        string getSeriesNumber() const { return seriesNumber; }
+        string getInstanceNumber() const { return instanceNumber;}
+        string getBodyPartExamined() const { return bodyPartExamined; }
+
+        virtual void read()=0;
         virtual bool write(string filename)=0;
 
         static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
@@ -31,15 +38,16 @@ namespace dcmqi {
         static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
 
     protected:
-        bool isValid(string filename);
+        virtual bool isValid(string filename)=0;
+
+        string seriesDescription;
+        string seriesNumber;
+        string instanceNumber;
+        string bodyPartExamined;
 
         string filename;
 
-        virtual void readSeriesAttributes(const Json::Value &root);
-
         Json::Value codeSequence2Json(CodeSequenceMacro *codeSequence);
-
-        virtual Json::Value writeSeriesAttributes();
     };
 }
 

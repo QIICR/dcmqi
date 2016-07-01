@@ -34,6 +34,12 @@ namespace dcmqi {
             return "JSON Exception: file could not be read.";
         }
     };
+
+    class CodeSequenceValueException : public exception {
+        virtual const char *what() const throw() {
+            return "CodeSequence Exception: missing value in code sequence";
+        }
+    };
 }
 
 #endif //DCMQI_EXCEPTIONS_H

@@ -264,5 +264,11 @@ namespace dcmqi {
         return DSRCodedEntryValue(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
+    CodeSequenceMacro* Helper::createNewCodeSequence(const string& code, const string& designator, const string& meaning) {
+        if (code.empty() || designator.empty() || meaning.empty())
+            throw CodeSequenceValueException();
+        return new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+    }
+
 
 }

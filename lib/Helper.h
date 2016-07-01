@@ -11,6 +11,8 @@
 #include <vector>
 #include <map>
 
+#include "Exceptions.h"
+
 using namespace std;
 
 
@@ -38,6 +40,8 @@ namespace dcmqi {
         static DSRCodedEntryValue stringToDSRCodedEntryValue(string str);
 
         static void checkValidityOfFirstSrcImage(DcmSegmentation *segdoc);
+
+        static CodeSequenceMacro* createNewCodeSequence(const string& code, const string& designator, const string& meaning);
     };
 
 }

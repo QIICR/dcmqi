@@ -16,13 +16,25 @@ namespace dcmqi {
         }
     }
 
+    void JSONSegmentationMetaInformationHandler::setContentCreatorName(const string &creatorName) {
+        this->contentCreatorName = creatorName;
+    }
+
+    void JSONSegmentationMetaInformationHandler::setClinicalTrialSeriesID(const string &seriesID) {
+        this->clinicalTrialSeriesID = seriesID;
+    }
+
+    void JSONSegmentationMetaInformationHandler::setClinicalTrialTimePointID(const string &timePointID) {
+        this->clinicalTrialTimePointID = timePointID;
+    }
+
     void JSONSegmentationMetaInformationHandler::read() {
-        JSONMetaInformationHandlerBase::read();
         if (this->filename.size() && this->isValid(this->filename)) {
             try {
                 ifstream metainfoStream(this->filename, ios_base::binary);
                 Json::Value root;
                 metainfoStream >> root;
+                this->readSeriesAttributes(root);
                 this->readSegmentAttributes(root);
             } catch (exception &e) {
                 cout << e.what() << '\n';
@@ -41,8 +53,8 @@ namespace dcmqi {
         outputFile.open(filename);
         Json::Value data;
 
-        data["seriesAttributes"] = writeSeriesAttributes();
-        data["segmentAttributes"] = writeSegmentAttributes();
+        data["seriesAttributes"] = createAndGetSeriesAttributes();
+        data["segmentAttributes"] = createAndGetSegmentAttributes();
 
         Json::StyledWriter styledWriter;
         outputFile << styledWriter.write(data);
@@ -51,7 +63,30 @@ namespace dcmqi {
         return true;
     }
 
-    Json::Value JSONSegmentationMetaInformationHandler::writeSegmentAttributes() {
+    void JSONSegmentationMetaInformationHandler::readSeriesAttributes(const Json::Value &root) {
+        Json::Value seriesAttributes = root["seriesAttributes"];
+        this->contentCreatorName = seriesAttributes.get("ContentCreatorName", "Reader1").asString();
+        this->clinicalTrialSeriesID = seriesAttributes.get("SessionID", "Session1").asString();
+        this->clinicalTrialTimePointID = seriesAttributes.get("TimePointID", "1").asString();
+        this->seriesDescription = seriesAttributes.get("SeriesDescription", "Segmentation").asString();
+        this->seriesNumber = seriesAttributes.get("SeriesNumber", "300").asString();
+        this->instanceNumber = seriesAttributes.get("InstanceNumber", "1").asString();
+        this->bodyPartExamined = seriesAttributes.get("BodyPartExamined", "").asString();
+    }
+
+    Json::Value JSONSegmentationMetaInformationHandler::createAndGetSeriesAttributes() {
+        Json::Value value;
+        value["ContentCreatorName"] = this->contentCreatorName;
+        value["ClinicalTrialSeriesID"] = this->clinicalTrialSeriesID;
+        value["TimePointID"] = this->clinicalTrialTimePointID;
+        value["SeriesDescription"] = this->seriesDescription;
+        value["SeriesNumber"] = this->seriesNumber;
+        value["InstanceNumber"] = this->instanceNumber;
+        value["BodyPartExamined"] = this->bodyPartExamined;
+        return value;
+    }
+
+    Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
         Json::Value values(Json::arrayValue);
         for (vector<SegmentAttributes *>::iterator it = segmentsAttributes.begin();
              it != segmentsAttributes.end(); ++it) {
@@ -150,5 +185,10 @@ namespace dcmqi {
             }
             segmentsAttributes.push_back(segmentAttribute);
         }
+    }
+
+    bool JSONSegmentationMetaInformationHandler::isValid(string filename) {
+        // TODO: add validation of json file here
+        return true;
     }
 }

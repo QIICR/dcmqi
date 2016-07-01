@@ -63,7 +63,7 @@ namespace dcmqi {
     }
 
     void SegmentAttributes::setSegmentedPropertyCategoryCode(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyCategoryCode = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyCategoryCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentedPropertyCategoryCode(const CodeSequenceMacro& codeSequence) {
@@ -71,7 +71,7 @@ namespace dcmqi {
     }
 
     void SegmentAttributes::setSegmentedPropertyType(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyType = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyType = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentedPropertyType(const CodeSequenceMacro& codeSequence) {
@@ -79,7 +79,7 @@ namespace dcmqi {
     }
 
     void SegmentAttributes::setSegmentedPropertyTypeModifier(const string& code, const string& designator, const string& meaning) {
-        this->segmentedPropertyTypeModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->segmentedPropertyTypeModifier = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setSegmentedPropertyTypeModifier(const CodeSequenceMacro* codeSequence) {
@@ -87,7 +87,7 @@ namespace dcmqi {
     }
 
     void SegmentAttributes::setAnatomicRegion(const string& code, const string& designator, const string& meaning) {
-        this->anatomicRegion = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->anatomicRegion = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setAnatomicRegion(const CodeSequenceMacro& codeSequence) {
@@ -95,7 +95,7 @@ namespace dcmqi {
     }
 
     void SegmentAttributes::setAnatomicRegionModifier(const string& code, const string& designator, const string& meaning) {
-        this->anatomicRegionModifier = new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
+        this->anatomicRegionModifier = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
     }
 
     void SegmentAttributes::setAnatomicRegionModifier(const CodeSequenceMacro& codeSequence) {

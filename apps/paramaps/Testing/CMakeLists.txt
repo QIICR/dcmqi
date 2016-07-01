@@ -12,7 +12,7 @@ add_test(NAME ${MODULE_NAME}_hello
          COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
 add_test(NAME ${MODULE_NAME}_makeParametricMap
          COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
-        --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/exampledata.json
+        --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/pm-example.json
         --inputFileName ${BASELINE}/liver_seg.nrrd
         --outputParaMapFileName ${TEMP_DIR}/paramap.dcm
        )

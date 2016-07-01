@@ -7,9 +7,9 @@
 #include <math.h>
 
 #include "Helper.h"
+#include "JSONMetaInformationHandlerBase.h"
 
 using namespace std;
-
 
 namespace dcmqi {
 

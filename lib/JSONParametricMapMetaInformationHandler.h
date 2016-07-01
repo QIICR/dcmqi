@@ -1,7 +1,3 @@
-//
-// Created by Christian Herz on 6/28/16.
-//
-
 #ifndef DCMQI_JSONPARAMETRICMAPMETAINFORMATIONHANDLER_H
 #define DCMQI_JSONPARAMETRICMAPMETAINFORMATIONHANDLER_H
 
@@ -15,15 +11,29 @@ namespace dcmqi {
     class JSONParametricMapMetaInformationHandler : public JSONMetaInformationHandlerBase {
 
     public:
-        JSONParametricMapMetaInformationHandler()
-                : JSONMetaInformationHandlerBase() {}
+        JSONParametricMapMetaInformationHandler();
+        JSONParametricMapMetaInformationHandler(string filename);
+        ~JSONParametricMapMetaInformationHandler();
 
-        JSONParametricMapMetaInformationHandler(string filename)
-                : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename){};
-        ~JSONParametricMapMetaInformationHandler() {};
+        void setQuantityValueCode(const string& code, const string& designator, const string& meaning);
+        void setQuantityValueCode(const CodeSequenceMacro& codeSequence);
 
-        virtual bool write(string filename){return true;};
+        void setQuantityUnitsCode(const string& code, const string& designator, const string& meaning);
+        void setQuantityUnitsCode(const CodeSequenceMacro& codeSequence);
 
+        CodeSequenceMacro* getQuantityValueCode() const { return quantityValueCode; }
+        CodeSequenceMacro* getQuantityUnitsCode() const { return quantityUnitsCode; }
+
+        virtual void read();
+        virtual bool write(string filename);
+    protected:
+        virtual bool isValid(string filename);
+
+        string realWorldValueSlope;
+        string derivedPixelContrast;
+
+        CodeSequenceMacro* quantityValueCode;
+        CodeSequenceMacro* quantityUnitsCode;
     };
 
 }

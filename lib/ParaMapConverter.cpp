@@ -22,7 +22,7 @@ namespace dcmqi {
 
         IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
         ContentIdentificationMacro contentID = createContentIdentificationInformation();
-        CHECK_COND(contentID.setInstanceNumber(metaInfo.seriesAttributes->getInstanceNumber().c_str()));
+        CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
         DcmDataset pMapDocDataset;
         DPMParametricMapFloat *pMapDoc = NULL;
@@ -34,8 +34,8 @@ namespace dcmqi {
         OFString modality = "MR";
 
 
-        CHECK_COND(DPMParametricMapFloat::create(pMapDoc, modality, metaInfo.seriesAttributes->getSeriesNumber().c_str(),
-                                                 metaInfo.seriesAttributes->getInstanceNumber().c_str(),
+        CHECK_COND(DPMParametricMapFloat::create(pMapDoc, modality, metaInfo.getSeriesNumber().c_str(),
+                                                 metaInfo.getInstanceNumber().c_str(),
                                                  inputSize[0], inputSize[1], eq, contentID,
                                                  imageFlavor, pixContrast, contQual));
 
@@ -93,6 +93,7 @@ namespace dcmqi {
         CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
         FGIdentityPixelValueTransformation idTransFG;
+        // Rescale Intercept, Rescale Slope, Rescale Type are missing here
         CHECK_COND(pMapDoc->addForAllFrames(idTransFG));
 
         FGParametricMapFrameType frameTypeFG;
@@ -103,22 +104,14 @@ namespace dcmqi {
             result = addFrame(pMapDoc, parametricMapImage, f);
         }
 
-    //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
-
     COUT << "Successfully created parametric map document" << OFendl;
-
-    // Set reader/session/timepoint information
-    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.seriesAttributes->getReaderID().c_str()));
-    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.seriesAttributes->getSessionID().c_str()));
-    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.seriesAttributes->getTimePointID().c_str()));
-    CHECK_COND(pMapDocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, "UIowa"));
 
     // populate BodyPartExamined
     {
         DcmFileFormat sliceFF;
         DcmDataset *sliceDataset = NULL;
         OFString bodyPartStr;
-        string bodyPartAssigned = metaInfo.seriesAttributes->getBodyPartExamined();
+        string bodyPartAssigned = metaInfo.getBodyPartExamined();
 
 //        TODO: add the following only if source dicom file was parameterized
 //        CHECK_COND(sliceFF.loadFile(dicomImageFileNames[0].c_str()));
@@ -144,8 +137,8 @@ namespace dcmqi {
         pMapDocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
         pMapDocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
 
-        pMapDocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.seriesAttributes->getSeriesDescription().c_str());
-        pMapDocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.seriesAttributes->getSeriesNumber().c_str());
+        pMapDocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str());
+        pMapDocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.getSeriesNumber().c_str());
     }
 
     CHECK_COND(pMapDoc->writeDataset(pMapDocDataset));
