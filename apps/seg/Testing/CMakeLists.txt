@@ -26,7 +26,7 @@ add_test(NAME ${MODULE_NAME}_hello
          COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
 add_test(NAME ${MODULE_NAME}_makeSEG
          COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
-        --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/exampledata.json
+        --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example.json
         --segImageFiles ${BASELINE}/liver_seg.nrrd
         --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
         --segDICOMFile ${TEMP_DIR}/liver.dcm
