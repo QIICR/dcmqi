@@ -83,10 +83,10 @@
             {"properties" :
              {"CodeValue" : {"default": "T-D0050"},
               "CodingSchemeDesignator" : {"default": "SRT"},
-              "CodeMeaning" : {"default": "Tissue"}},
+              "CodeMeaning" : {"default": "Tissue"}}
             }
           ],
-          "required" : true,
+          "required" : true
         },
 
         "SegmentedPropertyTypeCodeSequence": {
@@ -95,10 +95,10 @@
             {"properties" :
               {"CodeValue" : {"default": "T-D0050"},
               "CodingSchemeDesignator" : {"default": "SRT"},
-              "CodeMeaning" : {"default": "Tissue"}},
+              "CodeMeaning" : {"default": "Tissue"}}
             }
           ],
-          "required" : true,
+          "required" : true
         },
 
         "SegmentedPropertyTypeModifierCodeSequence" : {
@@ -122,7 +122,7 @@
             {"enum" : ["AUTOMATIC","MANUAL","SEMIAUTOMATIC"]},
             {"default" : "SEMIAUTOMATIC"}
           ],
-          "required" : true,
+          "required" : true
         },
 
         "SegmentAlgorithmName": {
