@@ -18,7 +18,7 @@ dependencies:
     - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
   post:
     - export PATH=${CMAKE_BIN}:${PATH} && mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
-    - export PATH=${CMAKE_BIN}:${PATH} && cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest --no-compress-output
+    - export PATH=${CMAKE_BIN}:${PATH} && cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output
     - export PATH=${CMAKE_BIN}:${PATH} && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
 test:
   post:

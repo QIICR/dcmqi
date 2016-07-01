@@ -1,6 +1,3 @@
-env:
- - CMAKE_VERSION_MAJOR=3.5
- - CMAKE_VERSION=3.5.2
 language: c++
 os:
 - osx
@@ -9,13 +6,12 @@ env:
 compiler:
 - clang
 before_script:
-- cmake --version
 - clang --version
-- mkdir /Users/travis/build/QIICR/dcmqi-build
+- pwd && mkdir -p /Users/travis/build/QIICR/dcmqi-build
 - cd /Users/travis/build/QIICR
-- wget --no-check-certificate https://cmake.org/files/v${CMAKE_VERSION_MAJOR}/cmake-${CMAKE_VERSION}.tar.gz
-- tar zxf cmake-${CMAKE_VERSION}.tar.gz
-- mv cmake-${CMAKE_VERSION} cmake-build
+- wget --no-check-certificate https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz
+- tar zxf cmake-3.5.2.tar.gz
+- mv cmake-3.5.2 cmake-build
 - cd cmake-build
 - ./configure && make
 script:
