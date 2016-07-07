@@ -19,6 +19,13 @@
   </file>
 
   <file>
+    <name>referenceDICOMFileName</name>
+    <label>Input DICOM file with patient/study information</label>
+    <channel>input</channel>
+    <longflag>referenceDICOMFileName</longflag>
+  </file>
+
+  <file>
     <name>outputFileName</name>
     <label>Output DICOM SR file name</label>
     <channel>output</channel>

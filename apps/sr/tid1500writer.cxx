@@ -1,4 +1,5 @@
 #include "TID1500Converter.h"
+#include "dcmtk/dcmiod/modhelp.h"
 
 #include <Exceptions.h>
 
@@ -53,7 +54,7 @@ int main(int argc, char** argv){
   //  - this is a very narrow procedure code
   //  - discuss with Jörg - need to be able to use private code
   //  - discuss with David - generic parameter
-  OFCHECK(report.addProcedureReported(CMR_CID100::PETWholeBody).good());
+  OFCHECK(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")).good());
 
   CHECK_BOOL(report.isValid());
 
@@ -68,7 +69,13 @@ int main(int argc, char** argv){
     //std::cout << measurementGroup["TrackingIdentifier"] << std::endl;
     OFCHECK(measurements.setTrackingIdentifier(measurementGroup["TrackingIdentifier"].asString().c_str()).good());
 
-    // TODO - init tracking UID if not provided by the user, or populate
+    if(measurementGroup.isMember("TrackingUniqueIdentifier")) {
+      OFCHECK(measurements.setTrackingUniqueIdentifier(measurementGroup["TrackingUniqueIdentifier"].asString().c_str()).good());
+    } else {
+      char uid[100];
+      dcmGenerateUniqueIdentifier(uid, SITE_STUDY_UID_ROOT);
+      OFCHECK(measurements.setTrackingUniqueIdentifier(uid).good());
+    }
 
     OFCHECK(measurements.setSourceSeriesForSegmentation(measurementGroup["SourceSeriesForImageSegmentation"].asString().c_str()).good());
 
@@ -103,13 +110,12 @@ int main(int argc, char** argv){
       DSRCodedEntryValue unitsCode(measurement["units"]["codeValue"].asCString(),
         measurement["units"]["codingSchemeDesignator"].asCString(),
         measurement["units"]["codeMeaning"].asCString());
-      //CMR_TID1411_in_TID1500::MeasurementValue numVal(measurement["value"],
-      //  DSRCodedEntryValue());
       // TODO - add measurement method and derivation!
       const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), unitsCode);
       measurements.addMeasurement(quantityCode, numValue);
     }
   }
+
 
   CHECK_BOOL(report.isValid());
 
@@ -125,8 +131,16 @@ int main(int argc, char** argv){
 
   std::cout << "About to write the document" << std::endl;
   if(outputFileName.size()){
-    DcmFileFormat ff;
-    CHECK_COND(doc.write(*ff.getDataset()));
+    DcmFileFormat ff, ffReference;
+    DcmDataset *dataset = ff.getDataset();
+    CHECK_COND(doc.write(*dataset));
+
+    CHECK_COND(ffReference.loadFile(referenceDICOMFileName.c_str()));
+
+    DcmModuleHelpers::copyPatientModule(*ffReference.getDataset(),*dataset);
+    DcmModuleHelpers::copyPatientStudyModule(*ffReference.getDataset(),*dataset);
+    DcmModuleHelpers::copyGeneralStudyModule(*ffReference.getDataset(),*dataset);
+
     OFCHECK(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit).good());
     std::cout << "SR saved!" << std::endl;
   }
