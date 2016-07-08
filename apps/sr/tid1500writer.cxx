@@ -41,7 +41,7 @@ int main(int argc, char** argv){
   OFCHECK(report.createNewMeasurementReport(CMR_CID7021::ImagingMeasurementReport).good());
 
   /* set the language */
-  OFCHECK(report.setLanguage(CID5000_Languages::English).good());
+  OFCHECK(report.setLanguage(DSRCodedEntryValue("eng", "RFC4646", "English")).good());
 
   /* set details on the observation context */
   // TODO - parameterize
