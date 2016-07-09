@@ -81,7 +81,7 @@ int main(int argc, char** argv){
 
     OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_RealWorldValueMappingStorage, measurementGroup["rwvmMapUsedForMeasurement"].asCString())).good());
 
-    DSRImageReferenceValue segment(UID_SegmentationStorage, measurementGroup["SourceSeriesForImageSegmentation"].asString().c_str());
+    DSRImageReferenceValue segment(UID_SegmentationStorage, measurementGroup["segmentationSOPInstanceUID"].asString().c_str());
     segment.getSegmentList().addItem(measurementGroup["ReferencedSegment"].asInt());
     OFCHECK(measurements.setReferencedSegment(segment).good());
 
@@ -112,10 +112,17 @@ int main(int argc, char** argv){
         measurement["units"]["codeMeaning"].asCString());
       // TODO - add measurement method and derivation!
       const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), unitsCode);
-      measurements.addMeasurement(quantityCode, numValue);
+
+      if(measurement.isMember("derivationModifier")){
+        DSRCodedEntryValue derivationModifier(measurement["derivationModifier"]["codeValue"].asCString(),
+          measurement["derivationModifier"]["codingSchemeDesignator"].asCString(),
+          measurement["derivationModifier"]["codeMeaning"].asCString());
+          measurements.addMeasurement(quantityCode, numValue, DSRCodedEntryValue(), derivationModifier);
+      } else {
+        measurements.addMeasurement(quantityCode, numValue);
+      }
     }
   }
-
 
   CHECK_BOOL(report.isValid());
 
@@ -125,6 +132,15 @@ int main(int argc, char** argv){
   if(cond.bad()){
     std::cout << "Failure: " << cond.text() << std::endl;
     return -1;
+  }
+
+  // WARNING: no consistency checks between the referenced UIDs and thereferencedDICOMFileNames ...
+  if(metaRoot.isMember("referencedDICOMFileNames")){
+    for(int i=0;i<metaRoot["referencedDICOMFileNames"].size();i++){
+      DcmFileFormat ff;
+      CHECK_COND(ff.loadFile(metaRoot["referencedDICOMFileNames"][i].asCString()));
+      doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset());
+    }
   }
 
   OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);

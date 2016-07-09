@@ -3,6 +3,11 @@
   "id" : "http://qiicr.org/schema/dcmqi/sr-tid1500-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
+  "referencedDICOMFileNames" : {
+    "type" : "array",
+    "items" : { "type" : "string"}
+  },
+
   "definitions" : {
     "measurementItem" : {
       "type" : "object",
@@ -10,7 +15,7 @@
         "value" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/NUM"},
         "quantity" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
         "units" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
-        "derivation" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"}
+        "derivationModifier" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"}
       }
     },
 
@@ -22,6 +27,8 @@
         "TrackingUniqueIdentifier" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"},
         "ReferencedSegment" : {"type" : "number"},
         "SourceSeriesForImageSegmentation" : { "type" :
+          "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF" },
+        "segmentationSOPInstanceUID" : { "type" :
           "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF" },
         "rwvmMapUsedForMeasurement" : {"$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF" },
         "MeasurementMethod" : { "$ref" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"},
