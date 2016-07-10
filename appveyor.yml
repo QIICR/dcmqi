@@ -33,7 +33,7 @@ build_script:
   - cmd: msbuild DCMQI.sln /m
 after_build:
   - cmd: cd c:\dcmqi\dcmqi-build\dcmqi-build
-  - cmd: ctest -D ExperimentalTest --no-compress-output
+  - cmd: ctest -C Release -D ExperimentalTest --no-compress-output
 artifacts:
   - path: dcmqi-build
     name: dcmqi
