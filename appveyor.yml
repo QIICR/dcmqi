@@ -33,7 +33,7 @@ build_script:
   - cmd: msbuild DCMQI.sln /m
 after_build:
   - cmd: cd c:\dcmqi\dcmqi-build\dcmqi-build
-  - cmd: set PATH=%PATH%;c:\DCMTK-install\lib;c:\ITK-install\lib;c:\zlib-install\lib;ctest -D ExperimentalTest --no-compress-output
+  - cmd: set PATH=%PATH%;c:\DCMTK-install\lib;c:\ITK-install\lib;c:\zlib-install\lib && ctest -D ExperimentalTest --no-compress-output
 artifacts:
   - path: dcmqi-build
     name: dcmqi
