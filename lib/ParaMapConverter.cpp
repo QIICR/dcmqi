@@ -1,4 +1,3 @@
-#include <itkImageRegionConstIteratorWithIndex.h>
 #include "ParaMapConverter.h"
 
 
@@ -6,8 +5,8 @@ using namespace std;
 
 namespace dcmqi {
 
-  int ParaMapConverter::itkimage2dcmParaMap(const string &inputFileName, const string &dicomImageFileName,
-																						const string &metaDataFileName, const string &outputFileName) {
+  int ParaMapConverter::itkimage2paramap(const string &inputFileName, const string &dicomImageFileName,
+																				 const string &metaDataFileName, const string &outputFileName) {
 
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(inputFileName.c_str());
@@ -148,7 +147,7 @@ namespace dcmqi {
     return EXIT_SUCCESS;
   }
 
-  int ParaMapConverter::paraMap2itkimage(const string &inputSEGFileName, const string &outputDirName) {
+  int ParaMapConverter::paramap2itkimage(const string &inputParamapFileName, const string &outputDirName) {
     return EXIT_SUCCESS;
   }
 
