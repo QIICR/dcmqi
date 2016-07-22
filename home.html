@@ -1,0 +1,39 @@
+<div class="container">
+    <div layout="row" layout-align="center">
+        <h2> {{headlineText}} </h2>
+    </div>
+    <div layout="row" layout-align="center">
+        <p layout="row" flex="75">
+            This is work in progress to develop libraries and command line tools with minimum dependencies to support
+            conversion of DICOM data specific to quantitative image analysis research.<br><br>
+            The logic behind the name is DICOM (dcm) + Quantitative Imaging (qi). This follows the patterns used by
+            DCMTK modules (dcmsr, dcmrt, ...). The idea is to put various components needed for QI applications that
+            for one or another reason do not fit DCMTK. <br><br>
+        </p>
+    </div>
+
+    <div layout="row" layout-align="center" class="md-padding">
+        <md-button ng-disabled="false" aria-label="DICOM SEGmentation Meta Information Generator" class="md-raised md-primary" href="#/seg">
+            Create a DICOM Segmentation
+            <md-tooltip md-direction="bottom" md-delay="toolTipDelay">DICOM SEGmentation Meta Information Generator</md-tooltip>
+        </md-button>
+    </div>
+    <div layout="row" layout-align="center" class="md-padding">
+        The below-mentioned <ng-md-icon aria-label="below" icon="arrow_downward" style="fill: black" size="24"></ng-md-icon>
+        meta information generators will be available soon.
+    </div>
+    <div layout="row" layout-align="center" class="md-padding">
+        <div class="md-padding">
+            <md-button ng-disabled="true" aria-label="DICOM Parametric Map Meta Information Generator" class="md-raised md-primary" href="#/pm">
+                Create a DICOM Parametric Map
+                <md-tooltip md-direction="bottom" md-delay="toolTipDelay">DICOM Parametric Map Meta Information Generator</md-tooltip>
+            </md-button>
+        </div>
+        <div class="md-padding">
+            <md-button ng-disabled="true" aria-label="DICOM Structured Reporting Meta Information Generator" class="md-raised md-primary" href="#/sr">
+                Create a DICOM Structured Report
+                <md-tooltip md-direction="bottom" md-delay="toolTipDelay">DICOM Structured Reporting Meta Information Generator</md-tooltip>
+            </md-button>
+        </div>
+    </div>
+</div>

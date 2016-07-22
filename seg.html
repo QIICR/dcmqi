@@ -1,0 +1,189 @@
+<div class="container">
+    <md-content layout-padding>
+        <div layout="row">
+            <div flex class="md-whiteframe-7dp md-padding" id="jsonForm">
+                <span class="md-title">Series Attributes</span>
+                <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" layout="column" novalidate
+                      class="customAutoComplete">
+                    <!--Series Attributes -->
+                    <div layout="row">
+                        <div>
+                            <md-input-container>
+                                <label>ReaderID</label>
+                                <input required name="ReaderID" ng-model="seriesAttributes.ReaderID" ng-maxlength="64">
+                                <div ng-messages="jsonForm.ReaderID.$error" role="alert">
+                                    <div ng-message="required" class="my-message">You must supply a reader ID.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container>
+                                <label>SessionID</label>
+                                <input required name="SessionID" ng-model="seriesAttributes.SessionID" ng-maxlength="64">
+                                <div ng-messages="jsonForm.SessionID.$error" role="alert">
+                                    <div ng-message="required" class="my-message">You must supply a session ID.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container>
+                                <label>TimePointID</label>
+                                <input required name="TimePointID" ng-model="seriesAttributes.TimePointID" ng-maxlength="64">
+                                <div ng-messages="jsonForm.TimePointID.$error" role="alert">
+                                    <div ng-message="required" class="my-message">You must supply a timepoint ID.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container>
+                                <label>InstanceNumber</label>
+                                <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber" ng-pattern="/[0-9]$/">
+                                <div ng-messages="jsonForm.InstanceNumber.$error" role="alert">
+                                    <div ng-message="required" class="my-message">You must supply an instance number.</div>
+                                    <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                    </div>
+                    <div layout="row">
+                        <div>
+                            <md-input-container>
+                                <label>SeriesDescription</label>
+                                <input ng-model="seriesAttributes.SeriesDescription">
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container>
+                                <label>SeriesNumber</label>
+                                <input required type="number" name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber" ng-pattern="/[0-9]$/">
+                                <div ng-messages="jsonForm.SeriesNumber.$error" role="alert">
+                                    <div ng-message="required" class="my-message">You must supply a series number.</div>
+                                    <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container>
+                                <label>BodyPartExamined</label>
+                                <input ng-model="seriesAttributes.BodyPartExamined">
+                            </md-input-container>
+                        </div>
+                    </div>
+
+                    <!--Segment Attributes-->
+                    <div layout="row">
+                        <div>
+                            <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
+                        </div>
+                        <div>
+                            <md-button class="smaller" ng-click="previousSegment()" ng-disabled="segments.length == 1 || selectedIndex == 0">
+                                <md-tooltip md-direction="bottom">Previous segment</md-tooltip>
+                                <div ng-show="segments.length == 1  || selectedIndex == 0">
+                                    <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length > 1  && selectedIndex != 0">
+                                    <ng-md-icon  icon="keyboard_arrow_left" style="fill:black"/>
+                                </div>
+                            </md-button>
+                            <md-button class="smaller" ng-click="nextSegment()" ng-disabled="segments.length == 1 || selectedIndex == segments.length-1">
+                                <md-tooltip md-direction="bottom">Next segment</md-tooltip>
+                                <div ng-show="segments.length == 1 || selectedIndex == segments.length-1">
+                                    <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length > 1 && selectedIndex < segments.length-1">
+                                    <ng-md-icon  icon="keyboard_arrow_right" style="fill:black"/>
+                                </div>
+                            </md-button>
+                            <md-button class="smaller" ng-click="addSegment()">
+                                <md-tooltip md-direction="bottom">Add segment</md-tooltip>
+                                <ng-md-icon icon="add" style="fill:black"/>
+                            </md-button>
+                            <md-button class="smaller" ng-click="removeSegment()" ng-disabled="segments.length == 1">
+                                <md-tooltip md-direction="bottom">Remove segment</md-tooltip>
+                                <div ng-show="segments.length == 1">
+                                    <ng-md-icon icon="delete" style="fill:grey"/>
+                                </div>
+                                <div ng-show="segments.length != 1">
+                                    <ng-md-icon icon="delete" style="fill:black"/>
+                                </div>
+                            </md-button>
+                        </div>
+                    </div>
+                    <div layout="row">
+                        <div flex>
+                            <md-tabs md-selected="selectedIndex" style="min-height: 500px;" md-autoselect>
+                                <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
+                                    <md-tab-template layout="column" flex>
+                                        <div layout="row">
+                                            <div>
+                                                <md-input-container>
+                                                    <label>LabelID</label>
+                                                    <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/" non-Existent-Label>
+                                                    <div ng-messages="jsonForm.LabelID.$error" role="alert">
+                                                        <div ng-message="required" class="my-message">You must supply a label id.</div>
+                                                        <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
+                                                    </div>
+                                                </md-input-container>
+                                            </div>
+                                            <div>
+                                                <md-input-container>
+                                                    <label>SegmentDescription</label>
+                                                    <input ng-model="segment.SegmentDescription">
+                                                </md-input-container>
+                                            </div>
+                                            <div flex label="Recommended Display RGB Value" md-color-picker="segment.RecommendedDisplayRGBValue.backgroundOptions" ng-model="segment.RecommendedDisplayRGBValue.color"></div>
+                                        </div>
+                                        <div layout="row">
+                                            <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl" class="ng-scope" flex>
+                                                <custom-Autocomplete></custom-Autocomplete>
+                                            </div>
+                                        </div>
+                                        <div layout="row">
+                                            <div ng-controller="SegmentedPropertyTypeController as ctrl" class="ng-scope" flex>
+                                                <custom-Autocomplete></custom-Autocomplete>
+                                            </div>
+                                            <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
+                                                <custom-Autocomplete></custom-Autocomplete>
+                                            </div>
+                                        </div>
+                                        <div layout="row">
+                                            <div ng-controller="AnatomicRegionController as ctrl" flex>
+                                                <custom-Autocomplete></custom-Autocomplete>
+                                            </div>
+                                            <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
+                                                <custom-Autocomplete></custom-Autocomplete>
+                                            </div>
+                                        </div>
+                                    </md-tab-template>
+                                </md-tab>
+                            </md-tabs>
+                        </div>
+                    </div>
+                    <div layout="row">
+                        <div>
+                            <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
+                        </div>
+                        <div>
+                            <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div flex class="md-whiteframe-7dp md-padding" id="jsonOutput">
+                <div layout="row">
+                    <div flex>
+                        <pre>
+                            {{ output | json }}
+                        </pre>
+                    </div>
+                    <div>
+                        <md-button class="md-fab md-mini md-primary" ngclipboard data-clipboard-text="{{ output | json }}">
+                            <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
+                            <ng-md-icon icon="content_copy" style="fill:white"/>
+                        </md-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </md-content>
+</div>
