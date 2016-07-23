@@ -3,12 +3,20 @@
   var anatomicRegionXMLPath = 'assets/AnatomicRegionAndModifier.xml';
   var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
 
-  var app = angular.module('JSONSemanticsCreator',
-    ['ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker'])
-    .config(function ($httpProvider) {
+  var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate',
+                                                    'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker']);
+
+  app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
-    })
-    .config(function(NotificationProvider) {
+    });
+
+  app.config(function($mdThemingProvider) {
+    $mdThemingProvider.theme('default')
+      .primaryPalette('green')
+      .accentPalette('red');
+  });
+
+  app.config(function(NotificationProvider) {
       NotificationProvider.setOptions({
         delay: 5000,
         startTop: 10,
@@ -17,6 +25,27 @@
         positionY: 'bottom'
       });
     });
+
+  app.config(function($routeProvider) {
+    $routeProvider
+      .when('/home', {
+        templateUrl: 'home.html',
+        controller: 'JSONSemanticsCreatorMainController'
+      })
+      .when('/seg', {
+        templateUrl: 'seg.html',
+        controller: 'JSONSemanticsCreatorController'
+      })
+      .otherwise({
+        redirectTo: '/home'
+      });
+  });
+
+  app.controller('JSONSemanticsCreatorMainController', ['$scope',
+    function($scope) {
+      $scope.headlineText = "DCMQI Meta Information Generators";
+      $scope.toolTipDelay = 500;
+  }]);
 
   app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log', '$mdDialog', '$timeout', 'Notification',
     function($scope, $rootScope, $log, $mdDialog, $timeout, Notification) {
