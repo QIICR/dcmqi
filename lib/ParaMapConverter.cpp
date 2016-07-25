@@ -13,15 +13,12 @@ namespace dcmqi {
     reader->Update();
     ImageType::Pointer parametricMapImage = reader->GetOutput();
 
-    ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
-    cout << "Input image size: " << inputSize << endl;
-
-    JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
-    metaInfo.read();
-
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage(parametricMapImage);
     calculator->Compute();
+
+    JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
+    metaInfo.read();
 
     metaInfo.setFirstValueMapped(calculator->GetMinimum());
     metaInfo.setLastValueMapped(calculator->GetMaximum());
@@ -38,6 +35,9 @@ namespace dcmqi {
     OFString pixContrast = "MTT";
     DPMTypes::ContentQualification contQual = DPMTypes::CQ_RESEARCH;
     OFString modality = "MR";
+
+    ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
+    cout << "Input image size: " << inputSize << endl;
 
     CHECK_COND(DPMParametricMapFloat::create(pMapDoc, modality, metaInfo.getSeriesNumber().c_str(),
 																						 metaInfo.getInstanceNumber().c_str(),
@@ -129,14 +129,13 @@ namespace dcmqi {
     DcmDate::getCurrentDate(contentDate);
     DcmTime::getCurrentTime(contentTime);
 
-    pMapDocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
-    pMapDocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
-    pMapDocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
-    pMapDocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
-
-    pMapDocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str());
-    pMapDocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.getSeriesNumber().c_str());
+    pMapDoc->getSeries().setSeriesDate(contentDate.c_str());
+    pMapDoc->getSeries().setSeriesTime(contentTime.c_str());
+    pMapDoc->getGeneralImage().setContentDate(contentDate.c_str());
+    pMapDoc->getGeneralImage().setContentTime(contentTime.c_str());
   }
+  pMapDoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
+  pMapDoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
 
   CHECK_COND(pMapDoc->writeDataset(pMapDocDataset));
   CHECK_COND(pMapDoc->saveFile(outputFileName.c_str()));
