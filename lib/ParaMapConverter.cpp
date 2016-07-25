@@ -19,6 +19,13 @@ namespace dcmqi {
     JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
     metaInfo.read();
 
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
+    calculator->SetImage(parametricMapImage);
+    calculator->Compute();
+
+    metaInfo.setFirstValueMapped(calculator->GetMinimum());
+    metaInfo.setLastValueMapped(calculator->GetMaximum());
+
     IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
     ContentIdentificationMacro contentID = createContentIdentificationInformation();
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
@@ -32,15 +39,13 @@ namespace dcmqi {
     DPMTypes::ContentQualification contQual = DPMTypes::CQ_RESEARCH;
     OFString modality = "MR";
 
-
     CHECK_COND(DPMParametricMapFloat::create(pMapDoc, modality, metaInfo.getSeriesNumber().c_str(),
 																						 metaInfo.getInstanceNumber().c_str(),
 																						 inputSize[0], inputSize[1], eq, contentID,
 																						 imageFlavor, pixContrast, contQual));
 
     if (!dicomImageFileName.empty())
-      cout << "using dicom source image" << endl;
-//      CHECK_COND(pMapDoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+      CHECK_COND(pMapDoc->import(dicomImageFileName.c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -103,26 +108,19 @@ namespace dcmqi {
       result = addFrame(pMapDoc, parametricMapImage, metaInfo, f);
     }
 
-  COUT << "Successfully created parametric map document" << OFendl;
-
-  // populate BodyPartExamined
   {
-    DcmFileFormat sliceFF;
-    DcmDataset *sliceDataset = NULL;
-    OFString bodyPartStr;
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
-
-//    TODO: add the following only if source dicom file was parameterized
-//    CHECK_COND(sliceFF.loadFile(dicomImageFileNames[0].c_str()));
-//    sliceDataset = sliceFF.getDataset();
-//    // inherit BodyPartExamined from the source image dataset, if available
-//    if(sliceDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
-//
-//    if(string(bodyPartStr.c_str()).size())
-//      bodyPartAssigned = bodyPartStr.c_str();
-
-    if(bodyPartAssigned.size())
-      CHECK_COND(pMapDocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+    if(!dicomImageFileName.empty() && bodyPartAssigned.empty()) {
+      DcmFileFormat sliceFF;
+      CHECK_COND(sliceFF.loadFile(dicomImageFileName.c_str()));
+      OFString bodyPartStr;
+      if(sliceFF.getDataset()->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
+        if (!bodyPartStr.empty())
+          bodyPartAssigned = bodyPartStr.c_str();
+      }
+    }
+    if(!bodyPartAssigned.empty())
+      pMapDoc->getIODGeneralSeriesModule().setBodyPartExamined(bodyPartAssigned.c_str());
   }
 
   // SeriesDate/Time should be of when parametric map was taken; initialize to when it was saved
@@ -152,7 +150,8 @@ namespace dcmqi {
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapFloat *map, const ImageType::Pointer &parametricMapImage,
-																				 const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo)
+																				 const JSONParametricMapMetaInformationHandler &metaInfo,
+                                         const unsigned long frameNo)
   {
     ImageType::RegionType sliceRegion;
     ImageType::IndexType sliceIndex;
@@ -184,32 +183,33 @@ namespace dcmqi {
 //      cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
     }
 
-    // Create functional groups
-    // TODO: needs to be populated by meta information json file
     OFVector<FGBase*> groups;
     OFunique_ptr<FGPlanePosPatient> fgPlanePos(new FGPlanePosPatient);
     OFunique_ptr<FGFrameContent > fgFracon(new FGFrameContent);
-    OFunique_ptr<FGRealWorldValueMapping> fgRVWM(new FGRealWorldValueMapping());
-    FGRealWorldValueMapping::RWVMItem* rvwmItemSimple = new FGRealWorldValueMapping::RWVMItem();
-//    FGRealWorldValueMapping::RWVMItem* rvwmItemLUT = new FGRealWorldValueMapping::RWVMItem();
-    if (!fgPlanePos  || !fgFracon || !fgRVWM || !rvwmItemSimple )
+    OFunique_ptr<FGRealWorldValueMapping> realWorldValueMappingFG(new FGRealWorldValueMapping());
+    FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
+    if (!fgPlanePos  || !fgFracon || !realWorldValueMappingFG || !realWorldValueMappingItem )
     {
       delete[] data;
       return EC_MemoryExhausted;
     }
 
-    // Real World Value Mapping
-    rvwmItemSimple->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
-    rvwmItemSimple->setRealWorldValueIntercept(0);
+    realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
+    realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
+
+    realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(metaInfo.getFirstValueMapped());
+    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
 
     CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
     if (measurementUnitCode != NULL) {
-      rvwmItemSimple->getMeasurementUnitsCode().set(metaInfo.getCodeSequenceValue(measurementUnitCode).c_str(),
+      realWorldValueMappingItem->getMeasurementUnitsCode().set(metaInfo.getCodeSequenceValue(measurementUnitCode).c_str(),
 																										metaInfo.getCodeSequenceDesignator(measurementUnitCode).c_str(),
 																										metaInfo.getCodeSequenceMeaning(measurementUnitCode).c_str());
     }
-    rvwmItemSimple->setLUTExplanation("We are mapping trash to junk.");
-    rvwmItemSimple->setLUTLabel("Just testing");
+
+    // TODO: LutExplanation and LUTLabel should be added as Metainformation
+    realWorldValueMappingItem->setLUTExplanation("We are mapping trash to junk.");
+    realWorldValueMappingItem->setLUTLabel("Just testing");
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro("110805", "SRT", "T2 Weighted MR Signal Intensity");
@@ -222,9 +222,9 @@ namespace dcmqi {
 
     quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
     quantity->getEntireConceptCodeSequence().push_back(qSpec);
-    rvwmItemSimple->getEntireQuantityDefinitionSequence().push_back(quantity);
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
     quantity->setValueType(ContentItemMacro::VT_CODE);
-    fgRVWM->getRealWorldValueMapping().push_back(rvwmItemSimple);
+    realWorldValueMappingFG->getRealWorldValueMapping().push_back(realWorldValueMappingItem);
 
     // Plane Position
     OFStringStream ss;
@@ -240,7 +240,7 @@ namespace dcmqi {
     {
       groups.push_back(fgPlanePos.get());
       groups.push_back(fgFracon.get());
-      groups.push_back(fgRVWM.get());
+      groups.push_back(realWorldValueMappingFG.get());
       groups.push_back(fgPlanePos.get());
       result = map->addFrame(data, frameSize, groups);
     }

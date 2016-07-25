@@ -18,9 +18,12 @@
 
 #include "ConverterBase.h"
 
+#include "itkMinimumMaximumImageCalculator.h"
+
 typedef float PixelType;
 typedef itk::Image<PixelType, 3> ImageType;
 typedef itk::ImageFileReader<ImageType> ReaderType;
+typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType;
 
 using namespace std;
 

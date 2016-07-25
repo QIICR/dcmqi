@@ -29,6 +29,10 @@ namespace dcmqi {
     this->realWorldValueSlope = value;
   };
 
+  void JSONParametricMapMetaInformationHandler::setRealWorldValueIntercept(const string &value) {
+    this->realWorldValueIntercept = value;
+  }
+
   void JSONParametricMapMetaInformationHandler::setDerivedPixelContrast(const string& value) {
     this->derivedPixelContrast = value;
   };
@@ -60,6 +64,14 @@ namespace dcmqi {
     this->quantityValueCode = new CodeSequenceMacro(codeSequence);
   }
 
+  void JSONParametricMapMetaInformationHandler::setLastValueMapped(const short &value) {
+    this->lastValueMapped = value;
+  }
+
+  void JSONParametricMapMetaInformationHandler::setFirstValueMapped(const short &value) {
+    this->firstValueMapped = value;
+  }
+
   void JSONParametricMapMetaInformationHandler ::read() {
     if (this->filename.size() && this->isValid(this->filename)) {
       try {
@@ -70,7 +82,8 @@ namespace dcmqi {
         this->seriesNumber = root.get("SeriesNumber", "300").asString();
         this->instanceNumber = root.get("InstanceNumber", "1").asString();
         this->bodyPartExamined = root.get("BodyPartExamined", "").asString();
-        this->realWorldValueSlope = root.get("RealWorldValueSlope", "1.0").asString();
+        this->realWorldValueSlope = root.get("RealWorldValueSlope", "10e-6").asString();
+        this->realWorldValueIntercept = root.get("RealWorldValueIntercept", "0").asString();
         this->derivedPixelContrast = root.get("DerivedPixelContrast", "").asString();
 
         Json::Value elem = root["QuantityValueCode"];
@@ -132,6 +145,5 @@ namespace dcmqi {
     // TODO: add validation of json file here
     return true;
   }
-
 
 }
