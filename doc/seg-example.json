@@ -12,12 +12,12 @@
   "segmentAttributes": [{
     "LabelID": 216,
     "SegmentDescription": "Liver Segmentation",
-    "SegmentedPropertyCategoryCode": {
+    "SegmentedPropertyCategoryCodeSequence": {
       "codeValue": "T-D0050",
       "codingSchemeDesignator": "SRT",
       "codeMeaning": "Tissue"
     },
-    "SegmentedPropertyType": {
+    "SegmentedPropertyTypeCodeSequence": {
       "codeValue": "T-62000",
       "codingSchemeDesignator": "SRT",
       "codeMeaning": "Liver"
