@@ -52,7 +52,7 @@ namespace dcmqi {
 
         /* Initialize shared functional groups */
         FGInterface &segFGInt = segdoc->getFunctionalGroups();
-        vector<int> slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
+        vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
 
         const unsigned frameSize = inputSize[0] * inputSize[1];
 
@@ -119,7 +119,7 @@ namespace dcmqi {
         OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
 
         DcmFileFormat ff;
-        CHECK_COND(ff.loadFile(dicomImageFileNames[slice2derimg[0]].c_str()));
+        CHECK_COND(ff.loadFile(dicomImageFileNames[0].c_str()));
         DcmDataset *dcm = ff.getDataset();
         CHECK_COND(dcm->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
         CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
@@ -354,7 +354,9 @@ namespace dcmqi {
                             return -1;
                         }
 
-                        siVector.push_back(OFString(dicomImageFileNames[slice2derimg[sliceNumber]].c_str()));
+                        for(unsigned derImageInstanceNum=0;derImageInstanceNum<slice2derimg[sliceNumber].size();derImageInstanceNum++){
+                          siVector.push_back(OFString(dicomImageFileNames[slice2derimg[sliceNumber][derImageInstanceNum]].c_str()));
+                        }
 
                         OFVector<SourceImageItem*> srcimgItems;
                         CHECK_COND(derimgItem->addSourceImageItems(siVector,
@@ -759,11 +761,12 @@ namespace dcmqi {
         return ident;
     }
 
-    vector<int> ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
+    vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
                                                                               const itk::Image<short, 3>::Pointer &labelImage) {
         // Find mapping from the segmentation slice number to the derivation image
         // Assume that orientation of the segmentation is the same as the source series
-        vector<int> slice2derimg(dicomImageFileNames.size());
+        unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
+        vector<vector<int> > slice2derimg(numLabelSlices);
         for(int i=0;i<dicomImageFileNames.size();i++){
             OFString ippStr;
             DcmFileFormat sliceFF;
@@ -777,11 +780,12 @@ namespace dcmqi {
                 ippPoint[j] = atof(ippStr.c_str());
             }
             if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
-                cout << "image position: " << ippPoint << endl;
-                cerr << "ippIndex: " << ippIndex << endl;
-                throw DCMQIImagePositionPatientMapsOutsideITKException("ImagePositionPatient maps outside the ITK image!");
+                //cout << "image position: " << ippPoint << endl;
+                //cerr << "ippIndex: " << ippIndex << endl;
+                // if certain DICOM instance does not map to a label slice, just skip it
+                continue;
             }
-            slice2derimg[ippIndex[2]] = i;
+            slice2derimg[ippIndex[2]].push_back(i);
         }
         return slice2derimg;
     }
@@ -1023,5 +1027,3 @@ namespace dcmqi {
     }
 
 }
-
-

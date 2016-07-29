@@ -73,7 +73,7 @@ namespace dcmqi {
     private:
         static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
         static ContentIdentificationMacro createContentIdentificationInformation();
-        static vector<int> getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
+        static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
                                                                       const itk::Image<short, 3>::Pointer &labelImage);
 
         static int getImageDirections(FGInterface &fgInterface, ImageType::DirectionType &dir);
