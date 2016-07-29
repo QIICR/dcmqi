@@ -208,7 +208,7 @@
           if (value.anatomicRegionModifier)
             attributes["AnatomicRegionModifierCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
           if (value.segmentedPropertyCategory)
-            attributes["SegmentedPropertyCategoryCodeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
+            attributes["SegmentedPropertyCategoryCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
           if (value.segmentedPropertyType)
             attributes["SegmentedPropertyTypeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyType);
           if (value.segmentedPropertyTypeModifier)
