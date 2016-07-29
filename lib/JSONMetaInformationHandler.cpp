@@ -68,14 +68,16 @@ namespace dcmqi {
             if ((*it)->getSegmentAlgorithmName().length() > 0)
                 segment["SegmentAlgorithmName"] = (*it)->getSegmentAlgorithmName();
 
-            if ((*it)->getSegmentedPropertyCategoryCode())
-                segment["SegmentedPropertyCategoryCode"] = codeSequence2Json((*it)->getSegmentedPropertyCategoryCode());
+            if ((*it)->getSegmentedPropertyCategoryCode()){
+                segment["SegmentedPropertyCategoryCodeSequence"] = codeSequence2Json((*it)->getSegmentedPropertyCategoryCode());
+                cout << (*it)->getSegmentedPropertyCategoryCode() << endl;
+              }
 
             if ((*it)->getSegmentedPropertyType())
-                segment["SegmentedPropertyType"] = codeSequence2Json((*it)->getSegmentedPropertyType());
+                segment["SegmentedPropertyTypeCodeSequence"] = codeSequence2Json((*it)->getSegmentedPropertyType());
 
             if ((*it)->getSegmentedPropertyTypeModifier())
-                segment["SegmentedPropertyTypeModifier"] = codeSequence2Json((*it)->getSegmentedPropertyTypeModifier());
+                segment["SegmentedPropertyTypeModifierCodeSequence"] = codeSequence2Json((*it)->getSegmentedPropertyTypeModifier());
 
             if ((*it)->getAnatomicRegion())
                 segment["AnatomicRegion"] = codeSequence2Json((*it)->getAnatomicRegion());
@@ -134,13 +136,13 @@ namespace dcmqi {
             if (!segmentDescription.isNull()) {
                 segmentAttribute->setSegmentDescription(segmentDescription.asString());
             }
-            Json::Value elem = segment["SegmentedPropertyCategoryCode"];
+            Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
             if (!elem.isNull()) {
                 segmentAttribute->setSegmentedPropertyCategoryCode(elem.get("codeValue", "T-D0050").asString(),
                                                                    elem.get("codingSchemeDesignator", "SRT").asString(),
                                                                    elem.get("codeMeaning", "Tissue").asString());
             }
-            elem = segment["SegmentedPropertyType"];
+            elem = segment["SegmentedPropertyTypeCodeSequence"];
             if (!elem.isNull()) {
                 segmentAttribute->setSegmentedPropertyType(elem.get("codeValue", "T-D0050").asString(),
                                                            elem.get("codingSchemeDesignator", "SRT").asString(),
@@ -194,5 +196,3 @@ namespace dcmqi {
     }
 
 }
-
-
