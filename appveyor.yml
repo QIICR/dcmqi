@@ -4,8 +4,6 @@ os:
 clone_depth: 1
 skip_tags: true
 clone_folder: c:\dcmqi
-install:
-  - cinst cmake
 configuration:
   - Release
 platform:
