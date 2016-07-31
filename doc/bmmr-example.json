@@ -1,0 +1,36 @@
+{
+  "SeriesAttributes": {
+    "ReaderID": "Reader1",
+    "SessionID": "Session1",
+    "TimePointID": "1",
+    "SeriesDescription": "Segmentation",
+    "SeriesNumber": 300,
+    "InstanceNumber": 1
+  },
+  "SegmentAttributes": [
+    {
+      "LabelID": 1,
+      "SegmentDescription": "Breast segmentation",
+      "SegmentedPropertyCategoryCodeSequence": {
+        "CodeValue": "T-D000A",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Anatomical Structure"
+      },
+      "SegmentedPropertyTypeCodeSequence": {
+        "CodeValue": "T-04000",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Breast"
+      },
+      "SegmentedPropertyTypeModifierCodeSequence": {
+        "CodeValue": "G-A102",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Right and left"
+      },
+      "RecommendedDisplayRGBValue": [
+        "252",
+        "226",
+        "234"
+      ]
+    }
+  ]
+}
