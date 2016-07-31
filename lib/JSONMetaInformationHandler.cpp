@@ -26,12 +26,11 @@ namespace dcmqi {
             try {
                 ifstream metainfoStream(this->filename, ifstream::binary);
 
-                Json::Value root;
-                metainfoStream >> root;
-                this->readSeriesAttributes(root);
-                this->readSegmentAttributes(root);
+                metainfoStream >> this->metaInfoRoot;
+                this->readSeriesAttributes(this->metaInfoRoot);
+                this->readSegmentAttributes(this->metaInfoRoot);
             } catch (exception& e) {
-                cout << e.what() << '\n';
+                cout << e.what() << endl;
                 return false;
             }
             return true;

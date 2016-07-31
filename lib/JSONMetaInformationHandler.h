@@ -41,6 +41,9 @@ namespace dcmqi {
         string instanceNumber;
         string bodyPartExamined;
 
+        // need to revisit
+        Json::Value metaInfoRoot;
+
     protected:
         bool isValid(const char *filename);
 

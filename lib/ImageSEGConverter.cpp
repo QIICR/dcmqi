@@ -23,7 +23,7 @@ namespace dcmqi {
         JSONMetaInformationHandler metaInfo(metaDataFileName.c_str());
 
         IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
-        ContentIdentificationMacro ident = createContentIdentificationInformation();
+        ContentIdentificationMacro ident = createContentIdentificationInformation(metaInfo);
         CHECK_COND(ident.setInstanceNumber(metaInfo.instanceNumber.c_str()));
 
 
@@ -406,7 +406,8 @@ namespace dcmqi {
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.readerID.c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.sessionID.c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.timePointID.c_str()));
-    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, "UIowa"));
+    if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
 
     // populate BodyPartExamined
     {
@@ -753,11 +754,19 @@ namespace dcmqi {
         return eq;
     }
 
-    ContentIdentificationMacro ImageSEGConverter::createContentIdentificationInformation() {
+    ContentIdentificationMacro ImageSEGConverter::createContentIdentificationInformation(JSONMetaInformationHandler &metaInfo) {
         ContentIdentificationMacro ident;
-        CHECK_COND(ident.setContentCreatorName("QIICR"));
-        CHECK_COND(ident.setContentDescription("Iowa QIN segmentation result"));
-        CHECK_COND(ident.setContentLabel("QIICR QIN IOWA"));
+        CHECK_COND(ident.setContentCreatorName("dcmqi"));
+        if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentDescription")){
+          CHECK_COND(ident.setContentDescription(metaInfo.metaInfoRoot["seriesAttributes"]["ContentDescription"].asCString()));
+        } else {
+          CHECK_COND(ident.setContentDescription("Image segmentation"));
+        }
+        if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentLabel")){
+          CHECK_COND(ident.setContentLabel(metaInfo.metaInfoRoot["seriesAttributes"]["ContentLabel"].asCString()));
+        } else {
+          CHECK_COND(ident.setContentLabel("SEGMENTATION"));
+        }
         return ident;
     }
 
@@ -788,14 +797,6 @@ namespace dcmqi {
             slice2derimg[ippIndex[2]].push_back(i);
         }
         return slice2derimg;
-    }
-
-    int ImageSEGConverter::CHECK_COND(const OFCondition& condition) {
-        if (condition.bad()) {
-            cerr << condition.text() << " in " __FILE__ << ":" << __LINE__  << endl;
-            throw OFConditionBadException();
-        }
-        return 0;
     }
 
     int ImageSEGConverter::getImageDirections(FGInterface &fgInterface, ImageType::DirectionType &dir){

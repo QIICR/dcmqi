@@ -68,11 +68,10 @@ namespace dcmqi {
                                              const std::string &metaDataFileName, const std::string &outputFileName);
 
         static int dcmSegmentation2itkimage(const string &inputSEGFileName, const string &outputDirName);
-        static int CHECK_COND(const OFCondition& condition);
 
     private:
         static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
-        static ContentIdentificationMacro createContentIdentificationInformation();
+        static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandler&);
         static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
                                                                       const itk::Image<short, 3>::Pointer &labelImage);
 

@@ -4,6 +4,14 @@
 #include <vector>
 #include <map>
 
+#define CHECK_COND(condition) \
+  do { \
+    if (condition.bad()) { \
+      std::cerr << "Condition failed: " << condition.text() << " in " __FILE__ << ":" << __LINE__ << std::endl; \
+      throw -1; \
+    } \
+} while (0);
+
 using namespace std;
 
 namespace dcmqi {

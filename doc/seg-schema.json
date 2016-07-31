@@ -19,6 +19,24 @@
         {"properties" : {"default" : "Session1"}}]
       },
 
+      "ContentLabel":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
+        {"properties" : {"default" : "SEGMENTATION"}}]
+      },
+
+      "ContentDescription":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+        {"properties" : {"default" : "Image segmentation"}}]
+      },
+
+      "ClinicalTrialCoordinatingCenterName":
+      { "allOf" :
+        [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
+        {"properties" : {"default" : "dcmqi"}}]
+      },
+
       "ClinicalTrialTimePointID":
       { "allOf" :
         [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
