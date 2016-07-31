@@ -219,8 +219,8 @@
         });
 
         var doc = {
-          "SeriesAttributes": seriesAttributes,
-          "SegmentAttributes": segmentAttributes
+          "seriesAttributes": seriesAttributes,
+          "segmentAttributes": segmentAttributes
         };
 
         $scope.output = doc;
