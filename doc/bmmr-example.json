@@ -1,15 +1,17 @@
 {
-  "SeriesAttributes": {
+  "seriesAttributes": {
     "ReaderID": "Reader1",
     "SessionID": "Session1",
     "TimePointID": "1",
     "SeriesDescription": "Segmentation",
     "SeriesNumber": 300,
-    "InstanceNumber": 1
+    "InstanceNumber": 1,
+    "ClinicalTrialCoordinatingCenterName": "UCSF"
   },
-  "SegmentAttributes": [
+  "segmentAttributes": [
     {
       "LabelID": 1,
+      "SegmentAlgorithmType": "MANUAL",
       "SegmentDescription": "Breast segmentation",
       "SegmentedPropertyCategoryCodeSequence": {
         "CodeValue": "T-D000A",
