@@ -13,20 +13,20 @@ namespace dcmqi {
 																											 QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
   }
 
-  ContentIdentificationMacro ConverterBase::createContentIdentificationInformation() {
-		ContentIdentificationMacro ident;
-		CHECK_COND(ident.setContentCreatorName("QIICR"));
-		CHECK_COND(ident.setContentDescription("Iowa QIN segmentation result"));
-		CHECK_COND(ident.setContentLabel("QIICR QIN IOWA"));
-		return ident;
+  // TODO: defaults for sub classes needs to be defined
+  ContentIdentificationMacro ConverterBase::createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo) {
+    ContentIdentificationMacro ident;
+    CHECK_COND(ident.setContentCreatorName("dcmqi"));
+    if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentDescription")){
+      CHECK_COND(ident.setContentDescription(metaInfo.metaInfoRoot["seriesAttributes"]["ContentDescription"].asCString()));
+    } else {
+      CHECK_COND(ident.setContentDescription("Image segmentation"));
+    }
+    if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentLabel")){
+      CHECK_COND(ident.setContentLabel(metaInfo.metaInfoRoot["seriesAttributes"]["ContentLabel"].asCString()));
+    } else {
+      CHECK_COND(ident.setContentLabel("SEGMENTATION"));
+    }
+    return ident;
   }
-
-  int ConverterBase::CHECK_COND(const OFCondition& condition) {
-		if (condition.bad()) {
-			cerr << condition.text() << " in " __FILE__ << ":" << __LINE__  << endl;
-			throw OFConditionBadException();
-		}
-		return 0;
-  }
-
 }

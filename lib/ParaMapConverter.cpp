@@ -24,7 +24,7 @@ namespace dcmqi {
     metaInfo.setLastValueMapped(calculator->GetMaximum());
 
     IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
-    ContentIdentificationMacro contentID = createContentIdentificationInformation();
+    ContentIdentificationMacro contentID = createContentIdentificationInformation(metaInfo);
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
     // TODO: following should maybe be moved to meta info

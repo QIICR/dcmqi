@@ -1,16 +1,9 @@
 #ifndef DCMQI_PARAMAP_CONVERTER_H
 #define DCMQI_PARAMAP_CONVERTER_H
 
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 #include "dcmtk/dcmpmap/dpmparametricmapiod.h"
-#include "dcmtk/oflog/loglevel.h"
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/oflog/oflog.h"
 
 #include <stdlib.h>
-#include <vector>
-
-#include "dcmqiVersionConfigure.h"
 
 #include <itkImageRegionConstIteratorWithIndex.h>
 

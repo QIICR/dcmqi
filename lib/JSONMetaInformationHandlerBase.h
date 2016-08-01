@@ -37,6 +37,9 @@ namespace dcmqi {
     static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
     static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
 
+    // need to revisit
+    Json::Value metaInfoRoot;
+
   protected:
     virtual bool isValid(string filename)=0;
 

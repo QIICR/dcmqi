@@ -4,6 +4,10 @@
 #include <vector>
 #include "vnl/vnl_cross.h"
 
+#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/oflog/loglevel.h"
+#include "dcmtk/oflog/oflog.h"
 #include <dcmtk/dcmiod/iodmacro.h>
 #include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modequipment.h>
@@ -25,19 +29,18 @@
 #include <itkImageFileWriter.h>
 #include <itkLabelImageToLabelMapFilter.h>
 
+#include "JSONMetaInformationHandlerBase.h"
+
 using namespace std;
 
 namespace dcmqi {
 
 	class ConverterBase {
 
-  public:
-		static int CHECK_COND(const OFCondition& condition);
-
   protected:
-		static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
+    static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
 		static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
-		static ContentIdentificationMacro createContentIdentificationInformation();
+		static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo);
 
 		template <class T>
 		static int getImageDirections(FGInterface &fgInterface, T &dir){
