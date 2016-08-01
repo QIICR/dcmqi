@@ -20,7 +20,7 @@
 
 #include "itkMinimumMaximumImageCalculator.h"
 
-typedef float PixelType;
+typedef IODFloatingPointImagePixelModule::value_type PixelType;
 typedef itk::Image<PixelType, 3> ImageType;
 typedef itk::ImageFileReader<ImageType> ReaderType;
 typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType;
@@ -39,7 +39,7 @@ namespace dcmqi {
 
   	static int paramap2itkimage(const string &inputSEGFileName, const string &outputDirName);
   protected:
-  	static OFCondition addFrame(DPMParametricMapFloat *map, const ImageType::Pointer &parametricMapImage,
+  	static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
 																const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
   };
 
