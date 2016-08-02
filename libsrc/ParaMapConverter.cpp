@@ -196,7 +196,7 @@ namespace dcmqi {
   return output;
   }
 
-  int ParaMapConverter::paramap2itkimage(const string &inputParamapFileName, const string &outputDirName) {
+  int ParaMapConverter::paramap2itkimage(const string &inputFileName, const string &outputDirName) {
     return EXIT_SUCCESS;
   }
 
