@@ -53,5 +53,17 @@
       {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"}
     ],
     "required" : true
-  }
+  },
+
+  "AnatomicRegionCode" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    "required" : true
+  },
+
+  "FrameLaterality" : {
+    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS",
+    "default" : "U",
+    "required" : true
+  },
+  "LUTLabel"
 }

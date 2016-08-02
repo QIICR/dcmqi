@@ -102,7 +102,14 @@ namespace dcmqi {
     CHECK_COND(pMapDoc.addForAllFrames(idTransFG));
 
     FGParametricMapFrameType frameTypeFG;
-    frameTypeFG.setFrameType("DERIVED\\PRIMARY\\VOLUME\\MTT");
+    std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\";
+    cout << metaInfo.metaInfoRoot << endl;
+    if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
+      frameTypeStr = frameTypeStr + metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
+    } else {
+      frameTypeStr = frameTypeStr + "NONE";
+    }
+    frameTypeFG.setFrameType(frameTypeStr.c_str());
     CHECK_COND(pMapDoc.addForAllFrames(frameTypeFG));
 
     for (unsigned long f = 0; result.good() && (f < inputSize[2]); f++) {
@@ -241,5 +248,3 @@ namespace dcmqi {
     return result;
   }
 }
-
-
