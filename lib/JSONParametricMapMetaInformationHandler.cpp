@@ -76,31 +76,30 @@ namespace dcmqi {
     if (this->filename.size() && this->isValid(this->filename)) {
       try {
         ifstream metainfoStream(this->filename, ios_base::binary);
-        Json::Value root;
-        metainfoStream >> root;
-        this->seriesDescription = root.get("SeriesDescription", "Segmentation").asString();
-        this->seriesNumber = root.get("SeriesNumber", "300").asString();
-        this->instanceNumber = root.get("InstanceNumber", "1").asString();
-        this->bodyPartExamined = root.get("BodyPartExamined", "").asString();
-        this->realWorldValueSlope = root.get("RealWorldValueSlope", "10e-6").asString();
-        this->realWorldValueIntercept = root.get("RealWorldValueIntercept", "0").asString();
-        this->derivedPixelContrast = root.get("DerivedPixelContrast", "").asString();
+        metainfoStream >> this->metaInfoRoot;
+        this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
+        this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
+        this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
+        this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
+        this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
+        this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
+        this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
 
-        Json::Value elem = root["QuantityValueCode"];
+        Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
         if (!elem.isNull()) {
           this->setQuantityValueCode(elem.get("codeValue", "").asString(),
 																		 elem.get("codingSchemeDesignator", "").asString(),
 																		 elem.get("codeMeaning", "").asString());
         }
 
-        elem = root["MeasurementUnitsCode"];
+        elem = this->metaInfoRoot["MeasurementUnitsCode"];
         if (!elem.isNull()) {
           this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
 																				elem.get("codingSchemeDesignator", "").asString(),
 																				elem.get("codeMeaning", "").asString());
         }
 
-        elem = root["MeasurementMethodCode"];
+        elem = this->metaInfoRoot["MeasurementMethodCode"];
         if (!elem.isNull()) {
           this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
 																				 elem.get("codingSchemeDesignator", "").asString(),
@@ -108,7 +107,7 @@ namespace dcmqi {
         }
 
       } catch (exception& e) {
-        cout << e.what() << '\n';
+        cout << e.what() << endl;
         throw JSONReadErrorException();
       }
     } else
