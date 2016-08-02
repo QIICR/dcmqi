@@ -103,7 +103,6 @@ namespace dcmqi {
 
     FGParametricMapFrameType frameTypeFG;
     std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\";
-    cout << metaInfo.metaInfoRoot << endl;
     if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
       frameTypeStr = frameTypeStr + metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
     } else {
@@ -111,6 +110,45 @@ namespace dcmqi {
     }
     frameTypeFG.setFrameType(frameTypeStr.c_str());
     CHECK_COND(pMapDoc.addForAllFrames(frameTypeFG));
+
+    FGRealWorldValueMapping rwvmFG;
+    FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
+    if (!realWorldValueMappingItem )
+    {
+      return -1;
+    }
+
+    realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
+    realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
+
+    realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(metaInfo.getFirstValueMapped());
+    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
+
+    CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
+    if (measurementUnitCode != NULL) {
+      realWorldValueMappingItem->getMeasurementUnitsCode().set(metaInfo.getCodeSequenceValue(measurementUnitCode).c_str(),
+                                                               metaInfo.getCodeSequenceDesignator(measurementUnitCode).c_str(),
+                                                               metaInfo.getCodeSequenceMeaning(measurementUnitCode).c_str());
+    }
+
+    // TODO: LutExplanation and LUTLabel should be added as Metainformation
+    realWorldValueMappingItem->setLUTExplanation("We are mapping trash to junk.");
+    realWorldValueMappingItem->setLUTLabel("Just testing");
+    ContentItemMacro* quantity = new ContentItemMacro;
+    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
+    CodeSequenceMacro* qSpec = new CodeSequenceMacro("110805", "SRT", "T2 Weighted MR Signal Intensity");
+
+    if (!quantity || !qSpec || !qCodeName)
+    {
+      return -1;
+    }
+
+    quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
+    quantity->getEntireConceptCodeSequence().push_back(qSpec);
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
+    quantity->setValueType(ContentItemMacro::VT_CODE);
+    rwvmFG.getRealWorldValueMapping().push_back(realWorldValueMappingItem);
+    CHECK_COND(pMapDoc.addForAllFrames(rwvmFG));
 
     for (unsigned long f = 0; result.good() && (f < inputSize[2]); f++) {
       result = addFrame(pMapDoc, parametricMapImage, metaInfo, f);
@@ -188,43 +226,10 @@ namespace dcmqi {
     OFVector<FGBase*> groups;
     OFunique_ptr<FGPlanePosPatient> fgPlanePos(new FGPlanePosPatient);
     OFunique_ptr<FGFrameContent > fgFracon(new FGFrameContent);
-    OFunique_ptr<FGRealWorldValueMapping> realWorldValueMappingFG(new FGRealWorldValueMapping());
-    FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
-    if (!fgPlanePos  || !fgFracon || !realWorldValueMappingFG || !realWorldValueMappingItem )
+    if (!fgPlanePos  || !fgFracon)
     {
       return EC_MemoryExhausted;
     }
-
-    realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
-    realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
-
-    realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(metaInfo.getFirstValueMapped());
-    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
-
-    CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
-    if (measurementUnitCode != NULL) {
-      realWorldValueMappingItem->getMeasurementUnitsCode().set(metaInfo.getCodeSequenceValue(measurementUnitCode).c_str(),
-                                                               metaInfo.getCodeSequenceDesignator(measurementUnitCode).c_str(),
-                                                               metaInfo.getCodeSequenceMeaning(measurementUnitCode).c_str());
-    }
-
-    // TODO: LutExplanation and LUTLabel should be added as Metainformation
-    realWorldValueMappingItem->setLUTExplanation("We are mapping trash to junk.");
-    realWorldValueMappingItem->setLUTLabel("Just testing");
-    ContentItemMacro* quantity = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro("110805", "SRT", "T2 Weighted MR Signal Intensity");
-
-    if (!quantity || !qSpec || !qCodeName)
-    {
-      return EC_MemoryExhausted;
-    }
-
-    quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
-    quantity->getEntireConceptCodeSequence().push_back(qSpec);
-    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
-    quantity->setValueType(ContentItemMacro::VT_CODE);
-    realWorldValueMappingFG->getRealWorldValueMapping().push_back(realWorldValueMappingItem);
 
     // Plane Position
     OFStringStream ss;
@@ -240,7 +245,6 @@ namespace dcmqi {
     {
       groups.push_back(fgPlanePos.get());
       groups.push_back(fgFracon.get());
-      groups.push_back(realWorldValueMappingFG.get());
       groups.push_back(fgPlanePos.get());
       DPMParametricMapIOD::FramesType frames = map.getFrames();
       result = OFget<DPMParametricMapIOD::Frames<PixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
