@@ -132,11 +132,14 @@ namespace dcmqi {
     }
 
     // TODO: LutExplanation and LUTLabel should be added as Metainformation
-    realWorldValueMappingItem->setLUTExplanation("We are mapping trash to junk.");
-    realWorldValueMappingItem->setLUTLabel("Just testing");
+    realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeMeaning"].asCString());
+    realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeValue"].asCString());
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro("110805", "SRT", "T2 Weighted MR Signal Intensity");
+    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
+      metaInfo.metaInfoRoot["QuantityValueCode"]["codeValue"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["codingSchemeDesignator"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["codeMeaning"].asCString());
 
     if (!quantity || !qSpec || !qCodeName)
     {
