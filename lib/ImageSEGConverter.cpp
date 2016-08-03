@@ -40,7 +40,9 @@ namespace dcmqi {
         ident);   // content identification
 
     /* Import patient and study from existing file */
-    CHECK_COND(segdoc->import(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+    // TODO: for more recent dcmtk version
+    // CHECK_COND(segdoc->import(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+    CHECK_COND(segdoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];

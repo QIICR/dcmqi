@@ -4,8 +4,15 @@
 namespace dcmqi {
 
   IODGeneralEquipmentModule::EquipmentInfo ConverterBase::getEquipmentInfo() {
-  	return IODGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
-																										QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
+    // TODO: change to following for most recent dcmtk
+    // return IODGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
+    //                                                 QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
+    IODGeneralEquipmentModule::EquipmentInfo eq;
+    eq.m_Manufacturer = QIICR_MANUFACTURER;
+    eq.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
+    eq.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
+    eq.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
+    return eq;
   }
 
   IODEnhGeneralEquipmentModule::EquipmentInfo ConverterBase::getEnhEquipmentInfo() {
