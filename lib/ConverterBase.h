@@ -35,216 +35,216 @@ using namespace std;
 
 namespace dcmqi {
 
-	class ConverterBase {
+  class ConverterBase {
 
   protected:
     static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
-		static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
-		static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo);
+    static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
+    static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo);
 
-		template <class T>
-		static int getImageDirections(FGInterface &fgInterface, T &dir){
-			// TODO: handle the situation when FoR is not initialized
-			OFBool isPerFrame;
-			vnl_vector<double> rowDirection(3), colDirection(3);
+    template <class T>
+    static int getImageDirections(FGInterface &fgInterface, T &dir){
+      // TODO: handle the situation when FoR is not initialized
+      OFBool isPerFrame;
+      vnl_vector<double> rowDirection(3), colDirection(3);
 
-			FGPlaneOrientationPatient *planorfg = OFstatic_cast(FGPlaneOrientationPatient*,
-																													fgInterface.get(0, DcmFGTypes::EFG_PLANEORIENTPATIENT, isPerFrame));
-			if(!planorfg){
-				cerr << "Plane Orientation (Patient) is missing, cannot parse input " << endl;
-				return EXIT_FAILURE;
-			}
-			OFString orientStr;
-			for(int i=0;i<3;i++){
-				if(planorfg->getImageOrientationPatient(orientStr, i).good()){
-					rowDirection[i] = atof(orientStr.c_str());
-				} else {
-					cerr << "Failed to get orientation " << i << endl;
-					return EXIT_FAILURE;
-				}
-			}
-			for(int i=3;i<6;i++){
-				if(planorfg->getImageOrientationPatient(orientStr, i).good()){
-					colDirection[i-3] = atof(orientStr.c_str());
-				} else {
-					cerr << "Failed to get orientation " << i << endl;
-					return EXIT_FAILURE;
-				}
-			}
-			vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, colDirection);
-			sliceDirection.normalize();
+      FGPlaneOrientationPatient *planorfg = OFstatic_cast(FGPlaneOrientationPatient*,
+                                                          fgInterface.get(0, DcmFGTypes::EFG_PLANEORIENTPATIENT, isPerFrame));
+      if(!planorfg){
+        cerr << "Plane Orientation (Patient) is missing, cannot parse input " << endl;
+        return EXIT_FAILURE;
+      }
+      OFString orientStr;
+      for(int i=0;i<3;i++){
+        if(planorfg->getImageOrientationPatient(orientStr, i).good()){
+          rowDirection[i] = atof(orientStr.c_str());
+        } else {
+          cerr << "Failed to get orientation " << i << endl;
+          return EXIT_FAILURE;
+        }
+      }
+      for(int i=3;i<6;i++){
+        if(planorfg->getImageOrientationPatient(orientStr, i).good()){
+          colDirection[i-3] = atof(orientStr.c_str());
+        } else {
+          cerr << "Failed to get orientation " << i << endl;
+          return EXIT_FAILURE;
+        }
+      }
+      vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, colDirection);
+      sliceDirection.normalize();
 
-			for(int i=0;i<3;i++){
-				dir[i][0] = rowDirection[i];
-				dir[i][1] = colDirection[i];
-				dir[i][2] = sliceDirection[i];
-			}
+      for(int i=0;i<3;i++){
+        dir[i][0] = rowDirection[i];
+        dir[i][1] = colDirection[i];
+        dir[i][2] = sliceDirection[i];
+      }
 
-			return 0;
-		}
+      return 0;
+    }
 
-		template <class T>
-		static int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, T &imageOrigin,
-																	 double &sliceSpacing, double &sliceExtent) {
-			// Size
-			// Rows/Columns can be read directly from the respective attributes
-			// For number of slices, consider that all segments must have the same number of frames.
-			//   If we have FoR UID initialized, this means every segment should also have Plane
-			//   Position (Patient) initialized. So we can get the number of slices by looking
-			//   how many per-frame functional groups a segment has.
+    template <class T>
+    static int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection, T &imageOrigin,
+                                   double &sliceSpacing, double &sliceExtent) {
+      // Size
+      // Rows/Columns can be read directly from the respective attributes
+      // For number of slices, consider that all segments must have the same number of frames.
+      //   If we have FoR UID initialized, this means every segment should also have Plane
+      //   Position (Patient) initialized. So we can get the number of slices by looking
+      //   how many per-frame functional groups a segment has.
 
-			vector<double> originDistances;
-			map<OFString, double> originStr2distance;
-			map<OFString, unsigned> frame2overlap;
-			double minDistance;
+      vector<double> originDistances;
+      map<OFString, double> originStr2distance;
+      map<OFString, unsigned> frame2overlap;
+      double minDistance;
 
-			unsigned numFrames = fgInterface.getNumberOfFrames();
+      unsigned numFrames = fgInterface.getNumberOfFrames();
 
-			/* Framesorter is to be moved to DCMTK at some point
-			 * in the future. For now it is causing build issues on windows
+      /* Framesorter is to be moved to DCMTK at some point
+       * in the future. For now it is causing build issues on windows
 
-			FrameSorterIPP fsIPP;
-			FrameSorterIPP::Results sortResults;
-			fsIPP.setSorterInput(&fgInterface);
-			fsIPP.sort(sortResults);
+      FrameSorterIPP fsIPP;
+      FrameSorterIPP::Results sortResults;
+      fsIPP.setSorterInput(&fgInterface);
+      fsIPP.sort(sortResults);
 
-			*/
+      */
 
-			// Determine ordering of the frames, keep mapping from ImagePositionPatient string
-			//   to the distance, and keep track (just out of curiousity) how many frames overlap
-			vnl_vector<double> refOrigin(3);
-			{
-				OFBool isPerFrame;
-				FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
-																										 fgInterface.get(0, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-				for(int j=0;j<3;j++){
-					OFString planposStr;
-					if(planposfg->getImagePositionPatient(planposStr, j).good()){
-						refOrigin[j] = atof(planposStr.c_str());
-					} else {
-						cerr << "Failed to read patient position" << endl;
-					}
-				}
-			}
+      // Determine ordering of the frames, keep mapping from ImagePositionPatient string
+      //   to the distance, and keep track (just out of curiousity) how many frames overlap
+      vnl_vector<double> refOrigin(3);
+      {
+        OFBool isPerFrame;
+        FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+                                                     fgInterface.get(0, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+        for(int j=0;j<3;j++){
+          OFString planposStr;
+          if(planposfg->getImagePositionPatient(planposStr, j).good()){
+            refOrigin[j] = atof(planposStr.c_str());
+          } else {
+            cerr << "Failed to read patient position" << endl;
+          }
+        }
+      }
 
-			for(int frameId=0;frameId<numFrames;frameId++){
-				OFBool isPerFrame;
-				FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
-																										 fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+      for(int frameId=0;frameId<numFrames;frameId++){
+        OFBool isPerFrame;
+        FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+                                                     fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
 
-				if(!planposfg){
-					cerr << "PlanePositionPatient is missing" << endl;
-					return EXIT_FAILURE;
-				}
+        if(!planposfg){
+          cerr << "PlanePositionPatient is missing" << endl;
+          return EXIT_FAILURE;
+        }
 
-				if(!isPerFrame){
-					cerr << "PlanePositionPatient is required for each frame!" << endl;
-					return EXIT_FAILURE;
-				}
+        if(!isPerFrame){
+          cerr << "PlanePositionPatient is required for each frame!" << endl;
+          return EXIT_FAILURE;
+        }
 
-				vnl_vector<double> sOrigin;
-				OFString sOriginStr = "";
-				sOrigin.set_size(3);
-				for(int j=0;j<3;j++){
-					OFString planposStr;
-					if(planposfg->getImagePositionPatient(planposStr, j).good()){
-						sOrigin[j] = atof(planposStr.c_str());
-						sOriginStr += planposStr;
-						if(j<2)
-							sOriginStr+='/';
-					} else {
-						cerr << "Failed to read patient position" << endl;
-						return EXIT_FAILURE;
-					}
-				}
+        vnl_vector<double> sOrigin;
+        OFString sOriginStr = "";
+        sOrigin.set_size(3);
+        for(int j=0;j<3;j++){
+          OFString planposStr;
+          if(planposfg->getImagePositionPatient(planposStr, j).good()){
+            sOrigin[j] = atof(planposStr.c_str());
+            sOriginStr += planposStr;
+            if(j<2)
+              sOriginStr+='/';
+          } else {
+            cerr << "Failed to read patient position" << endl;
+            return EXIT_FAILURE;
+          }
+        }
 
-				// check if this frame has already been encountered
-				if(originStr2distance.find(sOriginStr) == originStr2distance.end()){
-					vnl_vector<double> difference;
-					difference.set_size(3);
-					difference[0] = sOrigin[0]-refOrigin[0];
-					difference[1] = sOrigin[1]-refOrigin[1];
-					difference[2] = sOrigin[2]-refOrigin[2];
-					double dist = dot_product(difference,sliceDirection);
-					frame2overlap[sOriginStr] = 1;
-					originStr2distance[sOriginStr] = dist;
-					assert(originStr2distance.find(sOriginStr) != originStr2distance.end());
-					originDistances.push_back(dist);
+        // check if this frame has already been encountered
+        if(originStr2distance.find(sOriginStr) == originStr2distance.end()){
+          vnl_vector<double> difference;
+          difference.set_size(3);
+          difference[0] = sOrigin[0]-refOrigin[0];
+          difference[1] = sOrigin[1]-refOrigin[1];
+          difference[2] = sOrigin[2]-refOrigin[2];
+          double dist = dot_product(difference,sliceDirection);
+          frame2overlap[sOriginStr] = 1;
+          originStr2distance[sOriginStr] = dist;
+          assert(originStr2distance.find(sOriginStr) != originStr2distance.end());
+          originDistances.push_back(dist);
 
-					if(frameId==0){
-						minDistance = dist;
-						imageOrigin[0] = sOrigin[0];
-						imageOrigin[1] = sOrigin[1];
-						imageOrigin[2] = sOrigin[2];
-					}
-					else if(dist<minDistance){
-						imageOrigin[0] = sOrigin[0];
-						imageOrigin[1] = sOrigin[1];
-						imageOrigin[2] = sOrigin[2];
-						minDistance = dist;
-					}
-				} else {
-					frame2overlap[sOriginStr]++;
-				}
-			}
+          if(frameId==0){
+            minDistance = dist;
+            imageOrigin[0] = sOrigin[0];
+            imageOrigin[1] = sOrigin[1];
+            imageOrigin[2] = sOrigin[2];
+          }
+          else if(dist<minDistance){
+            imageOrigin[0] = sOrigin[0];
+            imageOrigin[1] = sOrigin[1];
+            imageOrigin[2] = sOrigin[2];
+            minDistance = dist;
+          }
+        } else {
+          frame2overlap[sOriginStr]++;
+        }
+      }
 
-			// sort all unique distances, this will be used to check consistency of
-			//  slice spacing, and also to locate the slice position from ImagePositionPatient
-			//  later when we read the segments
-			sort(originDistances.begin(), originDistances.end());
+      // sort all unique distances, this will be used to check consistency of
+      //  slice spacing, and also to locate the slice position from ImagePositionPatient
+      //  later when we read the segments
+      sort(originDistances.begin(), originDistances.end());
 
-			sliceSpacing = fabs(originDistances[0]-originDistances[1]);
+      sliceSpacing = fabs(originDistances[0]-originDistances[1]);
 
-			for(int i=1;i<originDistances.size();i++){
-				float dist1 = fabs(originDistances[i-1]-originDistances[i]);
-				float delta = sliceSpacing-dist1;
-				if(delta > 0.001){
-					cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
-					" difference exceeded threshold: " << delta << endl;
-				}
-			}
+      for(int i=1;i<originDistances.size();i++){
+        float dist1 = fabs(originDistances[i-1]-originDistances[i]);
+        float delta = sliceSpacing-dist1;
+        if(delta > 0.001){
+          cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
+          " difference exceeded threshold: " << delta << endl;
+        }
+      }
 
-			sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
-			unsigned overlappingFramesCnt = 0;
-			for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
-					it!=frame2overlap.end();++it){
-				if(it->second>1)
-					overlappingFramesCnt++;
-			}
+      sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
+      unsigned overlappingFramesCnt = 0;
+      for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
+          it!=frame2overlap.end();++it){
+        if(it->second>1)
+          overlappingFramesCnt++;
+      }
 
-			cout << "Total frames: " << numFrames << endl;
-			cout << "Total frames with unique IPP: " << originDistances.size() << endl;
-			cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
-			cout << "Origin: " << imageOrigin << endl;
+      cout << "Total frames: " << numFrames << endl;
+      cout << "Total frames with unique IPP: " << originDistances.size() << endl;
+      cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
+      cout << "Origin: " << imageOrigin << endl;
 
-			return 0;
-		}
+      return 0;
+    }
 
-		template <class T>
-		static int getDeclaredImageSpacing(FGInterface &fgInterface, T &spacing){
-			OFBool isPerFrame;
-			FGPixelMeasures *pixelMeasures = OFstatic_cast(FGPixelMeasures*,
-																										 fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
-			if(!pixelMeasures){
-				cerr << "Pixel measures FG is missing!" << endl;
-				return EXIT_FAILURE;
-			}
+    template <class T>
+    static int getDeclaredImageSpacing(FGInterface &fgInterface, T &spacing){
+      OFBool isPerFrame;
+      FGPixelMeasures *pixelMeasures = OFstatic_cast(FGPixelMeasures*,
+                                                     fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
+      if(!pixelMeasures){
+        cerr << "Pixel measures FG is missing!" << endl;
+        return EXIT_FAILURE;
+      }
 
-			pixelMeasures->getPixelSpacing(spacing[0], 0);
-			pixelMeasures->getPixelSpacing(spacing[1], 1);
+      pixelMeasures->getPixelSpacing(spacing[0], 0);
+      pixelMeasures->getPixelSpacing(spacing[1], 1);
 
-			Float64 spacingFloat;
-			if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
-				spacing[2] = spacingFloat;
-			} else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
-				// SliceThickness can be carried forward from the source images, and may not be what we need
-				// As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
-				cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". NOT using it!" << endl;
-			}
-			return 0;
-		}
+      Float64 spacingFloat;
+      if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
+        spacing[2] = spacingFloat;
+      } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
+        // SliceThickness can be carried forward from the source images, and may not be what we need
+        // As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
+        cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". NOT using it!" << endl;
+      }
+      return 0;
+    }
 
-	};
+  };
 
 }
 

@@ -7,5 +7,5 @@ int main(int argc, char *argv[])
 {
   PARSE_ARGS;
   return dcmqi::ParaMapConverter::itkimage2paramap(inputFileName, dicomImageFileName, metaDataFileName,
-																									 outputParaMapFileName);
+                                                   outputParaMapFileName);
 }

@@ -12,7 +12,7 @@ namespace dcmqi {
     FGInterface &fgInterface = segdoc->getFunctionalGroups();
     bool isPerFrame = false;
     FGDerivationImage *derimgfg = OFstatic_cast(FGDerivationImage*, fgInterface.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE,
-																																										isPerFrame));
+                                                                                    isPerFrame));
     assert(derimgfg);
     assert(isPerFrame);
 

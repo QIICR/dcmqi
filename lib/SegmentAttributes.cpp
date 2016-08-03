@@ -13,7 +13,7 @@ namespace dcmqi {
   }
 
   void SegmentAttributes::initAttributes() {
-		//    TODO: fill from defaults?
+    //    TODO: fill from defaults?
     this->setLabelID(1);
     this->setRecommendedDisplayRGBValue(128, 174, 128);
     this->anatomicRegion = NULL;

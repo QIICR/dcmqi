@@ -16,8 +16,8 @@ namespace dcmqi {
   }
 
   IODEnhGeneralEquipmentModule::EquipmentInfo ConverterBase::getEnhEquipmentInfo() {
-  	return IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
-																											 QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
+    return IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
+                                                       QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
   }
 
   // TODO: defaults for sub classes needs to be defined

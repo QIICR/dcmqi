@@ -6,7 +6,7 @@ using namespace std;
 namespace dcmqi {
 
   int ParaMapConverter::itkimage2paramap(const string &inputFileName, const string &dicomImageFileName,
-																				 const string &metaDataFileName, const string &outputFileName) {
+                                         const string &metaDataFileName, const string &outputFileName) {
 
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(inputFileName.c_str());
@@ -53,7 +53,7 @@ namespace dcmqi {
     dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
     IODMultiframeDimensionModule &mfdim = pMapDoc.getIODMultiframeDimensionModule();
     OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dimUID,
-																								 DCM_RealWorldValueMappingSequence, "Frame position");
+                                                 DCM_RealWorldValueMappingSequence, "Frame position");
 
     // Shared FGs: PixelMeasuresSequence
     {
@@ -197,7 +197,7 @@ namespace dcmqi {
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
-																				 const JSONParametricMapMetaInformationHandler &metaInfo,
+                                         const JSONParametricMapMetaInformationHandler &metaInfo,
                                          const unsigned long frameNo)
   {
     ImageType::RegionType sliceRegion;

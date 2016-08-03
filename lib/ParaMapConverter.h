@@ -27,13 +27,13 @@ namespace dcmqi {
   class ParaMapConverter : public ConverterBase {
 
   public:
-  	static int itkimage2paramap(const string &inputFileName, const string &dicomImageFileName,
-																const string &metaDataFileName, const string &outputFileName);
+    static int itkimage2paramap(const string &inputFileName, const string &dicomImageFileName,
+                                const string &metaDataFileName, const string &outputFileName);
 
-  	static int paramap2itkimage(const string &inputSEGFileName, const string &outputDirName);
+    static int paramap2itkimage(const string &inputSEGFileName, const string &outputDirName);
   protected:
-  	static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
-																const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
+    static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
+                                const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
   };
 
 }

@@ -3,17 +3,17 @@
 namespace dcmqi {
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler()
-			: JSONMetaInformationHandlerBase(),
-				measurementUnitsCode(NULL),
-				measurementMethodCode(NULL),
-				quantityValueCode(NULL) {
+      : JSONMetaInformationHandlerBase(),
+        measurementUnitsCode(NULL),
+        measurementMethodCode(NULL),
+        quantityValueCode(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string filename)
-			: JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename),
-				measurementUnitsCode(NULL),
-				measurementMethodCode(NULL),
-				quantityValueCode(NULL) {
+      : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename),
+        measurementUnitsCode(NULL),
+        measurementMethodCode(NULL),
+        quantityValueCode(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::~JSONParametricMapMetaInformationHandler() {
@@ -38,7 +38,7 @@ namespace dcmqi {
   };
 
   void JSONParametricMapMetaInformationHandler::setMeasurementUnitsCode(const string& code, const string& designator,
-																																				const string& meaning) {
+                                                                        const string& meaning) {
     this->measurementUnitsCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
@@ -47,7 +47,7 @@ namespace dcmqi {
   }
 
   void JSONParametricMapMetaInformationHandler::setMeasurementMethodCode(const string& code, const string& designator,
-																																				 const string& meaning) {
+                                                                         const string& meaning) {
     this->measurementMethodCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
@@ -56,7 +56,7 @@ namespace dcmqi {
   }
 
   void JSONParametricMapMetaInformationHandler::setQuantityValueCode(const string& code, const string& designator,
-																																		 const string& meaning) {
+                                                                     const string& meaning) {
     this->quantityValueCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
@@ -88,22 +88,22 @@ namespace dcmqi {
         Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
         if (!elem.isNull()) {
           this->setQuantityValueCode(elem.get("codeValue", "").asString(),
-																		 elem.get("codingSchemeDesignator", "").asString(),
-																		 elem.get("codeMeaning", "").asString());
+                                     elem.get("codingSchemeDesignator", "").asString(),
+                                     elem.get("codeMeaning", "").asString());
         }
 
         elem = this->metaInfoRoot["MeasurementUnitsCode"];
         if (!elem.isNull()) {
           this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
-																				elem.get("codingSchemeDesignator", "").asString(),
-																				elem.get("codeMeaning", "").asString());
+                                        elem.get("codingSchemeDesignator", "").asString(),
+                                        elem.get("codeMeaning", "").asString());
         }
 
         elem = this->metaInfoRoot["MeasurementMethodCode"];
         if (!elem.isNull()) {
           this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
-																				 elem.get("codingSchemeDesignator", "").asString(),
-																				 elem.get("codeMeaning", "").asString());
+                                         elem.get("codingSchemeDesignator", "").asString(),
+                                         elem.get("codeMeaning", "").asString());
         }
 
       } catch (exception& e) {
