@@ -5,7 +5,7 @@ using namespace std;
 namespace dcmqi {
 
   JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string filename)
-      : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename) {
+      : JSONMetaInformationHandlerBase(filename) {
   }
 
   JSONSegmentationMetaInformationHandler::~JSONSegmentationMetaInformationHandler() {
@@ -49,7 +49,7 @@ namespace dcmqi {
     // TODO: add checks for validity here....
 
     ofstream outputFile;
-    outputFile.open(filename);
+    outputFile.open(filename.c_str());
     Json::Value data;
 
     data["seriesAttributes"] = createAndGetSeriesAttributes();

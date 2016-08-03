@@ -10,7 +10,7 @@ namespace dcmqi {
   }
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string filename)
-      : JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(filename),
+      : JSONMetaInformationHandlerBase(filename),
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL) {
