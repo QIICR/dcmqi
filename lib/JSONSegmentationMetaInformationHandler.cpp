@@ -31,7 +31,7 @@ namespace dcmqi {
   void JSONSegmentationMetaInformationHandler::read() {
     if (this->filename.size() && this->isValid(this->filename)) {
       try {
-        ifstream metainfoStream(this->filename, ios_base::binary);
+        ifstream metainfoStream(this->filename.c_str(), ios_base::binary);
         metainfoStream >> this->metaInfoRoot;
         this->readSeriesAttributes(this->metaInfoRoot);
         this->readSegmentAttributes(this->metaInfoRoot);
