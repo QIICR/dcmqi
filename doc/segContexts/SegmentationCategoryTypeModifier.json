@@ -1,0 +1,1928 @@
+{
+  "SegmentationCodes": {
+    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "SegmentationCategoryTypeModifier.xsd", 
+    "Category": [
+      {
+        "codeMeaning": "Tissue", 
+        "codingScheme": "SRT", 
+        "SNOMEDCTConceptID": "85756007", 
+        "cid": "7051", 
+        "UMLSConceptUID": "C0040300", 
+        "codeValue": "T-D0050", 
+        "contextGroupName": "Segmentation Property Categories", 
+        "showAnatomy": "true", 
+        "Type": [
+          {
+            "codeValue": "T-1A190", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0225342", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Adventitia", 
+            "SNOMEDCTConceptID": "30180000"
+          }, 
+          {
+            "codeValue": "T-30000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0007226", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Cardiovascular system", 
+            "SNOMEDCTConceptID": "113257007"
+          }, 
+          {
+            "codeValue": "T-1A170", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0162864", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Intima", 
+            "SNOMEDCTConceptID": "8361002"
+          }, 
+          {
+            "codeValue": "T-40230", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0524424", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Lumen", 
+            "SNOMEDCTConceptID": "91747007"
+          }, 
+          {
+            "codeValue": "T-40210", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0162867", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Media", 
+            "SNOMEDCTConceptID": "27208005"
+          }, 
+          {
+            "codeValue": "T-4105E", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0459964", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Systemic artery", 
+            "SNOMEDCTConceptID": "281159003"
+          }, 
+          {
+            "codeValue": "T-48081", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0447117", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Systemic vein", 
+            "SNOMEDCTConceptID": "360592004"
+          }, 
+          {
+            "codeValue": "M-35001", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0087086", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Thrombus", 
+            "SNOMEDCTConceptID": "396339007"
+          }, 
+          {
+            "codeValue": "M-520F8", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0003850", 
+            "cid": "7156", 
+            "contextGroupName": "Vascular Tissue Segmentation Types", 
+            "codeMeaning": "Vascular sclerosis", 
+            "SNOMEDCTConceptID": "107671003"
+          }, 
+          {
+            "codeValue": "T-40000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0005847", 
+            "cid": "7155", 
+            "contextGroupName": "Thoracic Tissue Segmentation Types", 
+            "codeMeaning": "Blood Vessel", 
+            "SNOMEDCTConceptID": "59820001"
+          }, 
+          {
+            "codeValue": "T-D0050", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0040300", 
+            "cid": "7165", 
+            "contextGroupName": "Abstract Segmentation Types", 
+            "codeMeaning": "Tissue", 
+            "SNOMEDCTConceptID": "85756007"
+          }, 
+          {
+            "codeValue": "T-41066", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0555806", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Artery", 
+            "SNOMEDCTConceptID": "275989006"
+          }, 
+          {
+            "codeValue": "T-C2000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0005767", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Blood", 
+            "SNOMEDCTConceptID": "87612001"
+          }, 
+          {
+            "codeValue": "T-40000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0005847", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Blood vessel", 
+            "SNOMEDCTConceptID": "59820001"
+          }, 
+          {
+            "codeValue": "F-03D38", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0344335", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Body fat", 
+            "SNOMEDCTConceptID": "248300009"
+          }, 
+          {
+            "codeValue": "T-D016E", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0262950", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Bone", 
+            "SNOMEDCTConceptID": "272673000"
+          }, 
+          {
+            "codeValue": "T-40050", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0006901", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Capillary", 
+            "SNOMEDCTConceptID": "20982000"
+          }, 
+          {
+            "codeValue": "T-D021B", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0007301", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Cartilage", 
+            "SNOMEDCTConceptID": "309312004"
+          }, 
+          {
+            "codeValue": "T-1A200", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0009780", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Connective tissue", 
+            "SNOMEDCTConceptID": "21793004"
+          }, 
+          {
+            "codeValue": "T-18010", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0023685", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Ligament", 
+            "SNOMEDCTConceptID": "52082005"
+          }, 
+          {
+            "codeValue": "T-C4000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0024204", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Lymph node", 
+            "SNOMEDCTConceptID": "59441001"
+          }, 
+          {
+            "codeValue": "T-C6000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0024235", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Lymphatic system", 
+            "SNOMEDCTConceptID": "89890002"
+          }, 
+          {
+            "codeValue": "T-C6010", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0229889", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Lymphatic vessel", 
+            "SNOMEDCTConceptID": "83555006"
+          }, 
+          {
+            "codeValue": "T-15009", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0224498", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Meniscus", 
+            "SNOMEDCTConceptID": "74135004"
+          }, 
+          {
+            "codeValue": "T-13001", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0026845", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Muscle", 
+            "SNOMEDCTConceptID": "71616004"
+          }, 
+          {
+            "codeValue": "T-D0598", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C1268169", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Nerve", 
+            "SNOMEDCTConceptID": "119410002"
+          }, 
+          {
+            "codeValue": "T-1A310", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C1285092", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Organ", 
+            "SNOMEDCTConceptID": "2861001"
+          }, 
+          {
+            "codeValue": "T-01000", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C1123023", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Skin", 
+            "SNOMEDCTConceptID": "39937001"
+          }, 
+          {
+            "codeValue": "T-17010", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0039508", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Tendon", 
+            "SNOMEDCTConceptID": "13024002"
+          }, 
+          {
+            "codeValue": "T-D0050", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0040300", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Tissue", 
+            "SNOMEDCTConceptID": "85756007"
+          }, 
+          {
+            "codeValue": "T-4806E", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C0447146", 
+            "cid": "7166", 
+            "contextGroupName": "Common Tissue Segmentation Types", 
+            "codeMeaning": "Vein", 
+            "SNOMEDCTConceptID": "181378009"
+          }
+        ]
+      }, 
+      {
+        "codeMeaning": "Anatomical Structure", 
+        "codingScheme": "SRT", 
+        "SNOMEDCTConceptID": "123037004", 
+        "cid": "7051", 
+        "UMLSConceptUID": "C1268086", 
+        "codeValue": "T-D000A", 
+        "contextGroupName": "Segmentation Property Categories", 
+        "showAnatomy": "false", 
+        "Type": [
+          {
+            "codeValue": "T-43117", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524430", 
+            "codeMeaning": "1st Diagonal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91750005"
+          }, 
+          {
+            "codeValue": "15A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "1st Diagonal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-4312B", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524437", 
+            "codeMeaning": "1st Left Posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91757008"
+          }, 
+          {
+            "codeValue": "T-43128", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524434", 
+            "codeMeaning": "1st Marginal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91754001"
+          }, 
+          {
+            "codeValue": "20A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "1st Marginal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-43213", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524441", 
+            "codeMeaning": "1st Right posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91761002"
+          }, 
+          {
+            "codeValue": "T-43002", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0447058", 
+            "codeMeaning": "1st Septal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "244251006"
+          }, 
+          {
+            "codeValue": "T-43118", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524431", 
+            "codeMeaning": "2nd Diagonal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91751009"
+          }, 
+          {
+            "codeValue": "16A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "2nd Diagonal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-4312C", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524438", 
+            "codeMeaning": "2nd Left Posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91758003"
+          }, 
+          {
+            "codeValue": "T-43129", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524435", 
+            "codeMeaning": "2nd Marginal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91755000"
+          }, 
+          {
+            "codeValue": "21A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "2nd Marginal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-43214", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524442", 
+            "codeMeaning": "2nd Right posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91762009"
+          }, 
+          {
+            "codeValue": "T-43119", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524432", 
+            "codeMeaning": "3rd diagonal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91752002"
+          }, 
+          {
+            "codeValue": "29A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "3rd Diagonal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-4312D", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524439", 
+            "codeMeaning": "3rd Left Posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91759006"
+          }, 
+          {
+            "codeValue": "T-4312A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524436", 
+            "codeMeaning": "3rd Marginal Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91756004"
+          }, 
+          {
+            "codeValue": "22A", 
+            "cid": "3014", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "3rd Marginal Coronary Artery Laterals", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "BARI", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-43215", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0524443", 
+            "codeMeaning": "3rd Right posterolateral Coronary Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91763004"
+          }, 
+          {
+            "codeValue": "T-D4000", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C0000726", 
+            "codeMeaning": "Abdomen", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "113345001"
+          }, 
+          {
+            "codeValue": "R-FAB57", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C1508499", 
+            "codeMeaning": "Abdomen and Pelvis", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "416949008"
+          }, 
+          {
+            "codeValue": "T-42500", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C0003484", 
+            "codeMeaning": "Abdominal aorta", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "7832008"
+          }, 
+          {
+            "codeValue": "T-41070", 
+            "cid": "4030", 
+            "UMLSConceptUID": "C1283352", 
+            "codeMeaning": "Abdominal aorta and its branches", 
+            "contextGroupName": "CT, MR and PET Anatomy Imaged", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "360524005"
+          }, 
+          {
+            "codeValue": "T-D4010", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C0230168", 
+            "codeMeaning": "Abdominal cavity", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "52731004"
+          }, 
+          {
+            "codeValue": "T-14001", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C1279385", 
+            "codeMeaning": "Abdominal wall muscle", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "195879000"
+          }, 
+          {
+            "codeValue": "T-46640", 
+            "cid": "12111", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Accessory Renal Artery", 
+            "contextGroupName": "Abdominal Arteries (lateral)", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-15420", 
+            "cid": "6113", 
+            "UMLSConceptUID": "C0001208", 
+            "codeMeaning": "Acromioclavicular Joint", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "85856004", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-B1100", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0032008", 
+            "codeMeaning": "Adenohypophysis", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "62818001"
+          }, 
+          {
+            "codeValue": "T-B3000", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C0001625", 
+            "codeMeaning": "Adrenal gland", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "23451007", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-20001", 
+            "cid": "6111", 
+            "UMLSConceptUID": "C0458827", 
+            "codeMeaning": "Airway structure", 
+            "contextGroupName": "Bronchovascular Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "89187006"
+          }, 
+          {
+            "codeValue": "T-A3230", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0002708", 
+            "codeMeaning": "Amygdala", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "4958002", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-15750", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0003087", 
+            "codeMeaning": "Ankle joint", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "70258002", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-48503", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C0265914", 
+            "codeMeaning": "Anomalous pulmonary vein", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128585006"
+          }, 
+          {
+            "codeValue": "T-49215", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C1276271", 
+            "codeMeaning": "Antecubital vein", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128553008", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-48403", 
+            "cid": "3839", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior Cardiac Vein", 
+            "contextGroupName": "Coronary Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-45540", 
+            "cid": "12105", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior Cerebral Artery", 
+            "contextGroupName": "Intracranial Cerebral Vessels", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-45530", 
+            "cid": "12105", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior Communicating Artery", 
+            "contextGroupName": "Intracranial Cerebral Vessels", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "112088", 
+            "cid": "6112", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior junction line", 
+            "contextGroupName": "Pleura Anatomy Finding or Feature", 
+            "codingScheme": "DCM", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-45730", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C0149603", 
+            "codeMeaning": "Anterior spinal artery", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "17388009"
+          }, 
+          {
+            "codeValue": "T-47700", 
+            "cid": "12109", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior Tibial Artery", 
+            "contextGroupName": "Lower Extremity Arteries", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-49630", 
+            "cid": "12110", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior Tibial Vein", 
+            "contextGroupName": "Lower Extremity Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "G-0368", 
+            "cid": "12105", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior-Middle Cerebral Artery Bifurcation", 
+            "contextGroupName": "Intracranial Cerebral Vessels", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "G-0369", 
+            "cid": "12105", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Anterior-Posterior Cerebral Artery Bifurcation", 
+            "contextGroupName": "Intracranial Cerebral Vessels", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-59900", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0003461", 
+            "codeMeaning": "Anus", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "53505006"
+          }, 
+          {
+            "codeValue": "T-59490", 
+            "cid": "4040", 
+            "UMLSConceptUID": "C1267595", 
+            "codeMeaning": "Anus, rectum and sigmoid colon", 
+            "contextGroupName": "Endoscopy Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "110612005"
+          }, 
+          {
+            "codeValue": "T-42000", 
+            "cid": "7152", 
+            "UMLSConceptUID": "C0003483", 
+            "codeMeaning": "Aorta", 
+            "contextGroupName": "Cardiac Structure Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "15825003"
+          }, 
+          {
+            "codeValue": "T-42300", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0003489", 
+            "codeMeaning": "Aortic arch", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "57034009"
+          }, 
+          {
+            "codeValue": "D3-81922", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C1290392", 
+            "codeMeaning": "Aortic fistula", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128551005"
+          }, 
+          {
+            "codeValue": "T-42310", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0226019", 
+            "codeMeaning": "Aortic isthmus", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "88593004"
+          }, 
+          {
+            "codeValue": "112102", 
+            "cid": "6117", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Aortic knob", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "DCM", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-35400", 
+            "cid": "6113", 
+            "UMLSConceptUID": "C0003501", 
+            "codeMeaning": "Aortic Valve", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "34202007"
+          }, 
+          {
+            "codeValue": "T-32602", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C0580781", 
+            "codeMeaning": "Apex of left ventricle", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128564006"
+          }, 
+          {
+            "codeValue": "T-280A0", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0225703", 
+            "codeMeaning": "Apex of Lung", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "86598002", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-32502", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C0445242", 
+            "codeMeaning": "Apex of right ventricle", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128565007"
+          }, 
+          {
+            "codeValue": "T-A1220", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0003707", 
+            "codeMeaning": "Arachnoid", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "75042008"
+          }, 
+          {
+            "codeValue": "112103", 
+            "cid": "6117", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Arch of the Azygos vein", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "DCM", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-4668A", 
+            "cid": "12115", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Arcuate Artery of the Kidney", 
+            "contextGroupName": "Renal Vessels", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "276650", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C2329633", 
+            "codeMeaning": "Arcuate Fasciculus", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "FMA", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-41000", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C0003842", 
+            "codeMeaning": "Artery", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "51114001"
+          }, 
+          {
+            "codeValue": "T-42100", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0003956", 
+            "codeMeaning": "Ascending aorta", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "54247002"
+          }, 
+          {
+            "codeValue": "D4-31220", 
+            "cid": "6113", 
+            "UMLSConceptUID": "C0018817", 
+            "codeMeaning": "Atrial Septal Defect", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "70142008"
+          }, 
+          {
+            "codeValue": "T-48406", 
+            "cid": "3839", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Atrial Vein", 
+            "contextGroupName": "Coronary Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-48407", 
+            "cid": "3839", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Atrioventricular Vein", 
+            "contextGroupName": "Coronary Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-32100", 
+            "cid": "6113", 
+            "UMLSConceptUID": "C0018792", 
+            "codeMeaning": "Atrium", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "59652004", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-A9605", 
+            "cid": "7167", 
+            "UMLSConceptUID": "C0206250", 
+            "codeMeaning": "Autonomic nerve", 
+            "contextGroupName": "Peripheral Nervous System Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "53520000"
+          }, 
+          {
+            "codeValue": "T-43124", 
+            "cid": "3014", 
+            "UMLSConceptUID": "C0226041", 
+            "codeMeaning": "AV groove continuation of Circumflex Artery", 
+            "contextGroupName": "Coronary Artery Segments", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "75902001"
+          }, 
+          {
+            "codeValue": "T-47100", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0004455", 
+            "codeMeaning": "Axillary Artery", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "67937003", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-18774", 
+            "cid": "6113", 
+            "UMLSConceptUID": "C0225236", 
+            "codeMeaning": "Axillary Fascia", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "368536000"
+          }, 
+          {
+            "codeValue": "T-49110", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0004456", 
+            "codeMeaning": "Axillary vein", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "68705008", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "112090", 
+            "cid": "6113", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Azygoesophageal recess interface", 
+            "contextGroupName": "Mediastinum Anatomy Finding or Feature", 
+            "codingScheme": "DCM", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-48340", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0004526", 
+            "codeMeaning": "Azygos vein", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "72107004"
+          }, 
+          {
+            "codeValue": "A-00203", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C1289790", 
+            "codeMeaning": "Baffle", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128981007"
+          }, 
+          {
+            "codeValue": "T-45800", 
+            "cid": "12106", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Basilar Artery", 
+            "contextGroupName": "Intracranial Cerebral Vessels (unilateral)", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": ""
+          }, 
+          {
+            "codeValue": "T-48052", 
+            "cid": "12108", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Basilic vein", 
+            "contextGroupName": "Upper Extremity Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-60610", 
+            "cid": "7154", 
+            "UMLSConceptUID": "C0005400", 
+            "codeMeaning": "Bile Duct", 
+            "contextGroupName": "Abdominal Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "28273000"
+          }, 
+          {
+            "codeValue": "T-74000", 
+            "cid": "7160", 
+            "UMLSConceptUID": "C0005682", 
+            "codeMeaning": "Bladder", 
+            "contextGroupName": "Pelvic Organ Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "89837001"
+          }, 
+          {
+            "codeValue": "T-DD123", 
+            "cid": "4040", 
+            "UMLSConceptUID": "C1268386", 
+            "codeMeaning": "Bladder and urethra", 
+            "contextGroupName": "Endoscopy Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "110837003"
+          }, 
+          {
+            "codeValue": "T-D00AB", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C1735317", 
+            "codeMeaning": "Body conduit", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "91830000"
+          }, 
+          {
+            "codeValue": "T-12700", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0448188", 
+            "codeMeaning": "Bone of lower limb", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "72001000", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-D0170", 
+            "cid": "7155", 
+            "UMLSConceptUID": "C0448157", 
+            "codeMeaning": "Bone of thorax", 
+            "contextGroupName": "Thoracic Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "272710004"
+          }, 
+          {
+            "codeValue": "T-D0821", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0003793", 
+            "codeMeaning": "Bone of upper limb", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "371195002", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-D006D", 
+            "cid": "4028", 
+            "UMLSConceptUID": "C0730130", 
+            "codeMeaning": "Bone structure of head and/or neck", 
+            "contextGroupName": "Craniofacial Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "312779009"
+          }, 
+          {
+            "codeValue": "T-49424", 
+            "cid": "12110", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Boyd's perforating vein", 
+            "contextGroupName": "Lower Extremity Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-49424", 
+            "cid": "3010", 
+            "UMLSConceptUID": "C1267522", 
+            "codeMeaning": "Boyd\u2019s perforating vein", 
+            "contextGroupName": "Cardiovascular Anatomic Locations", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "128548003", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-47160", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0006087", 
+            "codeMeaning": "Brachial artery", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "17137000", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-A9090", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0006090", 
+            "codeMeaning": "Brachial plexus", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "36582005", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-49350", 
+            "cid": "12108", 
+            "UMLSConceptUID": "", 
+            "codeMeaning": "Brachial vein", 
+            "contextGroupName": "Upper Extremity Veins", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-46010", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0006094", 
+            "codeMeaning": "Brachiocephalic trunk", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "12691009"
+          }, 
+          {
+            "codeValue": "T-48620", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0006095", 
+            "codeMeaning": "Brachiocephalic vein", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "8887007"
+          }, 
+          {
+            "codeValue": "T-A0100", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0006104", 
+            "codeMeaning": "Brain", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "12738006"
+          }, 
+          {
+            "codeValue": "T-A0109", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0459387", 
+            "codeMeaning": "Brain cerebrospinal fluid pathway", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "280371009"
+          }, 
+          {
+            "codeValue": "T-D0558", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C1268144", 
+            "codeMeaning": "Brain stem", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "119238007"
+          }, 
+          {
+            "codeValue": "T-A1600", 
+            "cid": "7153", 
+            "UMLSConceptUID": "C0007799", 
+            "codeMeaning": "Brain ventricle", 
+            "contextGroupName": "CNS Tissue Segmentation Types", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "35764002"
+          }, 
+          {
+            "codeValue": "T-04000", 
+            "cid": "4031", 
+            "UMLSConceptUID": "C0006141", 
+            "codeMeaning": "Breast", 
+            "contextGroupName": "Common Anatomic Regions", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "76752008", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "7771000"
+              }, 
+              {
+                "codeValue": "G-A102", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0238767", 
+                "codeMeaning": "Right and left", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          }, 
+          {
+            "codeValue": "T-46310", 
+            "cid": "6117", 
+            "UMLSConceptUID": "C0006257", 
+            "codeMeaning": "Bronchial artery", 
+            "contextGroupName": "Vascular Anatomy", 
+            "codingScheme": "SRT", 
+            "SNOMEDCTConceptID": "64468002", 
+            "Modifier": [
+              {
+                "codeValue": "G-A100", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205090", 
+                "codeMeaning": "Right", 
+                "contextGroupName": "Laterality", 
+                "codingScheme": "SRT", 
+                "SNOMEDCTConceptID": "24028007"
+              }, 
+              {
+                "codeValue": "G-A101", 
+                "cid": "244", 
+                "UMLSConceptUID": "C0205091", 
+                "codeMeaning": "Left",
