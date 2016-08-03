@@ -1,54 +1,30 @@
-#ifndef DCMQI_CONVERTER_H
-#define DCMQI_CONVERTER_H
-
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
-
-#include "vnl/vnl_cross.h"
+#ifndef DCMQI_SEGMENTATION_CONVERTER_H
+#define DCMQI_SEGMENTATION_CONVERTER_H
 
 #ifdef WITH_ZLIB
-#include <zlib.h>                     /* for zlibVersion() */
+#include <zlib.h>           /* for zlibVersion() */
 #endif
 
-#include <vector>
-
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/oflog/oflog.h"
 #include "dcmtk/dcmseg/segdoc.h"
 #include "dcmtk/dcmseg/segment.h"
 
 #include "dcmtk/dcmfg/fgderimg.h"
-#include "dcmtk/dcmfg/fgplanor.h"
-#include "dcmtk/dcmfg/fgpixmsr.h"
-#include "dcmtk/dcmfg/fgplanpo.h"
 #include "dcmtk/dcmfg/fgseg.h"
 
 #include "dcmtk/dcmseg/segutils.h"
 
-
-#include "dcmtk/oflog/loglevel.h"
-
 #include "dcmtk/dcmdata/dcrledrg.h"
 
-// UIDs
-#include "QIICRUIDs.h"
 
-// versioning
-#include "dcmqiVersionConfigure.h"
-
-//#include "preproc.h"
-
-#include <itkImageFileReader.h>
-#include <itkImageFileWriter.h>
 #include <itkImageDuplicator.h>
 #include <itkImageRegionConstIterator.h>
-#include <itkLabelImageToLabelMapFilter.h>
 #include <itkLabelStatisticsImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
 #include <itkChangeInformationImageFilter.h>
 
-#include "JSONMetaInformationHandler.h"
+#include "JSONSegmentationMetaInformationHandler.h"
 
-#include "Exceptions.h"
+#include "ConverterBase.h"
 
 using namespace std;
 
@@ -61,29 +37,22 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 namespace dcmqi {
 
-    class ImageSEGConverter {
+  class ImageSEGConverter : public ConverterBase {
 
-    public:
-        static int itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                                             const std::string &metaDataFileName, const std::string &outputFileName);
+  public:
+    static int itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
+                                        const std::string &metaDataFileName, const std::string &outputFileName);
 
-        static int dcmSegmentation2itkimage(const string &inputSEGFileName, const string &outputDirName);
+    static int dcmSegmentation2itkimage(const string &inputSEGFileName, const string &outputDirName);
 
-    private:
-        static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
-        static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandler&);
-        static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-                                                                      const itk::Image<short, 3>::Pointer &labelImage);
+  private:
+    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
+                                                                           const itk::Image<short, 3>::Pointer &labelImage);
 
-        static int getImageDirections(FGInterface &fgInterface, ImageType::DirectionType &dir);
-        static int getDeclaredImageSpacing(FGInterface &fgInterface, ImageType::SpacingType &spacing);
-        static int computeVolumeExtent(FGInterface &fgInterface, vnl_vector<double> &sliceDirection,
-                                       ImageType::PointType &imageOrigin, double &sliceSpacing, double &sliceExtent);
-
-        static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
-                                                     JSONMetaInformationHandler &metaInfo);
-    };
+    static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
+                           JSONSegmentationMetaInformationHandler &metaInfo);
+  };
 
 }
 
-#endif //DCMQI_CONVERTER_H
+#endif //DCMQI_SEGMENTATION_CONVERTER_H

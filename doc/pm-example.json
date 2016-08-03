@@ -5,6 +5,7 @@
   "SeriesNumber": "701",
   "InstanceNumber": "1",
   "BodyPartExamined" : "PROSTATE",
+  "DerivedPixelContrast" : "ADC",
 
   "QuantityValueCode": {
     "codeValue": "113041",
@@ -16,6 +17,12 @@
     "codingSchemeDesignator": "UCUM",
     "codeMeaning": "square millimeter per second"
   },
-  "RealWorldValueSlope" : "10e-6",
+  "AnatomicRegionCode": {
+    "codeValue": "T-9200B",
+    "codingSchemeDesignator": "SRT",
+    "codeMeaning": "Prostate"
+  },
+  "FrameLaterality" : "U",
+  "RealWorldValueSlope" : "1e-6",
   "DerivedPixelContrast" : "ADC"
 }
