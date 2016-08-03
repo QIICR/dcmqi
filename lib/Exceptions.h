@@ -2,6 +2,7 @@
 #define DCMQI_EXCEPTIONS_H
 
 #include <vector>
+#include <stdexcept>
 #include <map>
 
 #define CHECK_COND(condition) \
