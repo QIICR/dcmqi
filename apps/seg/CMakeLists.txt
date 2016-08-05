@@ -3,31 +3,16 @@ set(COMMON_INCLUDE_DIRECTORIES
   ${ITK_INCLUDE_DIRS}
   ${ITK_INSTALL_PREFIX}/include/vxl/core
   ${ITK_INSTALL_PREFIX}/include/vxl/vcl
-  ${DCMQI_SOURCE_DIR}/lib
+  ${DCMQI_SOURCE_DIR}/include
   )
 
 set(COMMON_DCMQI_LIB_SOURCES
-  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
-  ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
-  ${CMAKE_SOURCE_DIR}/lib/Helper.h
-  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.h
-  ${CMAKE_SOURCE_DIR}/lib/ImageSEGConverter.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONSegmentationMetaInformationHandler.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONSegmentationMetaInformationHandler.cpp
-  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.h
-  ${CMAKE_SOURCE_DIR}/lib/SegmentAttributes.cpp
-  ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
-  ${CMAKE_SOURCE_DIR}/lib/QIICRConstants.h
-  ${CMAKE_SOURCE_DIR}/lib/preproc.h)
+)
 
 set(COMMON_TARGET_LIBRARIES
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
+  dcmqi
   )
 
 set(MODULE_NAME segimage2itkimage)
