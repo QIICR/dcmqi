@@ -23,6 +23,8 @@ namespace dcmqi {
     string getClinicalTrialSeriesID() const { return clinicalTrialSeriesID; }
     string getClinicalTrialTimePointID() const { return clinicalTrialTimePointID; }
 
+    string getJSONOutputAsString();
+
     vector<SegmentAttributes*> segmentsAttributes;
 
     void read();

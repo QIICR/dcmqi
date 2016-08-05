@@ -44,7 +44,7 @@ namespace dcmqi {
                                                 vector<ImageType::Pointer> segmentations,
                                                 const string &metaData);
 
-    static int dcmSegmentation2itkimage(DcmDataset *segDataset, const string &outputDirName);
+    static pair <map<unsigned,ImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
 
   private:
     static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,

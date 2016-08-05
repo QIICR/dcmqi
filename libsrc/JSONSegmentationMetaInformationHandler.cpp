@@ -41,22 +41,28 @@ namespace dcmqi {
   }
 
   bool JSONSegmentationMetaInformationHandler::write(string filename) {
+    ofstream outputFile;
+    outputFile.open(filename.c_str());
+    outputFile << this->getJSONOutputAsString();
+    outputFile.close();
+    return true;
+  }
+
+  string JSONSegmentationMetaInformationHandler::getJSONOutputAsString() {
     if (this->segmentsAttributes.size() == 0)
       return false;
     // TODO: add checks for validity here....
 
-    ofstream outputFile;
-    outputFile.open(filename.c_str());
     Json::Value data;
+    std::stringstream ss;
 
     data["seriesAttributes"] = createAndGetSeriesAttributes();
     data["segmentAttributes"] = createAndGetSegmentAttributes();
 
     Json::StyledWriter styledWriter;
-    outputFile << styledWriter.write(data);
+    ss << styledWriter.write(data);
 
-    outputFile.close();
-    return true;
+    return ss.str();
   }
 
   void JSONSegmentationMetaInformationHandler::readSeriesAttributes() {
