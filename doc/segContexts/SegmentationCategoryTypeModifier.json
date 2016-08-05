@@ -14421,15 +14421,17 @@
         "codeValue": "R-42019", 
         "contextGroupName": "Segmentation Property Categories", 
         "showAnatomy": "true", 
-        "Type": {
-          "codeValue": "R-0039F", 
-          "codingScheme": "SRT", 
-          "UMLSConceptUID": "C1276288", 
-          "cid": "7161", 
-          "contextGroupName": "Physiology Segmentation Types", 
-          "codeMeaning": "Perfusion", 
-          "SNOMEDCTConceptID": "371863001"
-        }
+        "Type": [ 
+          {
+            "codeValue": "R-0039F", 
+            "codingScheme": "SRT", 
+            "UMLSConceptUID": "C1276288", 
+            "cid": "7161", 
+            "contextGroupName": "Physiology Segmentation Types", 
+            "codeMeaning": "Perfusion", 
+            "SNOMEDCTConceptID": "371863001"
+          }
+        ]
       }, 
       {
         "codeMeaning": "Spatial and Relational Concept", 
