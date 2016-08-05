@@ -1,6 +1,6 @@
 {
+  "SegmentationCategoryTypeContextName" : "from AIM on ClearCanvas",
   "SegmentationCodes": {
-    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "SegmentationCategoryTypeModifier.xsd", 
     "Category": [
       {
         "codeMeaning": "Tissue", 
