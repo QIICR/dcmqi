@@ -1,6 +1,6 @@
 {
+  "AnatomicContextName": "from AIM on ClearCanvas", 
   "AnatomicCodes": {
-    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "AnatomicRegionAndModifier.xsd", 
     "AnatomicRegion": [
       {
         "codeValue": "T-43117", 
