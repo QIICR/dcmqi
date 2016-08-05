@@ -253,4 +253,6 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp)
 set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
 
+add_subdirectory("libsrc")
+
 add_subdirectory("apps")

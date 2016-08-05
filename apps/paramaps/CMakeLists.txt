@@ -3,30 +3,19 @@ set(COMMON_INCLUDE_DIRECTORIES
   ${ITK_INCLUDE_DIRS}
   ${ITK_INSTALL_PREFIX}/include/vxl/core
   ${ITK_INSTALL_PREFIX}/include/vxl/vcl
-  ${DCMQI_SOURCE_DIR}/lib
+  ${DCMQI_SOURCE_DIR}/include
   )
+
+message("Include")
+message(${DCMQI_SOURCE_DIR}/include)
 
 set(COMMON_TARGET_LIBRARIES
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
+  dcmqi
   )
 
 set(COMMON_SOURCE_FILES
-  ${CMAKE_SOURCE_DIR}/lib/Helper.h
-  ${CMAKE_SOURCE_DIR}/lib/Helper.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.h
-  ${CMAKE_SOURCE_DIR}/lib/ConverterBase.cpp
-  ${CMAKE_SOURCE_DIR}/lib/ParaMapConverter.h
-  ${CMAKE_SOURCE_DIR}/lib/ParaMapConverter.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONMetaInformationHandlerBase.cpp
-  ${CMAKE_SOURCE_DIR}/lib/JSONParametricMapMetaInformationHandler.h
-  ${CMAKE_SOURCE_DIR}/lib/JSONParametricMapMetaInformationHandler.cpp
-  ${CMAKE_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
-  ${CMAKE_SOURCE_DIR}/lib/Exceptions.h
-  ${CMAKE_SOURCE_DIR}/lib/QIICRUIDs.h
-  ${CMAKE_SOURCE_DIR}/lib/QIICRConstants.h
-  ${CMAKE_SOURCE_DIR}/lib/preproc.h
   )
 
 set(MODULE_NAME itkimage2paramap)
