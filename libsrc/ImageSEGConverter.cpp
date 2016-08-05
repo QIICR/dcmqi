@@ -4,20 +4,10 @@
 
 namespace dcmqi {
 
-  int ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                       const std::string &metaDataFileName, const std::string &outputFileName) {
+  int ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets, vector<ImageType::Pointer> segmentations,
+                                                  const std::string &metaDataFileName, const std::string &outputFileName) {
 
-    ReaderType::Pointer reader = ReaderType::New();
-
-    if (segmentationFileNames.empty() || dicomImageFileNames.empty() || metaDataFileName.empty() || outputFileName.empty() )
-    {
-      return EXIT_FAILURE;
-    }
-    reader->SetFileName(segmentationFileNames[0].c_str());
-    reader->Update();
-    ImageType::Pointer labelImage = reader->GetOutput();
-
-    ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
+    ImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
     JSONSegmentationMetaInformationHandler metaInfo(metaDataFileName.c_str());
@@ -40,9 +30,7 @@ namespace dcmqi {
         ident);   // content identification
 
     /* Import patient and study from existing file */
-    // TODO: for more recent dcmtk version
-    // CHECK_COND(segdoc->import(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
-    CHECK_COND(segdoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+    CHECK_COND(segdoc->import(*dcmDatasets[0], OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -55,7 +43,7 @@ namespace dcmqi {
 
     /* Initialize shared functional groups */
     FGInterface &segFGInt = segdoc->getFunctionalGroups();
-    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
+    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
 
     const unsigned frameSize = inputSize[0] * inputSize[1];
 
@@ -64,7 +52,7 @@ namespace dcmqi {
     {
       OFString imageOrientationPatientStr;
 
-      ImageType::DirectionType labelDirMatrix = labelImage->GetDirection();
+      ImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
       cout << "Directions: " << labelDirMatrix << endl;
 
@@ -86,7 +74,7 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ImageType::SpacingType labelSpacing = labelImage->GetSpacing();
+      ImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
       ostringstream spacingSStream;
       spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -121,25 +109,18 @@ namespace dcmqi {
 
     OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
 
-    DcmFileFormat ff;
-    CHECK_COND(ff.loadFile(dicomImageFileNames[0].c_str()));
-    DcmDataset *dcm = ff.getDataset();
-    CHECK_COND(dcm->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
+    CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
     CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
 
     int uidfound = 0, uidnotfound = 0;
 
     Uint8 *frameData = new Uint8[frameSize];
-    for(int segFileNumber=0; segFileNumber<segmentationFileNames.size(); segFileNumber++){
+    for(int segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
-      cout << "Processing input label " << segmentationFileNames[segFileNumber] << endl;
+      cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
       LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
-      reader->SetFileName(segmentationFileNames[segFileNumber]);
-      reader->Update();
-      ImageType::Pointer labelImage = reader->GetOutput();
-
-      l2lm->SetInput(labelImage);
+      l2lm->SetInput(segmentations[segFileNumber]);
       l2lm->Update();
 
       typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
@@ -148,8 +129,8 @@ namespace dcmqi {
       LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
 
       cout << "Found " << l2lm->GetOutput()->GetNumberOfLabelObjects() << " label(s)" << endl;
-      labelStats->SetInput(reader->GetOutput());
-      labelStats->SetLabelInput(reader->GetOutput());
+      labelStats->SetInput(segmentations[segFileNumber]);
+      labelStats->SetLabelInput(segmentations[segFileNumber]);
       labelStats->Update();
 
       bool cropSegmentsBBox = false;
@@ -157,7 +138,7 @@ namespace dcmqi {
         cout << "WARNING: Crop operation enabled - WIP" << endl;
         typedef itk::BinaryThresholdImageFilter<ImageType,ImageType> ThresholdType;
         ThresholdType::Pointer thresh = ThresholdType::New();
-        thresh->SetInput(reader->GetOutput());
+        thresh->SetInput(segmentations[segFileNumber]);
         thresh->SetLowerThreshold(1);
         thresh->SetLowerThreshold(100);
         thresh->SetInsideValue(1);
@@ -207,8 +188,6 @@ namespace dcmqi {
         lastSlice << ")" << endl;
 
         DcmSegment* segment = NULL;
-        string segFileName = segmentationFileNames[segFileNumber];
-
         SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributes[segFileNumber];
 
         DcmSegTypes::E_SegmentAlgoType algoType;
@@ -294,14 +273,14 @@ namespace dcmqi {
             ImageType::IndexType sliceOriginIndex;
             sliceOriginIndex.Fill(0);
             sliceOriginIndex[2] = sliceNumber;
-            labelImage->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
+            segmentations[segFileNumber]->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
             ostringstream pppSStream;
             if(sliceNumber>0){
               ImageType::PointType prevOrigin;
               ImageType::IndexType prevIndex;
               prevIndex.Fill(0);
               prevIndex[2] = sliceNumber-1;
-              labelImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
+              segmentations[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
             }
             fgppp->setImagePositionPatient(
                 Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
@@ -327,7 +306,7 @@ namespace dcmqi {
             sliceRegion.SetSize(sliceSize);
 
             unsigned framePixelCnt = 0;
-            itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(labelImage, sliceRegion);
+            itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(segmentations[segFileNumber], sliceRegion);
             for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
               if(sliceIterator.Get() == label){
                 frameData[framePixelCnt] = 1;
@@ -350,21 +329,21 @@ namespace dcmqi {
             DerivationImageItem *derimgItem;
             CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
 
-            OFVector<OFString> siVector;
 
-            if(sliceNumber>=dicomImageFileNames.size()){
+            if(sliceNumber>=dcmDatasets.size()){
               cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
               return -1;
             }
 
+            OFVector<DcmDataset*> siVector;
             for(unsigned derImageInstanceNum=0;derImageInstanceNum<slice2derimg[sliceNumber].size();derImageInstanceNum++){
-              siVector.push_back(OFString(dicomImageFileNames[slice2derimg[sliceNumber][derImageInstanceNum]].c_str()));
+              siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
             }
 
             OFVector<SourceImageItem*> srcimgItems;
             CHECK_COND(derimgItem->addSourceImageItems(siVector,
-                                   CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
-                                   srcimgItems));
+                                                       CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                       srcimgItems));
 
             CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
 
@@ -415,17 +394,11 @@ namespace dcmqi {
 
   // populate BodyPartExamined
   {
-    DcmFileFormat sliceFF;
-    DcmDataset *sliceDataset = NULL;
     OFString bodyPartStr;
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
 
-    CHECK_COND(sliceFF.loadFile(dicomImageFileNames[0].c_str()));
-
-    sliceDataset = sliceFF.getDataset();
-
     // inherit BodyPartExamined from the source image dataset, if available
-    if(sliceDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
+    if(dcmDatasets[0]->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
     if(string(bodyPartStr.c_str()).size())
       bodyPartAssigned = bodyPartStr.c_str();
 
@@ -749,22 +722,18 @@ namespace dcmqi {
     return EXIT_SUCCESS;
   }
 
-  vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-                                        const itk::Image<short, 3>::Pointer &labelImage) {
+  vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
+                                                                                     const itk::Image<short, 3>::Pointer &labelImage) {
     // Find mapping from the segmentation slice number to the derivation image
     // Assume that orientation of the segmentation is the same as the source series
     unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
     vector<vector<int> > slice2derimg(numLabelSlices);
-    for(int i=0;i<dicomImageFileNames.size();i++){
+    for(int i=0;i<dcmDatasets.size();i++){
       OFString ippStr;
-      DcmFileFormat sliceFF;
-      DcmDataset *sliceDataset = NULL;
       ImageType::PointType ippPoint;
       ImageType::IndexType ippIndex;
-      CHECK_COND(sliceFF.loadFile(dicomImageFileNames[i].c_str()));
-      sliceDataset = sliceFF.getDataset();
       for(int j=0;j<3;j++){
-        CHECK_COND(sliceDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
+        CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
         ippPoint[j] = atof(ippStr.c_str());
       }
       if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){

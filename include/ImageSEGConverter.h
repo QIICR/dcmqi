@@ -40,14 +40,14 @@ namespace dcmqi {
   class ImageSEGConverter : public ConverterBase {
 
   public:
-    static int itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
+    static int itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets, vector<ImageType::Pointer> segmentations,
                                         const std::string &metaDataFileName, const std::string &outputFileName);
 
     static int dcmSegmentation2itkimage(const string &inputSEGFileName, const string &outputDirName);
 
   private:
-    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-                                                                           const itk::Image<short, 3>::Pointer &labelImage);
+    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
+                                                                  const itk::Image<short, 3>::Pointer &labelImage);
 
     static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                            JSONSegmentationMetaInformationHandler &metaInfo);
