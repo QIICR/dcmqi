@@ -29,7 +29,12 @@ namespace dcmqi {
 
     // TODO: following should maybe be moved to meta info
     OFString imageFlavor = "VOLUME";
-    OFString pixContrast = "MTT";
+    OFString pixContrast = "NONE";
+    if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
+      pixContrast = metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
+    }
+
+    // TODO: initialize modality from the source / add to schema?
     OFString modality = "MR";
 
     ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
@@ -94,7 +99,14 @@ namespace dcmqi {
 
     FGFrameAnatomy frameAnaFG;
     frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED);
-    frameAnaFG.getAnatomy().getAnatomicRegion().set("T-A0100", "SRT", "Brain");
+    if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
+      frameAnaFG.getAnatomy().getAnatomicRegion().set(
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeValue"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codingSchemeDesignator"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeMeaning"].asCString());
+    } else {
+      frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
+    }
     CHECK_COND(pMapDoc.addForAllFrames(frameAnaFG));
 
     FGIdentityPixelValueTransformation idTransFG;
