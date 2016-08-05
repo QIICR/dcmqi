@@ -6,5 +6,10 @@
 int main(int argc, char *argv[])
 {
   PARSE_ARGS;
-  return dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(inputSEGFileName, outputDirName);
+
+  DcmFileFormat sliceFF;
+  CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
+  DcmDataset* dataset = sliceFF.getDataset();
+
+  return dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset, outputDirName);
 }

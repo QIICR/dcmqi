@@ -31,6 +31,23 @@ int main(int argc, char *argv[])
 
   }
 
-  return dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metaDataFileName,
-                                                            outputSEGFileName);
+  ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
+  std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
+                       (std::istreambuf_iterator<char>()));
+  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata);
+
+  if (result == NULL){
+    return EXIT_FAILURE;
+  } else {
+    DcmFileFormat segdocFF(result);
+    bool compress = false;
+    if(compress){
+      CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
+    } else {
+      CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
+    }
+
+    COUT << "Saved segmentation as " << outputSEGFileName << endl;
+    return EXIT_SUCCESS;
+  }
 }

@@ -4,13 +4,14 @@
 
 namespace dcmqi {
 
-  int ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets, vector<ImageType::Pointer> segmentations,
-                                                  const std::string &metaDataFileName, const std::string &outputFileName) {
+  DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+                                                          vector<ImageType::Pointer> segmentations,
+                                                          const string &metaData) {
 
     ImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
-    JSONSegmentationMetaInformationHandler metaInfo(metaDataFileName.c_str());
+    JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
 
     IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
@@ -157,7 +158,7 @@ namespace dcmqi {
                << threshBbox[4] << ", " << threshBbox[5]
                << endl;
                */
-        return -1;//abort();
+        return NULL;//abort();
       }
 
       for(int segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
@@ -204,7 +205,7 @@ namespace dcmqi {
           algoName = segmentAttributes->getSegmentAlgorithmName();
           if(algoName == ""){
             cerr << "ERROR: Algorithm name must be specified for non-manual algorithm types!" << endl;
-            return -1;
+            return NULL;
           }
         }
 
@@ -332,7 +333,7 @@ namespace dcmqi {
 
             if(sliceNumber>=dcmDatasets.size()){
               cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
-              return -1;
+              return NULL;
             }
 
             OFVector<DcmDataset*> siVector;
@@ -373,85 +374,62 @@ namespace dcmqi {
       }
     }
 
-  //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
+    //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
 
-  COUT << "Successfully created segmentation document" << OFendl;
+    segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+    CHECK_COND(segdoc->writeDataset(segdocDataset));
 
-  /* Store to disk */
-  COUT << "Saving the result to " << outputFileName << OFendl;
-  //segdoc->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
+    // Set reader/session/timepoint information
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
+    // TODO: user should not directly access root
+    //  if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
+    //    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
 
-  segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
-  CHECK_COND(segdoc->writeDataset(segdocDataset));
+    // populate BodyPartExamined
+    {
+      OFString bodyPartStr;
+      string bodyPartAssigned = metaInfo.getBodyPartExamined();
 
-  // Set reader/session/timepoint information
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
-  // TODO: user should not directly access root
-//  if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
+      // inherit BodyPartExamined from the source image dataset, if available
+      if(dcmDatasets[0]->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
+      if(string(bodyPartStr.c_str()).size())
+        bodyPartAssigned = bodyPartStr.c_str();
 
-  // populate BodyPartExamined
-  {
-    OFString bodyPartStr;
-    string bodyPartAssigned = metaInfo.getBodyPartExamined();
+      if(bodyPartAssigned.size())
+        CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+    }
 
-    // inherit BodyPartExamined from the source image dataset, if available
-    if(dcmDatasets[0]->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
-    if(string(bodyPartStr.c_str()).size())
-      bodyPartAssigned = bodyPartStr.c_str();
+    // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
 
-    if(bodyPartAssigned.size())
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+    // SeriesDate/Time should be of when segmentation was done; initialize to when it was saved
+    {
+      OFString contentDate, contentTime;
+      DcmDate::getCurrentDate(contentDate);
+      DcmTime::getCurrentTime(contentTime);
+
+      segdocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
+      segdocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
+      segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
+      segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
+
+      segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str());
+      segdocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.getSeriesNumber().c_str());
+    }
+
+    return new DcmDataset(segdocDataset);
   }
 
-  // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
 
-  // SeriesDate/Time should be of when segmentation was done; initialize to when it was saved
-  {
-    OFString contentDate, contentTime;
-    DcmDate::getCurrentDate(contentDate);
-    DcmTime::getCurrentTime(contentTime);
-
-    segdocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
-    segdocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
-
-    segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.getSeriesNumber().c_str());
-  }
-
-  DcmFileFormat segdocFF(&segdocDataset);
-  bool compress = false; // TODO: remove hardcoded
-  if(compress){
-    CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
-  } else {
-    CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
-  }
-
-  COUT << "Saved segmentation as " << outputFileName << endl;
-    return EXIT_SUCCESS;
-  }
-
-  int ImageSEGConverter::dcmSegmentation2itkimage(const std::string &inputSEGFileName, const std::string &outputDirName) {
+  int ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset, const string &outputDirName) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
-    DcmFileFormat segFF;
-    DcmDataset *segDataset = NULL;
-    if(segFF.loadFile(inputSEGFileName.c_str()).good()){
-      segDataset = segFF.getDataset();
-    } else {
-      cerr << "Failed to read input " << endl;
-      return EXIT_FAILURE;
-    }
-
     DcmSegmentation *segdoc = NULL;
-    OFCondition cond = DcmSegmentation::loadFile(inputSEGFileName.c_str(), segdoc);
+    OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
     if(!segdoc){
       cerr << "Failed to load seg! " << cond.text() << endl;
       return EXIT_FAILURE;

@@ -12,7 +12,7 @@ namespace dcmqi {
 
   public:
     JSONSegmentationMetaInformationHandler(){}
-    JSONSegmentationMetaInformationHandler(string filename);
+    JSONSegmentationMetaInformationHandler(string jsonInput);
     ~JSONSegmentationMetaInformationHandler();
 
     void setContentCreatorName(const string &creatorName);
@@ -32,12 +32,14 @@ namespace dcmqi {
 
   protected:
 
+    string jsonInput;
+
     string contentCreatorName;
     string clinicalTrialSeriesID;
     string clinicalTrialTimePointID;
 
-    void readSeriesAttributes(const Json::Value &root);
-    void readSegmentAttributes(const Json::Value &root);
+    void readSeriesAttributes();
+    void readSegmentAttributes();
 
     Json::Value createAndGetSeriesAttributes();
     Json::Value createAndGetSegmentAttributes();
