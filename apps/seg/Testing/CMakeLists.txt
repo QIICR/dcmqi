@@ -7,14 +7,14 @@ set(BASELINE ${CMAKE_SOURCE_DIR}/data/ct-3slice/)
 
 include_directories(${ITK_INCLUDE_DIRS})
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib ${ITK_LIBRARIES})
+target_link_libraries(${MODULE_NAME}Test ${${MODULE_NAME}_TARGET_LIBRARIES})
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
 
 add_test(NAME ${MODULE_NAME}_makeNRRD COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
   --compare ${BASELINE}/liver_seg.nrrd
   ${TEMP_DIR}/1.nrrd
-  ModuleEntryPoint
+  ${MODULE_NAME}Test
   ${BASELINE}/liver.dcm
   ${TEMP_DIR})
 

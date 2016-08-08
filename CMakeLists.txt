@@ -153,6 +153,7 @@ mark_as_superbuild(
 #-----------------------------------------------------------------------------
 # Additional CXX/C Flags
 #
+set(CMAKE_C_FLAGS "-fPIC")
 set(ADDITIONAL_C_FLAGS "" CACHE STRING "Additional C Flags")
 mark_as_advanced(ADDITIONAL_C_FLAGS)
 mark_as_superbuild(ADDITIONAL_C_FLAGS)
@@ -252,5 +253,7 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 # https://github.com/open-source-parsers/jsoncpp/
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp)
 set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
+
+add_subdirectory("libsrc")
 
 add_subdirectory("apps")

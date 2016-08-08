@@ -4,7 +4,7 @@ include_directories(${ITK_INCLUDE_DIRS})
 set(MODULE_NAME itkimage2paramap)
 
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib ${ITK_LIBRARIES})
+target_link_libraries(${MODULE_NAME}Test ${${MODULE_NAME}_TARGET_LIBRARIES})
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
 
