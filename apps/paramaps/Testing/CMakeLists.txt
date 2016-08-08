@@ -30,7 +30,7 @@ add_test(NAME ${MODULE_NAME}_hello
   COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
 add_test(NAME ${MODULE_NAME}_makeNRRDparametricmap COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
   --compare ${BASELINE}/pm-example.nrrd
-  ${TEMP_DIR}/paramap.nrrd
+  ${TEMP_DIR}/pmap.nrrd
   ModuleEntryPoint
   --inputFileName ${TEMP_DIR}/paramap.dcm
   --outputDirName ${TEMP_DIR})

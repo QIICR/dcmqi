@@ -1,3 +1,4 @@
+#include <itkImageDuplicator.h>
 #include "ParaMapConverter.h"
 
 
@@ -197,6 +198,133 @@ namespace dcmqi {
   }
 
   int ParaMapConverter::paramap2itkimage(const string &inputFileName, const string &outputDirName) {
+
+    DcmRLEDecoderRegistration::registerCodecs();
+
+    dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
+
+    DcmFileFormat segFF;
+    DcmDataset *pmapDataset = NULL;
+    if(segFF.loadFile(inputFileName.c_str()).good()){
+      pmapDataset = segFF.getDataset();
+    } else {
+      cerr << "Failed to read input " << endl;
+      return EXIT_FAILURE;
+    }
+
+    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadFile(inputFileName.c_str());
+    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+      return EXIT_FAILURE;
+    }
+
+    DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+
+    // Directions
+    FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
+    ImageType::DirectionType direction;
+    if(getImageDirections(fgInterface, direction)){
+      cerr << "Failed to get image directions" << endl;
+      return EXIT_FAILURE;
+    }
+
+    // Spacing and origin
+    double computedSliceSpacing, computedVolumeExtent;
+    vnl_vector<double> sliceDirection(3);
+    sliceDirection[0] = direction[0][2];
+    sliceDirection[1] = direction[1][2];
+    sliceDirection[2] = direction[2][2];
+
+    ImageType::PointType imageOrigin;
+    if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
+      cerr << "Failed to compute origin and/or slice spacing!" << endl;
+      return EXIT_FAILURE;
+    }
+
+    ImageType::SpacingType imageSpacing;
+    imageSpacing.Fill(0);
+    if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
+      cerr << "Failed to get image spacing from DICOM!" << endl;
+      return EXIT_FAILURE;
+    }
+
+    const double tolerance = 1e-5;
+    if(!imageSpacing[2]){
+      imageSpacing[2] = computedSliceSpacing;
+    } else if(fabs(imageSpacing[2]-computedSliceSpacing)>tolerance){
+      cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
+           " Declared = " << imageSpacing[2] << " Computed = " << computedSliceSpacing << endl;
+    }
+
+    // Region size
+    ImageType::SizeType imageSize;
+    {
+      OFString str;
+
+      if(pmapDataset->findAndGetOFString(DCM_Rows, str).good())
+        imageSize[1] = atoi(str.c_str());
+      if(pmapDataset->findAndGetOFString(DCM_Columns, str).good())
+        imageSize[0] = atoi(str.c_str());
+    }
+    imageSize[2] = fgInterface.getNumberOfFrames();
+
+    ImageType::RegionType imageRegion;
+    imageRegion.SetSize(imageSize);
+    ImageType::Pointer segImage = ImageType::New();
+    segImage->SetRegions(imageRegion);
+    segImage->SetOrigin(imageOrigin);
+    segImage->SetSpacing(imageSpacing);
+    segImage->SetDirection(direction);
+    segImage->Allocate();
+    segImage->FillBuffer(0);
+
+    typedef itk::ImageFileWriter<ImageType> WriterType;
+    stringstream imageFileNameSStream;
+    imageFileNameSStream << outputDirName << "/" << "pmap.nrrd";
+
+    DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
+    if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+      return EXIT_FAILURE;
+    }
+
+    DPMParametricMapIOD::Frames<PixelType> frames = *OFget<DPMParametricMapIOD::Frames<PixelType> >(&obj);
+
+    for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
+
+      PixelType *frame = frames.getFrame(frameId);
+
+      bool isPerFrame;
+
+      FGPlanePosPatient *planposfg =
+          OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+      assert(planposfg);
+
+      FGFrameContent *fracon =
+          OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
+      assert(fracon);
+
+      // populate meta information needed for Slicer ScalarVolumeNode initialization
+      {
+      }
+
+      ImageType::IndexType index;
+      // initialize slice with the frame content
+      for(int row=0;row<imageSize[1];row++){
+        index[1] = row;
+        index[2] = frameId;
+        for(int col=0;col<imageSize[0];col++){
+          unsigned pixelPosition = row*imageSize[0] + col;
+          index[0] = col;
+          segImage->SetPixel(index, frame[pixelPosition]);
+        }
+      }
+    }
+
+    WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName(imageFileNameSStream.str().c_str());
+    writer->SetInput(segImage);
+    writer->SetUseCompression(1);
+    writer->Update();
+
     return EXIT_SUCCESS;
   }
 
