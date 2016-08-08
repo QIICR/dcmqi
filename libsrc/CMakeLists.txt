@@ -30,3 +30,8 @@ target_include_directories(dcmqi PUBLIC
   ${DCMQI_SOURCE_DIR}/include
   ${DCMQI_SOURCE_DIR}/jsoncpp
   )
+
+target_link_libraries(dcmqi PUBLIC
+  ${DCMTK_LIBRARIES}
+  ${ITK_LIBRARIES}
+  )

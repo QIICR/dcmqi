@@ -1,17 +1,10 @@
 set(COMMON_INCLUDE_DIRECTORIES
-  ${DCMTK_INCLUDE_DIRS}
-  ${ITK_INCLUDE_DIRS}
-  ${ITK_INSTALL_PREFIX}/include/vxl/core
-  ${ITK_INSTALL_PREFIX}/include/vxl/vcl
-  ${DCMQI_SOURCE_DIR}/include
   )
 
 message("Include")
 message(${DCMQI_SOURCE_DIR}/include)
 
 set(COMMON_TARGET_LIBRARIES
-  ${DCMTK_LIBRARIES}
-  ${ITK_LIBRARIES}
   dcmqi
   )
 
