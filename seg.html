@@ -131,20 +131,20 @@
                                                     <input ng-model="segment.SegmentDescription">
                                                 </md-input-container>
                                             </div>
-                                            <div flex label="Recommended Display RGB Value" md-color-picker="segment.RecommendedDisplayRGBValue.backgroundOptions" ng-model="segment.RecommendedDisplayRGBValue.color"></div>
                                         </div>
                                         <div layout="row">
                                             <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl" class="ng-scope" flex>
                                                 <custom-Autocomplete></custom-Autocomplete>
                                             </div>
-                                        </div>
-                                        <div layout="row">
                                             <div ng-controller="SegmentedPropertyTypeController as ctrl" class="ng-scope" flex>
                                                 <custom-Autocomplete></custom-Autocomplete>
                                             </div>
+                                        </div>
+                                        <div layout="row">
                                             <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
                                                 <custom-Autocomplete></custom-Autocomplete>
                                             </div>
+                                            <div flex label="Recommended Display RGB Value" md-color-picker="segment.RecommendedDisplayRGBValue.backgroundOptions" ng-model="segment.RecommendedDisplayRGBValue.color"></div>
                                         </div>
                                         <div layout="row">
                                             <div ng-controller="AnatomicRegionController as ctrl" flex>

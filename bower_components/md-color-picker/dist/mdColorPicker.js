@@ -8,153 +8,9 @@
 
 (function( window, angular, undefined ) {
 'use strict';
-
 var dateClick;
 
-
-var canvasTypes = {
-	hue: {
-		getColorByPoint: function( x, y ) {
-			var imageData = this.getImageData( x, y );
-			this.setMarkerCenter( y );
-
-			var hsl = new tinycolor( {r: imageData[0], g: imageData[1], b: imageData[2] } );
-			return hsl.toHsl().h;
-		},
-		draw: function()  {
-			this.$element.css({'height': this.height + 'px'});
-
-			this.canvas.height = this.height;
-			this.canvas.width = this.height;
-
-			// Create gradient
-			var hueGrd = this.context.createLinearGradient(90, 0.000, 90, this.height);
-
-			// Add colors
-			hueGrd.addColorStop(0.01,	'rgba(255, 0, 0, 1.000)');
-			hueGrd.addColorStop(0.167, 	'rgba(255, 0, 255, 1.000)');
-			hueGrd.addColorStop(0.333, 	'rgba(0, 0, 255, 1.000)');
-			hueGrd.addColorStop(0.500, 	'rgba(0, 255, 255, 1.000)');
-			hueGrd.addColorStop(0.666, 	'rgba(0, 255, 0, 1.000)');
-			hueGrd.addColorStop(0.828, 	'rgba(255, 255, 0, 1.000)');
-			hueGrd.addColorStop(0.999, 	'rgba(255, 0, 0, 1.000)');
-
-			// Fill with gradient
-			this.context.fillStyle = hueGrd;
-			this.context.fillRect( 0, 0, this.canvas.width, this.height );
-		}
-	},
-	alpha: {
-		getColorByPoint: function( x, y ) {
-			var imageData = this.getImageData( x, y );
-			this.setMarkerCenter( y );
-
-			return imageData[3] / 255;
-		},
-		draw: function ()  {
-			this.$element.css({'height': this.height + 'px'});
-
-			this.canvas.height = this.height;
-			this.canvas.width = this.height;
-
-			// Create gradient
-			var hueGrd = this.context.createLinearGradient(90, 0.000, 90, this.height);
-
-			// Add colors
-			hueGrd.addColorStop(0.01,	'rgba(' + this.currentColor.r + ',' + this.currentColor.g + ',' + this.currentColor.b + ', 1.000)');
-			hueGrd.addColorStop(0.99,	'rgba(' + this.currentColor.r + ',' + this.currentColor.g + ',' + this.currentColor.b + ', 0.000)');
-
-			// Fill with gradient
-			this.context.fillStyle = hueGrd;
-			this.context.fillRect( -1, -1, this.canvas.width+2, this.height+2 );
-		},
-		extra: function() {
-			this.$scope.$on('mdColorPicker:spectrumColorChange', angular.bind( this, function( e, args ) {
-				this.currentColor = args.color;
-				this.draw();
-			}));
-		}
-	},
-	spectrum: {
-		getColorByPoint: function( x, y ) {
-
-			var imageData = this.getImageData( x, y );
-		 	this.setMarkerCenter(x,y);
-
-			return {
-				r: imageData[0],
-				g: imageData[1],
-				b: imageData[2]
-			};
-		},
-		draw: function() {
-			this.canvas.height = this.height;
-			this.canvas.width = this.height;
-			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-			// Odd bug prevented selecting min, max ranges from all gradients.
-			// Start at 0.01, end at 0.99 and stretch it to 1px larger in each direction
-
-			// White gradient
-			var whiteGrd = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
-
-
-			whiteGrd.addColorStop(0.01, 'rgba(255, 255, 255, 1.000)');
-			whiteGrd.addColorStop(0.99, 'rgba(255, 255, 255, 0.000)');
-
-			// Black Gradient
-			var blackGrd = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
-
-
-			blackGrd.addColorStop(0.01, 'rgba(0, 0, 0, 0.000)');
-			blackGrd.addColorStop(0.99, 'rgba(0, 0, 0, 1.000)');
-
-			// Fill with solid
-			this.context.fillStyle = 'hsl( ' + this.currentHue + ', 100%, 50%)';
-			this.context.fillRect( 0, 0, this.canvas.width, this.canvas.height );
-
-			// Fill with white
-			// Odd bug prevented selecting min, max ranges from all gradients
-			this.context.fillStyle = whiteGrd;
-			this.context.fillRect( -1, -1, this.canvas.width+2, this.canvas.height+2 );
-
-			// Fill with black
-			// Odd bug prevented selecting min, max ranges from all gradients
-			this.context.fillStyle = blackGrd;
-			this.context.fillRect( -1, -1, this.canvas.width+2, this.canvas.height+2 );
-		},
-		extra: function() {
-			this.$scope.$on('mdColorPicker:spectrumHueChange', angular.bind( this, function( e, args ) {
-				this.currentHue = args.hue;
-				this.draw();
-				var markerPos = this.getMarkerCenter();
-				var color = this.getColorByPoint( markerPos.x, markerPos.y );
-				this.setColor( color );
-
-			}));
-		}
-	}
-
-};
-
-function GradientCanvasFactory( ) {
-
-	return function gradientCanvas( type ) {
-		var canvas = new GradientCanvas( type, type != 'spectrum' );
-		canvas = angular.merge( canvas, canvasTypes[type] );
-
-		return {
-			template: '<canvas width="100%" height="100%"></canvas><div class="md-color-picker-marker"></div>',
-			link: canvas.get,
-			controller: function() {
-			//	console.log( "mdColorPickerAlpha Controller", Date.now() - dateClick );
-			}
-		};
-	}
-
-}
-
-function GradientCanvas( type, restrictX ) {
+var GradientCanvas = function( type, restrictX ) {
 
 	this.type = type;
 	this.restrictX = restrictX;
@@ -188,11 +44,12 @@ function GradientCanvas( type, restrictX ) {
 		//$scope.$watch( function() { return color.getRgb(); }, hslObserver, true );
 
 
-		this.$element.on('touchstart mousedown', angular.bind(this, this.onMouseDown));
+
+		this.$element.on( 'mousedown', angular.bind( this, this.onMouseDown ) );
 		this.$scope.$on('mdColorPicker:colorSet', angular.bind( this, this.onColorSet ) );
 		if ( this.extra ) {
 			this.extra();
-		}
+		};
 		////////////////////////////
 		// init
 		////////////////////////////
@@ -202,49 +59,36 @@ function GradientCanvas( type, restrictX ) {
 
 	//return angular.bind( this, this.get );
 
-}
-
-
-
+};
 GradientCanvas.prototype.$window = angular.element( window );
 
 GradientCanvas.prototype.getColorByMouse = function( e ) {
+	var x = e.pageX - this.offset.x;
+	var y = e.pageY - this.offset.y;
 
-    var te =  e.touches && e.touches[0];
-
-    var pageX = te && te.pageX || e.pageX;
-    var pageY = te && te.pageY || e.pageY;
-
-    var x = Math.round( pageX - this.offset.x );
-    var y = Math.round( pageY - this.offset.y );
-
-    return this.getColorByPoint(x, y);
+	return this.getColorByPoint( x, y );
 };
 
 GradientCanvas.prototype.setMarkerCenter = function( x, y ) {
 	var xOffset = -1 * this.marker.offsetWidth / 2;
 	var yOffset = -1 * this.marker.offsetHeight / 2;
-	var xAdjusted, xFinal, yAdjusted, yFinal;
-
 	if ( y === undefined ) {
-		yAdjusted = x + yOffset;
-		yFinal = Math.round( Math.max( Math.min( this.height-1 + yOffset, yAdjusted), yOffset ) );
+		y = x + yOffset;
+		y = Math.max( Math.min( this.height-1 + yOffset, y ), Math.ceil( yOffset ) );
 
-		xFinal = 0;
+		x = 0;
 	} else {
-		xAdjusted = x + xOffset;
-		yAdjusted = y + yOffset;
+		x = x + xOffset;
+		y = y + yOffset;
 
-		xFinal = Math.floor( Math.max( Math.min( this.height + xOffset, xAdjusted ), xOffset ) );
-		yFinal = Math.floor( Math.max( Math.min( this.height + yOffset, yAdjusted ), yOffset ) );
-		// Debug output
-		// console.log( "Raw: ", x+','+y, "Adjusted: ", xAdjusted + ',' + yAdjusted, "Final: ", xFinal + ',' + yFinal );
+		x = Math.max( Math.min( this.height + xOffset, x ), Math.ceil( xOffset ) );
+		y = Math.max( Math.min( this.height + yOffset, y ), Math.ceil( yOffset ) );
 	}
 
 
 
-	angular.element(this.marker).css({'left': xFinal + 'px' });
-	angular.element(this.marker).css({'top': yFinal + 'px'});
+	angular.element(this.marker).css({'left': x + 'px' });
+	angular.element(this.marker).css({'top': y + 'px'});
 };
 
 GradientCanvas.prototype.getMarkerCenter = function() {
@@ -272,7 +116,7 @@ GradientCanvas.prototype.onMouseDown = function( e ) {
 
 	this.$element.css({ 'cursor': 'none' });
 
-	this.offset.x = this.canvas.getBoundingClientRect().left;
+	this.offset.x = this.canvas.getBoundingClientRect().left+1;
 	this.offset.y = this.canvas.getBoundingClientRect().top;
 
 	var fn = angular.bind( this, function( e ) {
@@ -294,10 +138,10 @@ GradientCanvas.prototype.onMouseDown = function( e ) {
 		}
 	});
 
-	this.$window.on('touchmove mousemove', fn);
-	this.$window.one('touchend mouseup', angular.bind(this, function (e) {
-	this.$window.off('touchmove mousemove', fn);
-	this.$element.css({ 'cursor': 'crosshair' });
+	this.$window.on( 'mousemove', fn );
+	this.$window.one( 'mouseup', angular.bind(this, function( e ) {
+		this.$window.off( 'mousemove', fn );
+		this.$element.css({ 'cursor': 'crosshair' });
 	}));
 
 	// Set the color
@@ -342,11 +186,125 @@ GradientCanvas.prototype.onColorSet = function( e, args ) {
 
 };
 
+var hueLinkFn = new GradientCanvas( 'hue', true );
+hueLinkFn.getColorByPoint = function( x, y ) {
+	var imageData = this.getImageData( x, y );
+	this.setMarkerCenter( y );
+
+	var hsl = new tinycolor( {r: imageData[0], g: imageData[1], b: imageData[2] } );
+	return hsl.toHsl().h;
+
+};
+hueLinkFn.draw = function()  {
+
+
+	this.$element.css({'height': this.height + 'px'});
+
+	this.canvas.height = this.height;
+	this.canvas.width = this.height;
 
 
 
+	// Create gradient
+	var hueGrd = this.context.createLinearGradient(90, 0.000, 90, this.height);
+
+	// Add colors
+	hueGrd.addColorStop(0.01,	'rgba(255, 0, 0, 1.000)');
+	hueGrd.addColorStop(0.167, 	'rgba(255, 0, 255, 1.000)');
+	hueGrd.addColorStop(0.333, 	'rgba(0, 0, 255, 1.000)');
+	hueGrd.addColorStop(0.500, 	'rgba(0, 255, 255, 1.000)');
+	hueGrd.addColorStop(0.666, 	'rgba(0, 255, 0, 1.000)');
+	hueGrd.addColorStop(0.828, 	'rgba(255, 255, 0, 1.000)');
+	hueGrd.addColorStop(0.999, 	'rgba(255, 0, 0, 1.000)');
+
+	// Fill with gradient
+	this.context.fillStyle = hueGrd;
+	this.context.fillRect( 0, 0, this.canvas.width, this.height );
+};
 
 
+var alphaLinkFn = new GradientCanvas( 'alpha', true );
+alphaLinkFn.getColorByPoint = function( x, y ) {
+	var imageData = this.getImageData( x, y );
+	this.setMarkerCenter( y );
+
+	return imageData[3] / 255;
+};
+alphaLinkFn.draw = function ()  {
+	this.$element.css({'height': this.height + 'px'});
+
+	this.canvas.height = this.height;
+	this.canvas.width = this.height;
+
+	// Create gradient
+	var hueGrd = this.context.createLinearGradient(90, 0.000, 90, this.height);
+
+	// Add colors
+	hueGrd.addColorStop(0.01,	'rgba(' + this.currentColor.r + ',' + this.currentColor.g + ',' + this.currentColor.b + ', 1.000)');
+	hueGrd.addColorStop(0.999,	'rgba(' + this.currentColor.r + ',' + this.currentColor.g + ',' + this.currentColor.b + ', 0.000)');
+
+	// Fill with gradient
+	this.context.fillStyle = hueGrd;
+	this.context.fillRect( 0, 0, this.canvas.width, this.height );
+};
+alphaLinkFn.extra = function() {
+	this.$scope.$on('mdColorPicker:spectrumColorChange', angular.bind( this, function( e, args ) {
+		this.currentColor = args.color;
+		this.draw();
+	}));
+};
+
+
+var spectrumLinkFn = new GradientCanvas( 'spectrum', false );
+spectrumLinkFn.getColorByPoint = function( x, y ) {
+	var imageData = this.getImageData( x, y );
+ 	this.setMarkerCenter(x,y);
+
+	return {
+		r: imageData[0],
+		g: imageData[1],
+		b: imageData[2]
+	};
+};
+spectrumLinkFn.draw = function() {
+	this.canvas.height = this.height;
+	this.canvas.width = this.height;
+	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	// White gradient
+
+	var whiteGrd = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
+
+	whiteGrd.addColorStop(0, 'rgba(255, 255, 255, 1.000)');
+	whiteGrd.addColorStop(1, 'rgba(255, 255, 255, 0.000)');
+
+	// Black Gradient
+	var blackGrd = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
+
+	blackGrd.addColorStop(0, 'rgba(0, 0, 0, 0.000)');
+	blackGrd.addColorStop(1, 'rgba(0, 0, 0, 1.000)');
+
+	// Fill with solid
+	this.context.fillStyle = 'hsl( ' + this.currentHue + ', 100%, 50%)';
+	this.context.fillRect( 0, 0, this.canvas.width, this.canvas.height );
+
+	// Fill with white
+	this.context.fillStyle = whiteGrd;
+	this.context.fillRect( 0, 0, this.canvas.width, this.canvas.height );
+
+	// Fill with black
+	this.context.fillStyle = blackGrd;
+	this.context.fillRect( 0, 0, this.canvas.width, this.canvas.height );
+};
+spectrumLinkFn.extra = function() {
+	this.$scope.$on('mdColorPicker:spectrumHueChange', angular.bind( this, function( e, args ) {
+		this.currentHue = args.hue;
+		this.draw();
+		var markerPos = this.getMarkerCenter();
+		var color = this.getColorByPoint( markerPos.x, markerPos.y );
+		this.setColor( color );
+
+	}));
+};
 
 
 angular.module('mdColorPicker', [])
@@ -369,7 +327,6 @@ angular.module('mdColorPicker', [])
 			}
 		}
 	}])
-	.factory('mdColorGradientCanvas', GradientCanvasFactory )
 	.factory('mdColorPickerHistory', ['$injector', function( $injector ) {
 
 		var history = [];
@@ -443,17 +400,17 @@ angular.module('mdColorPicker', [])
 
 				// Input options
 				type: '@',
-				label: '@?',
-				icon: '@?',
-				random: '@?',
-				default: '@?',
+				label: '@',
+				icon: '@',
+				random: '@',
+				default: '@',
 
 				// Dialog Options
-				openOnInput: '=?',
-				hasBackdrop: '=?',
-				clickOutsideToClose: '=?',
-				skipHide: '=?',
-				preserveScope: '=?',
+				openOnInput: '@',
+				hasBackdrop: '@',
+				clickOutsideToClose: '@',
+				skipHide: '@',
+				preserveScope: '@',
 
 				// Advanced options
 				mdColorClearButton: '=?',
@@ -465,9 +422,6 @@ angular.module('mdColorPicker', [])
 				mdColorGenericPalette: '=?',
 				mdColorMaterialPalette: '=?',
 				mdColorHistory: '=?',
-				mdColorHex: '=?',
-				mdColorRgb: '=?',
-				mdColorHsl: '=?',
 				mdColorDefaultTab: '=?'
 			},
 			controller: ['$scope', '$element', '$attrs', '$mdDialog', '$mdColorPicker', function( $scope, $element, $attrs, $mdDialog, $mdColorPicker ) {
@@ -477,14 +431,15 @@ angular.module('mdColorPicker', [])
 				if ( $scope.options !== undefined ) {
 					for ( var opt in $scope.options ) {
 						if ( $scope.options.hasOwnProperty( opt ) ) {
-							var scopeKey;
-							//if ( $scope.hasOwnProperty( opt ) ) { // Removing this because optional scope properties are not added to the scope.
+							var scopeVal = undefined;
+							var scopeKey = undefined;
+							if ( $scope.hasOwnProperty( opt ) ) {
 								scopeKey = opt;
-							//} else
-							if ( $scope.hasOwnProperty( 'mdColor' + opt.slice(0,1).toUpperCase() + opt.slice(1) ) ) {
+							} else if ( $scope.hasOwnProperty( 'mdColor' + opt.slice(0,1).toUpperCase() + opt.slice(1) ) ) {
 								scopeKey = 'mdColor' + opt.slice(0,1).toUpperCase() + opt.slice(1);
 							}
-							if ( scopeKey && ( $scope[scopeKey] === undefined || $scope[scopeKey] === '' ) ) {
+
+							if ( scopeKey && $scope[scopeKey] === undefined ) {
 								$scope[scopeKey] = $scope.options[opt];
 							}
 						}
@@ -510,9 +465,8 @@ angular.module('mdColorPicker', [])
 				$scope.mdColorGenericPalette = $scope.mdColorGenericPalette === undefined ? true : $scope.mdColorGenericPalette;
 				$scope.mdColorMaterialPalette = $scope.mdColorMaterialPalette === undefined ? true : $scope.mdColorMaterialPalette;
 				$scope.mdColorHistory = $scope.mdColorHistory === undefined ? true : $scope.mdColorHistory;
-				$scope.mdColorHex = $scope.mdColorHex === undefined ? true : $scope.mdColorHex;
-				$scope.mdColorRgb = $scope.mdColorRgb === undefined ? true : $scope.mdColorRgb;
-				$scope.mdColorHsl = $scope.mdColorHsl === undefined ? true : $scope.mdColorHsl;
+
+
 				// Set the starting value
 				updateValue();
 
@@ -525,7 +479,7 @@ angular.module('mdColorPicker', [])
 
 				// Watch for updates to value and set them on the model
 				$scope.$watch('value',function(newVal,oldVal) {
-					if (newVal !== oldVal) {
+					if (newVal !== '' && typeof newVal !== 'undefined' && newVal && newVal !== oldVal) {
 						ngModel.$setViewValue(newVal);
 					}
 				});
@@ -557,12 +511,9 @@ angular.module('mdColorPicker', [])
 						mdColorGenericPalette: $scope.mdColorGenericPalette,
 						mdColorMaterialPalette: $scope.mdColorMaterialPalette,
 						mdColorHistory: $scope.mdColorHistory,
-						mdColorHex: $scope.mdColorHex,
-						mdColorRgb: $scope.mdColorRgb,
-						mdColorHsl: $scope.mdColorHsl,
 						mdColorDefaultTab: $scope.mdColorDefaultTab,
 
-						$event: $event
+						$event: $event,
 
 					}).then(function( color ) {
 						$scope.value = color;
@@ -591,9 +542,6 @@ angular.module('mdColorPicker', [])
 				mdColorGenericPalette: '=',
 				mdColorMaterialPalette: '=',
 				mdColorHistory: '=',
-				mdColorHex: '=',
-				mdColorRgb: '=',
-				mdColorHsl: '=',
 				mdColorDefaultTab: '='
 			},
 			controller: ["$scope", "$element", "$attrs", function( $scope, $element, $attrs ) {
@@ -602,11 +550,11 @@ angular.module('mdColorPicker', [])
 				function getTabIndex( tab ) {
 					var index = 0;
 					if ( tab && typeof( tab ) === 'string' ) {
-						/* DOM isn't fast enough for this
+/* DOM isn't fast enough for this
 
 						var tabs = $element[0].querySelector('.md-color-picker-colors').getElementsByTagName( 'md-tab' );
 						console.log( tabs.length );
-						*/
+*/
 						var tabName = 'mdColor' + tab.slice(0,1).toUpperCase() + tab.slice(1);
 						var tabs = ['mdColorSpectrum', 'mdColorSliders', 'mdColorGenericPalette', 'mdColorMaterialPalette', 'mdColorHistory'];
 						for ( var x = 0; x < tabs.length; x++ ) {
@@ -634,8 +582,8 @@ angular.module('mdColorPicker', [])
 				var previewInput = angular.element( $element[0].querySelector('.md-color-picker-preview-input') );
 
 				var outputFn = [
-					'toRgbString',
 					'toHexString',
+					'toRgbString',
 					'toHslString'
 				];
 
@@ -855,11 +803,38 @@ angular.module('mdColorPicker', [])
 		};
 	}])
 
-	.directive( 'mdColorPickerHue', ['mdColorGradientCanvas', function( mdColorGradientCanvas ) { return new mdColorGradientCanvas('hue'); }])
-	.directive( 'mdColorPickerAlpha', ['mdColorGradientCanvas', function( mdColorGradientCanvas ) { return new mdColorGradientCanvas('alpha'); }])
-	.directive( 'mdColorPickerSpectrum', ['mdColorGradientCanvas', function( mdColorGradientCanvas ) { return new mdColorGradientCanvas('spectrum'); }])
+	.directive( 'mdColorPickerHue', [function() {
+		return {
+			template: '<canvas width="100%" height="100%"></canvas><div class="md-color-picker-marker"></div>',
+			link: hueLinkFn.get,
+			controller: function() {
+			//	console.log( "mdColorPickerHue Controller", Date.now() - dateClick );
+			}
+		};
+	}])
 
-    .factory('$mdColorPicker', ['$q', '$mdDialog', 'mdColorPickerHistory', function ($q, $mdDialog, colorHistory) {
+	.directive( 'mdColorPickerAlpha', [function() {
+		return {
+			template: '<canvas width="100%" height="100%"></canvas><div class="md-color-picker-marker"></div>',
+			link: alphaLinkFn.get,
+			controller: function() {
+			//	console.log( "mdColorPickerAlpha Controller", Date.now() - dateClick );
+			}
+		};
+	}])
+
+	.directive( 'mdColorPickerSpectrum', [function() {
+		return {
+			template: '<canvas width="100%" height="100%"></canvas><div class="md-color-picker-marker"></div>{{hue}}',
+			link: spectrumLinkFn.get,
+			controller: function() {
+			//	console.log( "mdColorPickerSpectrum Controller", Date.now() - dateClick );
+			}
+		};
+	}])
+
+    .factory('$mdColorPicker', ['$q', '$mdDialog', 'mdColorPickerHistory', function ($q, $mdDialog, colorHistory)
+    {
 		var dialog;
 
         return {
@@ -871,7 +846,7 @@ angular.module('mdColorPicker', [])
 				//console.log( 'DIALOG OPTIONS', options );
 				// Defaults
 				// Dialog Properties
-				options.hasBackdrop = options.hasBackdrop === undefined ? true : options.hasBackdrop;
+                options.hasBackdrop = options.hasBackdrop === undefined ? true : options.hasBackdrop;
 				options.clickOutsideToClose = options.clickOutsideToClose === undefined ? true : options.clickOutsideToClose;
 				options.defaultValue = options.defaultValue === undefined ? '#FFFFFF' : options.defaultValue;
 				options.focusOnOpen = options.focusOnOpen === undefined ? false : options.focusOnOpen;
@@ -885,10 +860,10 @@ angular.module('mdColorPicker', [])
 				options.mdColorGenericPalette = options.mdColorGenericPalette === undefined ? true : options.mdColorGenericPalette;
 				options.mdColorMaterialPalette = options.mdColorMaterialPalette === undefined ? true : options.mdColorMaterialPalette;
 				options.mdColorHistory = options.mdColorHistory === undefined ? true : options.mdColorHistory;
-				options.mdColorRgb = ((options.mdColorRgb === undefined) || (!options.mdColorHex && !options.mdColorHsl))  ? true : options.mdColorRgb;
-				options.mdColorHsl = ((options.mdColorHsl === undefined) || (!options.mdColorRgb && !options.mdColorHex))  ? true : options.mdColorHsl;
-				options.mdColorHex = ((options.mdColorHex === undefined) || (!options.mdColorRgb && !options.mdColorHsl))  ? true : options.mdColorHex;
-				options.mdColorAlphaChannel = (!options.mdColorRgb && !options.mdColorHsl) ? false : options.mdColorAlphaChannel;
+
+
+
+
 
                 dialog = $mdDialog.show({
 					templateUrl: 'mdColorPickerDialog.tpl.html',
@@ -919,15 +894,12 @@ angular.module('mdColorPicker', [])
 							$scope.mdColorGenericPalette = options.mdColorGenericPalette;
 							$scope.mdColorMaterialPalette = options.mdColorMaterialPalette;
 							$scope.mdColorHistory = options.mdColorHistory;
-							$scope.mdColorHex = options.mdColorHex;
-							$scope.mdColorRgb = options.mdColorRgb;
-							$scope.mdColorHsl = options.mdColorHsl;
 							$scope.mdColorDefaultTab = options.mdColorDefaultTab;
 
 					}],
 
 					locals: {
-						options: options
+						options: options,
 					},
 					preserveScope: options.preserveScope,
   					skipHide: options.skipHide,
@@ -959,7 +931,7 @@ angular.module('mdColorPicker', [])
 	}]);
 })( window, window.angular );
 
-angular.module("mdColorPicker").run(["$templateCache", function($templateCache) {$templateCache.put("mdColorPicker.tpl.html","<div class=\"md-color-picker-input-container\" layout=\"row\">\n	<div class=\"md-color-picker-preview md-color-picker-checkered-bg\" ng-click=\"showColorPicker($event)\" ng-if=\"mdColorPreview\">\n		<div class=\"md-color-picker-result\" ng-style=\"{background: value}\"></div>\n	</div>\n	<md-input-container flex>\n		<label><md-icon ng-if=\"icon\">{{icon}}</md-icon>{{label}}</label>\n		<input type=\"input\" ng-model=\"value\" ng-disabled=\"true\" class=\'md-color-picker-input\'  ng-mousedown=\"(openOnInput || !mdColorPreview) && showColorPicker($event)\"/>\n	</md-input-container>\n	<md-button class=\"md-icon-button md-color-picker-clear\" ng-if=\"mdColorClearButton && value\" ng-click=\"clearValue();\" aria-label=\"Clear Color\">\n		<md-icon md-svg-icon=\"clear.svg\"></md-icon>\n	</md-button>\n</div>\n");
-$templateCache.put("mdColorPickerContainer.tpl.html","<div class=\"md-color-picker-container in\" layout=\"column\">\n	<div class=\"md-color-picker-arrow\" ng-style=\"{\'border-bottom-color\': color.toRgbString() }\"></div>\n\n	<div class=\"md-color-picker-preview md-color-picker-checkered-bg\" ng-class=\"{\'dark\': !color.isDark() || color.getAlpha() < .45}\" flex=\"1\" layout=\"column\">\n\n		<div class=\"md-color-picker-result\" ng-style=\"{\'background\': color.toRgbString()}\" flex=\"100\" layout=\"column\" layout-fill layout-align=\"center center\" ng-click=\"focusPreviewInput( $event )\">\n			<!--<span flex  layout=\"column\" layout-align=\"center center\">{{value}}</span>-->\n			<div flex  layout=\"row\" layout-align=\"center center\">\n				<input class=\"md-color-picker-preview-input\" type=\"text\" ng-model=\"value\" ng-focus=\"previewFocus($event);\" ng-blur=\"previewBlur()\" ng-change=\"changeValue()\" ng-keypress=\"previewKeyDown($event)\" layout-fill />\n			</div>\n			<div class=\"md-color-picker-tabs\" style=\"width: 100%\">\n				<md-tabs md-selected=\"type\" md-stretch-tabs=\"always\" md-no-bar md-no-ink md-no-pagination=\"true\" >\n					<md-tab ng-if=\"mdColorHex\" label=\"Hex\" ng-disabled=\"color.getAlpha() !== 1\" md-ink-ripple=\"#ffffff\"></md-tab>\n					<md-tab ng-if=\"mdColorRgb\" label=\"RGB\"></md-tab>\n					<md-tab ng-if=\"mdColorHsl\" label=\"HSL\"></md-tab>\n					<!--<md-tab label=\"HSV\"></md-tab>\n					<md-tab label=\"VEC\"></md-tab>-->\n				</md-tabs>\n			</div>\n		</div>\n	</div>\n\n	<div class=\"md-color-picker-tabs md-color-picker-colors\">\n		<md-tabs md-stretch-tabs=\"always\" md-align-tabs=\"bottom\"  md-selected=\"whichPane\" md-no-pagination>\n			<md-tab ng-if=\"mdColorSpectrum\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"gradient.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"row\" layout-align=\"space-between\" style=\"height: 255px\">\n						<div md-color-picker-spectrum></div>\n						<div md-color-picker-hue ng-class=\"{\'md-color-picker-wide\': !mdColorAlphaChannel}\"></div>\n						<div md-color-picker-alpha class=\"md-color-picker-checkered-bg\" ng-if=\"mdColorAlphaChannel\"></div>\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorSliders\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"tune.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" flex=\"100\" layout-fill layout-align=\"space-between start center\" class=\"md-color-picker-sliders\">\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">R</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._r\" aria-label=\"red\" class=\"red-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\">\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._r\" aria-label=\"red\" aria-controls=\"red-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">G</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._g\" aria-label=\"green\" class=\"green-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\">\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._g\" aria-label=\"green\" aria-controls=\"green-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">B</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._b\" aria-label=\"blue\" class=\"blue-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\" >\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._b\" aria-label=\"blue\" aria-controls=\"blue-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill ng-if=\"!mdColorAlphaChannel\">\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">A</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"1\" step=\".01\" ng-model=\"color._a\" aria-label=\"alpha\" class=\"md-primary\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\" >\n								<input style=\"width: 100%;\" min=\"0\" max=\"1\" step=\".01\" type=\"number\" ng-model=\"color._a\" aria-label=\"alpha\" aria-controls=\"alpha-slider\">\n							</div>\n						</div>\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorGenericPalette\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"view_module.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" layout-align=\"space-between start center\" flex class=\"md-color-picker-palette\">\n\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab  ng-if=\"mdColorMaterialPalette\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"view_headline.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" layout-fill flex class=\"md-color-picker-material-palette\">\n\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorHistory\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"history.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body layout=\"row\" layout-fill>\n					<div layout=\"column\" flex layout-align=\"space-between start\" layout-wrap layout-fill class=\"md-color-picker-history\">\n						<div layout=\"row\" flex=\"80\" layout-align=\"space-between start start\" layout-wrap  layout-fill>\n							<div flex=\"10\" ng-repeat=\"historyColor in history.get() track by $index\">\n								<div  ng-style=\"{\'background\': historyColor.toRgbString()}\" ng-click=\"setPaletteColor($event)\"></div>\n							</div>\n						</div>\n\n\n						<md-button flex-end ng-click=\"history.reset()\" class=\"md-mini\" aria-label=\"Clear History\">\n							<md-icon md-svg-icon=\"clear_all.svg\"></md-icon>\n						</md-button>\n					</div>\n				</md-tab-body>\n			</md-tab>\n		</md-tabs>\n	</div>\n\n</div>\n");
-$templateCache.put("mdColorPickerDialog.tpl.html","<md-dialog class=\"md-color-picker-dialog\">\n	<div md-color-picker-container\n		value=\"value\"\n		default=\"{{defaultValue}}\"\n		random=\"{{random}}\"\n		ok=\"ok\"\n		md-color-alpha-channel=\"mdColorAlphaChannel\"\n		md-color-spectrum=\"mdColorSpectrum\"\n		md-color-sliders=\"mdColorSliders\"\n		md-color-generic-palette=\"mdColorGenericPalette\"\n		md-color-material-palette=\"mdColorMaterialPalette\"\n		md-color-history=\"mdColorHistory\"\n		md-color-hex=\"mdColorHex\"\n		md-color-rgb=\"mdColorRgb\"\n		md-color-hsl=\"mdColorHsl\"\n		md-color-default-tab=\"mdColorDefaultTab\"\n	></div>\n	<md-actions layout=\"row\">\n		<md-button class=\"md-mini\" ng-click=\"close()\" style=\"width: 50%;\">Cancel</md-button>\n		<md-button class=\"md-mini\" ng-click=\"ok()\" style=\"width: 50%;\">Select</md-button>\n	</md-actions>\n</md-dialog>\n");}]);
+angular.module("mdColorPicker").run(["$templateCache", function($templateCache) {$templateCache.put("mdColorPicker.tpl.html","<div class=\"md-color-picker-input-container\" layout=\"row\">\n	<div class=\"md-color-picker-preview md-color-picker-checkered-bg\" ng-click=\"showColorPicker($event)\" ng-if=\"mdColorPreview\">\n		<div class=\"md-color-picker-result\" ng-style=\"{background: value}\"></div>\n	</div>\n	<md-input-container flex>\n		<label><md-icon ng-if=\"icon\">{{icon}}</md-icon>{{label}}</label>\n		<input type=\"input\" ng-model=\"value\" class=\'md-color-picker-input\'  ng-mousedown=\"(openOnInput || !mdColorPreview) && showColorPicker($event)\"/>\n	</md-input-container>\n	<md-button class=\"md-icon-button md-color-picker-clear\" ng-if=\"mdColorClearButton && value\" ng-click=\"clearValue();\" aria-label=\"Clear Color\">\n		<md-icon md-svg-icon=\"clear.svg\"></md-icon>\n	</md-button>\n</div>\n");
+$templateCache.put("mdColorPickerContainer.tpl.html","<div class=\"md-color-picker-container in\" layout=\"column\">\n	<div class=\"md-color-picker-arrow\" ng-style=\"{\'border-bottom-color\': color.toRgbString() }\"></div>\n\n	<div class=\"md-color-picker-preview md-color-picker-checkered-bg\" ng-class=\"{\'dark\': !color.isDark() || color.getAlpha() < .45}\" flex=\"1\" layout=\"column\">\n\n		<div class=\"md-color-picker-result\" ng-style=\"{\'background\': color.toRgbString()}\" flex=\"100\" layout=\"column\" layout-fill layout-align=\"center center\" ng-click=\"focusPreviewInput( $event )\">\n			<!--<span flex  layout=\"column\" layout-align=\"center center\">{{value}}</span>-->\n			<div flex  layout=\"row\" layout-align=\"center center\">\n				<input class=\"md-color-picker-preview-input\" type=\"text\" ng-model=\"value\" ng-focus=\"previewFocus($event);\" ng-blur=\"previewBlur()\" ng-change=\"changeValue()\" ng-keypress=\"previewKeyDown($event)\" layout-fill />\n			</div>\n			<div class=\"md-color-picker-tabs\" style=\"width: 100%\">\n				<md-tabs md-selected=\"type\" md-stretch-tabs=\"always\" md-no-bar md-no-ink md-no-pagination=\"true\" >\n					<md-tab label=\"Hex\" ng-disabled=\"color.getAlpha() !== 1\" md-ink-ripple=\"#ffffff\"></md-tab>\n					<md-tab label=\"RGB\"></md-tab>\n					<md-tab label=\"HSL\"></md-tab>\n					<!--<md-tab label=\"HSV\"></md-tab>\n					<md-tab label=\"VEC\"></md-tab>-->\n				</md-tabs>\n			</div>\n		</div>\n	</div>\n\n	<div class=\"md-color-picker-tabs md-color-picker-colors\">\n		<md-tabs md-stretch-tabs=\"always\" md-align-tabs=\"bottom\"  md-selected=\"whichPane\" md-no-pagination>\n			<md-tab ng-if=\"mdColorSpectrum\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"gradient.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"row\" layout-align=\"space-between\" style=\"height: 255px\">\n						<div md-color-picker-spectrum></div>\n						<div md-color-picker-hue ng-class=\"{\'md-color-picker-wide\': !mdColorAlphaChannel}\"></div>\n						<div md-color-picker-alpha class=\"md-color-picker-checkered-bg\" ng-if=\"mdColorAlphaChannel\"></div>\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorSliders\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"tune.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" flex=\"100\" layout-fill layout-align=\"space-between start center\" class=\"md-color-picker-sliders\">\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">R</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._r\" aria-label=\"red\" class=\"red-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\">\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._r\" aria-label=\"red\" aria-controls=\"red-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">G</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._g\" aria-label=\"green\" class=\"green-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\">\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._g\" aria-label=\"green\" aria-controls=\"green-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill>\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">B</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"255\" ng-model=\"color._b\" aria-label=\"blue\" class=\"blue-slider\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\" >\n								<input style=\"width: 100%;\" min=\"0\" max=\"255\" type=\"number\" ng-model=\"color._b\" aria-label=\"blue\" aria-controls=\"blue-slider\">\n							</div>\n						</div>\n						<div layout=\"row\" layout-align=\"start center\" layout-wrap flex layout-fill ng-if=\"!mdColorAlphaChannel\">\n							<div flex=\"10\" layout layout-align=\"center center\">\n								<span class=\"md-body-1\">A</span>\n							</div>\n							<md-slider flex=\"65\" min=\"0\" max=\"1\" step=\".01\" ng-model=\"color._a\" aria-label=\"alpha\" class=\"md-primary\"></md-slider>\n							<span flex></span>\n							<div flex=\"20\" layout layout-align=\"center center\" >\n								<input style=\"width: 100%;\" min=\"0\" max=\"1\" step=\".01\" type=\"number\" ng-model=\"color._a\" aria-label=\"alpha\" aria-controls=\"alpha-slider\">\n							</div>\n						</div>\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorGenericPalette\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"view_module.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" layout-align=\"space-between start center\" flex class=\"md-color-picker-palette\">\n\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab  ng-if=\"mdColorMaterialPalette\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"view_headline.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body>\n					<div layout=\"column\" layout-fill flex class=\"md-color-picker-material-palette\">\n\n					</div>\n				</md-tab-body>\n			</md-tab>\n			<md-tab ng-if=\"mdColorHistory\">\n				<md-tab-label>\n					<md-icon md-svg-icon=\"history.svg\"></md-icon>\n				</md-tab-label>\n				<md-tab-body layout=\"row\" layout-fill>\n					<div layout=\"column\" flex layout-align=\"space-between start\" layout-wrap layout-fill class=\"md-color-picker-history\">\n						<div layout=\"row\" flex=\"80\" layout-align=\"space-between start start\" layout-wrap  layout-fill>\n							<div flex=\"10\" ng-repeat=\"historyColor in history.get() track by $index\">\n								<div  ng-style=\"{\'background\': historyColor.toRgbString()}\" ng-click=\"setPaletteColor($event)\"></div>\n							</div>\n						</div>\n\n\n						<md-button flex-end ng-click=\"history.reset()\" class=\"md-mini\" aria-label=\"Clear History\">\n							<md-icon md-svg-icon=\"clear_all.svg\"></md-icon>\n						</md-button>\n					</div>\n				</md-tab-body>\n			</md-tab>\n		</md-tabs>\n	</div>\n\n</div>\n");
+$templateCache.put("mdColorPickerDialog.tpl.html","<md-dialog class=\"md-color-picker-dialog\">\n	<div md-color-picker-container\n		value=\"value\"\n		default=\"{{defaultValue}}\"\n		random=\"{{random}}\"\n		ok=\"ok\"\n		md-color-alpha-channel=\"mdColorAlphaChannel\"\n		md-color-spectrum=\"mdColorSpectrum\"\n		md-color-sliders=\"mdColorSliders\"\n		md-color-generic-palette=\"mdColorGenericPalette\"\n		md-color-material-palette=\"mdColorMaterialPalette\"\n		md-color-history=\"mdColorHistory\"\n		md-color-default-tab=\"mdColorDefaultTab\"\n	></div>\n	<md-actions layout=\"row\">\n		<md-button class=\"md-mini\" ng-click=\"close()\" style=\"width: 50%;\">Cancel</md-button>\n		<md-button class=\"md-mini\" ng-click=\"ok()\" style=\"width: 50%;\">Select</md-button>\n	</md-actions>\n</md-dialog>\n");}]);
 })(angular, window, tinycolor);

@@ -1,7 +1,10 @@
 (function(angular) {
 
-  var anatomicRegionXMLPath = 'assets/AnatomicRegionAndModifier.xml';
-  var segmentationCodesXMLPath = 'assets/SegmentationCategoryTypeModifier.xml';
+  var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
+  var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
+
+  var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
+  var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate',
                                                     'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker']);
@@ -47,7 +50,8 @@
       $scope.toolTipDelay = 500;
   }]);
 
-  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$log', '$mdDialog', '$timeout', 'Notification',
+  app.controller('JSONSemanticsCreatorController',
+                 ['$scope', '$rootScope', '$log', '$mdDialog', '$timeout', 'Notification',
     function($scope, $rootScope, $log, $mdDialog, $timeout, Notification) {
 
       var self = this;
@@ -70,6 +74,7 @@
         $scope.segmentAttributes.LabelID = 1;
         $scope.segments.length = 0;
         $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
+        $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.output = undefined;
       };
 
@@ -97,7 +102,7 @@
       };
 
       var defaultRecommendedDisplayValue = {
-        color: 'rgb(128, 174, 128)',
+        color: '',
         backgroundOptions: angular.extend({}, colorPickerDefaultOptions)
       };
 
@@ -114,6 +119,7 @@
         RecommendedDisplayRGBValue: angular.extend({}, defaultRecommendedDisplayValue)
       };
 
+
       var segment = angular.extend({}, $scope.segmentAttributes);
       $scope.segments = [segment];
       $scope.output = undefined;
@@ -124,7 +130,6 @@
         segment.RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.segments.push(segment);
         $scope.selectedIndex = $scope.segments.length-1;
-        console.log($scope.segments)
       };
 
       $scope.removeSegment = function() {
@@ -143,20 +148,6 @@
       $scope.nextSegment = function() {
         $scope.selectedIndex += 1;
       };
-
-      // $timeout(function() {
-      //   $scope.$watch('jsonForm.$valid',function(newValue, oldvalue) {
-      //     $scope.jsonForm.$submitted = true;
-      //     if(newValue == true) {
-      //       $timeout(function() {
-      //         self.createJSONOutput();
-      //       }, 500);
-      //       //Can do a ajax model submit.
-      //     } else {
-      //       self.showErrors();
-      //     }
-      //   });
-      // }, 1000);
 
       $scope.error = function(message) {
         Notification.error(message);
@@ -235,9 +226,9 @@
 
   function getCodeSequenceAttributes(codeSequence) {
     if (codeSequence != null && codeSequence != undefined)
-      return {"CodeValue":codeSequence._codeValue,
-              "CodingSchemeDesignator":codeSequence._codingScheme,
-              "CodeMeaning":codeSequence._codeMeaning}
+      return {"CodeValue":codeSequence.codeValue,
+              "CodingSchemeDesignator":codeSequence.codingScheme,
+              "CodeMeaning":codeSequence.codeMeaning}
   }
 
   app.controller('CodeSequenceBaseController',
@@ -288,12 +279,12 @@
         if(Object.prototype.toString.call( list ) != '[object Array]' ) {
           list = [list];
         }
-        list.sort(function(a,b) {return (a._codeMeaning > b._codeMeaning) ? 1 : ((b._codeMeaning > a._codeMeaning) ? -1 : 0);});
+        list.sort(function(a,b) {return (a.codeMeaning > b.codeMeaning) ? 1 : ((b.codeMeaning > a.codeMeaning) ? -1 : 0);});
         return list.map(function (code) {
           return {
-            value: code._codeMeaning.toLowerCase(),
-            contextGroupName : code._contextGroupName,
-            display: code._codeMeaning,
+            value: code.codeMeaning.toLowerCase(),
+            contextGroupName : code.contextGroupName,
+            display: code.codeMeaning,
             object: code
           };
         })
@@ -312,7 +303,7 @@
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(anatomicRegionXMLPath).success(function (data) {
+    $http.get(anatomicRegionJSONPath).success(function (data) {
       $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
       self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
     });
@@ -363,7 +354,7 @@
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(segmentationCodesXMLPath).success(function (data) {
+    $http.get(segmentationCategoryJSONPath).success(function (data) {
       $scope.segmentationCodes = data.SegmentationCodes.Category;
       self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
     });
@@ -381,6 +372,15 @@
     self.selectedItemChange = function(item) {
       $scope.segment.segmentedPropertyType = item ? item.object : item;
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+      if (self.selectedItem === null) {
+        $scope.segment.RecommendedDisplayRGBValue.color = "";
+        $scope.segment.hasRecommendedColor = false;
+      }
+      else if (self.selectedItem.object.recommendedDisplayRGBValue != undefined) {
+        $scope.segment.hasRecommendedColor = true;
+        var rgb = self.selectedItem.object.recommendedDisplayRGBValue;
+        $scope.segment.RecommendedDisplayRGBValue.color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')';
+      }
     };
 
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
