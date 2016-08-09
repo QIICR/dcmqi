@@ -1,17 +1,11 @@
-#include "TID1500Converter.h"
+//#include "TID1500Converter.h"
 #include "dcmtk/dcmiod/modhelp.h"
 
 #include <Exceptions.h>
 
-#include "tid1500writerCLP.h"
+#include "TID1500Converter.h"
 
-#define CHECK_COND(condition) \
-  do { \
-    if (condition.bad()) { \
-      std::cerr << "Condition failed: " << condition.text() << " in " __FILE__ << ":" << __LINE__ << std::endl; \
-      throw -1; \
-    } \
-  } while (0);
+#include "tid1500writerCLP.h"
 
 #define CHECK_BOOL(condition) \
   do { \

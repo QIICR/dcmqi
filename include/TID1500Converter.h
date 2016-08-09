@@ -33,7 +33,7 @@
 #include "dcmtk/dcmsr/codes/srt.h"
 #include "dcmtk/dcmsr/cmr/tid1500.h"
 
-#include "JSONMetaInformationHandler.h"
+#include "JSONMetaInformationHandlerBase.h"
 
 #include "Exceptions.h"
 
@@ -41,6 +41,7 @@ using namespace std;
 
 static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
+/*
 namespace dcmqi {
 
   class TID1500Converter {
@@ -50,5 +51,5 @@ namespace dcmqi {
   private:
   };
 }
-
+*/
 #endif // DCMQI_TID1500_CONVERTER_H

@@ -1,5 +1,6 @@
 if(BUILD_PARAMETRIC_MAPS)
   add_library(dcmqi STATIC
+    TID1500Converter.cpp
     ParaMapConverter.cpp
     ConverterBase.cpp
     SegmentAttributes.cpp
@@ -12,6 +13,7 @@ if(BUILD_PARAMETRIC_MAPS)
   )
 else()
   add_library(dcmqi STATIC
+    TID1500Converter.cpp
     ConverterBase.cpp
     SegmentAttributes.cpp
     Helper.cpp                                  
