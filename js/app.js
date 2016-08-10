@@ -217,7 +217,8 @@
           "segmentAttributes": segmentAttributes
         };
 
-        $scope.output = doc;
+        console.log(doc)
+        $scope.output = JSON.stringify(doc, null, 4); ;
       };
 
       self.rgbToArray = function(str) {
@@ -466,22 +467,26 @@
     };
   });
 
-  app.directive('resize', ['$window', function($window) {
+  app.directive('resize', function ($window) {
     return {
-      link: function(scope, elem, attrs) {
-        scope.onResize = function() {
+      link: function postLink(scope, elem, attrs) {
+
+        scope.onResizeFunction = function(element) {
           var toolbar = document.getElementById('toolbar');
-          elem.windowHeight = $window.innerHeight - toolbar.clientHeight;
-          var newHeight = elem.windowHeight-$(toolbar).height()/2;
-          $(elem).height(newHeight);
+          element.windowHeight = $window.innerHeight - toolbar.clientHeight;
+          var newHeight = element.windowHeight-$(toolbar).height()/2;
+          console.log(element);
+          $(element).height(newHeight);
         };
-        scope.onResize();
+
+        scope.onResizeFunction(elem);
 
         angular.element($window).bind('resize', function() {
-          scope.onResize();
-        })
+          scope.onResizeFunction(elem);
+          scope.$apply();
+        });
       }
-    }
-  }]);
+    };
+  });
 
 })(window.angular);
