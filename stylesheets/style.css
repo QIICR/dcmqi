@@ -1,14 +1,13 @@
 #jsonForm, #jsonOutput {
-    height: 96%;
     overflow: auto;
 }
 
 #jsonForm {
-    margin-right: 0.5%;
+    margin-right: 5px;
 }
 
 #jsonOutput {
-    margin-left: 0.5%;
+    margin-left: 5px;
 }
 
 .autocomplete-custom-template li {
@@ -36,7 +35,7 @@
 }
 
 fieldset {
-    border: 0px;
+    border: 0;
 }
 
 .md-button.smaller {

@@ -3,11 +3,14 @@
   var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
   var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
 
+  var segSchemaURL = webAssets + 'seg-schema.json';
+  var pmSchemaURL = webAssets + 'pm-schema.json';
+
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
-  var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'ngAnimate',
-                                                    'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker']);
+  var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -90,7 +93,7 @@
 
       var colorPickerDefaultOptions = {
         clickOutsideToClose: true,
-        openOnInput: true,
+        openOnInput: false,
         mdColorAlphaChannel: false,
         mdColorClearButton: false,
         mdColorSliders: false,
@@ -462,5 +465,23 @@
       }
     };
   });
+
+  app.directive('resize', ['$window', function($window) {
+    return {
+      link: function(scope, elem, attrs) {
+        scope.onResize = function() {
+          var toolbar = document.getElementById('toolbar');
+          elem.windowHeight = $window.innerHeight - toolbar.clientHeight;
+          var newHeight = elem.windowHeight-$(toolbar).height()/2;
+          $(elem).height(newHeight);
+        };
+        scope.onResize();
+
+        angular.element($window).bind('resize', function() {
+          scope.onResize();
+        })
+      }
+    }
+  }]);
 
 })(window.angular);
