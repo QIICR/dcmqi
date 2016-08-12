@@ -12,7 +12,7 @@ before_build:
   - cmd: cmake --version
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
   - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/DCMTK/releases/download/DCMTK-dcmqi-3.6.1_20160216-VS12-Win64-Release-v0.0.10/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
+  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/che85/dcmtk-1/releases/download/DCMTK-dcmqi-3.6.1_20160812-VS12-Win64-Release-v0.0.4/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
   - cmd: 7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.23/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
   - cmd: 7z x C:\ITK-dcmqi.zip -oC:\ITK-install
