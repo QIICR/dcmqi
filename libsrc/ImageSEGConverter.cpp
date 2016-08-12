@@ -4,23 +4,14 @@
 
 namespace dcmqi {
 
-  int ImageSEGConverter::itkimage2dcmSegmentation(vector<string> dicomImageFileNames, vector<string> segmentationFileNames,
-                       const std::string &metaDataFileName, const std::string &outputFileName) {
+  DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+                                                          vector<ImageType::Pointer> segmentations,
+                                                          const string &metaData) {
 
-    ReaderType::Pointer reader = ReaderType::New();
-
-    if (segmentationFileNames.empty() || dicomImageFileNames.empty() || metaDataFileName.empty() || outputFileName.empty() )
-    {
-      return EXIT_FAILURE;
-    }
-    reader->SetFileName(segmentationFileNames[0].c_str());
-    reader->Update();
-    ImageType::Pointer labelImage = reader->GetOutput();
-
-    ImageType::SizeType inputSize = labelImage->GetBufferedRegion().GetSize();
+    ImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
-    JSONSegmentationMetaInformationHandler metaInfo(metaDataFileName.c_str());
+    JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
 
     IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
@@ -40,9 +31,7 @@ namespace dcmqi {
         ident);   // content identification
 
     /* Import patient and study from existing file */
-    // TODO: for more recent dcmtk version
-    // CHECK_COND(segdoc->import(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
-    CHECK_COND(segdoc->importPatientStudyFoR(dicomImageFileNames[0].c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+    CHECK_COND(segdoc->import(*dcmDatasets[0], OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -55,7 +44,7 @@ namespace dcmqi {
 
     /* Initialize shared functional groups */
     FGInterface &segFGInt = segdoc->getFunctionalGroups();
-    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dicomImageFileNames, labelImage);
+    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
 
     const unsigned frameSize = inputSize[0] * inputSize[1];
 
@@ -64,7 +53,7 @@ namespace dcmqi {
     {
       OFString imageOrientationPatientStr;
 
-      ImageType::DirectionType labelDirMatrix = labelImage->GetDirection();
+      ImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
       cout << "Directions: " << labelDirMatrix << endl;
 
@@ -86,7 +75,7 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ImageType::SpacingType labelSpacing = labelImage->GetSpacing();
+      ImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
       ostringstream spacingSStream;
       spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -121,25 +110,18 @@ namespace dcmqi {
 
     OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
 
-    DcmFileFormat ff;
-    CHECK_COND(ff.loadFile(dicomImageFileNames[0].c_str()));
-    DcmDataset *dcm = ff.getDataset();
-    CHECK_COND(dcm->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
+    CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
     CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
 
     int uidfound = 0, uidnotfound = 0;
 
     Uint8 *frameData = new Uint8[frameSize];
-    for(int segFileNumber=0; segFileNumber<segmentationFileNames.size(); segFileNumber++){
+    for(int segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
-      cout << "Processing input label " << segmentationFileNames[segFileNumber] << endl;
+      cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
       LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
-      reader->SetFileName(segmentationFileNames[segFileNumber]);
-      reader->Update();
-      ImageType::Pointer labelImage = reader->GetOutput();
-
-      l2lm->SetInput(labelImage);
+      l2lm->SetInput(segmentations[segFileNumber]);
       l2lm->Update();
 
       typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
@@ -148,8 +130,8 @@ namespace dcmqi {
       LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
 
       cout << "Found " << l2lm->GetOutput()->GetNumberOfLabelObjects() << " label(s)" << endl;
-      labelStats->SetInput(reader->GetOutput());
-      labelStats->SetLabelInput(reader->GetOutput());
+      labelStats->SetInput(segmentations[segFileNumber]);
+      labelStats->SetLabelInput(segmentations[segFileNumber]);
       labelStats->Update();
 
       bool cropSegmentsBBox = false;
@@ -157,7 +139,7 @@ namespace dcmqi {
         cout << "WARNING: Crop operation enabled - WIP" << endl;
         typedef itk::BinaryThresholdImageFilter<ImageType,ImageType> ThresholdType;
         ThresholdType::Pointer thresh = ThresholdType::New();
-        thresh->SetInput(reader->GetOutput());
+        thresh->SetInput(segmentations[segFileNumber]);
         thresh->SetLowerThreshold(1);
         thresh->SetLowerThreshold(100);
         thresh->SetInsideValue(1);
@@ -176,7 +158,7 @@ namespace dcmqi {
                << threshBbox[4] << ", " << threshBbox[5]
                << endl;
                */
-        return -1;//abort();
+        return NULL;//abort();
       }
 
       for(int segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
@@ -207,8 +189,6 @@ namespace dcmqi {
         lastSlice << ")" << endl;
 
         DcmSegment* segment = NULL;
-        string segFileName = segmentationFileNames[segFileNumber];
-
         SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributes[segFileNumber];
 
         DcmSegTypes::E_SegmentAlgoType algoType;
@@ -225,7 +205,7 @@ namespace dcmqi {
           algoName = segmentAttributes->getSegmentAlgorithmName();
           if(algoName == ""){
             cerr << "ERROR: Algorithm name must be specified for non-manual algorithm types!" << endl;
-            return -1;
+            return NULL;
           }
         }
 
@@ -294,14 +274,14 @@ namespace dcmqi {
             ImageType::IndexType sliceOriginIndex;
             sliceOriginIndex.Fill(0);
             sliceOriginIndex[2] = sliceNumber;
-            labelImage->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
+            segmentations[segFileNumber]->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
             ostringstream pppSStream;
             if(sliceNumber>0){
               ImageType::PointType prevOrigin;
               ImageType::IndexType prevIndex;
               prevIndex.Fill(0);
               prevIndex[2] = sliceNumber-1;
-              labelImage->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
+              segmentations[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
             }
             fgppp->setImagePositionPatient(
                 Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
@@ -327,7 +307,7 @@ namespace dcmqi {
             sliceRegion.SetSize(sliceSize);
 
             unsigned framePixelCnt = 0;
-            itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(labelImage, sliceRegion);
+            itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(segmentations[segFileNumber], sliceRegion);
             for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
               if(sliceIterator.Get() == label){
                 frameData[framePixelCnt] = 1;
@@ -350,21 +330,21 @@ namespace dcmqi {
             DerivationImageItem *derimgItem;
             CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
 
-            OFVector<OFString> siVector;
 
-            if(sliceNumber>=dicomImageFileNames.size()){
+            if(sliceNumber>=dcmDatasets.size()){
               cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
-              return -1;
+              return NULL;
             }
 
+            OFVector<DcmDataset*> siVector;
             for(unsigned derImageInstanceNum=0;derImageInstanceNum<slice2derimg[sliceNumber].size();derImageInstanceNum++){
-              siVector.push_back(OFString(dicomImageFileNames[slice2derimg[sliceNumber][derImageInstanceNum]].c_str()));
+              siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
             }
 
             OFVector<SourceImageItem*> srcimgItems;
             CHECK_COND(derimgItem->addSourceImageItems(siVector,
-                                   CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
-                                   srcimgItems));
+                                                       CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                       srcimgItems));
 
             CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
 
@@ -394,94 +374,65 @@ namespace dcmqi {
       }
     }
 
-  //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
+    //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
 
-  COUT << "Successfully created segmentation document" << OFendl;
+    segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+    CHECK_COND(segdoc->writeDataset(segdocDataset));
 
-  /* Store to disk */
-  COUT << "Saving the result to " << outputFileName << OFendl;
-  //segdoc->saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit);
+    // Set reader/session/timepoint information
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
+    if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName,
+                                                  metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
 
-  segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
-  CHECK_COND(segdoc->writeDataset(segdocDataset));
+    // populate BodyPartExamined
+    {
+      OFString bodyPartStr;
+      string bodyPartAssigned = metaInfo.getBodyPartExamined();
 
-  // Set reader/session/timepoint information
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
-  CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
-  // TODO: user should not directly access root
-//  if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
-//    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
+      // inherit BodyPartExamined from the source image dataset, if available
+      if(dcmDatasets[0]->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
+      if(string(bodyPartStr.c_str()).size())
+        bodyPartAssigned = bodyPartStr.c_str();
 
-  // populate BodyPartExamined
-  {
-    DcmFileFormat sliceFF;
-    DcmDataset *sliceDataset = NULL;
-    OFString bodyPartStr;
-    string bodyPartAssigned = metaInfo.getBodyPartExamined();
+      if(bodyPartAssigned.size())
+        CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+    }
 
-    CHECK_COND(sliceFF.loadFile(dicomImageFileNames[0].c_str()));
+    // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
 
-    sliceDataset = sliceFF.getDataset();
+    // SeriesDate/Time should be of when segmentation was done; initialize to when it was saved
+    {
+      OFString contentDate, contentTime;
+      DcmDate::getCurrentDate(contentDate);
+      DcmTime::getCurrentTime(contentTime);
 
-    // inherit BodyPartExamined from the source image dataset, if available
-    if(sliceDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good())
-    if(string(bodyPartStr.c_str()).size())
-      bodyPartAssigned = bodyPartStr.c_str();
+      segdoc->getSeries().setSeriesDate(contentDate.c_str());
+      segdoc->getSeries().setSeriesTime(contentTime.c_str());
+      segdoc->getGeneralImage().setContentDate(contentDate.c_str());
+      segdoc->getGeneralImage().setContentTime(contentTime.c_str());
 
-    if(bodyPartAssigned.size())
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+      segdoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
+      segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+    }
+
+    return new DcmDataset(segdocDataset);
   }
 
-  // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
 
-  // SeriesDate/Time should be of when segmentation was done; initialize to when it was saved
-  {
-    OFString contentDate, contentTime;
-    DcmDate::getCurrentDate(contentDate);
-    DcmTime::getCurrentTime(contentTime);
-
-    segdocDataset.putAndInsertString(DCM_ContentDate, contentDate.c_str());
-    segdocDataset.putAndInsertString(DCM_ContentTime, contentTime.c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str());
-
-    segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str());
-    segdocDataset.putAndInsertString(DCM_SeriesNumber, metaInfo.getSeriesNumber().c_str());
-  }
-
-  DcmFileFormat segdocFF(&segdocDataset);
-  bool compress = false; // TODO: remove hardcoded
-  if(compress){
-    CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
-  } else {
-    CHECK_COND(segdocFF.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
-  }
-
-  COUT << "Saved segmentation as " << outputFileName << endl;
-    return EXIT_SUCCESS;
-  }
-
-  int ImageSEGConverter::dcmSegmentation2itkimage(const std::string &inputSEGFileName, const std::string &outputDirName) {
+  pair <map<unsigned,ImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
-    DcmFileFormat segFF;
-    DcmDataset *segDataset = NULL;
-    if(segFF.loadFile(inputSEGFileName.c_str()).good()){
-      segDataset = segFF.getDataset();
-    } else {
-      cerr << "Failed to read input " << endl;
-      return EXIT_FAILURE;
-    }
-
     DcmSegmentation *segdoc = NULL;
-    OFCondition cond = DcmSegmentation::loadFile(inputSEGFileName.c_str(), segdoc);
+    OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
     if(!segdoc){
       cerr << "Failed to load seg! " << cond.text() << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     // Directions
@@ -489,7 +440,7 @@ namespace dcmqi {
     ImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
       cerr << "Failed to get image directions" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     // Spacing and origin
@@ -502,14 +453,14 @@ namespace dcmqi {
     ImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
       cerr << "Failed to compute origin and/or slice spacing!" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     ImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
       cerr << "Failed to get image spacing from DICOM!" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     const double tolerance = 1e-5;
@@ -550,8 +501,6 @@ namespace dcmqi {
 
     // ITK images corresponding to the individual segments
     map<unsigned,ImageType::Pointer> segment2image;
-    // list of strings that
-    map<unsigned,string> segment2meta;
 
     // Iterate over frames, find the matching slice for each of the frames based on
     // ImagePositionPatient, set non-zero pixels to the segment number. Notify
@@ -582,14 +531,14 @@ namespace dcmqi {
       Uint16 segmentId = -1;
       if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
         cerr << "Failed to get seg number!";
-        return EXIT_FAILURE;
+        throw -1;
       }
 
       // WARNING: this is needed only for David's example, which numbers
       // (incorrectly!) segments starting from 0, should start from 1
       if(segmentId == 0){
         cerr << "Segment numbers should start from 1!" << endl;
-        return EXIT_FAILURE;
+        throw -1;
       }
 
       if(segment2image.find(segmentId) == segment2image.end()){
@@ -612,7 +561,7 @@ namespace dcmqi {
         DcmSegment* segment = segdoc->getSegment(segmentId);
         if(segment == NULL){
           cerr << "Failed to get segment for segment ID " << segmentId << endl;
-          return EXIT_FAILURE;
+          throw -1;
         }
 
         // get CIELab color for the segment
@@ -648,7 +597,7 @@ namespace dcmqi {
 
           if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
             cerr << "AlgorithmType is not valid with value " << readableAlgorithmType << endl;
-            return EXIT_FAILURE;
+            throw -1;
           }
           if (algorithmType != DcmSegTypes::SAT_MANUAL) {
             OFString segmentAlgorithmName;
@@ -697,7 +646,7 @@ namespace dcmqi {
         cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
         " is outside image geometry!" << frameOriginIndex << endl;
         cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
-        return EXIT_FAILURE;
+        throw -1;
       }
 
       unsigned slice = frameOriginIndex[2];
@@ -730,41 +679,21 @@ namespace dcmqi {
         delete unpackedFrame;
     }
 
-    for(map<unsigned,ImageType::Pointer>::const_iterator sI=segment2image.begin();sI!=segment2image.end();++sI){
-      typedef itk::ImageFileWriter<ImageType> WriterType;
-      stringstream imageFileNameSStream;
-      imageFileNameSStream << outputDirName << "/" << sI->first << ".nrrd";
-
-      WriterType::Pointer writer = WriterType::New();
-      writer->SetFileName(imageFileNameSStream.str().c_str());
-      writer->SetInput(sI->second);
-      writer->SetUseCompression(1);
-      writer->Update();
-    }
-
-    stringstream jsonOutput;
-    jsonOutput << outputDirName << "/" << "meta.json";
-    metaInfo.write(jsonOutput.str().c_str());
-
-    return EXIT_SUCCESS;
+    return pair <map<unsigned,ImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
   }
 
-  vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<string> &dicomImageFileNames,
-                                        const itk::Image<short, 3>::Pointer &labelImage) {
+  vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
+                                                                                     const itk::Image<short, 3>::Pointer &labelImage) {
     // Find mapping from the segmentation slice number to the derivation image
     // Assume that orientation of the segmentation is the same as the source series
     unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
     vector<vector<int> > slice2derimg(numLabelSlices);
-    for(int i=0;i<dicomImageFileNames.size();i++){
+    for(int i=0;i<dcmDatasets.size();i++){
       OFString ippStr;
-      DcmFileFormat sliceFF;
-      DcmDataset *sliceDataset = NULL;
       ImageType::PointType ippPoint;
       ImageType::IndexType ippIndex;
-      CHECK_COND(sliceFF.loadFile(dicomImageFileNames[i].c_str()));
-      sliceDataset = sliceFF.getDataset();
       for(int j=0;j<3;j++){
-        CHECK_COND(sliceDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
+        CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
         ippPoint[j] = atof(ippStr.c_str());
       }
       if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
@@ -782,17 +711,15 @@ namespace dcmqi {
                                JSONSegmentationMetaInformationHandler &metaInfo) {
     OFString readerID, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined;
 
-    ContentIdentificationMacro& contentIdentificationMacro = segdoc->getContentIdentification();
-    contentIdentificationMacro.getInstanceNumber(instanceNumber);
-    contentIdentificationMacro.getContentCreatorName(readerID);
+    segdoc->getContentIdentification().getInstanceNumber(instanceNumber);
+    segdoc->getContentIdentification().getContentCreatorName(readerID);
 
     segDataset->findAndGetOFString(DCM_ClinicalTrialTimePointID, timePointID);
     segDataset->findAndGetOFString(DCM_ClinicalTrialSeriesID, sessionID);
 
-    IODGeneralSeriesModule seriesModule = segdoc->getSeries();
-    seriesModule.getBodyPartExamined(bodyPartExamined);
-    seriesModule.getSeriesNumber(seriesNumber);
-    seriesModule.getSeriesDescription(seriesDescription);
+    segdoc->getSeries().getBodyPartExamined(bodyPartExamined);
+    segdoc->getSeries().getSeriesNumber(seriesNumber);
+    segdoc->getSeries().getSeriesDescription(seriesDescription);
 
     metaInfo.setContentCreatorName(readerID.c_str());
     metaInfo.setClinicalTrialTimePointID(sessionID.c_str());

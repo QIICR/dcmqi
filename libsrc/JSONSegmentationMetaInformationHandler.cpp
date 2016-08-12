@@ -4,8 +4,8 @@ using namespace std;
 
 namespace dcmqi {
 
-  JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string filename)
-      : JSONMetaInformationHandlerBase(filename) {
+  JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string jsonInput) {
+    this->jsonInput = jsonInput;
   }
 
   JSONSegmentationMetaInformationHandler::~JSONSegmentationMetaInformationHandler() {
@@ -29,41 +29,44 @@ namespace dcmqi {
   }
 
   void JSONSegmentationMetaInformationHandler::read() {
-    if (this->filename.size() && this->isValid(this->filename)) {
-      try {
-        ifstream metainfoStream(this->filename.c_str(), ios_base::binary);
-        metainfoStream >> this->metaInfoRoot;
-        this->readSeriesAttributes(this->metaInfoRoot);
-        this->readSegmentAttributes(this->metaInfoRoot);
-      } catch (exception &e) {
-        cout << e.what() << '\n';
-        throw JSONReadErrorException();
-      }
-    } else
+    try {
+      istringstream str(this->jsonInput);
+      str >> this->metaInfoRoot;
+      this->readSeriesAttributes();
+      this->readSegmentAttributes();
+    } catch (exception &e) {
+      cout << e.what() << '\n';
       throw JSONReadErrorException();
+    }
   }
 
   bool JSONSegmentationMetaInformationHandler::write(string filename) {
+    ofstream outputFile;
+    outputFile.open(filename.c_str());
+    outputFile << this->getJSONOutputAsString();
+    outputFile.close();
+    return true;
+  }
+
+  string JSONSegmentationMetaInformationHandler::getJSONOutputAsString() {
     if (this->segmentsAttributes.size() == 0)
       return false;
     // TODO: add checks for validity here....
 
-    ofstream outputFile;
-    outputFile.open(filename.c_str());
     Json::Value data;
+    std::stringstream ss;
 
     data["seriesAttributes"] = createAndGetSeriesAttributes();
     data["segmentAttributes"] = createAndGetSegmentAttributes();
 
     Json::StyledWriter styledWriter;
-    outputFile << styledWriter.write(data);
+    ss << styledWriter.write(data);
 
-    outputFile.close();
-    return true;
+    return ss.str();
   }
 
-  void JSONSegmentationMetaInformationHandler::readSeriesAttributes(const Json::Value &root) {
-    Json::Value seriesAttributes = root["seriesAttributes"];
+  void JSONSegmentationMetaInformationHandler::readSeriesAttributes() {
+    Json::Value seriesAttributes = this->metaInfoRoot["seriesAttributes"];
     this->contentCreatorName = seriesAttributes.get("ContentCreatorName", "Reader1").asString();
     this->clinicalTrialSeriesID = seriesAttributes.get("SessionID", "Session1").asString();
     this->clinicalTrialTimePointID = seriesAttributes.get("TimePointID", "1").asString();
@@ -133,8 +136,8 @@ namespace dcmqi {
     return segment;
   }
 
-  void JSONSegmentationMetaInformationHandler::readSegmentAttributes(const Json::Value &root) {
-    Json::Value segmentAttributes = root["segmentAttributes"];
+  void JSONSegmentationMetaInformationHandler::readSegmentAttributes() {
+    Json::Value segmentAttributes = this->metaInfoRoot["segmentAttributes"];
     // TODO: default parameters should be taken from json schema file
     for (Json::ValueIterator itr = segmentAttributes.begin(); itr != segmentAttributes.end(); itr++) {
       Json::Value segment = (*itr);
