@@ -10,7 +10,7 @@
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker',]);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker',]);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -21,16 +21,6 @@
       .primaryPalette('green')
       .accentPalette('red');
   });
-
-  app.config(function(NotificationProvider) {
-      NotificationProvider.setOptions({
-        delay: 5000,
-        startTop: 10,
-        startRight: 10,
-        positionX: 'right',
-        positionY: 'bottom'
-      });
-    });
 
   app.config(function($routeProvider) {
     $routeProvider
@@ -54,8 +44,8 @@
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdDialog', '$timeout', 'Notification',
-    function($scope, $rootScope, $http, $log, $mdDialog, $timeout, Notification) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast' ,'$mdDialog', '$timeout',
+    function($scope, $rootScope, $http, $log, $mdToast, $mdDialog, $timeout) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -67,6 +57,7 @@
       $scope.submitForm = function(isValid) {
         if (isValid) {
           self.createJSONOutput();
+          hideToast();
         } else {
           self.showErrors();
         }
@@ -87,12 +78,29 @@
         if (newValue.length > 0) {
           try {
             JSON.parse(newValue);
+            $scope.jsonError = "";
             $scope.validJSON = true;
+            hideToast();
           } catch(ex) {
             $scope.validJSON = false;
+            showToast(ex.message);
           }
         }
       });
+
+      function showToast(content) {
+        $mdToast.show(
+          $mdToast.simple()
+            .content(content)
+            .action('OK')
+            .position('bottom right')
+            .hideDelay(10000)
+        );
+      }
+
+      function hideToast() {
+        $mdToast.hide();
+      }
 
       var seriesAttributesDefaults = {
         ReaderID : "Reader1",
@@ -154,7 +162,7 @@
           $scope.selectedIndex = 0;
         else
           $scope.selectedIndex -= 1;
-        $scope.output = undefined;
+        $scope.output = "";
       };
 
       $scope.previousSegment = function() {
@@ -165,19 +173,14 @@
         $scope.selectedIndex += 1;
       };
 
-      $scope.error = function(message) {
-        Notification.error(message);
-      };
-
       self.showErrors = function() {
-        $scope.output = undefined;
-        angular.forEach($scope.jsonForm.$error.required, function (error, key) {
-          var elements = error.$name.split("_");
-          var message = "[MISSING]: " + elements[0];
-          if (elements[1] != undefined)
-            message += " for segment with label id " + elements[1];
-          $scope.error(message);
-        });
+        $scope.output = "";
+        var firstError = $scope.jsonForm.$error.required[0];
+        var elements = firstError.$name.split("_");
+        var message = "[MISSING]: " + elements[0];
+        if (elements[1] != undefined)
+          message += " for segment with label id " + elements[1];
+        showToast(message);
       };
 
       $scope.segmentAlreadyExists = function(segment) {
