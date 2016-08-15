@@ -1,0 +1,52 @@
+{
+  "name": "md-color-picker",
+  "version": "0.2.6",
+  "description": "Angular-Material inspired color picker.",
+  "main": "dist/mdColorPicker.min.js",
+  "dependencies": {
+      "tinycolor2": "*"
+  },
+  "devDependencies": {
+    "del": "^2.0.1",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^1.7.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-cssnano": "^2.1.0",
+    "gulp-debug": "^2.1.0",
+    "gulp-inject-reload": "0.0.2",
+    "gulp-jsclosure": "0.0.1",
+    "gulp-less": "^3.0.3",
+    "gulp-livereload": "^3.8.0",
+    "gulp-ng-annotate": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.4.0",
+    "gulp-util": "^3.0.7",
+    "gulp-header": "^1.7.1",
+    "merge-stream": "^1.0.0",
+    "run-sequence": "^1.1.2",
+    "st": "^1.0.0",
+    "streamqueue": "^1.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianpkelley/md-color-picker"
+  },
+  "keywords": [
+    "angular",
+    "angular-material",
+    "color-picker",
+    "color-chooser",
+    "color-dialog"
+  ],
+  "author": "Brian Kelley <kelley.brianp@gmail.com> (http://www.tastybytes.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brianpkelley/md-color-picker/issues"
+  },
+  "homepage": "https://github.com/brianpkelley/md-color-picker"
+}

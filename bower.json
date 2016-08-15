@@ -19,12 +19,13 @@
   ],
   "devDependencies": {
     "angular-material": "^1.0.9",
-    "jsonld": "^0.4.11",
     "angular-route": "^1.5.6",
     "angular-material-icons": "^0.7.0",
     "angular-xml": "^2.2.1",
     "ngclipboard": "^1.1.1",
-    "angular-ui-notification": "^0.2.0"
+    "md-color-picker": "^0.2.6",
+    "v-accordion": "^1.6.0",
+    "jquery": "^3.1.0"
   },
   "dependencies": {
     "angular-ui-notification": "^0.2.0"
