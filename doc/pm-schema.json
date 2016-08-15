@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "http://qiicr.org/schema/dcmqi/pm-schema.json",
+  "id": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/pm-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "required": [
     "DerivedPixelContrast",
@@ -11,7 +11,7 @@
     "SeriesDescription": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/LO"
         }
       ],
       "default": "Segmentation"
@@ -19,7 +19,7 @@
     "SeriesNumber": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
+          "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/IS"
         }
       ],
       "default": "300"
@@ -27,7 +27,7 @@
     "InstanceNumber": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
+          "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/IS"
         }
       ],
       "default": "1"
@@ -35,22 +35,22 @@
     "BodyPartExamined": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+          "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/CS"
         }
       ],
       "default": ""
     },
     "QuantityValueCode": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/codeSequence"
     },
     "MeasurementUnitsCode": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/codeSequence"
     },
     "MeasurementMethodCode": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/codeSequence"
     },
     "RealWorldValueSlope": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/FD",
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/FD",
       "default": "1.0"
     },
     "DerivedPixelContrast": {
@@ -102,10 +102,10 @@
       ]
     },
     "AnatomicRegionCode": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/codeSequence"
     },
     "FrameLaterality": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS",
+      "$ref": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/common-schema.json#/definitions/CS",
       "default": "U"
     }
   }
