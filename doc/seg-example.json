@@ -1,5 +1,5 @@
 {
-  "@schema" : "http://qiicr.org/schema/dcmqi/seg-schema.json",
+  "@schema" : "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/seg-schema.json",
 
   "seriesAttributes": {
     "ContentCreatorName": "Reader1",
@@ -26,9 +26,9 @@
     "SegmentAlgorithmType": "SEMIAUTOMATIC",
     "SegmentAlgorithmName": "SlicerEditor",
     "RecommendedDisplayRGBValue": [
-      "221",
-      "130",
-      "101"
+      221,
+      130,
+      101
     ]
   }]
 }
