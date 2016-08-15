@@ -24,14 +24,17 @@
       "type" : "string",
       "maxLength" : 64
     },
+    "FD": {
+      "type": "number"
+    },
     "codeSequence" : {
       "type" : "object",
+      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
       "properties" : {
         "CodeValue" : { "type" : "SH", "default" : "T-D0050"},
         "CodingSchemeDesignator" : { "type":"SH", "default" : "SRT"},
         "CodeMeaning" : { "type":"LO", "default" : "Tissue"}
-      },
-      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"]
+      }
     }
   }
 }

@@ -3,67 +3,123 @@
   "id" : "http://qiicr.org/schema/dcmqi/pm-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "SeriesDescription":
-  { "allOf" :
-    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"},
-    {"properties" : {"default" : "Segmentation"}}]
-  },
-
-  "SeriesNumber":
-  { "allOf" :
-    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
-    {"properties" : {"default" : "300"}}]
-  },
-
-  "InstanceNumber":
-  { "allOf" :
-    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"},
-    {"properties" : {"default" : "1"}}]
-  },
-
-  "BodyPartExamined":
-  { "allOf" :
-    [{"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"},
-    {"properties" : {"default" : ""}}]
-  },
-
-  "QuantityValueCode" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
-    "required" : false
-  },
-
-  "MeasurementUnitsCode" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
-    "required" : false
-  },
-
-  "MeasurementMethodCode" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
-    "required" : false
-  },
-
-  "RealWorldValueSlope" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/FD",
-    "default" : "1.0"
-  },
-
-  "DerivedPixelContrast" : {
-    "anyOf" : [
-      {"enum" : ["ADDITION", "DIVISION", "MASKED", "MAXIMUM", "MEAN", "MINIMUM", "MTT", "MULTIPLICATION", "RCBF", "RCBV", "RESAMPLED", "STD_DEVIATION", "SUBTRACTION", "T_TEST", "TTP", "Z_SCORE", "MIXED", "ADC", "DIFFUSION", "DIFFUSION_ANISO", "DIFFUSION_ATTND", "DIFFUSION_ISO", "FAT", "FAT_FRACTION", "FIELD_MAP", "IN_PHASE", "METABOLITE_MAP", "NEI", "OUT_OF_PHASE", "PERFUSION_ASL", "R_COEFFICIENT", "R2_MAP", "R2_STAR_MAP", "RHO", "SCM", "SNR_MAP", "T1_MAP", "T2_STAR_MAP", "T2_MAP", "TCS", "TEMPERATURE", "VELOCITY", "WATER", "WATER_FRACTION" ]},
-      {"$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"}
-    ],
-    "required" : true
-  },
-
-  "AnatomicRegionCode" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
-    "required" : true
-  },
-
-  "FrameLaterality" : {
-    "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS",
-    "default" : "U",
-    "required" : true
-  },
-  "LUTLabel"
+  "required" : ["DerivedPixelContrast", "AnatomicRegionCode", "FrameLaterality"],
+  "properties": {
+    "SeriesDescription": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"
+        },
+        {
+          "properties": {
+            "default": "Segmentation"
+          }
+        }
+      ]
+    },
+    "SeriesNumber": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
+        },
+        {
+          "properties": {
+            "default": "300"
+          }
+        }
+      ]
+    },
+    "InstanceNumber": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
+        },
+        {
+          "properties": {
+            "default": "1"
+          }
+        }
+      ]
+    },
+    "BodyPartExamined": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+        },
+        {
+          "properties": {
+            "default": ""
+          }
+        }
+      ]
+    },
+    "QuantityValueCode": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    },
+    "MeasurementUnitsCode": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    },
+    "MeasurementMethodCode": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    },
+    "RealWorldValueSlope": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/FD",
+      "default": "1.0"
+    },
+    "DerivedPixelContrast": {
+      "enum": [
+        "ADDITION",
+        "DIVISION",
+        "MASKED",
+        "MAXIMUM",
+        "MEAN",
+        "MINIMUM",
+        "MTT",
+        "MULTIPLICATION",
+        "RCBF",
+        "RCBV",
+        "RESAMPLED",
+        "STD_DEVIATION",
+        "SUBTRACTION",
+        "T_TEST",
+        "TTP",
+        "Z_SCORE",
+        "MIXED",
+        "ADC",
+        "DIFFUSION",
+        "DIFFUSION_ANISO",
+        "DIFFUSION_ATTND",
+        "DIFFUSION_ISO",
+        "FAT",
+        "FAT_FRACTION",
+        "FIELD_MAP",
+        "IN_PHASE",
+        "METABOLITE_MAP",
+        "NEI",
+        "OUT_OF_PHASE",
+        "PERFUSION_ASL",
+        "R_COEFFICIENT",
+        "R2_MAP",
+        "R2_STAR_MAP",
+        "RHO",
+        "SCM",
+        "SNR_MAP",
+        "T1_MAP",
+        "T2_STAR_MAP",
+        "T2_MAP",
+        "TCS",
+        "TEMPERATURE",
+        "VELOCITY",
+        "WATER",
+        "WATER_FRACTION"
+      ]
+    },
+    "AnatomicRegionCode": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence",
+    },
+    "FrameLaterality": {
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS",
+      "default": "U"
+    }
+  }
 }
