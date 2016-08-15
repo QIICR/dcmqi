@@ -10,7 +10,7 @@
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker']);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'ui-notification', 'mdColorPicker',]);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -54,8 +54,8 @@
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$log', '$mdDialog', '$timeout', 'Notification',
-    function($scope, $rootScope, $log, $mdDialog, $timeout, Notification) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdDialog', '$timeout', 'Notification',
+    function($scope, $rootScope, $http, $log, $mdDialog, $timeout, Notification) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -78,7 +78,7 @@
         $scope.segments.length = 0;
         $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
         $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
-        $scope.output = undefined;
+        $scope.output = "";
       };
 
       var seriesAttributesDefaults = {
@@ -125,7 +125,7 @@
 
       var segment = angular.extend({}, $scope.segmentAttributes);
       $scope.segments = [segment];
-      $scope.output = undefined;
+      $scope.output = "";
 
       $scope.addSegment = function() {
         $scope.segmentAttributes.LabelID += 1;
@@ -217,7 +217,6 @@
           "segmentAttributes": segmentAttributes
         };
 
-        console.log(doc)
         $scope.output = JSON.stringify(doc, null, 4); ;
       };
 
@@ -475,7 +474,6 @@
           var toolbar = document.getElementById('toolbar');
           element.windowHeight = $window.innerHeight - toolbar.clientHeight;
           var newHeight = element.windowHeight-$(toolbar).height()/2;
-          console.log(element);
           $(element).height(newHeight);
         };
 
