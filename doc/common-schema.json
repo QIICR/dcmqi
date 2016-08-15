@@ -30,7 +30,12 @@
     "US": {
       "type": "integer",
       "minimum" : 0,
-      "maximum": 2e16
+      "maximum": 2E+16
+    },
+    "RGBValue": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
     },
     "codeSequence" : {
       "type" : "object",
