@@ -27,6 +27,11 @@
     "FD": {
       "type": "number"
     },
+    "US": {
+      "type": "integer",
+      "minimum" : 0,
+      "maximum": 2e16
+    },
     "codeSequence" : {
       "type" : "object",
       "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
