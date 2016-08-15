@@ -32,10 +32,15 @@
       "minimum" : 0,
       "maximum": 2E+16
     },
-    "RGBValue": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 255
+    "RGB": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 255
+      },
+      "minItems": 3,
+      "maxItems": 3
     },
     "codeSequence" : {
       "type" : "object",
