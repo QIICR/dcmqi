@@ -72,6 +72,8 @@
         }
       };
 
+      $scope.validJSON = false;
+
       $scope.resetForm = function() {
         $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
         $scope.segmentAttributes.LabelID = 1;
@@ -80,6 +82,17 @@
         $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.output = "";
       };
+
+      $scope.$watch('output', function (newValue, oldValue) {
+        if (newValue.length > 0) {
+          try {
+            JSON.parse(newValue);
+            $scope.validJSON = true;
+          } catch(ex) {
+            $scope.validJSON = false;
+          }
+        }
+      });
 
       var seriesAttributesDefaults = {
         ReaderID : "Reader1",
