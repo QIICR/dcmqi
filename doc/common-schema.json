@@ -46,9 +46,9 @@
       "type" : "object",
       "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
       "properties" : {
-        "CodeValue" : { "type" : "SH", "default" : "T-D0050"},
-        "CodingSchemeDesignator" : { "type":"SH", "default" : "SRT"},
-        "CodeMeaning" : { "type":"LO", "default" : "Tissue"}
+        "CodeValue" : { "$ref": "#/definitions/SH", "default" : "T-D0050"},
+        "CodingSchemeDesignator" : { "$ref": "#/definitions/SH", "default" : "SRT"},
+        "CodeMeaning" : { "$ref": "#/definitions/LO", "default" : "Tissue"}
       }
     }
   }
