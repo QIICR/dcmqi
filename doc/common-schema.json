@@ -42,6 +42,14 @@
       "minItems": 3,
       "maxItems": 3
     },
+    "CIELab": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/US"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
     "codeSequence" : {
       "type" : "object",
       "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
