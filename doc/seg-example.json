@@ -25,7 +25,7 @@
     },
     "SegmentAlgorithmType": "SEMIAUTOMATIC",
     "SegmentAlgorithmName": "SlicerEditor",
-    "RecommendedDisplayRGBValue": [
+    "recommendedDisplayRGBValue": [
       221,
       130,
       101
