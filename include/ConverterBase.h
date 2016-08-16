@@ -2,6 +2,7 @@
 #define DCMQI_CONVERTERBASE_H
 
 #include <vector>
+#include <iostream>
 #include "vnl/vnl_cross.h"
 
 #include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first

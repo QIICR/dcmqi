@@ -48,10 +48,10 @@ namespace dcmqi {
 
   private:
     static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                  const itk::Image<short, 3>::Pointer &labelImage);
+                                                                           const itk::Image<short, 3>::Pointer &labelImage);
 
     static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
-                           JSONSegmentationMetaInformationHandler &metaInfo);
+                                                 JSONSegmentationMetaInformationHandler &metaInfo);
   };
 
 }

@@ -1,5 +1,4 @@
 #include "ImageSEGConverter.h"
-#include <iostream>
 
 
 namespace dcmqi {
@@ -17,7 +16,6 @@ namespace dcmqi {
     IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
     ContentIdentificationMacro ident = createContentIdentificationInformation(metaInfo);
     CHECK_COND(ident.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
-
 
     /* Create new segmentation document */
     DcmDataset segdocDataset;
@@ -48,11 +46,8 @@ namespace dcmqi {
 
     const unsigned frameSize = inputSize[0] * inputSize[1];
 
-
     // Shared FGs: PlaneOrientationPatientSequence
     {
-      OFString imageOrientationPatientStr;
-
       ImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
       cout << "Directions: " << labelDirMatrix << endl;
@@ -66,8 +61,6 @@ namespace dcmqi {
               Helper::floatToStrScientific(labelDirMatrix[1][1]).c_str(),
               Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
 
-
-      //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
       CHECK_COND(segdoc->addForAllFrames(*planor));
     }
 
@@ -85,6 +78,7 @@ namespace dcmqi {
       CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
       CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
       CHECK_COND(segdoc->addForAllFrames(*pixmsr));
+      delete pixmsr;
     }
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
@@ -158,7 +152,7 @@ namespace dcmqi {
                << threshBbox[4] << ", " << threshBbox[5]
                << endl;
                */
-        return NULL;//abort();
+        return NULL;
       }
 
       for(int segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
@@ -242,8 +236,6 @@ namespace dcmqi {
           }
         }
 
-        // TODO: Maybe implement for PrimaryAnatomicStructure and PrimaryAnatomicStructureModifier
-
         unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
         unsigned cielabScaled[3];
         float cielab[3], ciexyz[3];
@@ -259,11 +251,6 @@ namespace dcmqi {
         // TODO: make it possible to skip empty frames (optional)
         // iterate over slices for an individual label and populate output frames
         for(int sliceNumber=firstSlice;sliceNumber<lastSlice;sliceNumber++){
-
-          // segments are numbered starting from 1
-          Uint32 frameNumber = (segmentNumber-1)*inputSize[2]+sliceNumber;
-
-          OFString imagePositionPatientStr;
 
           // PerFrame FG: FrameContentSequence
           //fracon->setStackID("1"); // all frames go into the same stack
@@ -378,6 +365,9 @@ namespace dcmqi {
         }
       }
     }
+
+    delete fgfc;
+    delete fgder;
 
     //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
 
@@ -615,8 +605,6 @@ namespace dcmqi {
           OFString segmentDescription;
           segment->getSegmentDescription(segmentDescription);
           segmentAttributes->setSegmentDescription(segmentDescription.c_str());
-
-//          TODO: dcmtk method for getting algorithm name is missing???
 
           segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
           segmentAttributes->setSegmentedPropertyCategoryCode(segment->getSegmentedPropertyCategoryCode());
