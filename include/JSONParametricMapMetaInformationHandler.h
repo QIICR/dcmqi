@@ -12,7 +12,7 @@ namespace dcmqi {
 
   public:
     JSONParametricMapMetaInformationHandler();
-    JSONParametricMapMetaInformationHandler(string filename);
+    JSONParametricMapMetaInformationHandler(string jsonInput);
     ~JSONParametricMapMetaInformationHandler();
 
     void setRealWorldValueSlope(const string& value);
@@ -39,7 +39,6 @@ namespace dcmqi {
     virtual void read();
     virtual bool write(string filename);
   protected:
-    virtual bool isValid(string filename);
 
     string realWorldValueSlope;
     string realWorldValueIntercept;

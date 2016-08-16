@@ -9,8 +9,8 @@ namespace dcmqi {
         quantityValueCode(NULL) {
   }
 
-  JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string filename)
-      : JSONMetaInformationHandlerBase(filename),
+  JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string jsonInput)
+      : JSONMetaInformationHandlerBase(jsonInput),
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL) {
@@ -73,45 +73,42 @@ namespace dcmqi {
   }
 
   void JSONParametricMapMetaInformationHandler ::read() {
-    if (this->filename.size() && this->isValid(this->filename)) {
-      try {
-        ifstream metainfoStream(this->filename, ios_base::binary);
-        metainfoStream >> this->metaInfoRoot;
-        this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
-        this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
-        this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
-        this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
-        this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
-        this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
-        this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
+    try {
+      istringstream metainfoStream(this->jsonInput);
+      metainfoStream >> this->metaInfoRoot;
+      this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
+      this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
+      this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
+      this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
+      this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
+      this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
+      this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
 
-        Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
-        if (!elem.isNull()) {
-          this->setQuantityValueCode(elem.get("codeValue", "").asString(),
-                                     elem.get("codingSchemeDesignator", "").asString(),
-                                     elem.get("codeMeaning", "").asString());
-        }
-
-        elem = this->metaInfoRoot["MeasurementUnitsCode"];
-        if (!elem.isNull()) {
-          this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
-                                        elem.get("codingSchemeDesignator", "").asString(),
-                                        elem.get("codeMeaning", "").asString());
-        }
-
-        elem = this->metaInfoRoot["MeasurementMethodCode"];
-        if (!elem.isNull()) {
-          this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
-                                         elem.get("codingSchemeDesignator", "").asString(),
-                                         elem.get("codeMeaning", "").asString());
-        }
-
-      } catch (exception& e) {
-        cout << e.what() << endl;
-        throw JSONReadErrorException();
+      Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
+      if (!elem.isNull()) {
+        this->setQuantityValueCode(elem.get("codeValue", "").asString(),
+                                   elem.get("codingSchemeDesignator", "").asString(),
+                                   elem.get("codeMeaning", "").asString());
       }
-    } else
+
+      elem = this->metaInfoRoot["MeasurementUnitsCode"];
+      if (!elem.isNull()) {
+        this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
+                                      elem.get("codingSchemeDesignator", "").asString(),
+                                      elem.get("codeMeaning", "").asString());
+      }
+
+      elem = this->metaInfoRoot["MeasurementMethodCode"];
+      if (!elem.isNull()) {
+        this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
+                                       elem.get("codingSchemeDesignator", "").asString(),
+                                       elem.get("codeMeaning", "").asString());
+      }
+
+    } catch (exception& e) {
+      cout << e.what() << endl;
       throw JSONReadErrorException();
+    }
   }
 
   bool JSONParametricMapMetaInformationHandler::write(string filename) {
@@ -139,10 +136,5 @@ namespace dcmqi {
     outputFile.close();
     return true;
   };
-
-  bool JSONParametricMapMetaInformationHandler::isValid(string filename) {
-    // TODO: add validation of json file here
-    return true;
-  }
 
 }
