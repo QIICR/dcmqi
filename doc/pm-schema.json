@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/pm-schema.json",
+  "id": "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/pm-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "required": [
     "DerivedPixelContrast",
