@@ -1,17 +1,17 @@
 {
   "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
 
-  "seriesAttributes": {
-    "ContentCreatorName": "Reader1",
-    "ClinicalTrialSeriesID": "Session1",
-    "ClinicalTrialTimePointID": "1",
-    "ClinicalTrialCoordinatingCenterName": "BWH",
-    "SeriesDescription": "Segmentation",
-    "SeriesNumber": "300",
-    "InstanceNumber": "1"
-  },
-  "segmentAttributes": [{
-    "LabelID": 216,
+  "ContentCreatorName": "Reader1",
+  "ClinicalTrialSeriesID": "Session1",
+  "ClinicalTrialTimePointID": "1",
+  "ClinicalTrialCoordinatingCenterName": "BWH",
+  "SeriesDescription": "Segmentation",
+  "SeriesNumber": "300",
+  "InstanceNumber": "1",
+
+  "segmentAttributes": [
+    [{
+    "LabelID": 1,
     "SegmentDescription": "Liver Segmentation",
     "SegmentedPropertyCategoryCodeSequence": {
       "CodeValue": "T-D0050",
@@ -31,4 +31,5 @@
       101
     ]
   }]
+  ]
 }

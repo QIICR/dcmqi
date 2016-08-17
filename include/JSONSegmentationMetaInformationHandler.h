@@ -25,7 +25,9 @@ namespace dcmqi {
 
     string getJSONOutputAsString();
 
-    vector<SegmentAttributes*> segmentsAttributes;
+    // vector contains one item per input itkImageData label
+    // each item is a map from labelID to segment attributes
+    vector<map<unsigned,SegmentAttributes*> > segmentsAttributesMappingList;
 
     void read();
     bool write(string filename);
