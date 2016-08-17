@@ -1,6 +1,4 @@
-define(['ajv'], function (ajv) {
-
-  var ajv = new ajv();
+define(['ajv'], function (Ajv) {
 
   var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
   var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
@@ -66,23 +64,22 @@ define(['ajv'], function (ajv) {
       };
 
       $scope.validJSON = false;
+      var ajv = new Ajv({ allErrors: true, loadSchema: loadSchema });
+      var validate = undefined;
 
-      var schema = {
-        "properties": {
-          "foo": { "type": "string" },
-          "bar": { "type": "number", "maximum": 3 }
-        }
-      };
+      loadSchema(segSchemaURL, function(err, body){
+        validate = ajv.compile(body.data);
+      });
 
-      var validate = ajv.compile(schema);
-
-      test({"foo": "Das", "bar": 4});
-
-
-      function test(data) {
-        var valid = validate(data);
-        if (valid) console.log('Valid!');
-        else console.log('Invalid: ' + ajv.errorsText(validate.errors));
+      function loadSchema(uri, callback) {
+        $http({
+          method: 'GET',
+          url: uri
+        }).then(function successCallback(body) {
+          callback(null, body);
+        }, function errorCallback(response) {
+          callback(response || new Error('Loading error: ' + response.statusCode));
+        });
       }
 
       $scope.resetForm = function() {
@@ -97,10 +94,14 @@ define(['ajv'], function (ajv) {
       $scope.$watch('output', function (newValue, oldValue) {
         if (newValue.length > 0) {
           try {
-            JSON.parse(newValue);
-            $scope.jsonError = "";
-            $scope.validJSON = true;
-            hideToast();
+            var valid = validate(JSON.parse(newValue));
+            if (valid) {
+              hideToast();
+              $scope.validJSON = true;
+            } else {
+              $scope.validJSON = false;
+              showToast(ajv.errorsText(validate.errors));
+            }
           } catch(ex) {
             $scope.validJSON = false;
             showToast(ex.message);
@@ -114,7 +115,7 @@ define(['ajv'], function (ajv) {
             .content(content)
             .action('OK')
             .position('bottom right')
-            .hideDelay(10000)
+            .hideDelay(100000)
         );
       }
 
