@@ -1,5 +1,5 @@
 {
-  "@schema" : "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/seg-schema.json#",
+  "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
 
   "seriesAttributes": {
     "ContentCreatorName": "Reader1",

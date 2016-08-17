@@ -1,5 +1,5 @@
 {
-  "@schema" : "https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/pm-schema.json#",
+  "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json#",
 
   "SeriesDescription": "Apparent Diffusion Coefficient",
   "SeriesNumber": "701",
