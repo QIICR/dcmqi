@@ -1,9 +1,49 @@
 //#include "TID1500Converter.h"
+
+#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
+
+// UIDs
+#include "QIICRUIDs.h"
+
+// versioning
+#include "dcmqiVersionConfigure.h"
+
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmsr/dsrdoc.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmsr/dsriodcc.h"
 #include "dcmtk/dcmiod/modhelp.h"
+//#include "dcmtk/dcmdata/modhelp.h"
 
-#include <Exceptions.h>
+#include "dcmtk/ofstd/oftest.h"
 
-#include "TID1500Converter.h"
+#include "dcmtk/dcmsr/dsrdoctr.h"
+#include "dcmtk/dcmsr/dsrcontn.h"
+#include "dcmtk/dcmsr/dsrnumtn.h"
+#include "dcmtk/dcmsr/dsruidtn.h"
+#include "dcmtk/dcmsr/dsrtextn.h"
+#include "dcmtk/dcmsr/dsrcodtn.h"
+#include "dcmtk/dcmsr/dsrimgtn.h"
+#include "dcmtk/dcmsr/dsrcomtn.h"
+#include "dcmtk/dcmsr/dsrpnmtn.h"
+
+#include "dcmtk/dcmsr/codes/dcm.h"
+#include "dcmtk/dcmsr/codes/srt.h"
+#include "dcmtk/dcmsr/cmr/tid1500.h"
+
+//#include "JSONMetaInformationHandlerBase.h"
+
+#include <iostream>
+#include <exception>
+
+#include <json/json.h>
+
+#include "Exceptions.h"
+
+using namespace std;
+
+static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 #include "tid1500writerCLP.h"
 
@@ -55,7 +95,10 @@ int main(int argc, char** argv){
   // https://github.com/QIICR/dcmqi/issues/30
   OFCHECK(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")).good());
 
-  CHECK_BOOL(report.isValid());
+  if(!report.isValid()){
+    cerr << "Report invalid!" << endl;
+    return -1;
+  }
 
   std::cout << "Total measurement groups: " << metaRoot["Measurements"].size() << std::endl;
 
@@ -122,8 +165,11 @@ int main(int argc, char** argv){
       }
     }
   }
-
-  CHECK_BOOL(report.isValid());
+   
+ if(!report.isValid()){
+   cerr << "Report is not valid!" << endl;
+   return -1;
+ }
 
   DSRDocument doc;
   std::cout << "Setting tree from the report" << std::endl;

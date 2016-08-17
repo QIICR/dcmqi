@@ -1,24 +1,22 @@
 if(BUILD_PARAMETRIC_MAPS)
   add_library(dcmqi STATIC
-    TID1500Converter.cpp
     ParaMapConverter.cpp
     ConverterBase.cpp
     SegmentAttributes.cpp
-    Helper.cpp                                  
-    JSONMetaInformationHandlerBase.cpp          
-    ImageSEGConverter.cpp                       
+    Helper.cpp
+    JSONMetaInformationHandlerBase.cpp
+    ImageSEGConverter.cpp
     JSONParametricMapMetaInformationHandler.cpp
     JSONSegmentationMetaInformationHandler.cpp
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   )
 else()
   add_library(dcmqi STATIC
-    TID1500Converter.cpp
     ConverterBase.cpp
     SegmentAttributes.cpp
-    Helper.cpp                                  
-    JSONMetaInformationHandlerBase.cpp          
-    ImageSEGConverter.cpp                       
+    Helper.cpp
+    JSONMetaInformationHandlerBase.cpp
+    ImageSEGConverter.cpp
     JSONSegmentationMetaInformationHandler.cpp
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   )
