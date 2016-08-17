@@ -26,6 +26,14 @@
   </file>
 
   <file>
+    <name>dicomDataDir</name>
+    <label>DICOM data dir</label>
+    <channel>input</channel>
+    <longflag>dicomDataDir</longflag>
+    <description>Location of input DICOM Data</description>
+  </file>
+  
+  <file>
     <name>outputFileName</name>
     <label>Output DICOM SR file name</label>
     <channel>output</channel>

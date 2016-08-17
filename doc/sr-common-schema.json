@@ -1,24 +1,65 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id" : "http://qiicr.org/schema/dcmqi/sr-common-schema.json",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
-
-  "definitions" : {
-
-    "TEXT" : {
-      "type" : "string"
+  "definitions": {
+    "TEXT": {
+      "type": "string"
     },
-
-    "UIDREF" : {
-      "type" : "string"
+    "UIDREF": {
+      "type": "string"
     },
-
-    "CODE" : {
-      "$ref" : "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+    "PNAME": {
+      "type": "string"
     },
-
-    "NUM" : {
-      "type" : "number"
+    "CODE": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+        }
+      ]
+    },
+    "NUM": {
+      "type": "number"
+    },
+    "observerContext": {
+      "type": "object",
+      "properties": {
+        "oneOf": [
+          {
+            "allOf": [
+              {
+                "ObserverType": {
+                  "enum": [
+                    "PERSON"
+                  ]
+                }
+              },
+              {
+                "PersonObserverName": {
+                  "$ref": "#/definitions/PNAME"
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "ObserverType": {
+                  "enum": [
+                    "PERSON"
+                  ]
+                }
+              },
+              {
+                "DeviceObserverUID": {
+                  "$ref": "#/definitions/PNAME"
+                }
+              }
+            ]
+          }
+        ]
+      }
     }
   }
 }

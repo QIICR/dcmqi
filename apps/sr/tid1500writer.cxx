@@ -38,8 +38,12 @@ int main(int argc, char** argv){
   OFCHECK(report.setLanguage(DSRCodedEntryValue("eng", "RFC5646", "English")).good());
 
   /* set details on the observation context */
-  // TODO - parameterize
-  OFCHECK(report.getObservationContext().addPersonObserver("Doe^Jane", "Some Organization").good());
+  string observerType = metaRoot["observerContext"]["ObserverType"].asCString();
+  if(observerType == "PERSON"){
+    OFCHECK(report.getObservationContext().addPersonObserver(metaRoot["observerContext"]["PersonObserverName"].asCString(), "").good());
+  } else if(observerType == "DEVICE"){
+    OFCHECK(report.getObservationContext().addDeviceObserver(metaRoot["observerContext"]["DeviceObserverUID"].asCString()).good());
+  }
 
   // TODO - image library (note: invalid document if no Image Library present)
   OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
@@ -132,7 +136,9 @@ int main(int argc, char** argv){
   if(metaRoot.isMember("referencedDICOMFileNames")){
     for(int i=0;i<metaRoot["referencedDICOMFileNames"].size();i++){
       DcmFileFormat ff;
-      CHECK_COND(ff.loadFile(metaRoot["referencedDICOMFileNames"][i].asCString()));
+      string dicomFilePath = (dicomDataDir+"/"+metaRoot["referencedDICOMFileNames"][i].asCString());
+      cout << "Loading " << dicomFilePath << endl;
+      CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
       doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset());
     }
   }

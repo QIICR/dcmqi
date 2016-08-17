@@ -58,6 +58,11 @@
         "CodingSchemeDesignator" : { "$ref": "#/definitions/SH", "default" : "SRT"},
         "CodeMeaning" : { "$ref": "#/definitions/LO", "default" : "Tissue"}
       }
+    },
+
+    "dicomInstancesFileNameList" : {
+      "type" : "array",
+      "items" : "string"
     }
   }
 }
