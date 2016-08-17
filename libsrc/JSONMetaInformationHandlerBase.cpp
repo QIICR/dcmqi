@@ -5,7 +5,7 @@ namespace dcmqi {
   JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase() {
   }
 
-  JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(string filename) : filename(filename){
+  JSONMetaInformationHandlerBase::JSONMetaInformationHandlerBase(string jsonInput) : jsonInput(jsonInput){
   }
 
   JSONMetaInformationHandlerBase::~JSONMetaInformationHandlerBase() {

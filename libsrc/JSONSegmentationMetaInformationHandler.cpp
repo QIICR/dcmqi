@@ -4,8 +4,8 @@ using namespace std;
 
 namespace dcmqi {
 
-  JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string jsonInput) {
-    this->jsonInput = jsonInput;
+  JSONSegmentationMetaInformationHandler::JSONSegmentationMetaInformationHandler(string jsonInput)
+      : JSONMetaInformationHandlerBase(jsonInput){
   }
 
   JSONSegmentationMetaInformationHandler::~JSONSegmentationMetaInformationHandler() {
@@ -34,8 +34,8 @@ namespace dcmqi {
 
   void JSONSegmentationMetaInformationHandler::read() {
     try {
-      istringstream str(this->jsonInput);
-      str >> this->metaInfoRoot;
+      istringstream metainfoStream(this->jsonInput);
+      metainfoStream >> this->metaInfoRoot;
       this->readSeriesAttributes();
       this->readSegmentAttributes();
     } catch (exception &e) {
@@ -208,10 +208,5 @@ namespace dcmqi {
       }
       segmentsAttributesMappingList.push_back(labelID2SegmentAttributes);
     }
-  }
-
-  bool JSONSegmentationMetaInformationHandler::isValid(string filename) {
-    // TODO: add validation of json file here
-    return true;
   }
 }

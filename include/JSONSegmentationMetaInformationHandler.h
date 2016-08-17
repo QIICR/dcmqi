@@ -36,8 +36,6 @@ namespace dcmqi {
 
   protected:
 
-    string jsonInput;
-
     string contentCreatorName;
     string clinicalTrialSeriesID;
     string clinicalTrialTimePointID;
@@ -47,8 +45,6 @@ namespace dcmqi {
 
     Json::Value createAndGetSeriesAttributes();
     Json::Value createAndGetSegmentAttributes();
-
-    bool isValid(string filename);
   };
 
 }

@@ -24,11 +24,10 @@ int main(int argc, char *argv[])
 
   vector<DcmDataset*> dcmDatasets;
 
+  DcmFileFormat* sliceFF = new DcmFileFormat();
   for(int dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
-    DcmFileFormat* sliceFF = new DcmFileFormat();
     CHECK_COND(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()));
-    dcmDatasets.push_back(sliceFF->getDataset());
-
+    dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
   }
 
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
@@ -48,6 +47,13 @@ int main(int argc, char *argv[])
     }
 
     COUT << "Saved segmentation as " << outputSEGFileName << endl;
-    return EXIT_SUCCESS;
   }
+
+  delete sliceFF;
+  for(int i=0;i<dcmDatasets.size();i++) {
+    delete dcmDatasets[i];
+  }
+  if (result != NULL)
+    delete result;
+  return EXIT_SUCCESS;
 }

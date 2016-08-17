@@ -5,19 +5,14 @@ using namespace std;
 
 namespace dcmqi {
 
-  int ParaMapConverter::itkimage2paramap(const string &inputFileName, const string &dicomImageFileName,
-                                         const string &metaDataFileName, const string &outputFileName) {
-
-    ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName(inputFileName.c_str());
-    reader->Update();
-    ImageType::Pointer parametricMapImage = reader->GetOutput();
+  DcmDataset* ParaMapConverter::itkimage2paramap(const ImageType::Pointer &parametricMapImage, DcmDataset* dcmDataset,
+                                         const string &metaData) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage(parametricMapImage);
     calculator->Compute();
 
-    JSONParametricMapMetaInformationHandler metaInfo(metaDataFileName);
+    JSONParametricMapMetaInformationHandler metaInfo(metaData);
     metaInfo.read();
 
     metaInfo.setFirstValueMapped(calculator->GetMinimum());
@@ -46,17 +41,17 @@ namespace dcmqi {
                                                                       inputSize[0], inputSize[1], eq, contentID,
                                                                       imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
     if (OFCondition* pCondition = OFget<OFCondition>(&obj))
-      return EXIT_FAILURE;
+      return NULL;
 
-    DPMParametricMapIOD& pMapDoc = *OFget<DPMParametricMapIOD>(&obj);
+    DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    if (!dicomImageFileName.empty())
-      CHECK_COND(pMapDoc.import(dicomImageFileName.c_str(), OFTrue, OFTrue, OFFalse, OFTrue));
+    if (dcmDataset != NULL)
+      CHECK_COND(pMapDoc->import(*dcmDataset, OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];
     dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
-    IODMultiframeDimensionModule &mfdim = pMapDoc.getIODMultiframeDimensionModule();
+    IODMultiframeDimensionModule &mfdim = pMapDoc->getIODMultiframeDimensionModule();
     OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dimUID,
                                                  DCM_RealWorldValueMappingSequence, "Frame position");
 
@@ -73,7 +68,7 @@ namespace dcmqi {
       spacingSStream << scientific << labelSpacing[2];
       CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
       CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
-      CHECK_COND(pMapDoc.addForAllFrames(*pixmsr));
+      CHECK_COND(pMapDoc->addForAllFrames(*pixmsr));
     }
 
     // Shared FGs: PlaneOrientationPatientSequence
@@ -94,24 +89,24 @@ namespace dcmqi {
               Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
 
       //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
-      CHECK_COND(pMapDoc.addForAllFrames(*planor));
+      CHECK_COND(pMapDoc->addForAllFrames(*planor));
     }
 
     FGFrameAnatomy frameAnaFG;
     frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED);
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeValue"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codingSchemeDesignator"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeMeaning"].asCString());
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodingSchemeDesignator"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeMeaning"].asCString());
     } else {
       frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
     }
-    CHECK_COND(pMapDoc.addForAllFrames(frameAnaFG));
+    CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
     FGIdentityPixelValueTransformation idTransFG;
     // Rescale Intercept, Rescale Slope, Rescale Type are missing here
-    CHECK_COND(pMapDoc.addForAllFrames(idTransFG));
+    CHECK_COND(pMapDoc->addForAllFrames(idTransFG));
 
     FGParametricMapFrameType frameTypeFG;
     std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\";
@@ -121,13 +116,13 @@ namespace dcmqi {
       frameTypeStr = frameTypeStr + "NONE";
     }
     frameTypeFG.setFrameType(frameTypeStr.c_str());
-    CHECK_COND(pMapDoc.addForAllFrames(frameTypeFG));
+    CHECK_COND(pMapDoc->addForAllFrames(frameTypeFG));
 
     FGRealWorldValueMapping rwvmFG;
     FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
     if (!realWorldValueMappingItem )
     {
-      return -1;
+      return NULL;
     }
 
     realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
@@ -144,18 +139,18 @@ namespace dcmqi {
     }
 
     // TODO: LutExplanation and LUTLabel should be added as Metainformation
-    realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeMeaning"].asCString());
-    realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeValue"].asCString());
+    realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
+    realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codeValue"].asCString(),
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codingSchemeDesignator"].asCString(),
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codeMeaning"].asCString());
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodeValue"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodeMeaning"].asCString());
 
     if (!quantity || !qSpec || !qCodeName)
     {
-      return -1;
+      return NULL;
     }
 
     quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
@@ -163,25 +158,23 @@ namespace dcmqi {
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
     quantity->setValueType(ContentItemMacro::VT_CODE);
     rwvmFG.getRealWorldValueMapping().push_back(realWorldValueMappingItem);
-    CHECK_COND(pMapDoc.addForAllFrames(rwvmFG));
+    CHECK_COND(pMapDoc->addForAllFrames(rwvmFG));
 
     for (unsigned long f = 0; result.good() && (f < inputSize[2]); f++) {
-      result = addFrame(pMapDoc, parametricMapImage, metaInfo, f);
+      result = addFrame(*pMapDoc, parametricMapImage, metaInfo, f);
     }
 
   {
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
-    if(!dicomImageFileName.empty() && bodyPartAssigned.empty()) {
-      DcmFileFormat sliceFF;
-      CHECK_COND(sliceFF.loadFile(dicomImageFileName.c_str()));
+    if(dcmDataset != NULL && bodyPartAssigned.empty()) {
       OFString bodyPartStr;
-      if(sliceFF.getDataset()->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
+      if(dcmDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
         if (!bodyPartStr.empty())
           bodyPartAssigned = bodyPartStr.c_str();
       }
     }
     if(!bodyPartAssigned.empty())
-      pMapDoc.getIODGeneralSeriesModule().setBodyPartExamined(bodyPartAssigned.c_str());
+      pMapDoc->getIODGeneralSeriesModule().setBodyPartExamined(bodyPartAssigned.c_str());
   }
 
   // SeriesDate/Time should be of when parametric map was taken; initialize to when it was saved
@@ -190,18 +183,17 @@ namespace dcmqi {
     DcmDate::getCurrentDate(contentDate);
     DcmTime::getCurrentTime(contentTime);
 
-    pMapDoc.getSeries().setSeriesDate(contentDate.c_str());
-    pMapDoc.getSeries().setSeriesTime(contentTime.c_str());
-    pMapDoc.getGeneralImage().setContentDate(contentDate.c_str());
-    pMapDoc.getGeneralImage().setContentTime(contentTime.c_str());
+    pMapDoc->getSeries().setSeriesDate(contentDate.c_str());
+    pMapDoc->getSeries().setSeriesTime(contentTime.c_str());
+    pMapDoc->getGeneralImage().setContentDate(contentDate.c_str());
+    pMapDoc->getGeneralImage().setContentTime(contentTime.c_str());
   }
-  pMapDoc.getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
-  pMapDoc.getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+  pMapDoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
+  pMapDoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
 
-  CHECK_COND(pMapDoc.saveFile(outputFileName.c_str()));
-
-  COUT << "Saved parametric map as " << outputFileName << endl;
-    return EXIT_SUCCESS;
+  DcmDataset* output = new DcmDataset();
+  CHECK_COND(pMapDoc->writeDataset(*output));
+  return output;
   }
 
   int ParaMapConverter::paramap2itkimage(const string &inputParamapFileName, const string &outputDirName) {

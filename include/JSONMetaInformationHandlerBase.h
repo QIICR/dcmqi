@@ -17,7 +17,7 @@ namespace dcmqi {
 
   public:
     JSONMetaInformationHandlerBase();
-    JSONMetaInformationHandlerBase(string filename);
+    JSONMetaInformationHandlerBase(string jsonInput);
     virtual ~JSONMetaInformationHandlerBase();
 
     void setSeriesDescription(const string &seriesDescription);
@@ -41,14 +41,13 @@ namespace dcmqi {
     Json::Value metaInfoRoot;
 
   protected:
-    virtual bool isValid(string filename)=0;
+
+    string jsonInput;
 
     string seriesDescription;
     string seriesNumber;
     string instanceNumber;
     string bodyPartExamined;
-
-    string filename;
 
     Json::Value codeSequence2Json(CodeSequenceMacro *codeSequence);
   };
