@@ -1,16 +1,16 @@
-(function(angular) {
+define(function () {
 
   var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
   var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
 
-  var segSchemaURL = webAssets + 'seg-schema.json';
+  var segSchemaURL = 'https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/seg-schema.json';
   var pmSchemaURL = webAssets + 'pm-schema.json';
 
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker',]);
+                                                    'ngAnimate', 'xml']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -44,8 +44,8 @@
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast' ,'$mdDialog', '$timeout',
-    function($scope, $rootScope, $http, $log, $mdToast, $mdDialog, $timeout) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast',
+    function($scope, $rootScope, $http, $log, $mdToast) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -73,6 +73,8 @@
         $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.output = "";
       };
+
+      var clipboard = new Clipboard('#copyButton');
 
       $scope.$watch('output', function (newValue, oldValue) {
         if (newValue.length > 0) {
@@ -503,4 +505,4 @@
     };
   });
 
-})(window.angular);
+});

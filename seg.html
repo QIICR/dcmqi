@@ -180,7 +180,7 @@
       <md-input-container flex style="overflow: auto">
         <textarea aria-label="JSON-output" ng-model="output">{{output}}</textarea>
       </md-input-container>
-      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" ngclipboard data-clipboard-text="{{ output }}">
+      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" data-clipboard-text="{{ output }}">
         <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
         <ng-md-icon icon="content_copy" style="fill:white"/>
       </md-button>
