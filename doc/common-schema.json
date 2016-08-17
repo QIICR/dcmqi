@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id" : "http://qiicr.org/schema/dcmqi/common-schema.json",
+  "id" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
   "definitions" : {
@@ -24,14 +24,40 @@
       "type" : "string",
       "maxLength" : 64
     },
+    "FD": {
+      "type": "number"
+    },
+    "US": {
+      "type": "integer",
+      "minimum" : 0,
+      "maximum": 2E+16
+    },
+    "RGB": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 255
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "CIELab": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/US"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
     "codeSequence" : {
       "type" : "object",
+      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
       "properties" : {
-        "CodeValue" : { "type" : "SH", "default" : "T-D0050"},
-        "CodingSchemeDesignator" : { "type":"SH", "default" : "SRT"},
-        "CodeMeaning" : { "type":"LO", "default" : "Tissue"}
-      },
-      "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"]
+        "CodeValue" : { "$ref": "#/definitions/SH", "default" : "T-D0050"},
+        "CodingSchemeDesignator" : { "$ref": "#/definitions/SH", "default" : "SRT"},
+        "CodeMeaning" : { "$ref": "#/definitions/LO", "default" : "Tissue"}
+      }
     }
   }
 }

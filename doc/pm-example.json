@@ -1,28 +1,27 @@
 {
-  "@schema" : "http://qiicr.org/schema/dcmqi/pm-schema.json",
+  "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json#",
 
   "SeriesDescription": "Apparent Diffusion Coefficient",
   "SeriesNumber": "701",
   "InstanceNumber": "1",
   "BodyPartExamined" : "PROSTATE",
-  "DerivedPixelContrast" : "ADC",
 
   "QuantityValueCode": {
-    "codeValue": "113041",
-    "codingSchemeDesignator": "DCM",
-    "codeMeaning": "Apparent Diffusion Coefficient"
+    "CodeValue": "113041",
+    "CodingSchemeDesignator": "DCM",
+    "CodeMeaning": "Apparent Diffusion Coefficient"
   },
   "MeasurementUnitsCode": {
-    "codeValue": "mm2/s",
-    "codingSchemeDesignator": "UCUM",
-    "codeMeaning": "square millimeter per second"
+    "CodeValue": "mm2/s",
+    "CodingSchemeDesignator": "UCUM",
+    "CodeMeaning": "square millimeter per second"
   },
   "AnatomicRegionCode": {
-    "codeValue": "T-9200B",
-    "codingSchemeDesignator": "SRT",
-    "codeMeaning": "Prostate"
+    "CodeValue": "T-9200B",
+    "CodingSchemeDesignator": "SRT",
+    "CodeMeaning": "Prostate"
   },
   "FrameLaterality" : "U",
-  "RealWorldValueSlope" : "1e-6",
+  "RealWorldValueSlope" : 1e-6,
   "DerivedPixelContrast" : "ADC"
 }
