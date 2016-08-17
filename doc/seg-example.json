@@ -1,7 +1,6 @@
 {
-  "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
-
-  "seriesAttributes" : {
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
+  "seriesAttributes": {
     "ContentCreatorName": "Reader1",
     "ClinicalTrialSeriesID": "Session1",
     "ClinicalTrialTimePointID": "1",
@@ -10,28 +9,29 @@
     "SeriesNumber": "300",
     "InstanceNumber": "1"
   },
-
   "segmentAttributes": [
-    [{
-    "LabelID": 1,
-    "SegmentDescription": "Liver Segmentation",
-    "SegmentedPropertyCategoryCodeSequence": {
-      "CodeValue": "T-D0050",
-      "CodingSchemeDesignator": "SRT",
-      "CodeMeaning": "Tissue"
-    },
-    "SegmentedPropertyTypeCodeSequence": {
-      "CodeValue": "T-62000",
-      "CodingSchemeDesignator": "SRT",
-      "CodeMeaning": "Liver"
-    },
-    "SegmentAlgorithmType": "SEMIAUTOMATIC",
-    "SegmentAlgorithmName": "SlicerEditor",
-    "recommendedDisplayRGBValue": [
-      221,
-      130,
-      101
+    [
+      {
+        "LabelID": 1,
+        "SegmentDescription": "Liver Segmentation",
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeValue": "T-D0050",
+          "CodingSchemeDesignator": "SRT",
+          "CodeMeaning": "Tissue"
+        },
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeValue": "T-62000",
+          "CodingSchemeDesignator": "SRT",
+          "CodeMeaning": "Liver"
+        },
+        "SegmentAlgorithmType": "SEMIAUTOMATIC",
+        "SegmentAlgorithmName": "SlicerEditor",
+        "recommendedDisplayRGBValue": [
+          221,
+          130,
+          101
+        ]
+      }
     ]
-  }]
   ]
 }
