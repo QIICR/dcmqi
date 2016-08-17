@@ -93,6 +93,7 @@
       "items": {
         "type": "object",
         "required": [
+          "LabelID",
           "SegmentedPropertyCategoryCodeSequence",
           "SegmentedPropertyTypeCodeSequence",
           "SegmentAlgorithmType"
