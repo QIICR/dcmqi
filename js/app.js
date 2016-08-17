@@ -10,7 +10,7 @@ define(function () {
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml']);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -73,8 +73,6 @@ define(function () {
         $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.output = "";
       };
-
-      var clipboard = new Clipboard('#copyButton');
 
       $scope.$watch('output', function (newValue, oldValue) {
         if (newValue.length > 0) {

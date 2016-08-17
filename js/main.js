@@ -10,9 +10,11 @@ require.config({
     "angular-material": "../bower_components/angular-material/angular-material",
     "angular-material-icons": "../bower_components/angular-material-icons/angular-material-icons",
     "tinycolor": "../bower_components/tinycolor/dist/tinycolor-min",
-    "mdColorPicker": "../bower_components/md-color-picker/dist/mdColorPicker",
+    "md-color-picker": "../bower_components/md-color-picker/dist/mdColorPicker",
     "xml2json": "../bower_components/x2js/xml2json",
     "angular-xml": "../bower_components/angular-xml/angular-xml",
+    "clipboard": "../bower_components/clipboard/dist/clipboard.min",
+    "ngclipboard": "../bower_components/ngclipboard/dist/ngclipboard.min",
     "ajv": "../bower_components/ajv/lib/ajv",
     "JSONSemanticsCreator": "app"
   },
@@ -28,7 +30,7 @@ require.config({
     },
     "JSONSemanticsCreator": {
       deps: ["angular", "angular-route", "angular-material", "angular-messages", "angular-material-icons", "v-accordion",
-             "angular-animate", "angular-xml"]
+             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard"]
     },
     "angular-messages": {
       deps: ["angular"],
@@ -49,10 +51,21 @@ require.config({
     "angular-aria": {
       deps: ["angular"]
     },
-    "mdColorPicker": {
+    "md-color-picker": {
       deps: ["angular", "tinycolor"]
+    },
+    "ngclipboard": {
+      deps: ["angular", "clipboard"]
     }
   }
+});
+
+require(['clipboard'], function(clipboard) {
+  Clipboard = clipboard;
+});
+
+require(['tinycolor'], function(tinycolor) {
+  window.tinycolor = tinycolor;
 });
 
 require(["JSONSemanticsCreator"],
