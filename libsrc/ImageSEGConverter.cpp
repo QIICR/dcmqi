@@ -189,7 +189,12 @@ namespace dcmqi {
         lastSlice << ")" << endl;
 
         DcmSegment* segment = NULL;
-        SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributes[segFileNumber];
+        if(metaInfo.segmentsAttributesMappingList[segFileNumber].find(label) == metaInfo.segmentsAttributesMappingList[segFileNumber].end()){
+          cerr << "ERROR: Failed to match label from image to the segment metadata!" << endl;
+          return NULL;
+        }
+
+        SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributesMappingList[segFileNumber][label];
 
         DcmSegTypes::E_SegmentAlgoType algoType;
         string algoName = "";
@@ -591,6 +596,7 @@ namespace dcmqi {
         SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
         if (segmentAttributes) {
+          segmentAttributes->setLabelID(segmentId);
           DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
           string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
           segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);

@@ -91,105 +91,108 @@
     "segmentAttributes": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": [
-          "LabelID",
-          "SegmentedPropertyCategoryCodeSequence",
-          "SegmentedPropertyTypeCodeSequence",
-          "SegmentAlgorithmType"
-        ],
-        "properties": {
-          "LabelID": {
-            "type": "number",
-            "default": 1
-          },
-          "SegmentDescription": {
-            "type": "string"
-          },
-          "SegmentedPropertyCategoryCodeSequence": {
-            "allOf": [
-              {
-                "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
-              },
-              {
-                "properties": {
-                  "CodeValue": {
-                    "default": "T-D0050"
-                  },
-                  "CodingSchemeDesignator": {
-                    "default": "SRT"
-                  },
-                  "CodeMeaning": {
-                    "default": "Tissue"
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "LabelID",
+            "SegmentedPropertyCategoryCodeSequence",
+            "SegmentedPropertyTypeCodeSequence",
+            "SegmentAlgorithmType"
+          ],
+          "properties": {
+            "LabelID": {
+              "type": "number",
+              "default": 1
+            },
+            "SegmentDescription": {
+              "type": "string"
+            },
+            "SegmentedPropertyCategoryCodeSequence": {
+              "allOf": [
+                {
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+                },
+                {
+                  "properties": {
+                    "CodeValue": {
+                      "default": "T-D0050"
+                    },
+                    "CodingSchemeDesignator": {
+                      "default": "SRT"
+                    },
+                    "CodeMeaning": {
+                      "default": "Tissue"
+                    }
                   }
                 }
-              }
-            ]
-          },
-          "SegmentedPropertyTypeCodeSequence": {
-            "allOf": [
-              {
-                "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
-              },
-              {
-                "properties": {
-                  "CodeValue": {
-                    "default": "T-D0050"
-                  },
-                  "CodingSchemeDesignator": {
-                    "default": "SRT"
-                  },
-                  "CodeMeaning": {
-                    "default": "Tissue"
+              ]
+            },
+            "SegmentedPropertyTypeCodeSequence": {
+              "allOf": [
+                {
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+                },
+                {
+                  "properties": {
+                    "CodeValue": {
+                      "default": "T-D0050"
+                    },
+                    "CodingSchemeDesignator": {
+                      "default": "SRT"
+                    },
+                    "CodeMeaning": {
+                      "default": "Tissue"
+                    }
                   }
                 }
-              }
-            ]
-          },
-          "SegmentedPropertyTypeModifierCodeSequence": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
-          },
-          "AnatomicRegionSequence": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
-          },
-          "AnatomicRegionModifierSequence": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
-          },
-          "SegmentAlgorithmType": {
-            "allOf": [
-              {
-                "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
-              },
-              {
-                "enum": [
-                  "AUTOMATIC",
-                  "MANUAL",
-                  "SEMIAUTOMATIC"
-                ]
-              },
-              {
-                "default": "SEMIAUTOMATIC"
-              }
-            ]
-          },
-          "SegmentAlgorithmName": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
-          },
-          "recommendedDisplayRGBValue": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB",
-            "default": [
-              128,
-              174,
-              128
-            ]
-          },
-          "RecommendedDisplayCIELabValue": {
-            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CIELab",
-            "default": [
-              "43803",
-              "26565",
-              "37722"
-            ]
+              ]
+            },
+            "SegmentedPropertyTypeModifierCodeSequence": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+            },
+            "AnatomicRegionSequence": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+            },
+            "AnatomicRegionModifierSequence": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+            },
+            "SegmentAlgorithmType": {
+              "allOf": [
+                {
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
+                },
+                {
+                  "enum": [
+                    "AUTOMATIC",
+                    "MANUAL",
+                    "SEMIAUTOMATIC"
+                  ]
+                },
+                {
+                  "default": "SEMIAUTOMATIC"
+                }
+              ]
+            },
+            "SegmentAlgorithmName": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+            },
+            "recommendedDisplayRGBValue": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB",
+              "default": [
+                128,
+                174,
+                128
+              ]
+            },
+            "RecommendedDisplayCIELabValue": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CIELab",
+              "default": [
+                "43803",
+                "26565",
+                "37722"
+              ]
+            }
           }
         }
       }

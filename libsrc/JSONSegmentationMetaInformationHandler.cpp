@@ -9,10 +9,14 @@ namespace dcmqi {
   }
 
   JSONSegmentationMetaInformationHandler::~JSONSegmentationMetaInformationHandler() {
-    if (this->segmentsAttributes.size() > 0) {
-      for (vector<SegmentAttributes *>::iterator it = this->segmentsAttributes.begin();
-           it != this->segmentsAttributes.end(); ++it)
-        delete *it;
+    if (this->segmentsAttributesMappingList.size() > 0) {
+      for (vector<map<unsigned,SegmentAttributes *> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
+           vIt != this->segmentsAttributesMappingList.end(); ++vIt){
+        for (map<unsigned,SegmentAttributes *>::const_iterator mIt = (*vIt).begin();
+             mIt != (*vIt).end(); ++mIt){
+          delete mIt->second;
+        }
+      }
     }
   }
 
@@ -49,8 +53,8 @@ namespace dcmqi {
   }
 
   string JSONSegmentationMetaInformationHandler::getJSONOutputAsString() {
-    if (this->segmentsAttributes.size() == 0)
-      return false;
+    if (this->segmentsAttributesMappingList.size() == 0)
+      return string();
     // TODO: add checks for validity here....
 
     Json::Value data;
@@ -89,103 +93,120 @@ namespace dcmqi {
   }
 
   Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
+    // return a list of lists, where each inner list contains just one item (segment)
     Json::Value values(Json::arrayValue);
-    for (vector<SegmentAttributes *>::iterator it = segmentsAttributes.begin();
-       it != segmentsAttributes.end(); ++it) {
-      Json::Value segment;
-      segment["LabelID"] = (*it)->getLabelID();
-      segment["SegmentDescription"] = (*it)->getSegmentDescription();
-      segment["SegmentAlgorithmType"] = (*it)->getSegmentAlgorithmType();
-      if ((*it)->getSegmentAlgorithmName().length() > 0)
-        segment["SegmentAlgorithmName"] = (*it)->getSegmentAlgorithmName();
+    for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
+       vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
+      for(map<unsigned,SegmentAttributes*>::const_iterator mIt=vIt->begin();mIt!=vIt->end();++mIt){
+        Json::Value segment;
+        SegmentAttributes* segmentAttributes = mIt->second;
+        segment["LabelID"] = segmentAttributes->getLabelID();
+        segment["SegmentDescription"] = segmentAttributes->getSegmentDescription();
+        segment["SegmentAlgorithmType"] = segmentAttributes->getSegmentAlgorithmType();
+        if (segmentAttributes->getSegmentAlgorithmName().length() > 0)
+          segment["SegmentAlgorithmName"] = segmentAttributes->getSegmentAlgorithmName();
 
-      if ((*it)->getSegmentedPropertyCategoryCode())
-        segment["SegmentedPropertyCategoryCode"] = codeSequence2Json((*it)->getSegmentedPropertyCategoryCode());
+        if (segmentAttributes->getSegmentedPropertyCategoryCode())
+          segment["SegmentedPropertyCategoryCode"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyCategoryCode());
 
-      if ((*it)->getSegmentedPropertyType())
-        segment["SegmentedPropertyType"] = codeSequence2Json((*it)->getSegmentedPropertyType());
+        if (segmentAttributes->getSegmentedPropertyType())
+          segment["SegmentedPropertyType"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyType());
 
-      if ((*it)->getSegmentedPropertyTypeModifier())
-        segment["SegmentedPropertyTypeModifier"] = codeSequence2Json((*it)->getSegmentedPropertyTypeModifier());
+        if (segmentAttributes->getSegmentedPropertyTypeModifier())
+          segment["SegmentedPropertyTypeModifier"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyTypeModifier());
 
-      if ((*it)->getAnatomicRegion())
-        segment["AnatomicRegion"] = codeSequence2Json((*it)->getAnatomicRegion());
+        if (segmentAttributes->getAnatomicRegion())
+          segment["AnatomicRegion"] = codeSequence2Json(segmentAttributes->getAnatomicRegion());
 
-      if ((*it)->getAnatomicRegionModifier())
-        segment["AnatomicRegionModifier"] = codeSequence2Json((*it)->getAnatomicRegionModifier());
+        if (segmentAttributes->getAnatomicRegionModifier())
+          segment["AnatomicRegionModifier"] = codeSequence2Json(segmentAttributes->getAnatomicRegionModifier());
 
-      Json::Value rgb(Json::arrayValue);
-      rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[0]));
-      rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[1]));
-      rgb.append(Helper::toString((*it)->getRecommendedDisplayRGBValue()[2]));
-      segment["RecommendedDisplayRGBValue"] = rgb;
-      values.append(segment);
+        Json::Value rgb(Json::arrayValue);
+        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[0]));
+        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[1]));
+        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[2]));
+        segment["RecommendedDisplayRGBValue"] = rgb;
+        Json::Value innerList(Json::arrayValue);
+        innerList.append(segment);
+        values.append(innerList);
+      }
     }
     return values;
   }
 
   SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
-    for (vector<SegmentAttributes *>::iterator it = this->segmentsAttributes.begin();
-       it != this->segmentsAttributes.end(); ++it) {
-      SegmentAttributes *segmentAttributes = *it;
-      if (segmentAttributes->getLabelID() == labelID)
-        return NULL;
+    for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
+       vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
+      for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
+        SegmentAttributes *segmentAttributes = mIt->second;
+        if (segmentAttributes->getLabelID() == labelID)
+          return NULL;
+      }
     }
+
     SegmentAttributes *segment = new SegmentAttributes(labelID);
-    this->segmentsAttributes.push_back(segment);
+    map<unsigned,SegmentAttributes*> tempMap;
+    tempMap[labelID] = segment;
+    this->segmentsAttributesMappingList.push_back(tempMap);
     return segment;
   }
 
   void JSONSegmentationMetaInformationHandler::readSegmentAttributes() {
-    Json::Value segmentAttributes = this->metaInfoRoot["segmentAttributes"];
+    Json::Value allSegmentAttributes = this->metaInfoRoot["segmentAttributes"];
     // TODO: default parameters should be taken from json schema file
-    for (Json::ValueIterator itr = segmentAttributes.begin(); itr != segmentAttributes.end(); itr++) {
-      Json::Value segment = (*itr);
-      SegmentAttributes *segmentAttribute = new SegmentAttributes(segment.get("LabelID", "1").asUInt());
-      Json::Value segmentDescription = segment["SegmentDescription"];
-      if (!segmentDescription.isNull()) {
-        segmentAttribute->setSegmentDescription(segmentDescription.asString());
-      }
-      Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
-      if (!elem.isNull()) {
-        segmentAttribute->setSegmentedPropertyCategoryCode(elem.get("codeValue", "T-D0050").asString(),
+    for (Json::ValueIterator imageIt = allSegmentAttributes.begin(); imageIt != allSegmentAttributes.end(); imageIt++) {
+      Json::Value imageSegmentsAttributes = (*imageIt);
+      map<unsigned, SegmentAttributes*> labelID2SegmentAttributes;
+      for (Json::ValueIterator itr = imageSegmentsAttributes.begin(); itr != imageSegmentsAttributes.end(); itr++) {
+        Json::Value segment = (*itr);
+        SegmentAttributes *segmentAttribute = new SegmentAttributes(segment.get("LabelID", "1").asUInt());
+        labelID2SegmentAttributes[segmentAttribute->getLabelID()] = segmentAttribute;
+
+        Json::Value segmentDescription = segment["SegmentDescription"];
+        if (!segmentDescription.isNull()) {
+          segmentAttribute->setSegmentDescription(segmentDescription.asString());
+        }
+        Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
+        if (!elem.isNull()) {
+          segmentAttribute->setSegmentedPropertyCategoryCode(elem.get("codeValue", "T-D0050").asString(),
                                                            elem.get("codingSchemeDesignator", "SRT").asString(),
                                                            elem.get("codeMeaning", "Tissue").asString());
-      }
-      elem = segment["SegmentedPropertyTypeCodeSequence"];
-      if (!elem.isNull()) {
-        segmentAttribute->setSegmentedPropertyType(elem.get("codeValue", "T-D0050").asString(),
+        }
+        elem = segment["SegmentedPropertyTypeCodeSequence"];
+        if (!elem.isNull()) {
+          segmentAttribute->setSegmentedPropertyType(elem.get("codeValue", "T-D0050").asString(),
                                                    elem.get("codingSchemeDesignator", "SRT").asString(),
                                                    elem.get("codeMeaning", "Tissue").asString());
-      }
-      elem = segment["SegmentedPropertyTypeModifierCodeSequence"];
-      if (!elem.isNull()) {
-        segmentAttribute->setSegmentedPropertyTypeModifier(elem.get("codeValue", "").asString(),
+        }
+        elem = segment["SegmentedPropertyTypeModifierCodeSequence"];
+        if (!elem.isNull()) {
+          segmentAttribute->setSegmentedPropertyTypeModifier(elem.get("codeValue", "").asString(),
                                                            elem.get("codingSchemeDesignator", "").asString(),
                                                            elem.get("codeMeaning", "").asString());
-      }
-      elem = segment["AnatomicRegionSequence"];
-      if (!elem.isNull()) {
-        segmentAttribute->setAnatomicRegion(elem.get("codeValue", "").asString(),
+        }
+        elem = segment["AnatomicRegionSequence"];
+        if (!elem.isNull()) {
+          segmentAttribute->setAnatomicRegion(elem.get("codeValue", "").asString(),
                                             elem.get("codingSchemeDesignator", "").asString(),
                                             elem.get("codeMeaning", "").asString());
-      }
-      elem = segment["AnatomicRegionModifierSequence"];
-      if (!elem.isNull()) {
-        segmentAttribute->setAnatomicRegionModifier(elem.get("codeValue", "").asString(),
+        }
+        elem = segment["AnatomicRegionModifierSequence"];
+        if (!elem.isNull()) {
+          segmentAttribute->setAnatomicRegionModifier(elem.get("codeValue", "").asString(),
                                                     elem.get("codingSchemeDesignator", "").asString(),
                                                     elem.get("codeMeaning", "").asString());
+        }
+        segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
+        segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());
+        Json::Value rgbArray = segment.get("RecommendedDisplayRGBValue", "128,174,128");
+        if (rgbArray.size() > 0) {
+          unsigned rgb[3];
+          for (unsigned int index = 0; index < rgbArray.size(); ++index)
+            rgb[index] = atoi(rgbArray[index].asCString());
+          segmentAttribute->setRecommendedDisplayRGBValue(rgb);
+        }
       }
-      segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
-      segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());
-      Json::Value rgbArray = segment.get("RecommendedDisplayRGBValue", "128,174,128");
-      if (rgbArray.size() > 0) {
-        unsigned rgb[3];
-        for (unsigned int index = 0; index < rgbArray.size(); ++index)
-          rgb[index] = atoi(rgbArray[index].asCString());
-        segmentAttribute->setRecommendedDisplayRGBValue(rgb);
-      }
-      segmentsAttributes.push_back(segmentAttribute);
+      segmentsAttributesMappingList.push_back(labelID2SegmentAttributes);
     }
   }
 
