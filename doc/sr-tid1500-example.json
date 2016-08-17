@@ -1,5 +1,5 @@
 {
-  "@schema": "http://qiicr.org/schema/dcmqi/sr-tid1500-schema.json",
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json#",
   "SeriesDescription": "Measurements",
   "SeriesNumber": "1001",
   "InstanceNumber": "1",

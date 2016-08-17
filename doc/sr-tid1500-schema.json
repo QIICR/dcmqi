@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "http://qiicr.org/schema/dcmqi/sr-tid1500-schema.json",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "measurementItem": {

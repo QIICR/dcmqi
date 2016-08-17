@@ -50,8 +50,9 @@ int main(int argc, char** argv){
 
   // TODO
   //  - this is a very narrow procedure code
-  //  - discuss with Jörg - need to be able to use private code
-  //  - discuss with David - generic parameter
+  // see duscussion here for improved handling, should be factored out in the
+  // future, and handled by the upper-level application layers:
+  // https://github.com/QIICR/dcmqi/issues/30
   OFCHECK(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")).good());
 
   CHECK_BOOL(report.isValid());
@@ -83,7 +84,7 @@ int main(int argc, char** argv){
     segment.getSegmentList().addItem(measurementGroup["ReferencedSegment"].asInt());
     OFCHECK(measurements.setReferencedSegment(segment).good());
 
-    // TODO - a good cndidate to factor out
+    // TODO - a good candidate to factor out
     DSRBasicCodedEntry findingCode(measurementGroup["Finding"]["codeValue"].asCString(),
       measurementGroup["Finding"]["codingSchemeDesignator"].asCString(),
       measurementGroup["Finding"]["codeMeaning"].asCString());
@@ -132,10 +133,12 @@ int main(int argc, char** argv){
     return -1;
   }
 
-  // WARNING: no consistency checks between the referenced UIDs and thereferencedDICOMFileNames ...
+  // WARNING: no consistency checks between the referenced UIDs and the
+  //  referencedDICOMFileNames ...
   if(metaRoot.isMember("referencedDICOMFileNames")){
     for(int i=0;i<metaRoot["referencedDICOMFileNames"].size();i++){
       DcmFileFormat ff;
+      // Not sure what is a safe way to combine path components ...
       string dicomFilePath = (dicomDataDir+"/"+metaRoot["referencedDICOMFileNames"][i].asCString());
       cout << "Loading " << dicomFilePath << endl;
       CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
@@ -160,116 +163,6 @@ int main(int argc, char** argv){
     OFCHECK(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit).good());
     std::cout << "SR saved!" << std::endl;
   }
-
-#if 0
-  /* create new image library (only needed after clear) */
-  OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
-  /* set two values for "procedure reported" */
-  OFCHECK(!report.isValid());
-  OFCHECK(!report.hasProcedureReported());
-  OFCHECK(report.addProcedureReported(CMR_CID100::PETWholeBody).good());
-  OFCHECK(report.addProcedureReported(DSRCodedEntryValue("4711", "99TEST", "Some other test code")).good());
-  OFCHECK(report.hasProcedureReported());
-  OFCHECK(report.isValid());
-  /* some further checks */
-  OFCHECK(report.hasImagingMeasurements());
-  OFCHECK(report.hasVolumetricROIMeasurements());
-  OFCHECK(!report.hasQualitativeEvaluations());
-  OFCHECK(!report.hasImagingMeasurements(OFTrue /*checkChildren*/));
-  OFCHECK(!report.hasVolumetricROIMeasurements(OFTrue /*checkChildren*/));
-  OFCHECK(!report.hasQualitativeEvaluations(OFTrue /*checkChildren*/));
-  /* add two further volumetric ROI measurements */
-  OFCHECK(report.addVolumetricROIMeasurements().good());
-  OFCHECK(report.addVolumetricROIMeasurements().good());
-  OFCHECK(!report.hasVolumetricROIMeasurements(OFTrue /*checkChildren*/));
-  /* fill volumetric ROI measurements with data */
-  TID1500_MeasurementReport::TID1411_Measurements &measurements = report.getVolumetricROIMeasurements();
-  OFCHECK(!measurements.isValid());
-  OFCHECK(measurements.compareTemplateIdentication("1411", "DCMR"));
-  OFCHECK(measurements.setTrackingIdentifier("aorta reference region").good());
-  OFCHECK(measurements.setTrackingUniqueIdentifier("1.2.3.4.5").good());
-  OFCHECK(measurements.setTrackingIdentifier("some reference region").good());
-  OFCHECK(measurements.setActivitySession("1").good());
-  OFCHECK(measurements.setTimePoint("1.1").good());
-  OFCHECK(measurements.setSourceSeriesForSegmentation("6.7.8.9.0").good());
-  OFCHECK(measurements.setFinding(DSRBasicCodedEntry("0815", "99TEST", "Some test code")).good());
-  OFCHECK(!measurements.isValid());
-  /* test two ways of adding a referenced segment */
-  DSRImageReferenceValue segment(UID_SegmentationStorage, "1.0.2.0.3.0");
-  segment.getSegmentList().addItem(1);
-  DcmDataset dataset;
-  DcmItem *ditem = NULL;
-  OFCHECK(dataset.putAndInsertString(DCM_SOPClassUID, UID_SurfaceSegmentationStorage).good());
-  OFCHECK(dataset.putAndInsertString(DCM_SOPInstanceUID, "99.0").good());
-  OFCHECK(dataset.findOrCreateSequenceItem(DCM_SegmentSequence, ditem).good());
-  if (ditem != NULL)
-  {
-      OFCHECK(ditem->putAndInsertUint16(DCM_SegmentNumber, 1).good());
-      OFCHECK(ditem->putAndInsertString(DCM_TrackingID, "blabla").good());
-      OFCHECK(ditem->putAndInsertString(DCM_TrackingUID, "1.2.3").good());
-  }
-  OFCHECK(measurements.setReferencedSegment(segment).good());
-  OFCHECK(measurements.setReferencedSegment(DSRImageReferenceValue(UID_SegmentationStorage, "1.0")).bad());
-  OFCHECK(measurements.setReferencedSegment(dataset, 1).good());
-  dataset.clear();
-  OFCHECK(dataset.putAndInsertString(DCM_SOPClassUID, UID_RealWorldValueMappingStorage).good());
-  OFCHECK(dataset.putAndInsertString(DCM_SOPInstanceUID, "99.9").good());
-  OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_RealWorldValueMappingStorage, "2.0.3.0.4.0")).good());
-  OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_CTImageStorage, "2.0")).bad());
-  OFCHECK(measurements.setRealWorldValueMap(dataset).good());
-  OFCHECK(measurements.setFindingSite(CODE_SRT_AorticArch).good());
-  OFCHECK(measurements.setMeasurementMethod(DSRCodedEntryValue(CODE_DCM_SUVBodyWeightCalculationMethod)).good());
-  OFCHECK(!measurements.isValid());
-  /* add two measurement values */
-  const CMR_TID1411_in_TID1500::MeasurementValue numVal1("99", CMR_CID7181::StandardizedUptakeValueBodyWeight);
-  const CMR_TID1411_in_TID1500::MeasurementValue numVal2(CMR_CID42::MeasurementFailure);
-  OFCHECK(measurements.addMeasurement(CMR_CID7469::SUVbw, numVal1, CMR_CID6147(), CMR_CID7464::Mean).good());
-  OFCHECK(measurements.addMeasurement(CMR_CID7469::SUVbw, numVal2, DSRCodedEntryValue("0815", "99TEST", "Some test code"), CMR_CID7464::Mode).good());
-  OFCHECK(measurements.isValid());
-  /* now, add some qualitative evaluations */
-  const DSRCodedEntryValue code("1234", "99TEST", "not bad");
-  OFCHECK(report.addQualitativeEvaluation(DSRBasicCodedEntry("0815", "99TEST", "Some test code"), code).good());
-  OFCHECK(report.addQualitativeEvaluation(DSRBasicCodedEntry("4711", "99TEST", "Some other test code"), "very good").good());
-  /* some final checks */
-  OFCHECK(report.isValid());
-  OFCHECK(report.hasImagingMeasurements(OFTrue /*checkChildren*/));
-  OFCHECK(report.hasVolumetricROIMeasurements(OFTrue /*checkChildren*/));
-  OFCHECK(report.hasQualitativeEvaluations(OFTrue /*checkChildren*/));
-
-  /* check number of content items (expected) */
-  OFCHECK_EQUAL(report.getTree().countNodes(), 13);
-  OFCHECK_EQUAL(report.getTree().countNodes(OFTrue /*searchIntoSubTemplates*/), 34);
-  OFCHECK_EQUAL(report.getTree().countNodes(OFTrue /*searchIntoSubTemplates*/, OFFalse /*countIncludedTemplateNodes*/), 28);
-  /* create an expanded version of the tree */
-  DSRDocumentSubTree *tree = NULL;
-  OFCHECK(report.getTree().createExpandedSubTree(tree).good());
-  /* and check whether all content items are there */
-  if (tree != NULL)
-  {
-      OFCHECK_EQUAL(tree->countNodes(), 28);
-      OFCHECK_EQUAL(tree->countNodes(OFTrue /*searchIntoSubTemplates*/), 28);
-      OFCHECK_EQUAL(tree->countNodes(OFTrue /*searchIntoSubTemplates*/, OFFalse /*countIncludedTemplateNodes*/), 28);
-      delete tree;
-  } else
-      OFCHECK_FAIL("could create expanded tree");
-
-  /* try to insert the root template into a document */
-  DSRDocument doc;
-  OFCHECK(!doc.isValid());
-  OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_BasicTextSR);
-  OFCHECK(doc.setTreeFromRootTemplate(report, OFFalse /*expandTree*/).good());
-  OFCHECK(doc.isValid());
-  OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);
-  /* now, do the same with an expanded document tree */
-  OFCHECK(doc.setTreeFromRootTemplate(report, OFTrue  /*expandTree*/).good());
-  OFCHECK(doc.isValid());
-  OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);
-
-  DcmFileFormat *ff = new DcmFileFormat();
-  DcmDataset *ds = ff->getDataset();
-  doc.write(*ds);
-  ff->saveFile(outputSRFileName.c_str(), EXS_LittleEndianExplicit);
-#endif
 
   return 0;
 }
