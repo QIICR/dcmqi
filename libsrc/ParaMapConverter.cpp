@@ -96,9 +96,9 @@ namespace dcmqi {
     frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED);
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeValue"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codingSchemeDesignator"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["codeMeaning"].asCString());
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodingSchemeDesignator"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeMeaning"].asCString());
     } else {
       frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
     }
@@ -139,14 +139,14 @@ namespace dcmqi {
     }
 
     // TODO: LutExplanation and LUTLabel should be added as Metainformation
-    realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeMeaning"].asCString());
-    realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["codeValue"].asCString());
+    realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
+    realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codeValue"].asCString(),
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codingSchemeDesignator"].asCString(),
-      metaInfo.metaInfoRoot["QuantityValueCode"]["codeMeaning"].asCString());
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodeValue"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
+      metaInfo.metaInfoRoot["QuantityValueCode"]["CodeMeaning"].asCString());
 
     if (!quantity || !qSpec || !qCodeName)
     {

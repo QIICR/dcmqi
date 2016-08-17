@@ -86,23 +86,23 @@ namespace dcmqi {
 
       Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
       if (!elem.isNull()) {
-        this->setQuantityValueCode(elem.get("codeValue", "").asString(),
-                                   elem.get("codingSchemeDesignator", "").asString(),
-                                   elem.get("codeMeaning", "").asString());
+        this->setQuantityValueCode(elem.get("CodeValue", "").asString(),
+                                   elem.get("CodingSchemeDesignator", "").asString(),
+                                   elem.get("CodeMeaning", "").asString());
       }
 
       elem = this->metaInfoRoot["MeasurementUnitsCode"];
       if (!elem.isNull()) {
-        this->setMeasurementUnitsCode(elem.get("codeValue", "").asString(),
-                                      elem.get("codingSchemeDesignator", "").asString(),
-                                      elem.get("codeMeaning", "").asString());
+        this->setMeasurementUnitsCode(elem.get("CodeValue", "").asString(),
+                                      elem.get("CodingSchemeDesignator", "").asString(),
+                                      elem.get("CodeMeaning", "").asString());
       }
 
       elem = this->metaInfoRoot["MeasurementMethodCode"];
       if (!elem.isNull()) {
-        this->setMeasurementMethodCode(elem.get("codeValue", "").asString(),
-                                       elem.get("codingSchemeDesignator", "").asString(),
-                                       elem.get("codeMeaning", "").asString());
+        this->setMeasurementMethodCode(elem.get("CodeValue", "").asString(),
+                                       elem.get("CodingSchemeDesignator", "").asString(),
+                                       elem.get("CodeMeaning", "").asString());
       }
 
     } catch (exception& e) {
