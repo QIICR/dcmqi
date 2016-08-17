@@ -1,4 +1,6 @@
-define(function () {
+define(['ajv'], function (ajv) {
+
+  var ajv = new ajv();
 
   var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
   var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
@@ -64,6 +66,24 @@ define(function () {
       };
 
       $scope.validJSON = false;
+
+      var schema = {
+        "properties": {
+          "foo": { "type": "string" },
+          "bar": { "type": "number", "maximum": 3 }
+        }
+      };
+
+      var validate = ajv.compile(schema);
+
+      test({"foo": "Das", "bar": 4});
+
+
+      function test(data) {
+        var valid = validate(data);
+        if (valid) console.log('Valid!');
+        else console.log('Invalid: ' + ajv.errorsText(validate.errors));
+      }
 
       $scope.resetForm = function() {
         $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);

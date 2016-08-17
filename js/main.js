@@ -15,7 +15,7 @@ require.config({
     "angular-xml": "../bower_components/angular-xml/angular-xml",
     "clipboard": "../bower_components/clipboard/dist/clipboard.min",
     "ngclipboard": "../bower_components/ngclipboard/dist/ngclipboard.min",
-    "ajv": "../bower_components/ajv/lib/ajv",
+    "ajv": "../node_modules/ajv/dist/ajv.min",
     "JSONSemanticsCreator": "app"
   },
   shim: {
@@ -30,7 +30,7 @@ require.config({
     },
     "JSONSemanticsCreator": {
       deps: ["angular", "angular-route", "angular-material", "angular-messages", "angular-material-icons", "v-accordion",
-             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard"]
+             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard", "ajv"]
     },
     "angular-messages": {
       deps: ["angular"],
@@ -60,11 +60,11 @@ require.config({
   }
 });
 
-require(['clipboard'], function(clipboard) {
-  Clipboard = clipboard;
+require(["clipboard"], function(clipboard) {
+  window.Clipboard = clipboard;
 });
 
-require(['tinycolor'], function(tinycolor) {
+require(["tinycolor"], function(tinycolor) {
   window.tinycolor = tinycolor;
 });
 
