@@ -1,13 +1,15 @@
 {
   "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
 
-  "ContentCreatorName": "Reader1",
-  "ClinicalTrialSeriesID": "Session1",
-  "ClinicalTrialTimePointID": "1",
-  "ClinicalTrialCoordinatingCenterName": "BWH",
-  "SeriesDescription": "Segmentation",
-  "SeriesNumber": "300",
-  "InstanceNumber": "1",
+  "seriesAttributes" : {
+    "ContentCreatorName": "Reader1",
+    "ClinicalTrialSeriesID": "Session1",
+    "ClinicalTrialTimePointID": "1",
+    "ClinicalTrialCoordinatingCenterName": "BWH",
+    "SeriesDescription": "Segmentation",
+    "SeriesNumber": "300",
+    "InstanceNumber": "1"
+  },
 
   "segmentAttributes": [
     [{
