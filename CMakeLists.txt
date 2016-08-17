@@ -257,3 +257,5 @@ set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
 add_subdirectory("libsrc")
 
 add_subdirectory("apps")
+
+add_subdirectory("doc")

@@ -7,6 +7,7 @@ compiler:
 - clang
 before_script:
 - clang --version
+- npm install jsonlint -g
 - pwd && mkdir -p /Users/travis/build/QIICR/dcmqi-build
 - cd /Users/travis/build/QIICR
 - wget --no-check-certificate https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz
