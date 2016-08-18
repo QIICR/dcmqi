@@ -66,7 +66,7 @@ define(['ajv'], function (Ajv) {
       $scope.validJSON = false;
       var schemaLoaded = false;
 
-      var ajv = new Ajv({ allErrors: true, loadSchema: loadSchema });
+      var ajv = new Ajv({ useDefaults: true, allErrors: true, loadSchema: loadSchema });
 
       loadSchema(commonSchemaURL, function(err, body){
         ajv.addSchema(body.data);
@@ -96,15 +96,19 @@ define(['ajv'], function (Ajv) {
         $scope.output = "";
       };
 
+      var a =
+
       $scope.onOutputChanged = function() {
         if ($scope.output.length > 0) {
           try {
             var parsedJSON = JSON.parse($scope.output);
+            console.log(parsedJSON);
             if (!schemaLoaded) {
               showToast("Schema for validation was not loaded.");
               return;
             }
             var valid = ajv.validate( { $ref: segSchemaURL }, parsedJSON);
+            $scope.output = JSON.stringify(parsedJSON, null, 4);
             if (valid) {
               hideToast();
               $scope.validJSON = true;
@@ -117,7 +121,7 @@ define(['ajv'], function (Ajv) {
             showToast(ex.message);
           }
         }
-      }
+      };
 
       function showToast(content) {
         $mdToast.show(
