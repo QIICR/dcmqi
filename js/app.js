@@ -96,15 +96,15 @@ define(['ajv'], function (Ajv) {
         $scope.output = "";
       };
 
-      $scope.$watch('output', function (newValue, oldValue) {
-        if (newValue.length > 0) {
+      $scope.onOutputChanged = function() {
+        if ($scope.output.length > 0) {
           try {
-            JSON.parse(newValue);
+            var parsedJSON = JSON.parse($scope.output);
             if (!schemaLoaded) {
               showToast("Schema for validation was not loaded.");
               return;
             }
-            var valid = ajv.validate( { $ref: segSchemaURL }, JSON.parse(newValue));
+            var valid = ajv.validate( { $ref: segSchemaURL }, parsedJSON);
             if (valid) {
               hideToast();
               $scope.validJSON = true;
@@ -117,7 +117,7 @@ define(['ajv'], function (Ajv) {
             showToast(ex.message);
           }
         }
-      });
+      }
 
       function showToast(content) {
         $mdToast.show(
@@ -265,6 +265,7 @@ define(['ajv'], function (Ajv) {
         };
 
         $scope.output = JSON.stringify(doc, null, 4);
+        $scope.onOutputChanged();
       };
 
       self.rgbToArray = function(str) {
