@@ -1,5 +1,5 @@
 {
-  "SegmentationCategoryTypeContextName": "from AIM on ClearCanvas", 
+  "SegmentationCategoryTypeContextName" : "Segmentation category and type - DICOM master list",
   "SegmentationCodes": {
     "Category": [
       {
