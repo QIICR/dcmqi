@@ -71,6 +71,59 @@
         }
       ]
     },
+
+    "imageLibrary": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
+        }
+      ]
+    },
+
+    "activitySession": {
+      "type": "string",
+      "default": "1"
+    },
+
+    "timePoint": {
+      "type": "string",
+      "default": "1"
+    },
+
+    "VerficationFlag": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+        },
+        {
+          "enum": [
+            "VERIFIED",
+            "UNVERIFIED"
+          ]
+        },
+        {
+          "default": "UNVERIFIED"
+        }
+      ]
+    },
+
+    "CompletionFlag": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+        },
+        {
+          "enum": [
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        },
+        {
+          "default": "PARTIAL"
+        }
+      ]
+    },
+
     "SeriesDescription": {
       "allOf": [
         {

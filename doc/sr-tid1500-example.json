@@ -3,14 +3,28 @@
   "SeriesDescription": "Measurements",
   "SeriesNumber": "1001",
   "InstanceNumber": "1",
-  "referencedDICOMFileNames": [
+
+  "compositeContext": [
     "rwvm.dcm",
     "seg.dcm"
   ],
+
+  "imageLibrary": [
+    "01.dcm",
+    "02.dcm"
+  ],
+
   "observerContext": {
     "ObserverType": "PERSON",
     "PersonObserverName": "Reader1"
   },
+
+  "VerificationFlag": "VERIFIED",
+  "CompletionFlag": "COMPLETE",
+
+  "activitySession": "1",
+  "timePoint": "1",
+
   "Measurements": [
     {
       "MeasurementGroup": {

@@ -19,20 +19,21 @@
   </file>
 
   <file>
-    <name>referenceDICOMFileName</name>
-    <label>Input DICOM file with patient/study information</label>
+    <name>compositeContextDataDir</name>
+    <label>Composite context DICOM data dir</label>
     <channel>input</channel>
-    <longflag>referenceDICOMFileName</longflag>
+    <longflag>compositeContextDataDir</longflag>
+    <description>Location of input DICOM Data to be used for populating composite context</description>
   </file>
 
   <file>
-    <name>dicomDataDir</name>
-    <label>DICOM data dir</label>
+    <name>imageLibraryDataDir</name>
+    <label>Image library DICOM data dir</label>
     <channel>input</channel>
-    <longflag>dicomDataDir</longflag>
-    <description>Location of input DICOM Data</description>
+    <longflag>imageLibraryDataDir</longflag>
+    <description>Location of input DICOM Data to be used for populating image library</description>
   </file>
-  
+
   <file>
     <name>outputFileName</name>
     <label>Output DICOM SR file name</label>

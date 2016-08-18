@@ -32,6 +32,8 @@
 #include "dcmtk/dcmsr/codes/srt.h"
 #include "dcmtk/dcmsr/cmr/tid1500.h"
 
+#include "dcmtk/dcmdata/dcdeftag.h"
+
 //#include "JSONMetaInformationHandlerBase.h"
 
 #include <iostream>
@@ -54,6 +56,13 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
       throw -1; \
     } \
   } while (0);
+
+void copyElement(const DcmTag& tag, DcmDataset* d1, DcmDataset* d2){
+  const char* str = NULL;
+  if(d1->findAndGetString(tag,str).good()){
+    OFCHECK(d2->putAndInsertString(tag,str).good());
+  }
+}
 
 int main(int argc, char** argv){
   PARSE_ARGS;
@@ -85,8 +94,28 @@ int main(int argc, char** argv){
     OFCHECK(report.getObservationContext().addDeviceObserver(metaRoot["observerContext"]["DeviceObserverUID"].asCString()).good());
   }
 
-  // TODO - image library (note: invalid document if no Image Library present)
+  // Image library must be present, even if empty
   OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
+
+  if(metaRoot.isMember("imageLibrary")){
+    for(int i=0;i<metaRoot["imageLibrary"].size();i++){
+      DcmFileFormat ff;
+      // Not sure what is a safe way to combine path components ...
+      string dicomFilePath = (imageLibraryDataDir+"/"+metaRoot["imageLibrary"][i].asCString());
+      cout << "Loading " << dicomFilePath << endl;
+      CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
+
+      DcmDataset imageLibDataset;
+      DcmTag tagsToCopy[] = {DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient,DCM_ImagePositionPatient};
+      for(int t=0;t<10;t++){
+        copyElement(tagsToCopy[t], ff.getDataset(), &imageLibDataset);
+      }
+
+      OFCHECK(report.getImageLibrary().addImageGroup().good());
+      OFCHECK(report.getImageLibrary().addImageEntry(imageLibDataset).good());
+      OFCHECK(report.getImageLibrary().addImageEntryDescriptors(imageLibDataset).good());
+    }
+  }
 
   // TODO
   //  - this is a very narrow procedure code
@@ -110,6 +139,11 @@ int main(int argc, char** argv){
     TID1500_MeasurementReport::TID1411_Measurements &measurements =   report.getVolumetricROIMeasurements();
     //std::cout << measurementGroup["TrackingIdentifier"] << std::endl;
     OFCHECK(measurements.setTrackingIdentifier(measurementGroup["TrackingIdentifier"].asString().c_str()).good());
+
+    if(metaRoot.isMember("activitySession"))
+      CHECK_COND(measurements.setActivitySession(metaRoot["activitySession"].asCString()));
+    if(metaRoot.isMember("timePoint"))
+      CHECK_COND(measurements.setTimePoint(metaRoot["timePoint"].asCString()));
 
     if(measurementGroup.isMember("TrackingUniqueIdentifier")) {
       OFCHECK(measurements.setTrackingUniqueIdentifier(measurementGroup["TrackingUniqueIdentifier"].asString().c_str()).good());
@@ -165,7 +199,7 @@ int main(int argc, char** argv){
       }
     }
   }
-   
+
  if(!report.isValid()){
    cerr << "Report is not valid!" << endl;
    return -1;
@@ -181,11 +215,27 @@ int main(int argc, char** argv){
 
   // WARNING: no consistency checks between the referenced UIDs and the
   //  referencedDICOMFileNames ...
-  if(metaRoot.isMember("referencedDICOMFileNames")){
-    for(int i=0;i<metaRoot["referencedDICOMFileNames"].size();i++){
+  DcmFileFormat ccFileFormat;
+  if(metaRoot.isMember("compositeContext")){
+    for(int i=0;i<metaRoot["compositeContext"].size();i++){
+      // Not sure what is a safe way to combine path components ...
+      string dicomFilePath = (compositeContextDataDir+"/"+metaRoot["compositeContext"][i].asCString());
+      cout << "Loading " << dicomFilePath << endl;
+      CHECK_COND(ccFileFormat.loadFile(dicomFilePath.c_str()));
+      doc.getCurrentRequestedProcedureEvidence().addItem(*ccFileFormat.getDataset());
+
+      if(i==0){
+        // populate composite context
+
+      }
+    }
+  }
+
+  if(metaRoot.isMember("imageLibrary")){
+    for(int i=0;i<metaRoot["imageLibrary"].size();i++){
       DcmFileFormat ff;
       // Not sure what is a safe way to combine path components ...
-      string dicomFilePath = (dicomDataDir+"/"+metaRoot["referencedDICOMFileNames"][i].asCString());
+      string dicomFilePath = (imageLibraryDataDir+"/"+metaRoot["imageLibrary"][i].asCString());
       cout << "Loading " << dicomFilePath << endl;
       CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
       doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset());
@@ -196,15 +246,13 @@ int main(int argc, char** argv){
 
   std::cout << "About to write the document" << std::endl;
   if(outputFileName.size()){
-    DcmFileFormat ff, ffReference;
+    DcmFileFormat ff;
     DcmDataset *dataset = ff.getDataset();
     CHECK_COND(doc.write(*dataset));
 
-    CHECK_COND(ffReference.loadFile(referenceDICOMFileName.c_str()));
-
-    DcmModuleHelpers::copyPatientModule(*ffReference.getDataset(),*dataset);
-    DcmModuleHelpers::copyPatientStudyModule(*ffReference.getDataset(),*dataset);
-    DcmModuleHelpers::copyGeneralStudyModule(*ffReference.getDataset(),*dataset);
+    DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
+    DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
+    DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
 
     OFCHECK(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit).good());
     std::cout << "SR saved!" << std::endl;
