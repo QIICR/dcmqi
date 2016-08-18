@@ -1,10 +1,10 @@
 define(['ajv'], function (Ajv) {
 
-  var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
-  var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
+  var rev = 'master';
+  var webAssets = 'https://raw.githubusercontent.com/qiicr/dcmqi/'+rev+'/doc/';
 
-  var segSchemaURL = 'https://raw.githubusercontent.com/che85/dcmqi/fixSchema/doc/seg-schema.json';
-  var pmSchemaURL = webAssets + 'pm-schema.json';
+  var commonSchemaURL = webAssets + 'common-schema.json';
+  var segSchemaURL = webAssets + 'seg-schema.json';
 
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
@@ -64,11 +64,16 @@ define(['ajv'], function (Ajv) {
       };
 
       $scope.validJSON = false;
-      var ajv = new Ajv({ allErrors: true, loadSchema: loadSchema });
-      var validate = undefined;
+      var schemaLoaded = false;
 
-      loadSchema(segSchemaURL, function(err, body){
-        validate = ajv.compile(body.data);
+      var ajv = new Ajv({ allErrors: true, loadSchema: loadSchema });
+
+      loadSchema(commonSchemaURL, function(err, body){
+        ajv.addSchema(body.data);
+        loadSchema(segSchemaURL, function(err, body){
+          ajv.addSchema(body.data);
+          schemaLoaded = true;
+        });
       });
 
       function loadSchema(uri, callback) {
@@ -94,13 +99,18 @@ define(['ajv'], function (Ajv) {
       $scope.$watch('output', function (newValue, oldValue) {
         if (newValue.length > 0) {
           try {
-            var valid = validate(JSON.parse(newValue));
+            JSON.parse(newValue);
+            if (!schemaLoaded) {
+              showToast("Schema for validation was not loaded.");
+              return;
+            }
+            var valid = ajv.validate( { $ref: segSchemaURL }, JSON.parse(newValue));
             if (valid) {
               hideToast();
               $scope.validJSON = true;
             } else {
               $scope.validJSON = false;
-              showToast(ajv.errorsText(validate.errors));
+              showToast(ajv.errorsText(ajv.errors));
             }
           } catch(ex) {
             $scope.validJSON = false;
@@ -254,7 +264,7 @@ define(['ajv'], function (Ajv) {
           "segmentAttributes": segmentAttributes
         };
 
-        $scope.output = JSON.stringify(doc, null, 4); ;
+        $scope.output = JSON.stringify(doc, null, 4);
       };
 
       self.rgbToArray = function(str) {
