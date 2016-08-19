@@ -22,45 +22,44 @@
     "NUM": {
       "type": "number"
     },
-
     "observerContext": {
       "type": "object",
-      "properties": {
-        "oneOf": [
-          {
-            "allOf": [
-              {
-                "ObserverType": {
-                  "enum": [
-                    "PERSON"
-                  ]
-                }
-              },
-              {
-                "PersonObserverName": {
-                  "$ref": "#/definitions/PNAME"
-                }
-              }
-            ]
+      "oneOf": [
+        {
+          "properties": {
+            "PersonObserverName": {
+              "$ref": "#/definitions/PNAME"
+            },
+            "ObserverType": {
+              "type": "string",
+              "enum": [
+                "PERSON"
+              ]
+            }
           },
-          {
-            "allOf": [
-              {
-                "ObserverType": {
-                  "enum": [
-                    "PERSON"
-                  ]
-                }
-              },
-              {
-                "DeviceObserverUID": {
-                  "$ref": "#/definitions/PNAME"
-                }
-              }
-            ]
-          }
-        ]
-      }
+          "required": [
+            "PersonObserverName",
+            "ObserverType"
+          ]
+        },
+        {
+          "properties": {
+            "DeviceObserverUID": {
+              "$ref": "#/definitions/UIDREF"
+            },
+            "ObserverType": {
+              "type": "string",
+              "enum": [
+                "DEVICE"
+              ]
+            }
+          },
+          "required": [
+            "DeviceObserverUID",
+            "ObserverType"
+          ]
+        }
+      ]
     }
   }
 }

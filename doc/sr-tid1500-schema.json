@@ -33,10 +33,10 @@
           "type": "number"
         },
         "SourceSeriesForImageSegmentation": {
-          "type": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
         },
         "segmentationSOPInstanceUID": {
-          "type": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
         },
         "rwvmMapUsedForMeasurement": {
           "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
@@ -65,31 +65,19 @@
   },
   "properties": {
     "compositeContext": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
     },
-
     "imageLibrary": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
     },
-
     "activitySession": {
       "type": "string",
       "default": "1"
     },
-
     "timePoint": {
       "type": "string",
       "default": "1"
     },
-
     "VerficationFlag": {
       "allOf": [
         {
@@ -106,7 +94,6 @@
         }
       ]
     },
-
     "CompletionFlag": {
       "allOf": [
         {
@@ -123,42 +110,17 @@
         }
       ]
     },
-
     "SeriesDescription": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO"
-        },
-        {
-          "properties": {
-            "default": "Measurements"
-          }
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO",
+      "default": "Measurements"
     },
     "SeriesNumber": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
-        },
-        {
-          "properties": {
-            "default": "400"
-          }
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS",
+      "default": "400"
     },
     "InstanceNumber": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS"
-        },
-        {
-          "properties": {
-            "default": "1"
-          }
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS",
+      "default": "1"
     },
     "Measurements": {
       "type": "array",
