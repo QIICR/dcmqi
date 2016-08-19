@@ -16,6 +16,7 @@ dependencies:
     - cd ~
     - wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz
     - npm install jsonlint -g
+    - npm install ajv-cli -g
     - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
   post:
     - export PATH=${CMAKE_BIN}:${PATH} && mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make

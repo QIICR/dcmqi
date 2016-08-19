@@ -10,6 +10,7 @@ platform:
   - x64
 before_build:
   - npm install jsonlint -g
+  - npm install ajv-cli -g
   - cmd: cmake --version
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
   - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
