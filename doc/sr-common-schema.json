@@ -1,0 +1,65 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "TEXT": {
+      "type": "string"
+    },
+    "UIDREF": {
+      "type": "string"
+    },
+    "PNAME": {
+      "type": "string"
+    },
+    "CODE": {
+      "allOf": [
+        {
+          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+        }
+      ]
+    },
+    "NUM": {
+      "type": "number"
+    },
+    "observerContext": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "PersonObserverName": {
+              "$ref": "#/definitions/PNAME"
+            },
+            "ObserverType": {
+              "type": "string",
+              "enum": [
+                "PERSON"
+              ]
+            }
+          },
+          "required": [
+            "PersonObserverName",
+            "ObserverType"
+          ]
+        },
+        {
+          "properties": {
+            "DeviceObserverUID": {
+              "$ref": "#/definitions/UIDREF"
+            },
+            "ObserverType": {
+              "type": "string",
+              "enum": [
+                "DEVICE"
+              ]
+            }
+          },
+          "required": [
+            "DeviceObserverUID",
+            "ObserverType"
+          ]
+        }
+      ]
+    }
+  }
+}
