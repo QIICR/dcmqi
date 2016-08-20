@@ -13,11 +13,7 @@
       "type": "string"
     },
     "CODE": {
-      "allOf": [
-        {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
-        }
-      ]
+      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
     },
     "NUM": {
       "type": "number"
