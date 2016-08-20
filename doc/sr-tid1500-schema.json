@@ -1,22 +1,22 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "measurementItem": {
       "type": "object",
       "properties": {
         "value": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/NUM"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/NUM"
         },
         "quantity": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/CODE"
         },
         "units": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/CODE"
         },
         "derivationModifier": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/CODE"
         }
       }
     },
@@ -24,28 +24,28 @@
       "type": "object",
       "properties": {
         "TrackingIdentifier": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/TEXT"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/TEXT"
         },
         "TrackingUniqueIdentifier": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/UIDREF"
         },
         "ReferencedSegment": {
           "type": "number"
         },
         "SourceSeriesForImageSegmentation": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/UIDREF"
         },
         "segmentationSOPInstanceUID": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/UIDREF"
         },
         "rwvmMapUsedForMeasurement": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/UIDREF"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/UIDREF"
         },
         "MeasurementMethod": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/CODE"
         },
         "FindingSite": {
-          "$ref": "http://qiicr.org/schema/dcmqi/sr-common-schema.json#/CODE"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/CODE"
         },
         "measurementItems": {
           "type": "array",
@@ -65,10 +65,10 @@
   },
   "properties": {
     "compositeContext": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/dicomInstancesFileNameList"
     },
     "imageLibrary": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/dicomInstancesFileNameList"
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/definitions/dicomInstancesFileNameList"
     },
     "activitySession": {
       "type": "string",
@@ -81,7 +81,7 @@
     "VerficationFlag": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
         },
         {
           "enum": [
@@ -97,7 +97,7 @@
     "CompletionFlag": {
       "allOf": [
         {
-          "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/CS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
         },
         {
           "enum": [
@@ -111,15 +111,15 @@
       ]
     },
     "SeriesDescription": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/LO",
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO",
       "default": "Measurements"
     },
     "SeriesNumber": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS",
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/IS",
       "default": "400"
     },
     "InstanceNumber": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/IS",
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/IS",
       "default": "1"
     },
     "Measurements": {
