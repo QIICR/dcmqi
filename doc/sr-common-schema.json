@@ -13,7 +13,7 @@
       "type": "string"
     },
     "CODE": {
-      "$ref": "http://qiicr.org/schema/dcmqi/common-schema.json#/definitions/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitons/codeSequence"
     },
     "NUM": {
       "type": "number"
