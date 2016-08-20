@@ -12,9 +12,8 @@ foreach(json_file ${json_files})
     COMMAND jsonlint ${json_file})
 endforeach()
 
-foreach(json_schema_file ${json_files})
+foreach(json_schema_file ${json_schema_files})
   get_filename_component(json_name ${json_schema_file} NAME_WE)
   add_test(NAME ajv_${json_name}
     COMMAND ajv compile -s ${json_schema_file})
 endforeach()
-
