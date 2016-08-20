@@ -51,7 +51,7 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/measurementItem"
+            "$ref": "#/definitions/measurementItem"
           }
         }
       }
@@ -126,7 +126,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "#/MeasurementGroup"
+        "$ref": "#/definitions/MeasurementGroup"
       }
     }
   }
