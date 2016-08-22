@@ -45,10 +45,34 @@ foreach(json_schema_file ${json_schema_files})
 endforeach()
 
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
-foreach(json_example_file ${json_example_files})
-  get_filename_component(json_name ${json_example_file} NAME_WE)
-  STRING(REGEX REPLACE -example.json -schema.json json_schema ${json_example_file})
-  add_test(NAME ajv_${json_name}
+
+set(SEG_EXAMPLES seg bmmr)
+set(SEG_SCHEMA ${CMAKE_SOURCE_DIR}/doc/seg-schema.json)
+
+foreach(seg_example_name ${SEG_EXAMPLES})
+  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${seg_example_name}-example.json)
+  add_test(NAME ajv_seg-${seg_example_name}
     # -d stands for data that needs to be validated
-    COMMAND ajv -s ${json_schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+    COMMAND ajv -s ${SEG_SCHEMA} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
 endforeach()
+
+set(PM_EXAMPLES pm)
+set(PM_SCHEMA ${CMAKE_SOURCE_DIR}/doc/pm-schema.json)
+
+foreach(pm_example_name ${PM_EXAMPLES})
+  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${pm_example_name}-example.json)
+  add_test(NAME ajv_pm-${pm_example_name}
+    # -d stands for data that needs to be validated
+    COMMAND ajv -s ${PM_SCHEMA} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+endforeach()
+
+set(SRTID1500_EXAMPLES sr-tid1500)
+set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-schema.json)
+
+foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
+  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${srtid1500_example_name}-example.json)
+  add_test(NAME ajv_srtid1500-${srtid1500_example_name}
+    # -d stands for data that needs to be validated
+    COMMAND ajv -s ${SRTID1500_SCHEMA} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+endforeach()
+
