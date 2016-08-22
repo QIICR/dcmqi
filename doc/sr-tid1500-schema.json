@@ -78,7 +78,7 @@
       "type": "string",
       "default": "1"
     },
-    "VerficationFlag": {
+    "VerificationFlag": {
       "allOf": [
         {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
