@@ -1,33 +1,36 @@
 <div layout="row" layout-padding>
   <div class="md-whiteframe-7dp md-padding" id="jsonForm" flex resize>
     <div layout="column" flex>
-      <span class="md-title">Series Attributes</span>
-      <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" class="container-fluid" novalidate class="customAutoComplete">
+      <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" class="container-fluid" novalidate
+            class="customAutoComplete">
       <!--Series Attributes -->
       <div layout="row">
         <div>
         <md-input-container>
-          <label>ReaderID</label>
-          <input required name="ReaderID" ng-model="seriesAttributes.ReaderID" ng-maxlength="64">
-          <div ng-messages="jsonForm.ReaderID.$error" role="alert">
+          <label>ContentCreatorName</label>
+          <input required name="ContentCreatorName" ng-model="seriesAttributes.ContentCreatorName"
+                 ng-maxlength="64">
+          <div ng-messages="jsonForm.ContentCreatorName.$error" role="alert">
           <div ng-message="required" class="my-message">You must supply a reader ID.</div>
           </div>
         </md-input-container>
         </div>
         <div>
         <md-input-container>
-          <label>SessionID</label>
-          <input required name="SessionID" ng-model="seriesAttributes.SessionID" ng-maxlength="64">
-          <div ng-messages="jsonForm.SessionID.$error" role="alert">
+          <label>ClinicalTrialSeriesID</label>
+          <input required name="ClinicalTrialSeriesID" ng-model="seriesAttributes.ClinicalTrialSeriesID"
+                 ng-maxlength="64">
+          <div ng-messages="jsonForm.ClinicalTrialSeriesID.$error" role="alert">
           <div ng-message="required" class="my-message">You must supply a session ID.</div>
           </div>
         </md-input-container>
         </div>
         <div>
         <md-input-container>
-          <label>TimePointID</label>
-          <input required name="TimePointID" ng-model="seriesAttributes.TimePointID" ng-maxlength="64">
-          <div ng-messages="jsonForm.TimePointID.$error" role="alert">
+          <label>ClinicalTrialTimePointID</label>
+          <input required name="ClinicalTrialTimePointID" ng-model="seriesAttributes.ClinicalTrialTimePointID"
+                 ng-maxlength="64">
+          <div ng-messages="jsonForm.ClinicalTrialTimePointID.$error" role="alert">
           <div ng-message="required" class="my-message">You must supply a timepoint ID.</div>
           </div>
         </md-input-container>
@@ -35,10 +38,9 @@
         <div>
         <md-input-container>
           <label>InstanceNumber</label>
-          <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber" ng-pattern="/[0-9]$/">
+          <input required name="InstanceNumber" ng-model="seriesAttributes.InstanceNumber">
           <div ng-messages="jsonForm.InstanceNumber.$error" role="alert">
           <div ng-message="required" class="my-message">You must supply an instance number.</div>
-          <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
           </div>
         </md-input-container>
         </div>
@@ -53,10 +55,9 @@
         <div>
         <md-input-container>
           <label>SeriesNumber</label>
-          <input required type="number" name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber" ng-pattern="/[0-9]$/">
+          <input required  name="SeriesNumber" ng-model="seriesAttributes.SeriesNumber">
           <div ng-messages="jsonForm.SeriesNumber.$error" role="alert">
           <div ng-message="required" class="my-message">You must supply a series number.</div>
-          <div ng-message="pattern" class="my-message">Doesn't match allowed pattern</div>
           </div>
         </md-input-container>
         </div>
@@ -74,7 +75,8 @@
         <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
         </div>
         <div>
-        <md-button class="smaller" ng-click="previousSegment()" ng-disabled="segments.length == 1 || selectedIndex == 0">
+        <md-button class="smaller" ng-click="previousSegment()"
+                   ng-disabled="segments.length == 1 || selectedIndex == 0">
           <md-tooltip md-direction="bottom">Previous segment</md-tooltip>
           <div ng-show="segments.length == 1  || selectedIndex == 0">
           <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
@@ -83,7 +85,8 @@
           <ng-md-icon  icon="keyboard_arrow_left" style="fill:black"/>
           </div>
         </md-button>
-        <md-button class="smaller" ng-click="nextSegment()" ng-disabled="segments.length == 1 || selectedIndex == segments.length-1">
+        <md-button class="smaller" ng-click="nextSegment()"
+                   ng-disabled="segments.length == 1 || selectedIndex == segments.length-1">
           <md-tooltip md-direction="bottom">Next segment</md-tooltip>
           <div ng-show="segments.length == 1 || selectedIndex == segments.length-1">
           <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
@@ -113,20 +116,39 @@
           <md-tab-template layout="column">
           <div layout="row">
             <div>
-            <md-input-container>
-              <label>LabelID</label>
-              <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/" non-Existent-Label>
-              <div ng-messages="jsonForm.LabelID.$error" role="alert">
-              <div ng-message="required" class="my-message">You must supply a label id.</div>
-              <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
-              </div>
-            </md-input-container>
+              <md-input-container>
+                <label>LabelID</label>
+                <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/"
+                       non-Existent-Label>
+                <div ng-messages="jsonForm.LabelID.$error" role="alert">
+                <div ng-message="required" class="my-message">You must supply a label id.</div>
+                <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
+                </div>
+              </md-input-container>
             </div>
             <div>
-            <md-input-container>
-              <label>SegmentDescription</label>
-              <input ng-model="segment.SegmentDescription">
-            </md-input-container>
+              <md-input-container>
+                <label>SegmentDescription</label>
+                <input ng-model="segment.SegmentDescription">
+              </md-input-container>
+            </div>
+            <div>
+              <md-input-container>
+                <label>SegmentAlgorithmType</label>
+                <md-select required name="SegmentAlgorithmType_{{segment.LabelID}}"
+                           ng-model="segment.SegmentAlgorithmType">
+                  <md-option ng-repeat="segmentAlgorithmType in segmentAlgorithmTypes" ng-value="segmentAlgorithmType">
+                    {{segmentAlgorithmType}}
+                  </md-option>
+                </md-select>
+              </md-input-container>
+            </div>
+            <div ng-show="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"  flex>
+              <md-input-container>
+                <label>SegmentAlgorithmName</label>
+                <input ng-required="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"
+                       name="SegmentAlgorithmName_{{segment.LabelID}}" ng-model="segment.SegmentAlgorithmName">
+              </md-input-container>
             </div>
           </div>
           <div layout="row">
@@ -141,7 +163,9 @@
             <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
             <custom-Autocomplete></custom-Autocomplete>
             </div>
-            <div flex label="Recommended Display RGB Value" md-color-picker="segment.RecommendedDisplayRGBValue.backgroundOptions" ng-model="segment.RecommendedDisplayRGBValue.color"></div>
+            <div flex label="Recommended Display RGB Value"
+                 md-color-picker="segment.recommendedDisplayRGBValue.backgroundOptions"
+                 ng-model="segment.recommendedDisplayRGBValue.color"></div>
           </div>
           <div layout="row">
             <v-accordion flex class="vAccordion--default" multiple>
@@ -178,9 +202,13 @@
   <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex resize>
     <div layout="row" flex>
       <md-input-container flex style="overflow: auto">
-        <textarea  aria-label="JSON-output" id="output" ng-model="output" ng-change="onOutputChanged()" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">{{output}}</textarea>
+        <textarea  aria-label="JSON-output" id="output" ng-model="output" ng-change="onOutputChanged()"
+                   ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
+          {{output}}
+        </textarea>
       </md-input-container>
-      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" ngclipboard data-clipboard-text="{{ output }}">
+      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" ngclipboard
+                 data-clipboard-text="{{ output }}">
         <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
         <ng-md-icon icon="content_copy" style="fill:white"/>
       </md-button>
