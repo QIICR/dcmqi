@@ -30,25 +30,49 @@ foreach(json_common_schema_file ${json_common_schema_files})
   list(APPEND common_schema_references -r ${json_common_schema_file})
 endforeach()
 
+function(createSchemaValidationTest schema_name)
+  get_filename_component(json_name ${schema_name} NAME_WE)
+  add_test(NAME ajv_${json_name}-schema
+    COMMAND ajv compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
+endfunction()
+
 # validation of each common schema
 foreach(json_common_schema_file ${json_common_schema_files})
-  get_filename_component(json_name ${json_common_schema_file} NAME_WE)
-  add_test(NAME ajv_${json_name}
-    COMMAND ajv compile -s ${json_common_schema_file} ${common_schema_references} ${AJV_OPTIONS})
+  createSchemaValidationTest(${json_common_schema_file})
 endforeach()
 
 # validation of each specific (sr, seg, pm) schema file including referenced common schemata
 foreach(json_schema_file ${json_schema_files})
-  get_filename_component(json_name ${json_schema_file} NAME_WE)
-  add_test(NAME ajv_${json_name}
-           COMMAND ajv compile -s ${json_schema_file} ${common_schema_references} ${AJV_OPTIONS})
+  createSchemaValidationTest(${json_schema_file})
 endforeach()
 
-# validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
-foreach(json_example_file ${json_example_files})
-  get_filename_component(json_name ${json_example_file} NAME_WE)
-  STRING(REGEX REPLACE -example.json -schema.json json_schema ${json_example_file})
-  add_test(NAME ajv_${json_name}
+# function to simpify creation of example validation tests
+function(createExampleDataTest example_name schema)
+  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
+  add_test(NAME ajv_${example_name}-example
     # -d stands for data that needs to be validated
-    COMMAND ajv -s ${json_schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+    COMMAND ajv -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+endfunction()
+
+# validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
+set(SEG_EXAMPLES seg bmmr)
+set(SEG_SCHEMA ${CMAKE_SOURCE_DIR}/doc/seg-schema.json)
+
+foreach(seg_example_name ${SEG_EXAMPLES})
+  createExampleDataTest(${seg_example_name} ${SEG_SCHEMA})
 endforeach()
+
+set(PM_EXAMPLES pm)
+set(PM_SCHEMA ${CMAKE_SOURCE_DIR}/doc/pm-schema.json)
+
+foreach(pm_example_name ${PM_EXAMPLES})
+  createExampleDataTest(${pm_example_name} ${PM_SCHEMA})
+endforeach()
+
+set(SRTID1500_EXAMPLES sr-tid1500)
+set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-schema.json)
+
+foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
+  createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})
+endforeach()
+
