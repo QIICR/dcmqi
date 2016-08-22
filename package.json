@@ -1,0 +1,26 @@
+{
+  "name": "dcmqiweb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "ajv": "^4.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/che85/dcmqi.git"
+  },
+  "author": "Christian Herz (SPL)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/che85/dcmqi/issues"
+  },
+  "homepage": "https://github.com/che85/dcmqi#readme"
+}

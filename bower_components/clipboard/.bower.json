@@ -27,6 +27,7 @@
     "commit": "eb7418b51bb3c963893d83954c5cfa4de3f7f527"
   },
   "_source": "https://github.com/zenorocha/clipboard.js.git",
-  "_target": "~1.5.5",
-  "_originalSource": "clipboard"
+  "_target": "^1.5.12",
+  "_originalSource": "clipboard",
+  "_direct": true
 }

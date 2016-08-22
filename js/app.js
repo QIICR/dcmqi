@@ -1,16 +1,19 @@
-(function(angular) {
+define(['ajv'], function (Ajv) {
 
-  var rev = '1f7f99077892ae432915b6f0fe3a6cdc57b05e88';
-  var webAssets = 'https://raw.githubusercontent.com/QIICR/dcmqi/'+rev+'/doc/';
+  var user = 'qiicr';
+  var rev = 'master';
+  var webAssets = 'https://raw.githubusercontent.com/'+user+'/dcmqi/'+rev+'/doc/';
 
+  var commonSchemaURL = webAssets + 'common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
-  var pmSchemaURL = webAssets + 'pm-schema.json';
+
+  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker',]);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -44,8 +47,8 @@
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast' ,'$mdDialog', '$timeout',
-    function($scope, $rootScope, $http, $log, $mdToast, $mdDialog, $timeout) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
+    function($scope, $rootScope, $http, $log, $mdToast, download) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -53,6 +56,7 @@
       self.segmentedPropertyTypeModifier = null;
       self.anatomicRegion = null;
       self.anatomicRegionModifier = null;
+      var currentLabelID = 1;
 
       $scope.submitForm = function(isValid) {
         if (isValid) {
@@ -63,30 +67,105 @@
         }
       };
 
+      $scope.downloadFile = function() {
+        download.fromData($scope.output, "text/json", $scope.seriesAttributes.ClinicalTrialSeriesID+".json");
+      };
+
       $scope.validJSON = false;
 
+      var ajv = new Ajv({
+        useDefaults: true,
+        allErrors: true,
+        loadSchema: loadSchema });
+
+      var schemaLoaded = false;
+      var validate = undefined;
+      var commonSchema = undefined;
+      var segSchema = undefined;
+      var segment = undefined;
+
+      loadSchema(commonSchemaURL, function(err, body) {
+        if (body != undefined) {
+          commonSchema = body.data;
+          ajv.addSchema(commonSchema);
+        }
+        loadSchema(segSchemaURL, function(err, body){
+          if (body != undefined) {
+            segSchema = body.data;
+            ajv.addSchema(segSchema);
+            schemaLoaded = true;
+          }
+          $scope.resetForm();
+        });
+      });
+
+      function loadDefaultSeriesAttributes() {
+        var doc = {
+          "seriesAttributes": {}
+        };
+        if (schemaLoaded) {
+          validate = ajv.compile({$ref: segSchemaID});
+          var valid = validate(doc);
+          if (!valid) console.log(ajv.errorsText(validate.errors));
+        }
+        $scope.seriesAttributes = angular.extend({}, doc.seriesAttributes);
+      }
+
+      function loadAndValidateDefaultSegmentAttributes() {
+        var doc = {
+          "segmentAttributes": [[getDefaultSegmentAttributes()]]
+        };
+        if (schemaLoaded) {
+          validate = ajv.compile({$ref: segSchemaID});
+          var valid = validate(doc);
+          if (!valid) console.log(ajv.errorsText(validate.errors));
+        }
+        return doc.segmentAttributes[0][0];
+      }
+
+      function loadSchema(uri, callback) {
+        $http({
+          method: 'GET',
+          url: uri
+        }).then(function successCallback(body) {
+          callback(null, body);
+        }, function errorCallback(response) {
+          callback(response || new Error('Loading error: ' + response.statusCode));
+        });
+      }
+
       $scope.resetForm = function() {
-        $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
-        $scope.segmentAttributes.LabelID = 1;
-        $scope.segments.length = 0;
-        $scope.segments.push(angular.extend({}, $scope.segmentAttributes));
-        $scope.segments[0].RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
+        $scope.validJSON = false;
+        currentLabelID = 1;
+        loadDefaultSeriesAttributes();
+        $scope.segments = [loadAndValidateDefaultSegmentAttributes()];
+        $scope.segments[0].recommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.output = "";
       };
 
-      $scope.$watch('output', function (newValue, oldValue) {
-        if (newValue.length > 0) {
+      $scope.onOutputChanged = function() {
+        if ($scope.output.length > 0) {
           try {
-            JSON.parse(newValue);
-            $scope.jsonError = "";
-            $scope.validJSON = true;
-            hideToast();
+            var parsedJSON = JSON.parse($scope.output);
+            if (!schemaLoaded) {
+              showToast("Schema for validation was not loaded.");
+              return;
+            }
+            var valid = validate(parsedJSON);
+            $scope.output = JSON.stringify(parsedJSON, null, 2);
+            if (valid) {
+              hideToast();
+              $scope.validJSON = true;
+            } else {
+              $scope.validJSON = false;
+              showToast(ajv.errorsText(validate.errors));
+            }
           } catch(ex) {
             $scope.validJSON = false;
             showToast(ex.message);
           }
         }
-      });
+      };
 
       function showToast(content) {
         $mdToast.show(
@@ -94,23 +173,13 @@
             .content(content)
             .action('OK')
             .position('bottom right')
-            .hideDelay(10000)
+            .hideDelay(100000)
         );
       }
 
       function hideToast() {
         $mdToast.hide();
       }
-
-      var seriesAttributesDefaults = {
-        ReaderID : "Reader1",
-        SessionID : "Session1",
-        TimePointID : "1",
-        SeriesDescription : "Segmentation",
-        SeriesNumber : 300,
-        InstanceNumber : 1,
-        BodyPartExamined :  ""
-      };
 
       var colorPickerDefaultOptions = {
         clickOutsideToClose: true,
@@ -130,28 +199,31 @@
         backgroundOptions: angular.extend({}, colorPickerDefaultOptions)
       };
 
-      $scope.seriesAttributes = angular.extend({}, seriesAttributesDefaults);
+      // TODO: populate that from schema?
+      $scope.segmentAlgorithmTypes = [
+        "MANUAL",
+        "SEMIAUTOMATIC",
+        "AUTOMATIC"
+      ];
 
-      $scope.segmentAttributes = {
-        LabelID: 1,
-        SegmentDescription: "",
-        AnatomicRegion: null,
-        AnatomicRegionModifier: null,
-        SegmentedPropertyCategoryCode: null,
-        SegmentedPropertyType: null,
-        SegmentedPropertyTypeModifier: null,
-        RecommendedDisplayRGBValue: angular.extend({}, defaultRecommendedDisplayValue)
+      $scope.isSegmentAlgorithmNameRequired = function(algorithmType) {
+        return ["SEMIAUTOMATIC", "AUTOMATIC"].indexOf(algorithmType) > -1;
       };
 
-
-      var segment = angular.extend({}, $scope.segmentAttributes);
-      $scope.segments = [segment];
-      $scope.output = "";
+      function getDefaultSegmentAttributes() {
+        return {
+          LabelID: currentLabelID,
+          SegmentDescription: "",
+          AnatomicRegion: null,
+          AnatomicRegionModifier: null,
+          SegmentedPropertyTypeModifier: null
+        };
+      }
 
       $scope.addSegment = function() {
-        $scope.segmentAttributes.LabelID += 1;
-        var segment = angular.extend({}, $scope.segmentAttributes);
-        segment.RecommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
+        currentLabelID += 1;
+        var segment = loadAndValidateDefaultSegmentAttributes();
+        segment.recommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
         $scope.segments.push(segment);
         $scope.selectedIndex = $scope.segments.length-1;
       };
@@ -196,9 +268,9 @@
       self.createJSONOutput = function() {
 
         var seriesAttributes = {
-          "ReaderID": $scope.seriesAttributes.ReaderID,
-          "SessionID" : $scope.seriesAttributes.SessionID,
-          "TimePointID" : $scope.seriesAttributes.TimePointID,
+          "ContentCreatorName": $scope.seriesAttributes.ContentCreatorName,
+          "ClinicalTrialSeriesID" : $scope.seriesAttributes.ClinicalTrialSeriesID,
+          "ClinicalTrialTimePointID" : $scope.seriesAttributes.ClinicalTrialTimePointID,
           "SeriesDescription" : $scope.seriesAttributes.SeriesDescription,
           "SeriesNumber" : $scope.seriesAttributes.SeriesNumber,
           "InstanceNumber" : $scope.seriesAttributes.InstanceNumber
@@ -213,6 +285,8 @@
           attributes["LabelID"] = value.LabelID;
           if (value.SegmentDescription.length > 0)
             attributes["SegmentDescription"] = value.SegmentDescription;
+          if (value.SegmentAlgorithmType.length > 0)
+            attributes["SegmentAlgorithmType"] = value.SegmentAlgorithmType;
           if (value.anatomicRegion)
             attributes["AnatomicRegionCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
           if (value.anatomicRegionModifier)
@@ -223,22 +297,23 @@
             attributes["SegmentedPropertyTypeCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyType);
           if (value.segmentedPropertyTypeModifier)
             attributes["SegmentedPropertyTypeModifierCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyTypeModifier);
-          if (value.RecommendedDisplayRGBValue.color)
-            attributes["RecommendedDisplayRGBValue"] = self.rgbToArray(value.RecommendedDisplayRGBValue.color);
+          if (value.recommendedDisplayRGBValue.color)
+            attributes["recommendedDisplayRGBValue"] = self.rgbToArray(value.recommendedDisplayRGBValue.color);
           segmentAttributes.push(attributes);
         });
 
         var doc = {
           "seriesAttributes": seriesAttributes,
-          "segmentAttributes": segmentAttributes
+          "segmentAttributes": [segmentAttributes]
         };
 
-        $scope.output = JSON.stringify(doc, null, 4); ;
+        $scope.output = JSON.stringify(doc, null, 2);
+        $scope.onOutputChanged();
       };
 
       self.rgbToArray = function(str) {
         var rgb = str.replace("rgb(", "").replace(")", "").split(", ");
-        return [rgb[0], rgb[1], rgb[2]];
+        return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
       }
 
   }]);
@@ -283,7 +358,6 @@
       }
 
       function selectedItemChange(item) {
-        // $log.info('Item changed to ' + JSON.stringify(item));
         $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
       }
 
@@ -392,13 +466,13 @@
       $scope.segment.segmentedPropertyType = item ? item.object : item;
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
       if (self.selectedItem === null) {
-        $scope.segment.RecommendedDisplayRGBValue.color = "";
+        $scope.segment.recommendedDisplayRGBValue.color = "";
         $scope.segment.hasRecommendedColor = false;
       }
       else if (self.selectedItem.object.recommendedDisplayRGBValue != undefined) {
         $scope.segment.hasRecommendedColor = true;
         var rgb = self.selectedItem.object.recommendedDisplayRGBValue;
-        $scope.segment.RecommendedDisplayRGBValue.color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')';
+        $scope.segment.recommendedDisplayRGBValue.color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')';
       }
     };
 
@@ -503,4 +577,4 @@
     };
   });
 
-})(window.angular);
+});
