@@ -9,6 +9,7 @@ require.config({
     "angular-route": "../bower_components/angular-route/angular-route",
     "angular-material": "../bower_components/angular-material/angular-material",
     "angular-material-icons": "../bower_components/angular-material-icons/angular-material-icons",
+    "download": "../bower_components/angular-download/angular-download",
     "tinycolor": "../bower_components/tinycolor/dist/tinycolor-min",
     "md-color-picker": "../bower_components/md-color-picker/dist/mdColorPicker",
     "xml2json": "../bower_components/x2js/xml2json",
@@ -30,7 +31,7 @@ require.config({
     },
     "JSONSemanticsCreator": {
       deps: ["angular", "angular-route", "angular-material", "angular-messages", "angular-material-icons", "v-accordion",
-             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard", "ajv"]
+             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard", "ajv", "download"]
     },
     "angular-messages": {
       deps: ["angular"],
@@ -43,6 +44,9 @@ require.config({
       deps: ["angular"]
     },
     "angular-animate": {
+      deps: ["angular"]
+    },
+    "download": {
       deps: ["angular"]
     },
     "v-accordion": {

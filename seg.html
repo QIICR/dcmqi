@@ -212,6 +212,10 @@
         <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
         <ng-md-icon icon="content_copy" style="fill:white"/>
       </md-button>
+      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="downloadButton" ng-click="downloadFile()">
+        <md-tooltip md-direction="bottom">Download into file</md-tooltip>
+        <ng-md-icon icon="file_download" style="fill:white"/>
+      </md-button>
     </div>
   </div>
 </div>

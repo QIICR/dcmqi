@@ -1,0 +1,15 @@
+{
+  "name": "angular-download",
+  "homepage": "https://github.com/nonplus/angular-download",
+  "version": "0.0.2",
+  "_release": "0.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.2",
+    "commit": "54ff33c40e9121b501caa01350d308640663f0fe"
+  },
+  "_source": "https://github.com/nonplus/angular-download.git",
+  "_target": "^0.0.2",
+  "_originalSource": "angular-download",
+  "_direct": true
+}

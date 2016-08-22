@@ -7,13 +7,13 @@ define(['ajv'], function (Ajv) {
   var commonSchemaURL = webAssets + 'common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
 
-  var segSchemaID = segSchemaURL; // VERY IMPORTANT: needs to be the id specified in segSchema NOT URL
+  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker']);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -47,8 +47,8 @@ define(['ajv'], function (Ajv) {
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast',
-    function($scope, $rootScope, $http, $log, $mdToast) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
+    function($scope, $rootScope, $http, $log, $mdToast, download) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -67,9 +67,16 @@ define(['ajv'], function (Ajv) {
         }
       };
 
+      $scope.downloadFile = function() {
+        download.fromData($scope.output, "text/json", $scope.seriesAttributes.ClinicalTrialSeriesID+".json");
+      };
+
       $scope.validJSON = false;
 
-      ajv = new Ajv({ useDefaults: true, allErrors: true, loadSchema: loadSchema });
+      ajv = new Ajv({
+        useDefaults: true,
+        allErrors: true,
+        loadSchema: loadSchema });
 
       var schemaLoaded = false;
       var validate = undefined;

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Examples: angular-download</title>
+	<script src="../node_modules/angular/angular.js"></script>
+	<script src="../angular-download.js"></script>
+	<style>
+		input, textarea {
+			width: 50em;
+		}
+
+		textarea {
+			height: 12em;
+		}
+	</style>
+	<script>
+		angular.module("example", ["download"])
+				.controller("ExampleController", function($scope, download) {
+					$scope.fileName = "My file.txt";
+					$scope.fileData = "This module makes it easy to download content generated on the client"
+						+ "without invoking a server request or relying on external plugins.\n\n"
+						+ "It should work in any modern browser that supports the download attribute on link tags.";
+					$scope.downloadFile = function() {
+						download.fromData($scope.fileData, "text/plain", $scope.fileName);
+					};
+
+					$scope.imageName = "My image.png";
+					$scope.downloadImage = function() {
+						var img = angular.element(document).find("img");
+						var dataUrl = getImageDataUrl(img[0]);
+						download.fromDataURL(dataUrl, $scope.imageName);
+					}
+				});
+
+		function getImageDataUrl(img) {
+			// Create an empty canvas element
+			var canvas = document.createElement("canvas");
+			canvas.width = img.width;
+			canvas.height = img.height;
+
+			// Copy the image contents to the canvas
+			var ctx = canvas.getContext("2d");
+			ctx.drawImage(img, 0, 0);
+
+			return canvas.toDataURL("image/png");
+		}
+	</script>
+</head>
+<body ng-app="example" ng-controller="ExampleController">
+<h1>Examples: angular-download</h1>
+<table>
+	<tr>
+		<td>Name:</td>
+		<td><input ng-model="fileName"/></td>
+	</tr>
+	<tr>
+		<td>Data:</td>
+		<td><textarea ng-model="fileData"></textarea></td>
+	</tr>
+	<tr>
+		<td><button ng-click="downloadFile()">Download</button></td>
+		<td>
+			<pre>download.fromData(data, mimeType, fileName);</pre>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2"><hr/></td>
+	</tr>
+
+	<tr>
+		<td>Name:</td>
+		<td><input ng-model="imageName"/></td>
+	</tr>
+	<tr>
+		<td>Image:</td>
+		<td><img src="image.png"/></td>
+	</tr>
+	<tr>
+		<td><button ng-click="downloadImage()">Download</button></td>
+		<td>
+			<pre>download.fromDataUrl(dataUrl, fileName);</pre>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

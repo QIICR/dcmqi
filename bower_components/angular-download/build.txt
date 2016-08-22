@@ -1,0 +1,15 @@
+/**
+ * <%= info.description %>
+ *
+ * @link <%= info.homepage %>
+ *
+ * @license <%= info.name %> v<%= info.version %>
+ * (c) Copyright <%= info.author %>
+ * License <%= info.license %>
+ */
+
+(function(angular) {
+
+<%= contents %>
+
+})(window.angular);

@@ -27,7 +27,8 @@
     "requirejs": "^2.2.0",
     "clipboard": "^1.5.12",
     "ngclipboard": "^1.1.1",
-    "ajv": "^4.5.0"
+    "ajv": "^4.5.0",
+    "angular-download": "^0.0.2"
   },
   "dependencies": {
     "angular-ui-notification": "^0.2.0"
