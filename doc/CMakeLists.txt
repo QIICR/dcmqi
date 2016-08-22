@@ -49,7 +49,7 @@ endforeach()
 # function to simpify creation of example validation tests
 function(createExampleDataTest example_name schema)
   set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
-  add_test(NAME ajv_seg-${example_name}
+  add_test(NAME ajv_${example_name}-example
     # -d stands for data that needs to be validated
     COMMAND ajv -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
 endfunction()
