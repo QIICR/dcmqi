@@ -73,7 +73,7 @@ define(['ajv'], function (Ajv) {
 
       $scope.validJSON = false;
 
-      ajv = new Ajv({
+      var ajv = new Ajv({
         useDefaults: true,
         allErrors: true,
         loadSchema: loadSchema });
@@ -135,6 +135,7 @@ define(['ajv'], function (Ajv) {
       }
 
       $scope.resetForm = function() {
+        $scope.validJSON = false;
         currentLabelID = 1;
         loadDefaultSeriesAttributes();
         $scope.segments = [loadAndValidateDefaultSegmentAttributes()];
