@@ -69,10 +69,9 @@ foreach(pm_example_name ${PM_EXAMPLES})
   createExampleDataTest(${pm_example_name} ${PM_SCHEMA})
 endforeach()
 
-set(SRTID1500_EXAMPLES sr-tid1500)
+set(SRTID1500_EXAMPLES sr-tid1500 sr-tid1500-ct-liver)
 set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-schema.json)
 
 foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
   createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})
 endforeach()
-

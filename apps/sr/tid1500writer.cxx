@@ -155,7 +155,9 @@ int main(int argc, char** argv){
 
     OFCHECK(measurements.setSourceSeriesForSegmentation(measurementGroup["SourceSeriesForImageSegmentation"].asString().c_str()).good());
 
-    OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_RealWorldValueMappingStorage, measurementGroup["rwvmMapUsedForMeasurement"].asCString())).good());
+    if(measurementGroup.isMember("rwvmMapUsedForMeasurement")){
+      OFCHECK(measurements.setRealWorldValueMap(DSRCompositeReferenceValue(UID_RealWorldValueMappingStorage, measurementGroup["rwvmMapUsedForMeasurement"].asCString())).good());
+    }
 
     DSRImageReferenceValue segment(UID_SegmentationStorage, measurementGroup["segmentationSOPInstanceUID"].asString().c_str());
     segment.getSegmentList().addItem(measurementGroup["ReferencedSegment"].asInt());
@@ -172,10 +174,12 @@ int main(int argc, char** argv){
       measurementGroup["FindingSite"]["codeMeaning"].asCString());
     OFCHECK(measurements.setFindingSite(findingSiteCode).good());
 
-    DSRCodedEntryValue measurementMethodCode(measurementGroup["MeasurementMethod"]["codeValue"].asCString(),
-      measurementGroup["MeasurementMethod"]["codingSchemeDesignator"].asCString(),
-      measurementGroup["MeasurementMethod"]["codeMeaning"].asCString());
-    OFCHECK(measurements.setMeasurementMethod(measurementMethodCode).good());
+    if(measurementGroup.isMember("MeasurementMethod")){
+      DSRCodedEntryValue measurementMethodCode(measurementGroup["MeasurementMethod"]["codeValue"].asCString(),
+        measurementGroup["MeasurementMethod"]["codingSchemeDesignator"].asCString(),
+        measurementGroup["MeasurementMethod"]["codeMeaning"].asCString());
+      OFCHECK(measurements.setMeasurementMethod(measurementMethodCode).good());
+    }
 
     // TODO - handle conditional items!
     for(int j=0;j<measurementGroup["measurementItems"].size();j++){
