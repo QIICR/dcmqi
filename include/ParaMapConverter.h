@@ -34,6 +34,9 @@ namespace dcmqi {
   protected:
     static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
                                 const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
+
+    static void populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
+                                                 JSONParametricMapMetaInformationHandler &metaInfo);
   };
 
 }

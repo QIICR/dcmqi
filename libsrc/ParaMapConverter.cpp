@@ -277,6 +277,10 @@ namespace dcmqi {
     segImage->Allocate();
     segImage->FillBuffer(0);
 
+    JSONParametricMapMetaInformationHandler metaInfo;
+    populateMetaInformationFromDICOM(pmapDataset, metaInfo);
+
+//    TODO: not only nrrd files!
     typedef itk::ImageFileWriter<ImageType> WriterType;
     stringstream imageFileNameSStream;
     imageFileNameSStream << outputDirName << "/" << "pmap.nrrd";
@@ -324,6 +328,14 @@ namespace dcmqi {
     writer->SetInput(segImage);
     writer->SetUseCompression(1);
     writer->Update();
+
+    stringstream jsonOutput;
+    jsonOutput << outputDirName << "/" << "meta.json";
+
+    ofstream outputFile;
+    outputFile.open(jsonOutput.str().c_str());
+    outputFile << metaInfo.getJSONOutputAsString();
+    outputFile.close();
 
     return EXIT_SUCCESS;
   }
@@ -385,5 +397,70 @@ namespace dcmqi {
       result = OFget<DPMParametricMapIOD::Frames<PixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
     }
     return result;
+  }
+
+  void ParaMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
+                                                          JSONParametricMapMetaInformationHandler &metaInfo) {
+
+    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
+    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+      cerr << "Failed to load parametric map! " << pCondition->text() << endl;
+      throw -1;
+    }
+    DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+
+    OFString temp;
+
+    pMapDoc->getSeries().getSeriesDescription(temp);
+    metaInfo.setSeriesDescription(temp.c_str());
+
+    pMapDoc->getSeries().getSeriesNumber(temp);
+    metaInfo.setSeriesNumber(temp.c_str());
+
+    if(pmapDataset->findAndGetOFString(DCM_InstanceNumber, temp).good())
+      metaInfo.setInstanceNumber(temp.c_str());
+
+    pMapDoc->getSeries().getBodyPartExamined(temp);
+    metaInfo.setBodyPartExamined(temp.c_str());
+
+    pMapDoc->getDPMParametricMapImageModule().getImageType(temp, 3);
+    metaInfo.setDerivedPixelContrast(temp.c_str());
+
+    if (pMapDoc->getNumberOfFrames() > 0) {
+      FGInterface& fg = pMapDoc->getFunctionalGroups();
+      FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
+                                                  fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
+      size_t numMappings = rw->getRealWorldValueMapping().size();
+      if (numMappings > 0) {
+        FGRealWorldValueMapping::RWVMItem *item = rw->getRealWorldValueMapping()[0];
+        metaInfo.setMeasurementUnitsCode(item->getMeasurementUnitsCode());
+
+        Float64 slope;
+        // TODO: replace the following call by following getter once it is available
+//        item->getRealWorldValueSlope(slope);
+        item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
+        metaInfo.setRealWorldValueSlope(Helper::floatToStrScientific(slope));
+
+        size_t numQuant = item->getEntireQuantityDefinitionSequence().size();
+        if (numQuant > 0) {
+          ContentItemMacro *macro = item->getEntireQuantityDefinitionSequence()[0];
+          size_t numEntireConcept = macro->getEntireConceptCodeSequence().size();
+          cout << numEntireConcept << endl;
+          if (numEntireConcept > 0) {
+//            BUG??? does not match in json...
+            metaInfo.setQuantityValueCode(macro->getEntireConceptCodeSequence()[0]);
+            COUT << "      Quantity #" << 0 << ": " << macro->toString() << OFendl;
+          }
+        }
+      }
+
+      FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
+      metaInfo.setAnatomicRegion(fa->getAnatomy().getAnatomicRegion());
+    }
+
+//    TODO: populate more from here
+
+    if(pMapDoc != NULL)
+      delete pMapDoc;
   }
 }

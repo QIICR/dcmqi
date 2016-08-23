@@ -24,6 +24,8 @@ namespace dcmqi {
     void setMeasurementMethodCode(const CodeSequenceMacro& codeSequence);
     void setQuantityValueCode(const string& code, const string& designator, const string& meaning);
     void setQuantityValueCode(const CodeSequenceMacro& codeSequence);
+    void setAnatomicRegion(const string& code, const string& designator, const string& meaning);
+    void setAnatomicRegion(const CodeSequenceMacro& codeSequence);
     void setFirstValueMapped(const short &value);
     void setLastValueMapped(const short &value);
 
@@ -35,6 +37,9 @@ namespace dcmqi {
     CodeSequenceMacro* getMeasurementUnitsCode() const { return measurementUnitsCode; }
     CodeSequenceMacro* getMeasurementMethodCode() const { return measurementMethodCode; }
     CodeSequenceMacro* getQuantityValueCode() const { return quantityValueCode; }
+    CodeSequenceMacro* getAnatomicRegion() const { return anatomicRegionCode; }
+
+    string getJSONOutputAsString();
 
     virtual void read();
     virtual bool write(string filename);
@@ -50,6 +55,7 @@ namespace dcmqi {
     CodeSequenceMacro* measurementUnitsCode;
     CodeSequenceMacro* measurementMethodCode;
     CodeSequenceMacro* quantityValueCode;
+    CodeSequenceMacro* anatomicRegionCode;
   };
 
 }
