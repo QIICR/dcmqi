@@ -27,12 +27,13 @@ set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
 
 add_test(NAME ${MODULE_NAME}_hello
-  COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
-add_test(NAME ${MODULE_NAME}_makeNRRDparametricmap COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
-  --compare ${BASELINE}/pm-example.nrrd
-  ${TEMP_DIR}/pmap.nrrd
-  ModuleEntryPoint
-  --inputFileName ${TEMP_DIR}/paramap.dcm
-  --outputDirName ${TEMP_DIR})
+         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
+add_test(NAME ${MODULE_NAME}_makeNRRDparametricmap 
+         COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
+         --compare ${BASELINE}/pm-example.nrrd
+         ${TEMP_DIR}/pmap.nrrd
+         ${MODULE_NAME}Test
+         --inputFileName ${TEMP_DIR}/paramap.dcm
+         --outputDirName ${TEMP_DIR})
 
 set_property(TEST ${testname} PROPERTY LABELS ${MODULE_NAME})
