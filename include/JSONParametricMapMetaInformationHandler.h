@@ -15,6 +15,7 @@ namespace dcmqi {
     JSONParametricMapMetaInformationHandler(string jsonInput);
     ~JSONParametricMapMetaInformationHandler();
 
+    void setFrameLaterality(const string& value);
     void setRealWorldValueSlope(const string& value);
     void setRealWorldValueIntercept(const string &value);
     void setDerivedPixelContrast(const string& value);
@@ -24,9 +25,12 @@ namespace dcmqi {
     void setMeasurementMethodCode(const CodeSequenceMacro& codeSequence);
     void setQuantityValueCode(const string& code, const string& designator, const string& meaning);
     void setQuantityValueCode(const CodeSequenceMacro& codeSequence);
+    void setAnatomicRegion(const string& code, const string& designator, const string& meaning);
+    void setAnatomicRegion(const CodeSequenceMacro& codeSequence);
     void setFirstValueMapped(const short &value);
     void setLastValueMapped(const short &value);
 
+    string getFrameLaterality() const { return frameLaterality; }
     string getRealWorldValueSlope() const { return realWorldValueSlope; }
     string getRealWorldValueIntercept() const { return realWorldValueIntercept; }
     string getDerivedPixelContrast() const { return derivedPixelContrast; }
@@ -35,6 +39,9 @@ namespace dcmqi {
     CodeSequenceMacro* getMeasurementUnitsCode() const { return measurementUnitsCode; }
     CodeSequenceMacro* getMeasurementMethodCode() const { return measurementMethodCode; }
     CodeSequenceMacro* getQuantityValueCode() const { return quantityValueCode; }
+    CodeSequenceMacro* getAnatomicRegion() const { return anatomicRegionCode; }
+
+    string getJSONOutputAsString();
 
     virtual void read();
     virtual bool write(string filename);
@@ -43,6 +50,7 @@ namespace dcmqi {
     string realWorldValueSlope;
     string realWorldValueIntercept;
     string derivedPixelContrast;
+    string frameLaterality;
 
     Sint16 firstValueMapped;
     Sint16 lastValueMapped;
@@ -50,6 +58,7 @@ namespace dcmqi {
     CodeSequenceMacro* measurementUnitsCode;
     CodeSequenceMacro* measurementMethodCode;
     CodeSequenceMacro* quantityValueCode;
+    CodeSequenceMacro* anatomicRegionCode;
   };
 
 }

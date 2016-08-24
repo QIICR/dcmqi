@@ -1,3 +1,4 @@
+#include <itkImageDuplicator.h>
 #include "ParaMapConverter.h"
 
 
@@ -93,7 +94,7 @@ namespace dcmqi {
     }
 
     FGFrameAnatomy frameAnaFG;
-    frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED);
+    frameAnaFG.setLaterality(FGFrameAnatomy::str2Laterality(metaInfo.getFrameLaterality().c_str()));
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
           metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
@@ -196,8 +197,119 @@ namespace dcmqi {
   return output;
   }
 
-  int ParaMapConverter::paramap2itkimage(const string &inputParamapFileName, const string &outputDirName) {
-    return EXIT_SUCCESS;
+  pair <ImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
+
+    DcmRLEDecoderRegistration::registerCodecs();
+
+    dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
+
+    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
+    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+      throw -1;
+    }
+
+    DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+
+    // Directions
+    FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
+    ImageType::DirectionType direction;
+    if(getImageDirections(fgInterface, direction)){
+      cerr << "Failed to get image directions" << endl;
+      throw -1;
+    }
+
+    // Spacing and origin
+    double computedSliceSpacing, computedVolumeExtent;
+    vnl_vector<double> sliceDirection(3);
+    sliceDirection[0] = direction[0][2];
+    sliceDirection[1] = direction[1][2];
+    sliceDirection[2] = direction[2][2];
+
+    ImageType::PointType imageOrigin;
+    if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
+      cerr << "Failed to compute origin and/or slice spacing!" << endl;
+      throw -1;
+    }
+
+    ImageType::SpacingType imageSpacing;
+    imageSpacing.Fill(0);
+    if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
+      cerr << "Failed to get image spacing from DICOM!" << endl;
+      throw -1;
+    }
+
+    const double tolerance = 1e-5;
+    if(!imageSpacing[2]){
+      imageSpacing[2] = computedSliceSpacing;
+    } else if(fabs(imageSpacing[2]-computedSliceSpacing)>tolerance){
+      cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
+           " Declared = " << imageSpacing[2] << " Computed = " << computedSliceSpacing << endl;
+    }
+
+    // Region size
+    ImageType::SizeType imageSize;
+    {
+      OFString str;
+
+      if(pmapDataset->findAndGetOFString(DCM_Rows, str).good())
+        imageSize[1] = atoi(str.c_str());
+      if(pmapDataset->findAndGetOFString(DCM_Columns, str).good())
+        imageSize[0] = atoi(str.c_str());
+    }
+    imageSize[2] = fgInterface.getNumberOfFrames();
+
+    ImageType::RegionType imageRegion;
+    imageRegion.SetSize(imageSize);
+    ImageType::Pointer pmImage = ImageType::New();
+    pmImage->SetRegions(imageRegion);
+    pmImage->SetOrigin(imageOrigin);
+    pmImage->SetSpacing(imageSpacing);
+    pmImage->SetDirection(direction);
+    pmImage->Allocate();
+    pmImage->FillBuffer(0);
+
+    JSONParametricMapMetaInformationHandler metaInfo;
+    populateMetaInformationFromDICOM(pmapDataset, metaInfo);
+
+    DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
+    if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+      throw -1;
+    }
+
+    DPMParametricMapIOD::Frames<PixelType> frames = *OFget<DPMParametricMapIOD::Frames<PixelType> >(&obj);
+
+    for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
+
+      PixelType *frame = frames.getFrame(frameId);
+
+      bool isPerFrame;
+
+      FGPlanePosPatient *planposfg =
+          OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+      assert(planposfg);
+
+      FGFrameContent *fracon =
+          OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
+      assert(fracon);
+
+      // populate meta information needed for Slicer ScalarVolumeNode initialization
+      {
+      }
+
+      ImageType::IndexType index;
+      // initialize slice with the frame content
+      for(int row=0;row<imageSize[1];row++){
+        index[1] = row;
+        index[2] = frameId;
+        for(int col=0;col<imageSize[0];col++){
+          unsigned pixelPosition = row*imageSize[0] + col;
+          index[0] = col;
+          pmImage->SetPixel(index, frame[pixelPosition]);
+        }
+      }
+    }
+
+    return pair <ImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
@@ -257,5 +369,74 @@ namespace dcmqi {
       result = OFget<DPMParametricMapIOD::Frames<PixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
     }
     return result;
+  }
+
+  void ParaMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
+                                                          JSONParametricMapMetaInformationHandler &metaInfo) {
+
+    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
+    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+      cerr << "Failed to load parametric map! " << pCondition->text() << endl;
+      throw -1;
+    }
+    DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+
+    OFString temp;
+
+    pMapDoc->getSeries().getSeriesDescription(temp);
+    metaInfo.setSeriesDescription(temp.c_str());
+
+    pMapDoc->getSeries().getSeriesNumber(temp);
+    metaInfo.setSeriesNumber(temp.c_str());
+
+    if(pmapDataset->findAndGetOFString(DCM_InstanceNumber, temp).good())
+      metaInfo.setInstanceNumber(temp.c_str());
+
+    pMapDoc->getSeries().getBodyPartExamined(temp);
+    metaInfo.setBodyPartExamined(temp.c_str());
+
+    pMapDoc->getDPMParametricMapImageModule().getImageType(temp, 3);
+    metaInfo.setDerivedPixelContrast(temp.c_str());
+
+    if (pMapDoc->getNumberOfFrames() > 0) {
+      FGInterface& fg = pMapDoc->getFunctionalGroups();
+      FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
+                                                  fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
+      size_t numMappings = rw->getRealWorldValueMapping().size();
+      if (numMappings > 0) {
+        FGRealWorldValueMapping::RWVMItem *item = rw->getRealWorldValueMapping()[0];
+        metaInfo.setMeasurementUnitsCode(item->getMeasurementUnitsCode());
+
+        Float64 slope;
+        // TODO: replace the following call by following getter once it is available
+//        item->getRealWorldValueSlope(slope);
+        item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
+        metaInfo.setRealWorldValueSlope(Helper::floatToStrScientific(slope));
+
+        size_t numQuant = item->getEntireQuantityDefinitionSequence().size();
+        if (numQuant > 0) {
+          ContentItemMacro *macro = item->getEntireQuantityDefinitionSequence()[0];
+          size_t numEntireConcept = macro->getEntireConceptCodeSequence().size();
+          if (numEntireConcept > 0) {
+//            BUG??? For any reason metaInfo.setQuantityValueCode(macro->getConceptCodeSequence()); results in an empty code sequence
+            CodeSequenceMacro* quantityValueCode = macro->getConceptCodeSequence();
+            if (quantityValueCode != NULL) {
+              OFString designator, meaning, value;
+              quantityValueCode->getCodeValue(value);
+              quantityValueCode->getCodeMeaning(meaning);
+              quantityValueCode->getCodingSchemeDesignator(designator);
+              metaInfo.setQuantityValueCode(value.c_str(), designator.c_str(), meaning.c_str());
+            }
+          }
+        }
+      }
+      FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
+      metaInfo.setAnatomicRegion(fa->getAnatomy().getAnatomicRegion());
+      FGFrameAnatomy::LATERALITY frameLaterality;
+      fa->getLaterality(frameLaterality);
+      metaInfo.setFrameLaterality(fa->laterality2Str(frameLaterality).c_str());
+    }
+    if(pMapDoc != NULL)
+      delete pMapDoc;
   }
 }

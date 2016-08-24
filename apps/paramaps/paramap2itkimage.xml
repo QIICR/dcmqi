@@ -14,17 +14,17 @@
       <name>inputFileName</name>
       <label>Parametric Map DICOM file name</label>
       <channel>input</channel>
-      <longflag>parametricMapInputFileName</longflag>
+      <longflag>inputFileName</longflag>
       <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
     </file>
 
-    <file>
+    <directory>
         <name>outputDirName</name>
         <label>Output directory name</label>
-        <channel>input</channel>
-        <index>1</index>
+        <channel>output</channel>
+        <longflag>outputDirName</longflag>
         <description>Directory to store parametric map as NRRD file.</description>
-    </file>
+    </directory>
   </parameters>
 
 </executable>

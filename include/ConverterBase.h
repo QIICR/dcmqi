@@ -16,6 +16,7 @@
 #include <dcmtk/dcmfg/fgplanor.h>
 #include <dcmtk/dcmfg/fgplanpo.h>
 #include <dcmtk/dcmfg/fgpixmsr.h>
+#include "dcmtk/dcmdata/dcrledrg.h"
 
 // UIDs
 #include "QIICRUIDs.h"

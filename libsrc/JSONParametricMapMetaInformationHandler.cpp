@@ -6,14 +6,16 @@ namespace dcmqi {
       : JSONMetaInformationHandlerBase(),
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
-        quantityValueCode(NULL) {
+        quantityValueCode(NULL),
+        anatomicRegionCode(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string jsonInput)
       : JSONMetaInformationHandlerBase(jsonInput),
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
-        quantityValueCode(NULL) {
+        quantityValueCode(NULL),
+        anatomicRegionCode(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::~JSONParametricMapMetaInformationHandler() {
@@ -23,7 +25,13 @@ namespace dcmqi {
       delete this->measurementMethodCode;
     if (this->quantityValueCode)
       delete this->quantityValueCode;
+    if (this->anatomicRegionCode)
+      delete this->anatomicRegionCode;
   }
+
+  void JSONParametricMapMetaInformationHandler::setFrameLaterality(const string& value) {
+    this->frameLaterality = value;
+  };
 
   void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const string& value) {
     this->realWorldValueSlope = value;
@@ -64,6 +72,15 @@ namespace dcmqi {
     this->quantityValueCode = new CodeSequenceMacro(codeSequence);
   }
 
+  void JSONParametricMapMetaInformationHandler::setAnatomicRegion(const string& code, const string& designator,
+                                                                  const string& meaning) {
+    this->anatomicRegionCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+  }
+
+  void JSONParametricMapMetaInformationHandler::setAnatomicRegion(const CodeSequenceMacro& codeSequence) {
+    this->anatomicRegionCode = new CodeSequenceMacro(codeSequence);
+  }
+
   void JSONParametricMapMetaInformationHandler::setLastValueMapped(const short &value) {
     this->lastValueMapped = value;
   }
@@ -83,6 +100,7 @@ namespace dcmqi {
       this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
       this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
       this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
+      this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "U").asString();
 
       Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
       if (!elem.isNull()) {
@@ -105,6 +123,13 @@ namespace dcmqi {
                                        elem.get("CodeMeaning", "").asString());
       }
 
+      elem = this->metaInfoRoot["AnatomicRegionCode"];
+      if (!elem.isNull()) {
+        this->setAnatomicRegion(elem.get("CodeValue", "").asString(),
+                                elem.get("CodingSchemeDesignator", "").asString(),
+                                elem.get("CodeMeaning", "").asString());
+      }
+
     } catch (exception& e) {
       cout << e.what() << endl;
       throw JSONReadErrorException();
@@ -113,8 +138,15 @@ namespace dcmqi {
 
   bool JSONParametricMapMetaInformationHandler::write(string filename) {
     ofstream outputFile;
-    outputFile.open(filename);
+    outputFile.open(filename.c_str());
+    outputFile << this->getJSONOutputAsString();
+    outputFile.close();
+    return true;
+  };
+
+  string JSONParametricMapMetaInformationHandler::getJSONOutputAsString() {
     Json::Value data;
+    std::stringstream ss;
 
     data["SeriesDescription"] = this->seriesDescription;
     data["SeriesNumber"] = this->seriesNumber;
@@ -122,6 +154,7 @@ namespace dcmqi {
     data["BodyPartExamined"] = this->bodyPartExamined;
     data["RealWorldValueSlope"] = this->realWorldValueSlope;
     data["DerivedPixelContrast"] = this->derivedPixelContrast;
+    data["FrameLaterality"] = this->frameLaterality;
 
     if (this->measurementUnitsCode)
       data["MeasurementUnitsCode"] = codeSequence2Json(this->measurementUnitsCode);
@@ -129,12 +162,14 @@ namespace dcmqi {
       data["MeasurementMethodCode"] = codeSequence2Json(this->measurementMethodCode);
     if (this->quantityValueCode)
       data["QuantityValueCode"] = codeSequence2Json(this->quantityValueCode);
+    if (this->anatomicRegionCode)
+      data["AnatomicRegionCode"] = codeSequence2Json(this->anatomicRegionCode);
 
     Json::StyledWriter styledWriter;
-    outputFile << styledWriter.write(data);
 
-    outputFile.close();
-    return true;
-  };
+    ss << styledWriter.write(data);
+
+    return ss.str();
+  }
 
 }
