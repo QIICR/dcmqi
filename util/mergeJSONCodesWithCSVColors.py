@@ -38,11 +38,14 @@ def addColor(codeDict,jsonDict,c,t,m=-1):
 
   if key in codeDict:
     rgb = codeDict[key][-2].rgb
+    slicerName = codeDict[key][-3]
     codeDict[key][-1] = True # mark this entry as matched
     if m != -1:
       jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]["Modifier"][m]["recommendedDisplayRGBValue"] = rgb
+      jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]["Modifier"][m]["3dSlicerLabel"] = slicerName
     else:
       jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]["recommendedDisplayRGBValue"] = rgb
+      jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]["3dSlicerLabel"] = slicerName
     return True
   else:
     return False
@@ -68,6 +71,7 @@ codeDict = {}
 with open(inputCSVFileName) as csvfile:
   csvreader = csv.reader(csvfile)
   for row in csvreader:
+    slicerName = row[1].strip()
     segCategory = Term(row[6])
     segType = Term(row[7])
     segModifier = Term(row[9])
@@ -77,7 +81,7 @@ with open(inputCSVFileName) as csvfile:
     key = segCategory.code+","+segType.code+","+segModifier.code
     if segCategory.code != "":
       # last item indicates this entry has not been matched to the JSON dataset
-      codeDict[key] = [segCategory,segType,segModifier,segRGB,False]
+      codeDict[key] = [segCategory,segType,segModifier,slicerName,segRGB,False]
 
 print "Total valid entries in CSV:",len(codeDict.keys())
 
