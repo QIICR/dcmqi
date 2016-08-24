@@ -197,24 +197,15 @@ namespace dcmqi {
   return output;
   }
 
-  int ParaMapConverter::paramap2itkimage(const string &inputFileName, const string &outputDirName) {
+  pair <ImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
-    DcmFileFormat pmFF;
-    DcmDataset *pmapDataset = NULL;
-    if(pmFF.loadFile(inputFileName.c_str()).good()){
-      pmapDataset = pmFF.getDataset();
-    } else {
-      cerr << "Failed to read input " << endl;
-      return EXIT_FAILURE;
-    }
-
-    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadFile(inputFileName.c_str());
+    OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
     if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
@@ -224,7 +215,7 @@ namespace dcmqi {
     ImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
       cerr << "Failed to get image directions" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     // Spacing and origin
@@ -237,14 +228,14 @@ namespace dcmqi {
     ImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
       cerr << "Failed to compute origin and/or slice spacing!" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     ImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
       cerr << "Failed to get image spacing from DICOM!" << endl;
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     const double tolerance = 1e-5;
@@ -280,14 +271,9 @@ namespace dcmqi {
     JSONParametricMapMetaInformationHandler metaInfo;
     populateMetaInformationFromDICOM(pmapDataset, metaInfo);
 
-//    TODO: not only nrrd files!
-    typedef itk::ImageFileWriter<ImageType> WriterType;
-    stringstream imageFileNameSStream;
-    imageFileNameSStream << outputDirName << "/" << "pmap.nrrd";
-
     DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
     if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
-      return EXIT_FAILURE;
+      throw -1;
     }
 
     DPMParametricMapIOD::Frames<PixelType> frames = *OFget<DPMParametricMapIOD::Frames<PixelType> >(&obj);
@@ -323,21 +309,7 @@ namespace dcmqi {
       }
     }
 
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(imageFileNameSStream.str().c_str());
-    writer->SetInput(pmImage);
-    writer->SetUseCompression(1);
-    writer->Update();
-
-    stringstream jsonOutput;
-    jsonOutput << outputDirName << "/" << "meta.json";
-
-    ofstream outputFile;
-    outputFile.open(jsonOutput.str().c_str());
-    outputFile << metaInfo.getJSONOutputAsString();
-    outputFile.close();
-
-    return EXIT_SUCCESS;
+    return pair <ImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,

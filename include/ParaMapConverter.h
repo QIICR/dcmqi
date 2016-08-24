@@ -30,7 +30,7 @@ namespace dcmqi {
     static DcmDataset* itkimage2paramap(const ImageType::Pointer &parametricMapImage, DcmDataset* dcmDataset,
                                         const string &metaData);
 
-    static int paramap2itkimage(const string &inputSEGFileName, const string &outputDirName);
+    static pair <ImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
   protected:
     static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
                                 const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
