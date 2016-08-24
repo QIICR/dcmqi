@@ -16,7 +16,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
                                                     'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
-                                                    'ngFileUpload']);
+                                                    'ngFileUpload', 'ngProgress']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -50,8 +50,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download', 'Upload',
-    function($scope, $rootScope, $http, $log, $mdToast, download, Upload) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download', 'Upload', 'ngProgressFactory',
+    function($scope, $rootScope, $http, $log, $mdToast, download, Upload, ngProgressFactory) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -74,10 +74,19 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         download.fromData($scope.output, "text/json", $scope.seriesAttributes.ClinicalTrialSeriesID+".json");
       };
 
+      $scope.progressbar = ngProgressFactory.createInstance();
+      $scope.progressbar.setHeight('5px');
+
       function populateAttributesFromDICOM(file)
       {
         var reader = new FileReader();
+        reader.onprogress = function(event) {
+          if (event.lengthComputable) {
+            $scope.progressbar.set(event.loaded/event.total);
+          }
+        };
         reader.onload = function(file) {
+          $scope.progressbar.complete();
           var arrayBuffer = reader.result;
           var byteArray = new Uint8Array(arrayBuffer);
           var dataset = dicomParser.parseDicom(byteArray);
