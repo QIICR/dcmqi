@@ -29,6 +29,10 @@ namespace dcmqi {
       delete this->anatomicRegionCode;
   }
 
+  void JSONParametricMapMetaInformationHandler::setFrameLaterality(const string& value) {
+    this->frameLaterality = value;
+  };
+
   void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const string& value) {
     this->realWorldValueSlope = value;
   };
@@ -96,6 +100,7 @@ namespace dcmqi {
       this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
       this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
       this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
+      this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "").asString();
 
       Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
       if (!elem.isNull()) {
@@ -149,6 +154,7 @@ namespace dcmqi {
     data["BodyPartExamined"] = this->bodyPartExamined;
     data["RealWorldValueSlope"] = this->realWorldValueSlope;
     data["DerivedPixelContrast"] = this->derivedPixelContrast;
+    data["FrameLaterality"] = this->frameLaterality;
 
     if (this->measurementUnitsCode)
       data["MeasurementUnitsCode"] = codeSequence2Json(this->measurementUnitsCode);

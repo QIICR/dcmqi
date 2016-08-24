@@ -94,7 +94,7 @@ namespace dcmqi {
     }
 
     FGFrameAnatomy frameAnaFG;
-    frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED);
+    frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED); // TODO: should be taken from metaInfo
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
           metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
@@ -445,21 +445,25 @@ namespace dcmqi {
         if (numQuant > 0) {
           ContentItemMacro *macro = item->getEntireQuantityDefinitionSequence()[0];
           size_t numEntireConcept = macro->getEntireConceptCodeSequence().size();
-          cout << numEntireConcept << endl;
           if (numEntireConcept > 0) {
-//            BUG??? does not match in json...
-            metaInfo.setQuantityValueCode(macro->getEntireConceptCodeSequence()[0]);
-            COUT << "      Quantity #" << 0 << ": " << macro->toString() << OFendl;
+//            BUG??? For any reason metaInfo.setQuantityValueCode(macro->getConceptCodeSequence()); results in an empty code sequence
+            CodeSequenceMacro* quantityValueCode = macro->getConceptCodeSequence();
+            if (quantityValueCode != NULL) {
+              OFString designator, meaning, value;
+              quantityValueCode->getCodeValue(value);
+              quantityValueCode->getCodeMeaning(meaning);
+              quantityValueCode->getCodingSchemeDesignator(designator);
+              metaInfo.setQuantityValueCode(value.c_str(), designator.c_str(), meaning.c_str());
+            }
           }
         }
       }
-
       FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
       metaInfo.setAnatomicRegion(fa->getAnatomy().getAnatomicRegion());
+      FGFrameAnatomy::LATERALITY frameLaterality;
+      fa->getLaterality(frameLaterality);
+      metaInfo.setFrameLaterality(fa->laterality2Str(frameLaterality).c_str());
     }
-
-//    TODO: populate more from here
-
     if(pMapDoc != NULL)
       delete pMapDoc;
   }

@@ -15,6 +15,7 @@ namespace dcmqi {
     JSONParametricMapMetaInformationHandler(string jsonInput);
     ~JSONParametricMapMetaInformationHandler();
 
+    void setFrameLaterality(const string& value);
     void setRealWorldValueSlope(const string& value);
     void setRealWorldValueIntercept(const string &value);
     void setDerivedPixelContrast(const string& value);
@@ -29,6 +30,7 @@ namespace dcmqi {
     void setFirstValueMapped(const short &value);
     void setLastValueMapped(const short &value);
 
+    string getFrameLaterality() const { return frameLaterality; }
     string getRealWorldValueSlope() const { return realWorldValueSlope; }
     string getRealWorldValueIntercept() const { return realWorldValueIntercept; }
     string getDerivedPixelContrast() const { return derivedPixelContrast; }
@@ -48,6 +50,7 @@ namespace dcmqi {
     string realWorldValueSlope;
     string realWorldValueIntercept;
     string derivedPixelContrast;
+    string frameLaterality;
 
     Sint16 firstValueMapped;
     Sint16 lastValueMapped;
