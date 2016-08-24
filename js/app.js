@@ -1,19 +1,22 @@
-define(['ajv'], function (Ajv) {
+define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var user = 'qiicr';
   var rev = 'master';
   var webAssets = 'https://raw.githubusercontent.com/'+user+'/dcmqi/'+rev+'/doc/';
+  // var webAssets = 'assets/doc/';
 
   var commonSchemaURL = webAssets + 'common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
 
+  // var segSchemaID = webAssets + 'seg-schema.json';
   var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
   var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
   var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download']);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
+                                                    'ngFileUpload']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -47,8 +50,8 @@ define(['ajv'], function (Ajv) {
   }]);
 
   app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
-    function($scope, $rootScope, $http, $log, $mdToast, download) {
+                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download', 'Upload',
+    function($scope, $rootScope, $http, $log, $mdToast, download, Upload) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -70,6 +73,38 @@ define(['ajv'], function (Ajv) {
       $scope.downloadFile = function() {
         download.fromData($scope.output, "text/json", $scope.seriesAttributes.ClinicalTrialSeriesID+".json");
       };
+
+      function populateAttributesFromDICOM(file)
+      {
+        var reader = new FileReader();
+        reader.onload = function(file) {
+          var arrayBuffer = reader.result;
+          var byteArray = new Uint8Array(arrayBuffer);
+          var dataset = dicomParser.parseDicom(byteArray);
+          var t = $scope.seriesAttributes;
+          t.ContentCreatorName = getValueOrOld(t.ContentCreatorName, dataset, 'x00700084');
+          t.ClinicalTrialSeriesID = getValueOrOld(t.ClinicalTrialSeriesID, dataset, 'x00120071');
+          t.ClinicalTrialTimePointID = getValueOrOld(t.ClinicalTrialTimePointID, dataset, 'x00120050');
+          t.SeriesDescription = getValueOrOld(t.SeriesDescription, dataset, 'x0008103E');
+          t.SeriesNumber = getValueOrOld(t.SeriesNumber, dataset, 'x00200011');
+          t.InstanceNumber = getValueOrOld(t.InstanceNumber, dataset, 'x00200013');
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function getValueOrOld(field, dataset, tag) {
+        var value = dataset.string(tag);
+        return value != undefined ? value : field;
+      }
+
+      $scope.$watch('file', function () {
+        if ($scope.file != undefined) {
+          $scope.dropZoneText = "DICOM file: " + $scope.file.name;
+          populateAttributesFromDICOM($scope.file);
+        } else {
+          $scope.dropZoneText = "Auto-populate attributes: Drop DICOM image here or click to upload";
+        }
+      });
 
       $scope.validJSON = false;
 
