@@ -94,7 +94,7 @@ namespace dcmqi {
     }
 
     FGFrameAnatomy frameAnaFG;
-    frameAnaFG.setLaterality(FGFrameAnatomy::LATERALITY_UNPAIRED); // TODO: should be taken from metaInfo
+    frameAnaFG.setLaterality(FGFrameAnatomy::str2Laterality(metaInfo.getFrameLaterality().c_str()));
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
           metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
@@ -203,10 +203,10 @@ namespace dcmqi {
 
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
-    DcmFileFormat segFF;
+    DcmFileFormat pmFF;
     DcmDataset *pmapDataset = NULL;
-    if(segFF.loadFile(inputFileName.c_str()).good()){
-      pmapDataset = segFF.getDataset();
+    if(pmFF.loadFile(inputFileName.c_str()).good()){
+      pmapDataset = pmFF.getDataset();
     } else {
       cerr << "Failed to read input " << endl;
       return EXIT_FAILURE;
@@ -269,13 +269,13 @@ namespace dcmqi {
 
     ImageType::RegionType imageRegion;
     imageRegion.SetSize(imageSize);
-    ImageType::Pointer segImage = ImageType::New();
-    segImage->SetRegions(imageRegion);
-    segImage->SetOrigin(imageOrigin);
-    segImage->SetSpacing(imageSpacing);
-    segImage->SetDirection(direction);
-    segImage->Allocate();
-    segImage->FillBuffer(0);
+    ImageType::Pointer pmImage = ImageType::New();
+    pmImage->SetRegions(imageRegion);
+    pmImage->SetOrigin(imageOrigin);
+    pmImage->SetSpacing(imageSpacing);
+    pmImage->SetDirection(direction);
+    pmImage->Allocate();
+    pmImage->FillBuffer(0);
 
     JSONParametricMapMetaInformationHandler metaInfo;
     populateMetaInformationFromDICOM(pmapDataset, metaInfo);
@@ -318,14 +318,14 @@ namespace dcmqi {
         for(int col=0;col<imageSize[0];col++){
           unsigned pixelPosition = row*imageSize[0] + col;
           index[0] = col;
-          segImage->SetPixel(index, frame[pixelPosition]);
+          pmImage->SetPixel(index, frame[pixelPosition]);
         }
       }
     }
 
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName(imageFileNameSStream.str().c_str());
-    writer->SetInput(segImage);
+    writer->SetInput(pmImage);
     writer->SetUseCompression(1);
     writer->Update();
 

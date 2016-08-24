@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     DcmFileFormat segdocFF(result);
     CHECK_COND(segdocFF.saveFile(outputParaMapFileName.c_str(), EXS_LittleEndianExplicit));
 
-    COUT << "Saved segmentation as " << outputParaMapFileName << endl;
+    COUT << "Saved parametric map as " << outputParaMapFileName << endl;
     return EXIT_SUCCESS;
   }
 }

@@ -100,7 +100,7 @@ namespace dcmqi {
       this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
       this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
       this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
-      this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "").asString();
+      this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "U").asString();
 
       Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
       if (!elem.isNull()) {
