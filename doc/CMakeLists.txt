@@ -19,7 +19,7 @@ list(REMOVE_ITEM json_schema_files ${json_common_schema_files})
 foreach(json_file ${json_files})
   get_filename_component(json_name ${json_file} NAME_WE)
   add_test(NAME jsonlint_${json_name}
-    COMMAND jsonlint ${json_file})
+    COMMAND jsonlint.cmd ${json_file})
 endforeach()
 
 set(AJV_OPTIONS --all-errors)
@@ -33,7 +33,7 @@ endforeach()
 function(createSchemaValidationTest schema_name)
   get_filename_component(json_name ${schema_name} NAME_WE)
   add_test(NAME ajv_${json_name}-schema
-    COMMAND ajv compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
+    COMMAND ajv.cmd compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
 endfunction()
 
 # validation of each common schema
@@ -51,7 +51,7 @@ function(createExampleDataTest example_name schema)
   set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
   add_test(NAME ajv_${example_name}-example
     # -d stands for data that needs to be validated
-    COMMAND ajv -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+    COMMAND ajv.cmd -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
 endfunction()
 
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
