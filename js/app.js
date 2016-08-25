@@ -464,12 +464,29 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Anatomic Region";
+    self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
     self.selectedItemChange = function(item) {
       $scope.segment.anatomicRegion = item ? item.object : item;
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
+
+    $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
+        return;
+      }
+      if (data.item) {
+        if(data.item.object.showAnatomy == "false") {
+          self.isDisabled = true;
+          self.searchText = undefined;
+        } else {
+          self.isDisabled = false;
+        }
+      } else {
+        self.searchText = undefined;
+      }
+    });
 
     $scope.$watch('selectedAnatomicRegionContext', function () {
       if ($scope.selectedAnatomicRegionContext != undefined) {
