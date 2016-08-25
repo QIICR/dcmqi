@@ -18,7 +18,7 @@ require.config({
     "ngclipboard": "../bower_components/ngclipboard/dist/ngclipboard.min",
     "dicomParser": "../bower_components/dicomParser/dist/dicomParser",
     "ng-file-upload": "../bower_components/ng-file-upload/ng-file-upload",
-    "ngProgress": "../bower_components/ngprogress/build/ngProgress",
+    "ngProgress": "../bower_components/ngprogress/build/ngprogress",
     "ajv": "../node_modules/ajv/dist/ajv.min",
     "JSONSemanticsCreator": "app"
   },
