@@ -50,10 +50,20 @@ def addColor(codeDict,jsonDict,c,t,m=-1):
   else:
     return False
 
+def copyNonListItems(src,dest,destKey=None):
+  if destKey:
+    dest[destKey] = {}
+  for k in src.keys():
+    if type(k) != 'list':
+      if not destKey:
+        dest[k] = src[k]
+      else:
+        dest[destKey][k] = src[k]
+
 if len(sys.argv)<3:
-  print "Usage: ",sys.argv[0]," AnatomicCodesJSON AnatomicCodesCSV"
-  print "  where AnatomicCodesJSON is the JSON file from doc/segContext"
-  print "  and AnatomicCodesCSV is the CSV file imported from the first sheet here https://goo.gl/vuANnw"
+  print "Usage: ",sys.argv[0]," SegmentationCodesJSON SegmentationCodesCSV <outputJSON>"
+  print "  where SegmentationCodesJSON is the SegmentationCategoryType JSON"
+  print "  file from doc/segContext, and SegmentationCodesCSV is the CSV file" print "  imported from the first sheet here https://goo.gl/vuANnw"
 
 inputJSONFileName = sys.argv[1]
 inputCSVFileName = sys.argv[2]
@@ -86,15 +96,38 @@ with open(inputCSVFileName) as csvfile:
 print "Total valid entries in CSV:",len(codeDict.keys())
 
 totalJSONEntries = 0
+matchedCodes = []
 for c in range(len(jsonCodes["SegmentationCodes"]["Category"])):
   for t in range(len(jsonCodes["SegmentationCodes"]["Category"][c]["Type"])):
     if "Modifier" in jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]:
       for m in range(len(jsonCodes["SegmentationCodes"]["Category"][c]["Type"][t]["Modifier"])):
-        addColor(codeDict,jsonCodes,c,t,m)
+        matched = addColor(codeDict,jsonCodes,c,t,m)
         totalJSONEntries = totalJSONEntries+1
+        if matched:
+          matchedJsonCodes.append([c,t,m])
     else:
-      addColor(codeDict,jsonCodes,c,t)
+      matched = addColor(codeDict,jsonCodes,c,t)
       totalJSONEntries = totalJSONEntries+1
+      if matched:
+        matchedJsonCodes.append([c,t])
+
+# copy matched codes to a new JSON
+matchedCodesJson = {}
+matchedCodesJson["SegmentationCodes"] = {}
+matchedCodesJson["SegmentationCodes"]["Category"] = {}
+# look up if a category with the given key/coding scheme already exists
+categoryLookupByKey = {}
+
+if len(matchedCodes):
+  for t in matchedJsonCodes:
+    cCat = jsonCodes["SegmentationCodes"]["Category"][t[0]]]
+    cType = jsonCodes["SegmentationCodes"]["Category"][t[0]]]["Type"][t[1]]
+    if len(t)==3:
+      cMod = jsonCodes["SegmentationCodes"]["Category"][t[0]]]["Type"][t[1]]["Modifier"][t[2]]
+    else:
+      cMod = None
+
+
 
 print "Total JSON entries:",totalJSONEntries
 
