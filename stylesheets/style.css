@@ -49,4 +49,5 @@ md-input-container textarea.md-input {
   vertical-align: middle;
   text-align: center;
   padding: 15px;
+  cursor: pointer;
 }

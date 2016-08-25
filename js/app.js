@@ -49,8 +49,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $scope.toolTipDelay = 500;
   }]);
 
-  app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download', 'Upload', 'ngProgressFactory',
+  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
+                                                    'Upload', 'ngProgressFactory',
     function($scope, $rootScope, $http, $log, $mdToast, download, Upload, ngProgressFactory) {
 
       var self = this;
