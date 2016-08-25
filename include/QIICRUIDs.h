@@ -7,6 +7,6 @@
 
 #define QIICR_DEVICE_OBSERVER_UID QIICR_IMPLEMENTATION_CLASS_UID ".99.1" // use .99 for sandbox code examples
 
-#define SITE_UID_ROOT QIICR_UID_ROOT
+#define QIICR_INSTANCE_UID_ROOT QIICR_UID_ROOT ".1.4"
 
 #endif
