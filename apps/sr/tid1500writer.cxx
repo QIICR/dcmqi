@@ -95,7 +95,9 @@ int main(int argc, char** argv){
   }
 
   // Image library must be present, even if empty
+
   OFCHECK(report.getImageLibrary().createNewImageLibrary().good());
+  OFCHECK(report.getImageLibrary().addImageGroup().good());
 
   if(metaRoot.isMember("imageLibrary")){
     for(int i=0;i<metaRoot["imageLibrary"].size();i++){
@@ -105,15 +107,19 @@ int main(int argc, char** argv){
       cout << "Loading " << dicomFilePath << endl;
       CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
 
+
       DcmDataset imageLibDataset;
-      DcmTag tagsToCopy[] = {DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient,DCM_ImagePositionPatient};
-      for(int t=0;t<10;t++){
+      DcmTag tagsToCopy[] = {DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
+      // no DCM_ImagePositionPatient - it should be under individual image
+      for(int t=0;t<9;t++){
         copyElement(tagsToCopy[t], ff.getDataset(), &imageLibDataset);
       }
 
-      OFCHECK(report.getImageLibrary().addImageGroup().good());
-      OFCHECK(report.getImageLibrary().addImageEntry(imageLibDataset).good());
-      OFCHECK(report.getImageLibrary().addImageEntryDescriptors(imageLibDataset).good());
+      if(i==0)
+        CHECK_COND(report.getImageLibrary().addImageEntryDescriptors(imageLibDataset));
+
+      // TODO: would also be nice to include ImagePositionPatient under each individual image entry!
+      OFCHECK(report.getImageLibrary().addImageEntry(*ff.getDataset()).good());
     }
   }
 
