@@ -10,10 +10,11 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   // var segSchemaID = webAssets + 'seg-schema.json';
   var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
-  var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json';
 
-  var segmentationCategoryTypeSources = [webAssets+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
-                                         webAssets+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
+  var anatomicRegionContextSources = [webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
+
+  var segCategoryTypeContextSources = [webAssets+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
+                                       webAssets+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
 
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
@@ -268,10 +269,29 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
       $scope.segmentationContexts = [];
       $scope.selectedSegmentationCategoryContext = undefined;
-      angular.forEach(segmentationCategoryTypeSources, function(value, key) {
+      angular.forEach(segCategoryTypeContextSources, function(value, key) {
         $http.get(value).success(function (data) {
-          $scope.segmentationContexts.push({url: value,
-            name: data.SegmentationCategoryTypeContextName});
+          $scope.segmentationContexts.push(
+            {
+              url: value,
+              name: data.SegmentationCategoryTypeContextName
+            });
+        });
+        if ($scope.segmentationContexts.length == 1)
+          $scope.selectedSegmentationCategoryContext = $scope.segmentationContexts[0];
+      });
+
+      $scope.anatomicRegionContexts = [];
+      $scope.selectedAnatomicRegionContext = undefined;
+      angular.forEach(anatomicRegionContextSources, function(value, key) {
+        $http.get(value).success(function (data) {
+          $scope.anatomicRegionContexts.push(
+            {
+              url: value,
+              name: data.AnatomicContextName
+            });
+          if (anatomicRegionContextSources.length == 1)
+            $scope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
         });
       });
 
@@ -451,9 +471,13 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(anatomicRegionJSONPath).success(function (data) {
-      $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
-      self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+    $scope.$watch('selectedAnatomicRegionContext', function () {
+      if ($scope.selectedAnatomicRegionContext != undefined) {
+        $http.get($scope.selectedAnatomicRegionContext.url).success(function (data) {
+          $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
+          self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+        });
+      }
     });
   });
 
