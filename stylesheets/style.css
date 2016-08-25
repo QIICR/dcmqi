@@ -42,3 +42,12 @@
 md-input-container textarea.md-input {
   border: 0;
 }
+
+.drop-box {
+  background: #F8F8F8;
+  border: 5px dashed #DDD;
+  vertical-align: middle;
+  text-align: center;
+  padding: 15px;
+  cursor: pointer;
+}

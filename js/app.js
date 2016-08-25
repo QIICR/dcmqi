@@ -1,19 +1,25 @@
-define(['ajv'], function (Ajv) {
+define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var user = 'qiicr';
   var rev = 'master';
   var webAssets = 'https://raw.githubusercontent.com/'+user+'/dcmqi/'+rev+'/doc/';
+  // var webAssets = 'assets/doc/';
 
   var commonSchemaURL = webAssets + 'common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
 
+  // var segSchemaID = webAssets + 'seg-schema.json';
   var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
-  var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
-  var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
+  var anatomicRegionContextSources = [webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
+
+  var segCategoryTypeContextSources = [webAssets+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
+                                       webAssets+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
+
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
-                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download']);
+                                                    'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
+                                                    'ngFileUpload', 'ngProgress']);
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
@@ -46,9 +52,9 @@ define(['ajv'], function (Ajv) {
       $scope.toolTipDelay = 500;
   }]);
 
-  app.controller('JSONSemanticsCreatorController',
-                 ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
-    function($scope, $rootScope, $http, $log, $mdToast, download) {
+  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
+                                                    'Upload', 'ngProgressFactory',
+    function($scope, $rootScope, $http, $log, $mdToast, download, Upload, ngProgressFactory) {
 
       var self = this;
       self.segmentedPropertyCategory = null;
@@ -70,6 +76,47 @@ define(['ajv'], function (Ajv) {
       $scope.downloadFile = function() {
         download.fromData($scope.output, "text/json", $scope.seriesAttributes.ClinicalTrialSeriesID+".json");
       };
+
+      $scope.progressbar = ngProgressFactory.createInstance();
+      $scope.progressbar.setHeight('5px');
+
+      function populateAttributesFromDICOM(file)
+      {
+        var reader = new FileReader();
+        reader.onprogress = function(event) {
+          if (event.lengthComputable) {
+            $scope.progressbar.set(event.loaded/event.total);
+          }
+        };
+        reader.onload = function(file) {
+          $scope.progressbar.complete();
+          var arrayBuffer = reader.result;
+          var byteArray = new Uint8Array(arrayBuffer);
+          var dataset = dicomParser.parseDicom(byteArray);
+          var t = $scope.seriesAttributes;
+          t.ContentCreatorName = getValueOrOld(t.ContentCreatorName, dataset, 'x00700084');
+          t.ClinicalTrialSeriesID = getValueOrOld(t.ClinicalTrialSeriesID, dataset, 'x00120071');
+          t.ClinicalTrialTimePointID = getValueOrOld(t.ClinicalTrialTimePointID, dataset, 'x00120050');
+          t.SeriesDescription = getValueOrOld(t.SeriesDescription, dataset, 'x0008103E');
+          t.SeriesNumber = getValueOrOld(t.SeriesNumber, dataset, 'x00200011');
+          t.InstanceNumber = getValueOrOld(t.InstanceNumber, dataset, 'x00200013');
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function getValueOrOld(field, dataset, tag) {
+        var value = dataset.string(tag);
+        return value != undefined ? value : field;
+      }
+
+      $scope.$watch('file', function () {
+        if ($scope.file != undefined) {
+          $scope.dropZoneText = "DICOM file: " + $scope.file.name;
+          populateAttributesFromDICOM($scope.file);
+        } else {
+          $scope.dropZoneText = "Auto-populate attributes: Drop DICOM image here or click to upload";
+        }
+      });
 
       $scope.validJSON = false;
 
@@ -219,6 +266,34 @@ define(['ajv'], function (Ajv) {
           SegmentedPropertyTypeModifier: null
         };
       }
+
+      $scope.segmentationContexts = [];
+      $scope.selectedSegmentationCategoryContext = undefined;
+      angular.forEach(segCategoryTypeContextSources, function(value, key) {
+        $http.get(value).success(function (data) {
+          $scope.segmentationContexts.push(
+            {
+              url: value,
+              name: data.SegmentationCategoryTypeContextName
+            });
+        });
+        if ($scope.segmentationContexts.length == 1)
+          $scope.selectedSegmentationCategoryContext = $scope.segmentationContexts[0];
+      });
+
+      $scope.anatomicRegionContexts = [];
+      $scope.selectedAnatomicRegionContext = undefined;
+      angular.forEach(anatomicRegionContextSources, function(value, key) {
+        $http.get(value).success(function (data) {
+          $scope.anatomicRegionContexts.push(
+            {
+              url: value,
+              name: data.AnatomicContextName
+            });
+          if (anatomicRegionContextSources.length == 1)
+            $scope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
+        });
+      });
 
       $scope.addSegment = function() {
         currentLabelID += 1;
@@ -389,6 +464,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Anatomic Region";
+    self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
     self.selectedItemChange = function(item) {
@@ -396,9 +472,29 @@ define(['ajv'], function (Ajv) {
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(anatomicRegionJSONPath).success(function (data) {
-      $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
-      self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+    $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
+        return;
+      }
+      if (data.item) {
+        if(data.item.object.showAnatomy == "false") {
+          self.isDisabled = true;
+          self.searchText = undefined;
+        } else {
+          self.isDisabled = false;
+        }
+      } else {
+        self.searchText = undefined;
+      }
+    });
+
+    $scope.$watch('selectedAnatomicRegionContext', function () {
+      if ($scope.selectedAnatomicRegionContext != undefined) {
+        $http.get($scope.selectedAnatomicRegionContext.url).success(function (data) {
+          $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
+          self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+        });
+      }
     });
   });
 
@@ -447,9 +543,14 @@ define(['ajv'], function (Ajv) {
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(segmentationCategoryJSONPath).success(function (data) {
-      $scope.segmentationCodes = data.SegmentationCodes.Category;
-      self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
+    $scope.$watch('selectedSegmentationCategoryContext', function () {
+      if ($scope.selectedSegmentationCategoryContext != undefined) {
+
+        $http.get($scope.selectedSegmentationCategoryContext.url).success(function (data) {
+          $scope.segmentationCodes = data.SegmentationCodes.Category;
+          self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
+        });
+      }
     });
   });
 

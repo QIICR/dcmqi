@@ -4,6 +4,14 @@
       <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" class="container-fluid" novalidate
             class="customAutoComplete">
       <!--Series Attributes -->
+      <!--<div layout="row">-->
+        <!--<div flex ngf-drop ngf-select ng-model="file" class="drop-box"-->
+             <!--ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-allow-dir="false"-->
+             <!--accept="application/dicom"-->
+             <!--ngf-pattern="'application/dicom'">-->
+          <!--{{dropZoneText}}-->
+        <!--</div>-->
+      <!--</div>-->
       <div layout="row">
         <div>
         <md-input-container>
@@ -68,127 +76,150 @@
         </md-input-container>
         </div>
       </div>
-
-      <!--Segment Attributes-->
       <div layout="row">
         <div>
-        <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
+          <md-input-container>
+            <label>Segmentation Category Type Context Name</label>
+            <md-select ng-disabled="segments[0].segmentedPropertyCategory || segments.length > 1"
+                       ng-model="selectedSegmentationCategoryContext">
+              <md-option ng-repeat="context in segmentationContexts" ng-value="context">
+                {{context.name}}
+              </md-option>
+            </md-select>
+          </md-input-container>
         </div>
         <div>
-        <md-button class="smaller" ng-click="previousSegment()"
-                   ng-disabled="segments.length == 1 || selectedIndex == 0">
-          <md-tooltip md-direction="bottom">Previous segment</md-tooltip>
-          <div ng-show="segments.length == 1  || selectedIndex == 0">
-          <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
-          </div>
-          <div ng-show="segments.length > 1  && selectedIndex != 0">
-          <ng-md-icon  icon="keyboard_arrow_left" style="fill:black"/>
-          </div>
-        </md-button>
-        <md-button class="smaller" ng-click="nextSegment()"
-                   ng-disabled="segments.length == 1 || selectedIndex == segments.length-1">
-          <md-tooltip md-direction="bottom">Next segment</md-tooltip>
-          <div ng-show="segments.length == 1 || selectedIndex == segments.length-1">
-          <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
-          </div>
-          <div ng-show="segments.length > 1 && selectedIndex < segments.length-1">
-          <ng-md-icon  icon="keyboard_arrow_right" style="fill:black"/>
-          </div>
-        </md-button>
-        <md-button class="smaller" ng-click="addSegment()">
-          <md-tooltip md-direction="bottom">Add segment</md-tooltip>
-          <ng-md-icon icon="add" style="fill:black"/>
-        </md-button>
-        <md-button class="smaller" ng-click="removeSegment()" ng-disabled="segments.length == 1">
-          <md-tooltip md-direction="bottom">Remove segment</md-tooltip>
-          <div ng-show="segments.length == 1">
-          <ng-md-icon icon="delete" style="fill:grey"/>
-          </div>
-          <div ng-show="segments.length != 1">
-          <ng-md-icon icon="delete" style="fill:black"/>
-          </div>
-        </md-button>
+          <md-input-container>
+            <label>Anatomic Region Context Name</label>
+            <md-select ng-disabled="segments[0].anatomicRegion || segments.length > 1"
+                       ng-model="selectedAnatomicRegionContext">
+              <md-option ng-repeat="context in anatomicRegionContexts" ng-value="context">
+                {{context.name}}
+              </md-option>
+            </md-select>
+          </md-input-container>
         </div>
       </div>
-      <div layout="column">
+      <!--Segment Attributes-->
+      <div layout="row" ng-show="selectedSegmentationCategoryContext != undefined">
+        <div>
+          <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
+        </div>
+        <div>
+          <md-button class="smaller" ng-click="previousSegment()"
+                     ng-disabled="segments.length == 1 || selectedIndex == 0">
+            <md-tooltip md-direction="bottom">Previous segment</md-tooltip>
+            <div ng-show="segments.length == 1  || selectedIndex == 0">
+              <ng-md-icon  icon="keyboard_arrow_left" style="fill:grey"/>
+            </div>
+            <div ng-show="segments.length > 1  && selectedIndex != 0">
+              <ng-md-icon  icon="keyboard_arrow_left" style="fill:black"/>
+            </div>
+          </md-button>
+          <md-button class="smaller" ng-click="nextSegment()"
+                     ng-disabled="segments.length == 1 || selectedIndex == segments.length-1">
+            <md-tooltip md-direction="bottom">Next segment</md-tooltip>
+            <div ng-show="segments.length == 1 || selectedIndex == segments.length-1">
+              <ng-md-icon  icon="keyboard_arrow_right" style="fill:grey"/>
+            </div>
+            <div ng-show="segments.length > 1 && selectedIndex < segments.length-1">
+              <ng-md-icon  icon="keyboard_arrow_right" style="fill:black"/>
+            </div>
+          </md-button>
+          <md-button class="smaller" ng-click="addSegment()">
+            <md-tooltip md-direction="bottom">Add segment</md-tooltip>
+            <ng-md-icon icon="add" style="fill:black"/>
+          </md-button>
+          <md-button class="smaller" ng-click="removeSegment()" ng-disabled="segments.length == 1">
+            <md-tooltip md-direction="bottom">Remove segment</md-tooltip>
+            <div ng-show="segments.length == 1">
+              <ng-md-icon icon="delete" style="fill:grey"/>
+            </div>
+            <div ng-show="segments.length != 1">
+              <ng-md-icon icon="delete" style="fill:black"/>
+            </div>
+          </md-button>
+        </div>
+      </div>
+      <div layout="column" ng-show="selectedSegmentationCategoryContext != undefined">
         <md-tabs md-selected="selectedIndex" md-autoselect md-dynamic-height>
-        <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
-          <md-tab-template layout="column">
-          <div layout="row">
-            <div>
-              <md-input-container>
-                <label>LabelID</label>
-                <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/"
-                       non-Existent-Label>
-                <div ng-messages="jsonForm.LabelID.$error" role="alert">
-                <div ng-message="required" class="my-message">You must supply a label id.</div>
-                <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
-                </div>
-              </md-input-container>
-            </div>
-            <div>
-              <md-input-container>
-                <label>SegmentDescription</label>
-                <input ng-model="segment.SegmentDescription">
-              </md-input-container>
-            </div>
-            <div>
-              <md-input-container>
-                <label>SegmentAlgorithmType</label>
-                <md-select required name="SegmentAlgorithmType_{{segment.LabelID}}"
-                           ng-model="segment.SegmentAlgorithmType">
-                  <md-option ng-repeat="segmentAlgorithmType in segmentAlgorithmTypes" ng-value="segmentAlgorithmType">
-                    {{segmentAlgorithmType}}
-                  </md-option>
-                </md-select>
-              </md-input-container>
-            </div>
-            <div ng-show="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"  flex>
-              <md-input-container>
-                <label>SegmentAlgorithmName</label>
-                <input ng-required="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"
-                       name="SegmentAlgorithmName_{{segment.LabelID}}" ng-model="segment.SegmentAlgorithmName">
-              </md-input-container>
-            </div>
-          </div>
-          <div layout="row">
-            <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl" class="ng-scope" flex>
-            <custom-Autocomplete></custom-Autocomplete>
-            </div>
-            <div ng-controller="SegmentedPropertyTypeController as ctrl" class="ng-scope" flex>
-            <custom-Autocomplete></custom-Autocomplete>
-            </div>
-          </div>
-          <div layout="row">
-            <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
-            <custom-Autocomplete></custom-Autocomplete>
-            </div>
-            <div flex label="Recommended Display RGB Value"
-                 md-color-picker="segment.recommendedDisplayRGBValue.backgroundOptions"
-                 ng-model="segment.recommendedDisplayRGBValue.color"></div>
-          </div>
-          <div layout="row">
-            <v-accordion flex class="vAccordion--default" multiple>
-            <v-pane>
-              <v-pane-header>Optional</v-pane-header>
-              <v-pane-content>
-              <div layout="row">
-                <div ng-controller="AnatomicRegionController as ctrl" flex>
-                <custom-Autocomplete></custom-Autocomplete>
-                </div>
-                <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
-                <custom-Autocomplete></custom-Autocomplete>
-                </div>
+          <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
+            <md-tab-template layout="column">
+            <div layout="row">
+              <div>
+                <md-input-container>
+                  <label>LabelID</label>
+                  <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/"
+                         non-Existent-Label>
+                  <div ng-messages="jsonForm.LabelID.$error" role="alert">
+                  <div ng-message="required" class="my-message">You must supply a label id.</div>
+                  <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
+                  </div>
+                </md-input-container>
               </div>
-              </v-pane-content>
-            </v-pane>
-            </v-accordion>
-          </div>
-          </md-tab-template>
-        </md-tab>
+              <div>
+                <md-input-container>
+                  <label>SegmentDescription</label>
+                  <input ng-model="segment.SegmentDescription">
+                </md-input-container>
+              </div>
+              <div>
+                <md-input-container>
+                  <label>SegmentAlgorithmType</label>
+                  <md-select required name="SegmentAlgorithmType_{{segment.LabelID}}"
+                             ng-model="segment.SegmentAlgorithmType">
+                    <md-option ng-repeat="segmentAlgorithmType in segmentAlgorithmTypes" ng-value="segmentAlgorithmType">
+                      {{segmentAlgorithmType}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>
+              </div>
+              <div ng-show="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"  flex>
+                <md-input-container>
+                  <label>SegmentAlgorithmName</label>
+                  <input ng-required="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"
+                         name="SegmentAlgorithmName_{{segment.LabelID}}" ng-model="segment.SegmentAlgorithmName">
+                </md-input-container>
+              </div>
+            </div>
+            <div layout="row">
+              <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl" class="ng-scope" flex>
+              <custom-Autocomplete></custom-Autocomplete>
+              </div>
+              <div ng-controller="SegmentedPropertyTypeController as ctrl" class="ng-scope" flex>
+              <custom-Autocomplete></custom-Autocomplete>
+              </div>
+            </div>
+            <div layout="row">
+              <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
+              <custom-Autocomplete></custom-Autocomplete>
+              </div>
+              <div flex label="Recommended Display RGB Value"
+                   md-color-picker="segment.recommendedDisplayRGBValue.backgroundOptions"
+                   ng-model="segment.recommendedDisplayRGBValue.color"></div>
+            </div>
+            <div layout="row">
+              <v-accordion flex class="vAccordion--default" multiple>
+              <v-pane>
+                <v-pane-header>Optional</v-pane-header>
+                <v-pane-content>
+                <div layout="row" ng-show="selectedAnatomicRegionContext != undefined" >
+                  <div ng-controller="AnatomicRegionController as ctrl" flex>
+                  <custom-Autocomplete></custom-Autocomplete>
+                  </div>
+                  <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
+                  <custom-Autocomplete></custom-Autocomplete>
+                  </div>
+                </div>
+                </v-pane-content>
+              </v-pane>
+              </v-accordion>
+            </div>
+            </md-tab-template>
+          </md-tab>
         </md-tabs>
       </div>
-      <div layout="row">
+      <div layout="row" ng-show="selectedSegmentationCategoryContext != undefined">
         <div>
         <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
         </div>
