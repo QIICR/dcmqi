@@ -10,9 +10,11 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   // var segSchemaID = webAssets + 'seg-schema.json';
   var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
+  var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json';
 
-  var anatomicRegionJSONPath = webAssets+'segContexts/AnatomicRegionAndModifier.json'; // fallback should be local
-  var segmentationCategoryJSONPath = webAssets+'segContexts/SegmentationCategoryTypeModifierRGB.json'; // fallback should be local
+  var segmentationCategoryTypeSources = [webAssets+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
+                                         webAssets+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
+
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
                                                     'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
@@ -264,6 +266,15 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         };
       }
 
+      $scope.segmentationContexts = [];
+      $scope.selectedSegmentationCategoryContext = undefined;
+      angular.forEach(segmentationCategoryTypeSources, function(value, key) {
+        $http.get(value).success(function (data) {
+          $scope.segmentationContexts.push({url: value,
+            name: data.SegmentationCategoryTypeContextName});
+        });
+      });
+
       $scope.addSegment = function() {
         currentLabelID += 1;
         var segment = loadAndValidateDefaultSegmentAttributes();
@@ -491,9 +502,14 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
     };
 
-    $http.get(segmentationCategoryJSONPath).success(function (data) {
-      $scope.segmentationCodes = data.SegmentationCodes.Category;
-      self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
+    $scope.$watch('selectedSegmentationCategoryContext', function () {
+      if ($scope.selectedSegmentationCategoryContext != undefined) {
+
+        $http.get($scope.selectedSegmentationCategoryContext.url).success(function (data) {
+          $scope.segmentationCodes = data.SegmentationCodes.Category;
+          self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
+        });
+      }
     });
   });
 
