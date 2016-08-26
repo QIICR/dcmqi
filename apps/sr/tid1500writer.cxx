@@ -1,5 +1,3 @@
-//#include "TID1500Converter.h"
-
 #include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 
 // UIDs
@@ -197,14 +195,19 @@ int main(int argc, char** argv){
   }
 
   // cleanup duplicate modality from image descriptor entry
-  {
-    DSRDocumentTree &st = doc.getTree();
-    size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
-    nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
-    while(nnid){
-      CHECK_COND(st.removeSubTree());
-      nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
-      nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
+  //  - if we have any imageLibrary items supplied
+  if(metaRoot.isMember("imageLibrary")){
+    if(metaRoot["imageLibrary"].size()){
+      DSRDocumentTree &st = doc.getTree();
+      size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
+      if(nnid)
+        nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
+      while(nnid){
+        CHECK_COND(st.removeSubTree());
+        nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
+        if(nnid)
+          nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
+      }
     }
   }
 
