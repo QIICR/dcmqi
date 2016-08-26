@@ -190,7 +190,6 @@ int main(int argc, char** argv){
  }
 
   DSRDocument doc;
-  std::cout << "Setting tree from the report" << std::endl;
   OFCondition cond = doc.setTreeFromRootTemplate(report, OFTrue /*expandTree*/);
   if(cond.bad()){
     std::cout << "Failure: " << cond.text() << std::endl;
@@ -198,14 +197,16 @@ int main(int argc, char** argv){
   }
 
   // cleanup duplicate modality from image descriptor entry
-  DSRDocumentTree &st = doc.getTree();
-  size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
-  st.goDown();
-  st.removeSubTree();
-  while(nnid){
-    nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
-    st.goDown();
-    st.removeSubTree();
+  {
+    DSRDocumentTree &st = doc.getTree();
+    DSRCodedEntryValue modalityCode("121139","DCM","Modality");
+    size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
+    nnid = st.gotoNamedChildNode(modalityCode);
+    while(nnid){
+      CHECK_COND(st.removeSubTree());
+      nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
+      nnid = st.gotoNamedChildNode(modalityCode);
+    }
   }
 
   // WARNING: no consistency checks between the referenced UIDs and the
@@ -225,7 +226,6 @@ int main(int argc, char** argv){
 
   OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);
 
-  std::cout << "About to write the document" << std::endl;
   if(!outputFileName.empty()){
     DcmFileFormat ff;
     DcmDataset *dataset = ff.getDataset();
