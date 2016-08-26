@@ -101,7 +101,7 @@ int main(int argc, char** argv){
 
       if(i==0){
         DcmDataset imageLibGroupDataset;
-        DcmTag commonTagsToCopy[] =   {DCM_SOPClassUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
+        const DcmTagKey commonTagsToCopy[] =   {DCM_SOPClassUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
         for(int t=0;t<STATIC_ARRAY_SIZE(commonTagsToCopy);t++){
           ff.getDataset()->findAndInsertCopyOfElement(commonTagsToCopy[t],&imageLibGroupDataset);
         }
@@ -109,10 +109,11 @@ int main(int argc, char** argv){
       }
 
       DcmDataset imageEntryDataset;
-      DcmTag imageTagsToCopy[] = {DCM_Modality,DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_ImagePositionPatient};
+      const DcmTagKey imageTagsToCopy[] = {DCM_Modality,DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_ImagePositionPatient};
       for(int t=0;t<STATIC_ARRAY_SIZE(imageTagsToCopy);t++)
         ff.getDataset()->findAndInsertCopyOfElement(imageTagsToCopy[t],&imageEntryDataset);
       CHECK_COND(report.getImageLibrary().addImageEntry(imageEntryDataset,TID1600_ImageLibrary::withAllDescriptors));
+
     }
   }
 
@@ -194,6 +195,17 @@ int main(int argc, char** argv){
   if(cond.bad()){
     std::cout << "Failure: " << cond.text() << std::endl;
     return -1;
+  }
+
+  // cleanup duplicate modality from image descriptor entry
+  DSRDocumentTree &st = doc.getTree();
+  size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
+  st.goDown();
+  st.removeSubTree();
+  while(nnid){
+    nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
+    st.goDown();
+    st.removeSubTree();
   }
 
   // WARNING: no consistency checks between the referenced UIDs and the
