@@ -44,11 +44,7 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
     } \
   } while (0);
 
-DSRBasicCodedEntry json2bce(Json::Value& j){
-  return DSRBasicCodedEntry(j["codeValue"].asCString(),
-    j["codingSchemeDesignator"].asCString(),
-    j["codeMeaning"].asCString());
-}
+#define STATIC_ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
 DSRCodedEntryValue json2cev(Json::Value& j){
   return DSRCodedEntryValue(j["codeValue"].asCString(),
@@ -56,19 +52,11 @@ DSRCodedEntryValue json2cev(Json::Value& j){
     j["codeMeaning"].asCString());
 }
 
-void copyElement(const DcmTag& tag, DcmDataset* d1, DcmDataset* d2){
-  const char* str = NULL;
-  if(d1->findAndGetString(tag,str).good()){
-    OFCHECK(d2->putAndInsertString(tag,str).good());
-  }
-}
-
 void addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
   DcmFileFormat ff;
-  OFString dir = dirStr.c_str(),
-     imageLibItem = fileStr.c_str(), fullPath;
-  CHECK_COND(ff.loadFile(OFStandard::combineDirAndFilename(fullPath,dir,imageLibItem)));
-  doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset());
+  OFString fullPath;
+  CHECK_COND(ff.loadFile(OFStandard::combineDirAndFilename(fullPath,dirStr.c_str(),fileStr.c_str())));
+  CHECK_COND(doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset()));
 }
 
 int main(int argc, char** argv){
@@ -111,18 +99,20 @@ int main(int argc, char** argv){
       CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
 
 
-      DcmDataset imageLibDataset;
-      DcmTag tagsToCopy[] = {DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
-      // no DCM_ImagePositionPatient - it should be under individual image
-      for(int t=0;t<9;t++){
-        copyElement(tagsToCopy[t], ff.getDataset(), &imageLibDataset);
+      if(i==0){
+        DcmDataset imageLibGroupDataset;
+        DcmTag commonTagsToCopy[] =   {DCM_SOPClassUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
+        for(int t=0;t<STATIC_ARRAY_SIZE(commonTagsToCopy);t++){
+          ff.getDataset()->findAndInsertCopyOfElement(commonTagsToCopy[t],&imageLibGroupDataset);
+        }
+        CHECK_COND(report.getImageLibrary().addImageEntryDescriptors(imageLibGroupDataset));
       }
 
-      if(i==0)
-        CHECK_COND(report.getImageLibrary().addImageEntryDescriptors(imageLibDataset));
-
-      // TODO: would also be nice to include ImagePositionPatient under each individual image entry!
-      CHECK_COND(report.getImageLibrary().addImageEntry(*ff.getDataset()));
+      DcmDataset imageEntryDataset;
+      DcmTag imageTagsToCopy[] = {DCM_Modality,DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_ImagePositionPatient};
+      for(int t=0;t<STATIC_ARRAY_SIZE(imageTagsToCopy);t++)
+        ff.getDataset()->findAndInsertCopyOfElement(imageTagsToCopy[t],&imageEntryDataset);
+      CHECK_COND(report.getImageLibrary().addImageEntry(imageEntryDataset,TID1600_ImageLibrary::withAllDescriptors));
     }
   }
 
@@ -172,8 +162,8 @@ int main(int argc, char** argv){
     segment.getSegmentList().addItem(measurementGroup["ReferencedSegment"].asInt());
     CHECK_COND(measurements.setReferencedSegment(segment));
 
-    CHECK_COND(measurements.setFinding(json2bce(measurementGroup["Finding"])));
-    CHECK_COND(measurements.setFindingSite(json2bce(measurementGroup["FindingSite"])));
+    CHECK_COND(measurements.setFinding(json2cev(measurementGroup["Finding"])));
+    CHECK_COND(measurements.setFindingSite(json2cev(measurementGroup["FindingSite"])));
 
     if(measurementGroup.isMember("MeasurementMethod"))
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
