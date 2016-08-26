@@ -199,13 +199,12 @@ int main(int argc, char** argv){
   // cleanup duplicate modality from image descriptor entry
   {
     DSRDocumentTree &st = doc.getTree();
-    DSRCodedEntryValue modalityCode("121139","DCM","Modality");
     size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
-    nnid = st.gotoNamedChildNode(modalityCode);
+    nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
     while(nnid){
       CHECK_COND(st.removeSubTree());
       nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
-      nnid = st.gotoNamedChildNode(modalityCode);
+      nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
     }
   }
 
