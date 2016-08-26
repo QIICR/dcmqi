@@ -200,13 +200,12 @@ int main(int argc, char** argv){
     if(metaRoot["imageLibrary"].size()){
       DSRDocumentTree &st = doc.getTree();
       size_t nnid = st.gotoAnnotatedNode("TID 1601 - Row 1");
-      if(nnid)
+      while (nnid) {
         nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
-      while(nnid){
-        CHECK_COND(st.removeSubTree());
-        nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
-        if(nnid)
-          nnid = st.gotoNamedChildNode(CODE_DCM_Modality);
+        if (nnid) {
+          CHECK_COND(st.removeSubTree());
+          nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
+        }
       }
     }
   }
