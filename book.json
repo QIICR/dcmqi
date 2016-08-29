@@ -1,0 +1,10 @@
+{
+  "pluginsConfig": {
+    "anchorjs": {
+      "icon": "#",
+      "placement": "left",
+      "visible": "always",
+      "class": "custom-class another-one"
+    }
+  }
+}
