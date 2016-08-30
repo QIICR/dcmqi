@@ -21,7 +21,9 @@ At the moment, we do not provide pre-built packages for dcmqi. If you want to gi
 
 dcmqi is not platform specific. Our goal is to support its use on Windows, Mac and Linux.
 
-Instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/).
+In the future (pending resolution of issues on the gitbooks platform), instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/).
+
+For now, please check out [dcmqi faq](https://github.com/QIICR/dcmqi-faq/issues) to find instructions on how to build dcmqi, and how to use certain components.
 
 # License
 
