@@ -21,7 +21,7 @@ At the moment, we do not provide pre-built packages for dcmqi. If you want to gi
 
 dcmqi is not platform specific. Our goal is to support its use on Windows, Mac and Linux.
 
-Instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi-dicom-for-quantitative-imaging/content/v/gitbook/).
+Instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/).
 
 # License
 
@@ -34,7 +34,7 @@ Our goal is to support and encourage adoption of the DICOM standard in both acad
 You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
 * send email to [Andrey Fedorov](http://fedorov.github.io)
-* leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi-dicom-for-quantitative-imaging/content/v/gitbook/)
+* leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/)
 
 # dcmqi health monitors
 
