@@ -25,7 +25,7 @@ Instructions on how to build dcmqi and how to use it will be provided in the [dc
 
 You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
-* send email to[Andrey Fedorov](http://fedorov.github.io)
+* send email to [Andrey Fedorov](http://fedorov.github.io)
 * leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi-dicom-for-quantitative-imaging/content/v/gitbook/)
 
 # Acknowledgments
