@@ -19,7 +19,15 @@ dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
 
 At the moment, we do not provide pre-built packages for dcmqi. If you want to give it a try, you will need to check out the source code and build it yourself. 
 
+dcmqi is not platform specific. Our goal is to support its use on Windows, Mac and Linux.
+
 Instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi-dicom-for-quantitative-imaging/content/v/gitbook/).
+
+# License
+
+dcmqi is distributed under non-restrictive BSD-style license (see full text [here](https://github.com/QIICR/dcmqi/blob/master/LICENSE.txt)) that does not have any constraints on either commercial or academic usage.
+
+Our goal is to support and encourage adoption of the DICOM standard in both academic and research tools. We will be happy to hear about your usage of dcmqi, but you don't have to report back to us.
 
 # Support
 
@@ -27,6 +35,14 @@ You can communicate you feedback, feature requests, comments or problem reports 
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
 * send email to [Andrey Fedorov](http://fedorov.github.io)
 * leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi-dicom-for-quantitative-imaging/content/v/gitbook/)
+
+# dcmqi health monitors
+
+Indicators below can be used to check whether current version of dcmqi source code has any build or testing issues on our continuous integration platforms (green means good).
+
+* Linux build: [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
+* Windows build: [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
+* Mac OS X build: [![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
 
 # Acknowledgments
 
