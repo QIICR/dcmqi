@@ -33,10 +33,14 @@ Our goal is to support and encourage adoption of the DICOM standard in both acad
 
 # Support
 
-You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
+We are most interested in the feedback of early testers and adopters. You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
+
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
 * send email to [Andrey Fedorov](http://fedorov.github.io)
 * leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/)
+
+
+Note that dcmqi is under active development; command line arguments, schemas, examples can (and most likely, will) change as we refined the software.
 
 # dcmqi health monitors
 
