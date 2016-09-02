@@ -134,7 +134,3 @@ or (more colorful!) [dsrdump](http://support.dcmtk.org/docs/dsrdump.html) from [
 ![image](https://cloud.githubusercontent.com/assets/313942/18153147/9f6ee6a8-6fc9-11e6-99bd-0bbd72be556b.png)
 
 You can also use [dicom-dump plugin](https://atom.io/packages/dicom-dump) in the [Atom editor](http://atom.io) to conveniently view the content without having to use the terminal.
-
-***Mandatory disclaimers***:
-* dcmqi is under active development; command line arguments, schemas, examples can (and most likely, will) change as we refined the software
-* we are most interested in the feedback of early testers and adopters - please submit an issue at https://github.com/QIICR/dcmqi/issues/new, or send email to [Andrey Fedorov](http://fedorov.github.io)
