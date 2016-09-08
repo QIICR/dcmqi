@@ -479,9 +479,7 @@ namespace dcmqi {
       }
     }
     // number of slices should be computed, since segmentation may have empty frames
-    // Small differences in image spacing could lead to computing number of slices incorrectly
-    // (it is always floored), round it with a tolerance instead.
-    imageSize[2] = int(computedVolumeExtent/imageSpacing[2]/tolerance+0.5)*tolerance+1;
+    imageSize[2] = ceil(computedVolumeExtent/imageSpacing[2])+1;
 
     // Initialize the image
     ImageType::RegionType imageRegion;
