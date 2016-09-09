@@ -49,6 +49,15 @@
     "MeasurementMethodCode": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
     },
+    "ModelFittingMethodCode": {
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+    },
+    "SourceImageDiffusionBValues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "RealWorldValueSlope": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/FD",
       "default": "1.0"

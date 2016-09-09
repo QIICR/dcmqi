@@ -16,6 +16,12 @@
     "CodingSchemeDesignator": "UCUM",
     "CodeMeaning": "square millimeter per second"
   },
+  "MeasurementMethodCode": {
+    "CodeValue": "DWMPxxxx10",
+    "CodingSchemeDesignator": "QIICR",
+    "CodeMeaning": "Mono-exponential diffusion model"
+  },
+  "SourceImageDiffusionBValues": ["0","1400"],
   "AnatomicRegionCode": {
     "CodeValue": "T-9200B",
     "CodingSchemeDesignator": "SRT",
