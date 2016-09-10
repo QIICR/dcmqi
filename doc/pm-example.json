@@ -18,7 +18,7 @@
   },
   "MeasurementMethodCode": {
     "CodeValue": "DWMPxxxx10",
-    "CodingSchemeDesignator": "QIICR",
+    "CodingSchemeDesignator": "99QIICR",
     "CodeMeaning": "Mono-exponential diffusion model"
   },
   "SourceImageDiffusionBValues": ["0","1400"],
