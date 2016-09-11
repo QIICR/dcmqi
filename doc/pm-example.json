@@ -12,7 +12,7 @@
     "CodeMeaning": "Apparent Diffusion Coefficient"
   },
   "MeasurementUnitsCode": {
-    "CodeValue": "mm2/s",
+    "CodeValue": "um2/s",
     "CodingSchemeDesignator": "UCUM",
     "CodeMeaning": "square millimeter per second"
   },
@@ -28,6 +28,6 @@
     "CodeMeaning": "Prostate"
   },
   "FrameLaterality" : "U",
-  "RealWorldValueSlope" : 1e-6,
+  "RealWorldValueSlope" : 1,
   "DerivedPixelContrast" : "ADC"
 }
