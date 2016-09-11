@@ -212,7 +212,7 @@ namespace dcmqi {
         bval->setValueType(ContentItemMacro::VT_NUMERIC);
         bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
         bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
-        if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][bvalId].asCString(),false).bad())
+        if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
           cout << "Failed to insert the value!" << endl;;
         realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
         cout << bval->toString() << endl;
