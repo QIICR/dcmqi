@@ -213,9 +213,13 @@ int main(int argc, char** argv){
   // WARNING: no consistency checks between the referenced UIDs and the
   //  referencedDICOMFileNames ...
   DcmFileFormat ccFileFormat;
+  bool compositeContextInitialized = false;
   if(metaRoot.isMember("compositeContext")){
     for(int i=0;i<metaRoot["compositeContext"].size();i++){
+      OFString fullPath;
       addFileToEvidence(doc,compositeContextDataDir,metaRoot["compositeContext"][i].asString());
+      CHECK_COND(ccFileFormat.loadFile(OFStandard::combineDirAndFilename(fullPath,compositeContextDataDir.c_str(),metaRoot["compositeContext"][i].asCString())));
+      compositeContextInitialized = true;
     }
   }
 
@@ -232,9 +236,11 @@ int main(int argc, char** argv){
     DcmDataset *dataset = ff.getDataset();
     CHECK_COND(doc.write(*dataset));
 
-    DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
-    DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
-    DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
+    if(compositeContextInitialized){
+      DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
+      DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
+      DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
+    }
 
     CHECK_COND(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
     std::cout << "SR saved!" << std::endl;
