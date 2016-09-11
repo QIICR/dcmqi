@@ -14,7 +14,7 @@
   "MeasurementUnitsCode": {
     "CodeValue": "um2/s",
     "CodingSchemeDesignator": "UCUM",
-    "CodeMeaning": "square millimeter per second"
+    "CodeMeaning": "um2/s"
   },
   "MeasurementMethodCode": {
     "CodeValue": "DWMPxxxx10",
