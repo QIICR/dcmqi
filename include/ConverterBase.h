@@ -76,11 +76,16 @@ namespace dcmqi {
       vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, colDirection);
       sliceDirection.normalize();
 
+      cout << "Row direction: " << rowDirection << endl;
+      cout << "Col direction: " << colDirection << endl;
+
       for(int i=0;i<3;i++){
         dir[i][0] = rowDirection[i];
         dir[i][1] = colDirection[i];
         dir[i][2] = sliceDirection[i];
       }
+
+      cout << "Z direction: " << sliceDirection << endl;
 
       return 0;
     }
@@ -99,6 +104,8 @@ namespace dcmqi {
       map<OFString, double> originStr2distance;
       map<OFString, unsigned> frame2overlap;
       double minDistance;
+
+      sliceSpacing = 0;
 
       unsigned numFrames = fgInterface.getNumberOfFrames();
 
@@ -190,34 +197,44 @@ namespace dcmqi {
         }
       }
 
-      // sort all unique distances, this will be used to check consistency of
-      //  slice spacing, and also to locate the slice position from ImagePositionPatient
-      //  later when we read the segments
-      sort(originDistances.begin(), originDistances.end());
+      // it IS possible to have a segmentation object containing just one frame!
+      if(numFrames>1){
+        // WARNING: this should be improved further. Spacing should be calculated for
+        //  consecutive frames of the individual segment. Right now, all frames are considered
+        //  indiscriminately. Question is whether it should be computed at all, considering we do
+        //  not have any information about whether the 2 frames are adjacent or not, so perhaps we should
+        //  always rely on the declared spacing, and not even try to compute it?
+        // TODO: discuss this with the QIICR team!
 
-      sliceSpacing = fabs(originDistances[0]-originDistances[1]);
+        // sort all unique distances, this will be used to check consistency of
+        //  slice spacing, and also to locate the slice position from ImagePositionPatient
+        //  later when we read the segments
+        sort(originDistances.begin(), originDistances.end());
 
-      for(int i=1;i<originDistances.size();i++){
-        float dist1 = fabs(originDistances[i-1]-originDistances[i]);
-        float delta = sliceSpacing-dist1;
-        if(delta > 0.001){
-          cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
-          " difference exceeded threshold: " << delta << endl;
+        sliceSpacing = fabs(originDistances[0]-originDistances[1]);
+
+        for(int i=1;i<originDistances.size();i++){
+          float dist1 = fabs(originDistances[i-1]-originDistances[i]);
+          float delta = sliceSpacing-dist1;
+          if(delta > 0.001){
+            cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
+            " difference exceeded threshold: " << delta << endl;
+          }
         }
-      }
 
-      sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
-      unsigned overlappingFramesCnt = 0;
-      for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
-          it!=frame2overlap.end();++it){
-        if(it->second>1)
-          overlappingFramesCnt++;
-      }
+        sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
+        unsigned overlappingFramesCnt = 0;
+        for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
+            it!=frame2overlap.end();++it){
+            if(it->second>1)
+              overlappingFramesCnt++;
+        }
 
-      cout << "Total frames: " << numFrames << endl;
-      cout << "Total frames with unique IPP: " << originDistances.size() << endl;
-      cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
-      cout << "Origin: " << imageOrigin << endl;
+        cout << "Total frames: " << numFrames << endl;
+        cout << "Total frames with unique IPP: " << originDistances.size() << endl;
+        cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
+        cout << "Origin: " << imageOrigin << endl;
+      }
 
       return 0;
     }
@@ -241,7 +258,8 @@ namespace dcmqi {
       } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
         // SliceThickness can be carried forward from the source images, and may not be what we need
         // As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
-        cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". NOT using it!" << endl;
+        cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". using it!" << endl;
+        spacing[2] = spacingFloat;
       }
       return 0;
     }

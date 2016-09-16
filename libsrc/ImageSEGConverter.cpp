@@ -459,6 +459,10 @@ namespace dcmqi {
     }
 
     const double tolerance = 1e-5;
+    if(!imageSpacing[2] && !computedSliceSpacing){
+      cerr << "FATAL ERROR: No sufficient information to derive slice spacing! Unable to interpret the data." << endl;
+      throw -1;
+    }
     if(!imageSpacing[2]){
       imageSpacing[2] = computedSliceSpacing;
     }
