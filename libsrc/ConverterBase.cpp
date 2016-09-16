@@ -27,12 +27,12 @@ namespace dcmqi {
     if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentDescription")){
       CHECK_COND(ident.setContentDescription(metaInfo.metaInfoRoot["seriesAttributes"]["ContentDescription"].asCString()));
     } else {
-      CHECK_COND(ident.setContentDescription("Image segmentation"));
+      CHECK_COND(ident.setContentDescription("DCMQI"));
     }
     if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentLabel")){
       CHECK_COND(ident.setContentLabel(metaInfo.metaInfoRoot["seriesAttributes"]["ContentLabel"].asCString()));
     } else {
-      CHECK_COND(ident.setContentLabel("SEGMENTATION"));
+      CHECK_COND(ident.setContentLabel("DCMQI"));
     }
     return ident;
   }

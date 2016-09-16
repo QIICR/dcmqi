@@ -12,16 +12,22 @@
     "CodeMeaning": "Apparent Diffusion Coefficient"
   },
   "MeasurementUnitsCode": {
-    "CodeValue": "mm2/s",
+    "CodeValue": "um2/s",
     "CodingSchemeDesignator": "UCUM",
-    "CodeMeaning": "square millimeter per second"
+    "CodeMeaning": "um2/s"
   },
+  "MeasurementMethodCode": {
+    "CodeValue": "DWMPxxxx10",
+    "CodingSchemeDesignator": "99QIICR",
+    "CodeMeaning": "Mono-exponential diffusion model"
+  },
+  "SourceImageDiffusionBValues": ["0","1400"],
   "AnatomicRegionCode": {
     "CodeValue": "T-9200B",
     "CodingSchemeDesignator": "SRT",
     "CodeMeaning": "Prostate"
   },
   "FrameLaterality" : "U",
-  "RealWorldValueSlope" : 1e-6,
+  "RealWorldValueSlope" : 1,
   "DerivedPixelContrast" : "ADC"
 }
