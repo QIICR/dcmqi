@@ -1,0 +1,33 @@
+{
+  "@schema" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json#",
+
+  "SeriesDescription": "Apparent Diffusion Coefficient",
+  "SeriesNumber": "701",
+  "InstanceNumber": "1",
+  "BodyPartExamined" : "PROSTATE",
+
+  "QuantityValueCode": {
+    "CodeValue": "113041",
+    "CodingSchemeDesignator": "DCM",
+    "CodeMeaning": "Apparent Diffusion Coefficient"
+  },
+  "MeasurementUnitsCode": {
+    "CodeValue": "m2/s",
+    "CodingSchemeDesignator": "UCUM",
+    "CodeMeaning": "m2/s"
+  },
+  "MeasurementMethodCode": {
+    "CodeValue": "DWMPxxxx10",
+    "CodingSchemeDesignator": "99QIICR",
+    "CodeMeaning": "Mono-exponential diffusion model"
+  },
+  "SourceImageDiffusionBValues": ["0","1400"],
+  "AnatomicRegionCode": {
+    "CodeValue": "T-9200B",
+    "CodingSchemeDesignator": "SRT",
+    "CodeMeaning": "Prostate"
+  },
+  "FrameLaterality" : "U",
+  "RealWorldValueSlope" : 1,
+  "DerivedPixelContrast" : "ADC"
+}

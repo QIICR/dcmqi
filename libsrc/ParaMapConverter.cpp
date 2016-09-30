@@ -412,10 +412,12 @@ namespace dcmqi {
     }
 
     // Plane Position
-    OFStringStream ss;
-    ss << frameNo;
-    OFSTRINGSTREAM_GETOFSTRING(ss, framestr) // convert number to string
-    fgPlanePos->setImagePositionPatient("0", "0", framestr);
+    ImageType::PointType sliceOriginPoint;
+    parametricMapImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
+    fgPlanePos->setImagePositionPatient(
+        Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
+        Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
+        Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
 
     // Frame Content
     OFCondition result = fgFracon->setDimensionIndexValues(frameNo+1 /* value within dimension */, 0 /* first dimension */);
