@@ -458,13 +458,9 @@ namespace dcmqi {
       throw -1;
     }
 
-    const double tolerance = 1e-5;
     if(!imageSpacing[2]){
-      imageSpacing[2] = computedSliceSpacing;
-    }
-    else if(fabs(imageSpacing[2]-computedSliceSpacing)>tolerance){
-      cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
-      " Declared = " << imageSpacing[2] << " Computed = " << computedSliceSpacing << endl;
+      cerr << "FATAL ERROR: No sufficient information to derive slice spacing! Unable to interpret the data." << endl;
+      throw -1;
     }
 
     // Region size
