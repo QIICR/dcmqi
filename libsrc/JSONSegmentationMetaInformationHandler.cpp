@@ -122,9 +122,9 @@ namespace dcmqi {
           segment["AnatomicRegionModifier"] = codeSequence2Json(segmentAttributes->getAnatomicRegionModifier());
 
         Json::Value rgb(Json::arrayValue);
-        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[0]));
-        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[1]));
-        rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[2]));
+        rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[0]);
+        rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[1]);
+        rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[2]);
         segment["recommendedDisplayRGBValue"] = rgb;
         Json::Value innerList(Json::arrayValue);
         innerList.append(segment);
