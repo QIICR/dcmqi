@@ -107,19 +107,19 @@ namespace dcmqi {
           segment["SegmentAlgorithmName"] = segmentAttributes->getSegmentAlgorithmName();
 
         if (segmentAttributes->getSegmentedPropertyCategoryCode())
-          segment["SegmentedPropertyCategoryCode"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyCategoryCode());
+          segment["SegmentedPropertyCategoryCodeSequence"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyCategoryCode());
 
         if (segmentAttributes->getSegmentedPropertyType())
-          segment["SegmentedPropertyType"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyType());
+          segment["SegmentedPropertyTypeCodeSequence"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyType());
 
         if (segmentAttributes->getSegmentedPropertyTypeModifier())
-          segment["SegmentedPropertyTypeModifier"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyTypeModifier());
+          segment["SegmentedPropertyTypeModifierCodeSequence"] = codeSequence2Json(segmentAttributes->getSegmentedPropertyTypeModifier());
 
         if (segmentAttributes->getAnatomicRegion())
-          segment["AnatomicRegion"] = codeSequence2Json(segmentAttributes->getAnatomicRegion());
+          segment["AnatomicRegionCodeSequence"] = codeSequence2Json(segmentAttributes->getAnatomicRegion());
 
         if (segmentAttributes->getAnatomicRegionModifier())
-          segment["AnatomicRegionModifier"] = codeSequence2Json(segmentAttributes->getAnatomicRegionModifier());
+          segment["AnatomicRegionModifierCodeSequence"] = codeSequence2Json(segmentAttributes->getAnatomicRegionModifier());
 
         Json::Value rgb(Json::arrayValue);
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[0]);
