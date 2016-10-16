@@ -125,7 +125,7 @@ namespace dcmqi {
         rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[0]));
         rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[1]));
         rgb.append(Helper::toString(segmentAttributes->getRecommendedDisplayRGBValue()[2]));
-        segment["RecommendedDisplayRGBValue"] = rgb;
+        segment["recommendedDisplayRGBValue"] = rgb;
         Json::Value innerList(Json::arrayValue);
         innerList.append(segment);
         values.append(innerList);
@@ -198,11 +198,11 @@ namespace dcmqi {
         }
         segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
         segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());
-        Json::Value rgbArray = segment.get("RecommendedDisplayRGBValue", "128,174,128");
+        Json::Value rgbArray = segment.get("recommendedDisplayRGBValue", "128,174,128");
         if (rgbArray.size() > 0) {
           unsigned rgb[3];
           for (unsigned int index = 0; index < rgbArray.size(); ++index)
-            rgb[index] = atoi(rgbArray[index].asCString());
+            rgb[index] = rgbArray[index].asInt();
           segmentAttribute->setRecommendedDisplayRGBValue(rgb);
         }
       }
