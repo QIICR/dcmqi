@@ -35,7 +35,7 @@ add_test(NAME ${MODULE_NAME}_makeSEG
         --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm
        )
 
-add_test(NAME seg_roundtrip
+add_test(NAME seg_meta_roundtrip
          COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
          ${MODULE_TEMP_DIR}/meta.json
          ${CMAKE_SOURCE_DIR}/doc/seg-example.json
