@@ -1,5 +1,6 @@
 {
   "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json#",
+
   "SeriesDescription": "Measurements",
   "SeriesNumber": "1001",
   "InstanceNumber": "1",
@@ -27,122 +28,120 @@
 
   "Measurements": [
     {
-      "MeasurementGroup": {
-        "TrackingIdentifier": "Measurements group 1",
-        "ReferencedSegment": 1,
-        "SourceSeriesForImageSegmentation": "1.2.392.200103.20080913.113635.2.2009.6.22.21.43.10.23431.1",
-        "segmentationSOPInstanceUID": "1.2.276.0.7230010.3.1.4.0.42154.1458337731.665796",
-        "Finding": {
-          "codeValue": "T-D0060",
-          "codingSchemeDesignator": "SRT",
-          "codeMeaning": "Organ"
-        },
-        "FindingSite": {
-          "codeValue": "T-62000",
-          "codingSchemeDesignator": "SRT",
-          "codeMeaning": "Liver"
-        },
-        "measurementItems": [
-          {
-            "value": "37.3289",
-            "quantity": {
-              "codeValue": "122713",
-              "codingSchemeDesignator": "DCM",
-              "codeMeaning": "Attenuation Coefficient"
-            },
-            "units": {
-              "codeValue": "[hnsf'U]",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "Hounsfield unit"
-            },
-            "derivationModifier": {
-              "codeValue": "R-00317",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Mean"
-            }
+      "TrackingIdentifier": "Measurements group 1",
+      "ReferencedSegment": 1,
+      "SourceSeriesForImageSegmentation": "1.2.392.200103.20080913.113635.2.2009.6.22.21.43.10.23431.1",
+      "segmentationSOPInstanceUID": "1.2.276.0.7230010.3.1.4.0.42154.1458337731.665796",
+      "Finding": {
+        "CodeValue": "T-D0060",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Organ"
+      },
+      "FindingSite": {
+        "CodeValue": "T-62000",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Liver"
+      },
+      "measurementItems": [
+        {
+          "value": 37.3289,
+          "quantity": {
+            "CodeValue": "122713",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "Attenuation Coefficient"
           },
-          {
-            "value": "-778",
-            "quantity": {
-              "codeValue": "122713",
-              "codingSchemeDesignator": "DCM",
-              "codeMeaning": "Attenuation Coefficient"
-            },
-            "units": {
-              "codeValue": "[hnsf'U]",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "Hounsfield unit"
-            },
-            "derivationModifier": {
-              "codeValue": "R-404FB",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Minimum"
-            }
+          "units": {
+            "CodeValue": "[hnsf'U]",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Hounsfield unit"
           },
-          {
-            "value": "221",
-            "quantity": {
-              "codeValue": "122713",
-              "codingSchemeDesignator": "DCM",
-              "codeMeaning": "Attenuation Coefficient"
-            },
-            "units": {
-              "codeValue": "[hnsf'U]",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "Hounsfield unit"
-            },
-            "derivationModifier": {
-              "codeValue": "G-A437",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Maximum"
-            }
-          },
-          {
-            "value": "59.1691",
-            "quantity": {
-              "codeValue": "122713",
-              "codingSchemeDesignator": "DCM",
-              "codeMeaning": "Attenuation Coefficient"
-            },
-            "units": {
-              "codeValue": "[hnsf'U]",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "Hounsfield unit"
-            },
-            "derivationModifier": {
-              "codeValue": "R-10047",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Standard Deviation"
-            }
-          },
-          {
-            "value": "70361.9",
-            "quantity": {
-              "codeValue": "G-D705",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Volume"
-            },
-            "units": {
-              "codeValue": "mm3",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "cubic millimeter"
-            }
-          },
-          {
-            "value": "70.3619",
-            "quantity": {
-              "codeValue": "G-D705",
-              "codingSchemeDesignator": "SRT",
-              "codeMeaning": "Volume"
-            },
-            "units": {
-              "codeValue": "cm3",
-              "codingSchemeDesignator": "UCUM",
-              "codeMeaning": "cubic centimeter"
-            }
+          "derivationModifier": {
+            "CodeValue": "R-00317",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Mean"
           }
-        ]
-      }
+        },
+        {
+          "value": -778,
+          "quantity": {
+            "CodeValue": "122713",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "Attenuation Coefficient"
+          },
+          "units": {
+            "CodeValue": "[hnsf'U]",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Hounsfield unit"
+          },
+          "derivationModifier": {
+            "CodeValue": "R-404FB",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Minimum"
+          }
+        },
+        {
+          "value": 221,
+          "quantity": {
+            "CodeValue": "122713",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "Attenuation Coefficient"
+          },
+          "units": {
+            "CodeValue": "[hnsf'U]",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Hounsfield unit"
+          },
+          "derivationModifier": {
+            "CodeValue": "G-A437",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Maximum"
+          }
+        },
+        {
+          "value": 59.1691,
+          "quantity": {
+            "CodeValue": "122713",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "Attenuation Coefficient"
+          },
+          "units": {
+            "CodeValue": "[hnsf'U]",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Hounsfield unit"
+          },
+          "derivationModifier": {
+            "CodeValue": "R-10047",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Standard Deviation"
+          }
+        },
+        {
+          "value": 70361.9,
+          "quantity": {
+            "CodeValue": "G-D705",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Volume"
+          },
+          "units": {
+            "CodeValue": "mm3",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "cubic millimeter"
+          }
+        },
+        {
+          "value": 70.3619,
+          "quantity": {
+            "CodeValue": "G-D705",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Volume"
+          },
+          "units": {
+            "CodeValue": "cm3",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "cubic centimeter"
+          }
+        }
+      ]
     }
   ]
 }

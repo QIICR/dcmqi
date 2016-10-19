@@ -1,13 +1,14 @@
 {
   "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
+
   "seriesAttributes": {
-    "ReaderID": "Reader1",
-    "SessionID": "Session1",
-    "TimePointID": "1",
+    "ContentCreatorName": "Reader1",
+    "ClinicalTrialSeriesID": "Session1",
+    "ClinicalTrialTimePointID": "1",
+    "ClinicalTrialCoordinatingCenterName": "UCSF",
     "SeriesDescription": "Segmentation",
     "SeriesNumber": "300",
-    "InstanceNumber": "1",
-    "ClinicalTrialCoordinatingCenterName": "UCSF"
+    "InstanceNumber": "1"
   },
   "segmentAttributes": [
     [
@@ -31,10 +32,10 @@
           "CodingSchemeDesignator": "SRT",
           "CodeMeaning": "Right and left"
         },
-        "RecommendedDisplayRGBValue": [
-          "252",
-          "226",
-          "234"
+        "recommendedDisplayRGBValue": [
+          252,
+          226,
+          234
         ]
       }
     ]

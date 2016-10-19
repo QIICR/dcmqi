@@ -1,5 +1,6 @@
 {
   "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
+
   "seriesAttributes": {
     "ContentCreatorName": "Reader1",
     "ClinicalTrialSeriesID": "Session1",
