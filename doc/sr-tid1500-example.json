@@ -50,7 +50,7 @@
       },
       "measurementItems": [
         {
-          "value": 1.96772,
+          "value": "1.96772",
           "quantity": {
             "CodeValue": "126401",
             "CodingSchemeDesignator": "DCM",

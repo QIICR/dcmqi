@@ -8,7 +8,7 @@
       "additionalProperties": false,
       "properties": {
         "value": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/definitions/NUM"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/DS"
         },
         "quantity": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"

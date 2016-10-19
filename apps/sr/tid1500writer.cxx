@@ -50,14 +50,6 @@ DSRCodedEntryValue json2cev(Json::Value& j){
     j["CodeMeaning"].asCString());
 }
 
-template <typename T>
-string numberToString(T number)
-{
-  ostringstream sstream;
-  sstream << number;
-  return sstream.str();
-}
-
 void addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
   DcmFileFormat ff;
   OFString fullPath;
@@ -179,9 +171,7 @@ int main(int argc, char** argv){
     for(int j=0;j<measurementGroup["measurementItems"].size();j++){
       Json::Value measurement = measurementGroup["measurementItems"][j];
       // TODO - add measurement method and derivation!
-      string value = numberToString(measurement["value"].isInt() ? measurement["value"].asInt() : measurement["value"].asFloat());
-      cout << value << endl;
-      const CMR_TID1411_in_TID1500::MeasurementValue numValue(value.c_str(), json2cev(measurement["units"]));
+      const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), json2cev(measurement["units"]));
 
       if(measurement.isMember("derivationModifier")){
           measurements.addMeasurement(json2cev(measurement["quantity"]), numValue, DSRCodedEntryValue(), json2cev(measurement["derivationModifier"]));

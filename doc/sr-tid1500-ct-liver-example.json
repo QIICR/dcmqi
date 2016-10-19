@@ -44,7 +44,7 @@
       },
       "measurementItems": [
         {
-          "value": 37.3289,
+          "value": "37.3289",
           "quantity": {
             "CodeValue": "122713",
             "CodingSchemeDesignator": "DCM",
@@ -62,7 +62,7 @@
           }
         },
         {
-          "value": -778,
+          "value": "-778",
           "quantity": {
             "CodeValue": "122713",
             "CodingSchemeDesignator": "DCM",
@@ -80,7 +80,7 @@
           }
         },
         {
-          "value": 221,
+          "value": "221",
           "quantity": {
             "CodeValue": "122713",
             "CodingSchemeDesignator": "DCM",
@@ -98,7 +98,7 @@
           }
         },
         {
-          "value": 59.1691,
+          "value": "59.1691",
           "quantity": {
             "CodeValue": "122713",
             "CodingSchemeDesignator": "DCM",
@@ -116,7 +116,7 @@
           }
         },
         {
-          "value": 70361.9,
+          "value": "70361.9",
           "quantity": {
             "CodeValue": "G-D705",
             "CodingSchemeDesignator": "SRT",
@@ -129,7 +129,7 @@
           }
         },
         {
-          "value": 70.3619,
+          "value": "70.3619",
           "quantity": {
             "CodeValue": "G-D705",
             "CodingSchemeDesignator": "SRT",
