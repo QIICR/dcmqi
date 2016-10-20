@@ -20,6 +20,10 @@ namespace dcmqi {
     }
   }
 
+  void JSONSegmentationMetaInformationHandler::setClinicalTrialCoordinatingCenterName(const string &coordinatingCenterName) {
+    this->coordinatingCenterName = coordinatingCenterName;
+  }
+
   void JSONSegmentationMetaInformationHandler::setContentCreatorName(const string &creatorName) {
     this->contentCreatorName = creatorName;
   }
@@ -72,8 +76,9 @@ namespace dcmqi {
   void JSONSegmentationMetaInformationHandler::readSeriesAttributes() {
     Json::Value seriesAttributes = this->metaInfoRoot["seriesAttributes"];
     this->contentCreatorName = seriesAttributes.get("ContentCreatorName", "Reader1").asString();
+    this->coordinatingCenterName =  seriesAttributes.get("ClinicalTrialCoordinatingCenterName", "").asString();
     this->clinicalTrialSeriesID = seriesAttributes.get("SessionID", "Session1").asString();
-    this->clinicalTrialTimePointID = seriesAttributes.get("TimePointID", "1").asString();
+    this->clinicalTrialTimePointID = seriesAttributes.get("ClinicalTrialTimePointID", "1").asString();
     this->seriesDescription = seriesAttributes.get("SeriesDescription", "Segmentation").asString();
     this->seriesNumber = seriesAttributes.get("SeriesNumber", "300").asString();
     this->instanceNumber = seriesAttributes.get("InstanceNumber", "1").asString();
@@ -83,8 +88,10 @@ namespace dcmqi {
   Json::Value JSONSegmentationMetaInformationHandler::createAndGetSeriesAttributes() {
     Json::Value value;
     value["ContentCreatorName"] = this->contentCreatorName;
+    if (this->coordinatingCenterName.size())
+      value["ClinicalTrialCoordinatingCenterName"] = this->coordinatingCenterName;
     value["ClinicalTrialSeriesID"] = this->clinicalTrialSeriesID;
-    value["TimePointID"] = this->clinicalTrialTimePointID;
+    value["ClinicalTrialTimePointID"] = this->clinicalTrialTimePointID;
     value["SeriesDescription"] = this->seriesDescription;
     value["SeriesNumber"] = this->seriesNumber;
     value["InstanceNumber"] = this->instanceNumber;
