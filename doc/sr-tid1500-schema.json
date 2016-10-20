@@ -5,9 +5,10 @@
   "definitions": {
     "measurementItem": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "value": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/definitions/NUM"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/DS"
         },
         "quantity": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
@@ -22,6 +23,7 @@
     },
     "MeasurementGroup": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "TrackingIdentifier": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/definitions/TEXT"
@@ -44,6 +46,9 @@
         "MeasurementMethod": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
         },
+        "Finding": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+        },
         "FindingSite": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
         },
@@ -63,12 +68,17 @@
       }
     }
   },
+  "additionalProperties": false,
   "properties": {
+    "@schema": {"type" : "string"},
     "compositeContext": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/dicomInstancesFileNameList"
     },
     "imageLibrary": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/dicomInstancesFileNameList"
+    },
+    "observerContext": {
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#/definitions/observerContext"
     },
     "activitySession": {
       "type": "string",

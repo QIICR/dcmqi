@@ -45,9 +45,9 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 #define STATIC_ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
 DSRCodedEntryValue json2cev(Json::Value& j){
-  return DSRCodedEntryValue(j["codeValue"].asCString(),
-    j["codingSchemeDesignator"].asCString(),
-    j["codeMeaning"].asCString());
+  return DSRCodedEntryValue(j["CodeValue"].asCString(),
+    j["CodingSchemeDesignator"].asCString(),
+    j["CodeMeaning"].asCString());
 }
 
 void addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
@@ -130,7 +130,7 @@ int main(int argc, char** argv){
   std::cout << "Total measurement groups: " << metaRoot["Measurements"].size() << std::endl;
 
   for(int i=0;i<metaRoot["Measurements"].size();i++){
-    Json::Value measurementGroup = metaRoot["Measurements"][i]["MeasurementGroup"];
+    Json::Value measurementGroup = metaRoot["Measurements"][i];
 
     CHECK_COND(report.addVolumetricROIMeasurements());
     /* fill volumetric ROI measurements with data */
@@ -171,8 +171,7 @@ int main(int argc, char** argv){
     for(int j=0;j<measurementGroup["measurementItems"].size();j++){
       Json::Value measurement = measurementGroup["measurementItems"][j];
       // TODO - add measurement method and derivation!
-      const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(),
-        json2cev(measurement["units"]));
+      const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), json2cev(measurement["units"]));
 
       if(measurement.isMember("derivationModifier")){
           measurements.addMeasurement(json2cev(measurement["quantity"]), numValue, DSRCodedEntryValue(), json2cev(measurement["derivationModifier"]));

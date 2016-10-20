@@ -7,7 +7,9 @@
     "AnatomicRegionCode",
     "FrameLaterality"
   ],
+  "additionalProperties": false,
   "properties": {
+    "@schema": {"type" : "string"},
     "SeriesDescription": {
       "allOf": [
         {
