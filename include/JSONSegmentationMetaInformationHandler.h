@@ -16,10 +16,12 @@ namespace dcmqi {
     ~JSONSegmentationMetaInformationHandler();
 
     void setContentCreatorName(const string &creatorName);
+    void setClinicalTrialCoordinatingCenterName(const string &coordinatingCenterName);
     void setClinicalTrialSeriesID(const string &seriesID);
     void setClinicalTrialTimePointID(const string &timePointID);
 
     string getContentCreatorName() const { return contentCreatorName; }
+    string getClinicalTrialCoordinatingCenterName() const { return coordinatingCenterName; }
     string getClinicalTrialSeriesID() const { return clinicalTrialSeriesID; }
     string getClinicalTrialTimePointID() const { return clinicalTrialTimePointID; }
 
@@ -37,6 +39,7 @@ namespace dcmqi {
   protected:
 
     string contentCreatorName;
+    string coordinatingCenterName;
     string clinicalTrialSeriesID;
     string clinicalTrialTimePointID;
 

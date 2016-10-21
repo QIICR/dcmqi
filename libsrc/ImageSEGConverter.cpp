@@ -375,12 +375,12 @@ namespace dcmqi {
     CHECK_COND(segdoc->writeDataset(segdocDataset));
 
     // Set reader/session/timepoint information
+    CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
-    if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ClinicalTrialCoordinatingCenterName"))
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName,
-                                                  metaInfo.metaInfoRoot["seriesAttributes"]["ClinicalTrialCoordinatingCenterName"].asCString()));
+    if (metaInfo.getClinicalTrialCoordinatingCenterName().size())
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.getClinicalTrialCoordinatingCenterName().c_str()));
 
     // populate BodyPartExamined
     {
@@ -408,9 +408,6 @@ namespace dcmqi {
       segdoc->getSeries().setSeriesTime(contentTime.c_str());
       segdoc->getGeneralImage().setContentDate(contentDate.c_str());
       segdoc->getGeneralImage().setContentTime(contentTime.c_str());
-
-      segdoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
-      segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
     }
 
     return new DcmDataset(segdocDataset);
@@ -697,20 +694,22 @@ namespace dcmqi {
 
   void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                JSONSegmentationMetaInformationHandler &metaInfo) {
-    OFString readerID, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined;
+    OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined, coordinatingCenter;
 
-    segdoc->getContentIdentification().getInstanceNumber(instanceNumber);
-    segdoc->getContentIdentification().getContentCreatorName(readerID);
+    segDataset->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
+    segdoc->getContentIdentification().getContentCreatorName(creatorName);
 
     segDataset->findAndGetOFString(DCM_ClinicalTrialTimePointID, timePointID);
     segDataset->findAndGetOFString(DCM_ClinicalTrialSeriesID, sessionID);
+    segDataset->findAndGetOFString(DCM_ClinicalTrialCoordinatingCenterName, coordinatingCenter);
 
     segdoc->getSeries().getBodyPartExamined(bodyPartExamined);
     segdoc->getSeries().getSeriesNumber(seriesNumber);
     segdoc->getSeries().getSeriesDescription(seriesDescription);
 
-    metaInfo.setContentCreatorName(readerID.c_str());
-    metaInfo.setClinicalTrialTimePointID(sessionID.c_str());
+    metaInfo.setClinicalTrialCoordinatingCenterName(coordinatingCenter.c_str());
+    metaInfo.setContentCreatorName(creatorName.c_str());
+    metaInfo.setClinicalTrialSeriesID(sessionID.c_str());
     metaInfo.setSeriesNumber(seriesNumber.c_str());
     metaInfo.setClinicalTrialTimePointID(timePointID.c_str());
     metaInfo.setSeriesDescription(seriesDescription.c_str());

@@ -1,33 +1,48 @@
-set(MODULE_NAME segimage2itkimage)
-
-add_test(NAME ${MODULE_NAME}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
-
+set(MODULE_NAME segmentation)
 set(BASELINE ${CMAKE_SOURCE_DIR}/data/ct-3slice/)
 
+set(MODULE_TEMP_DIR ${TEMP_DIR}/seg)
+make_directory(${MODULE_TEMP_DIR})
+
+set(itk2dcm itkimage2segimage)
+
+add_test(NAME ${itk2dcm}_hello
+         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${itk2dcm} --help)
+set_property(TEST ${itk2dcm}_hello PROPERTY LABELS ${MODULE_NAME})
+
+add_test(NAME ${itk2dcm}_makeSEG
+  COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${itk2dcm}
+  --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example.json
+  --segImageFiles ${BASELINE}/liver_seg.nrrd
+  --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
+  --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm)
+set_property(TEST ${itk2dcm}_makeSEG PROPERTY LABELS ${MODULE_NAME})
+
+set(dcm2itk segimage2itkimage)
+
+add_test(NAME ${dcm2itk}_hello
+         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${dcm2itk} --help)
+set_property(TEST ${dcm2itk}_hello PROPERTY LABELS ${MODULE_NAME})
+
 include_directories(${ITK_INCLUDE_DIRS})
-add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${${MODULE_NAME}_TARGET_LIBRARIES})
-set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
-set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
+add_executable(${dcm2itk}Test ${dcm2itk}Test.cxx )
+target_link_libraries(${dcm2itk}Test ${${dcm2itk}_TARGET_LIBRARIES})
+set_target_properties(${dcm2itk}Test PROPERTIES LABELS ${MODULE_NAME})
+set_target_properties(${dcm2itk}Test PROPERTIES FOLDER ${${dcm2itk}_TARGETS_FOLDER})
 
-add_test(NAME ${MODULE_NAME}_makeNRRD COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
-  --compare ${BASELINE}/liver_seg.nrrd
-  ${TEMP_DIR}/1.nrrd
-  ${MODULE_NAME}Test
-  ${BASELINE}/liver.dcm
-  ${TEMP_DIR})
+add_test(NAME ${dcm2itk}_makeNRRD COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+         --compare ${BASELINE}/liver_seg.nrrd
+         ${MODULE_TEMP_DIR}/1.nrrd
+         ${dcm2itk}Test
+         ${MODULE_TEMP_DIR}/liver.dcm
+         ${MODULE_TEMP_DIR})
+set_tests_properties(${dcm2itk}_makeNRRD PROPERTIES DEPENDS ${itk2dcm}_makeSEG)
+set_property(TEST ${dcm2itk}_makeNRRD PROPERTY LABELS ${MODULE_NAME})
 
-set_property(TEST ${testname} PROPERTY LABELS ${MODULE_NAME})
 
-set(MODULE_NAME itkimage2segimage)
-
-add_test(NAME ${MODULE_NAME}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME} --help)
-add_test(NAME ${MODULE_NAME}_makeSEG
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MODULE_NAME}
-        --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example.json
-        --segImageFiles ${BASELINE}/liver_seg.nrrd
-        --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
-        --segDICOMFile ${TEMP_DIR}/liver.dcm
-       )
+add_test(NAME seg_meta_roundtrip
+  COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  ${CMAKE_SOURCE_DIR}/doc/seg-example.json
+  ${MODULE_TEMP_DIR}/meta.json)
+set_tests_properties(seg_meta_roundtrip PROPERTIES DEPENDS ${dcm2itk}_makeNRRD)
+set_property(TEST seg_meta_roundtrip PROPERTY LABELS ${MODULE_NAME})

@@ -29,9 +29,9 @@ namespace dcmqi {
 
   Json::Value JSONMetaInformationHandlerBase::codeSequence2Json(CodeSequenceMacro *codeSequence) {
     Json::Value value;
-    value["codeValue"] = getCodeSequenceValue(codeSequence);
-    value["codingSchemeDesignator"] = getCodeSequenceDesignator(codeSequence);
-    value["codeMeaning"] = getCodeSequenceMeaning(codeSequence);
+    value["CodeValue"] = getCodeSequenceValue(codeSequence);
+    value["CodingSchemeDesignator"] = getCodeSequenceDesignator(codeSequence);
+    value["CodeMeaning"] = getCodeSequenceMeaning(codeSequence);
     return value;
   }
 
