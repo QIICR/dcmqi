@@ -259,9 +259,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         return {
           LabelID: currentLabelID,
           SegmentDescription: "",
-          AnatomicRegion: null,
-          AnatomicRegionModifier: null,
-          SegmentedPropertyTypeModifier: null
+          AnatomicRegionSequence: {},
+          AnatomicRegionModifierSequence: {},
+          SegmentedPropertyTypeModifierCodeSequence: {}
         };
       }
 
@@ -360,10 +360,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             attributes["SegmentDescription"] = value.SegmentDescription;
           if (value.SegmentAlgorithmType.length > 0)
             attributes["SegmentAlgorithmType"] = value.SegmentAlgorithmType;
+          if (value.SegmentAlgorithmName.length > 0)
+            attributes["SegmentAlgorithmName"] = value.SegmentAlgorithmName;
           if (value.anatomicRegion)
-            attributes["AnatomicRegionCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
+            attributes["AnatomicRegionSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
           if (value.anatomicRegionModifier)
-            attributes["AnatomicRegionModifierCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
+            attributes["AnatomicRegionModifierSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
           if (value.segmentedPropertyCategory)
             attributes["SegmentedPropertyCategoryCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
           if (value.segmentedPropertyType)
