@@ -13,7 +13,7 @@ before_build:
   - npm install ajv-cli -g
   - cmd: cmake --version
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("http://www.dclunie.com/dicom3tools/workinprogress/winexe/dicom3tools_winexe_1.00.snapshot.20160721064406.zip", "C:\dicom3tools.zip")
-  - cmd: 7z x C:\dicom3tools.zip -o C:\dicom3tools
+  - cmd: 7z x C:\dicom3tools.zip -oC:\dicom3tools
   - cmd: set PATH=%PATH%;C:\dicom3tools
   - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
   - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
