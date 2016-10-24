@@ -147,15 +147,13 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       });
 
       function loadDefaultSeriesAttributes() {
-        var doc = {
-          "seriesAttributes": {}
-        };
+        var doc = {};
         if (schemaLoaded) {
           validate = ajv.compile({$ref: segSchemaID});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
-        $scope.seriesAttributes = angular.extend({}, doc.seriesAttributes);
+        $scope.seriesAttributes = angular.extend({}, doc);
       }
 
       function loadAndValidateDefaultSegmentAttributes() {
