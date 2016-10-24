@@ -18,6 +18,10 @@ add_test(NAME ${itk2dcm}_makeSEG
   --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm)
 set_property(TEST ${itk2dcm}_makeSEG PROPERTY LABELS ${MODULE_NAME})
 
+add_test(NAME ${itk2dcm}_dciodvfy
+  COMMAND dciodvfy ${MODULE_TEMP_DIR}/liver.dcm)
+set_property(TEST ${itk2dcm}_dciodvfy PROPERTY LABELS dciodvfy)
+
 set(dcm2itk segimage2itkimage)
 
 add_test(NAME ${dcm2itk}_hello

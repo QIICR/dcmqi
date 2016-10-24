@@ -15,6 +15,7 @@ dependencies:
     - sudo apt-get update
     - cd ~
     - wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz
+    - apt-get install dicom3tools
     - npm install jsonlint -g
     - npm install ajv-cli -g
     - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
