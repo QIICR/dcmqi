@@ -24,6 +24,7 @@ foreach(json_file ${json_files})
   get_filename_component(json_name ${json_file} NAME_WE)
   add_test(NAME jsonlint_${json_name}
     COMMAND jsonlint${NPM_SUFFIX} ${json_file})
+  set_property(TEST jsonlint_${json_name} PROPERTY LABELS jsonlint)
 endforeach()
 
 set(AJV_OPTIONS --all-errors)
@@ -38,6 +39,7 @@ function(createSchemaValidationTest schema_name)
   get_filename_component(json_name ${schema_name} NAME_WE)
   add_test(NAME ajv_${json_name}-schema
     COMMAND ajv${NPM_SUFFIX} compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
+  set_property(TEST ajv_${json_name}-schema PROPERTY LABELS ajv)
 endfunction()
 
 # validation of each common schema
@@ -56,6 +58,7 @@ function(createExampleDataTest example_name schema)
   add_test(NAME ajv_${example_name}-example
     # -d stands for data that needs to be validated
     COMMAND ajv${NPM_SUFFIX} -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+  set_property(TEST ajv_${example_name}-example PROPERTY LABELS ajv)
 endfunction()
 
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata

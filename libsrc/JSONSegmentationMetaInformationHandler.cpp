@@ -40,7 +40,15 @@ namespace dcmqi {
     try {
       istringstream metainfoStream(this->jsonInput);
       metainfoStream >> this->metaInfoRoot;
-      this->readSeriesAttributes();
+      this->contentCreatorName = this->metaInfoRoot.get("ContentCreatorName", "Reader1").asString();
+      this->coordinatingCenterName =  this->metaInfoRoot.get("ClinicalTrialCoordinatingCenterName", "").asString();
+      this->clinicalTrialSeriesID = this->metaInfoRoot.get("SessionID", "Session1").asString();
+      this->clinicalTrialTimePointID = this->metaInfoRoot.get("ClinicalTrialTimePointID", "1").asString();
+      this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
+      this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
+      this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
+      this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
+
       this->readSegmentAttributes();
     } catch (exception &e) {
       cout << e.what() << '\n';
@@ -64,39 +72,22 @@ namespace dcmqi {
     Json::Value data;
     std::stringstream ss;
 
-    data["seriesAttributes"] = createAndGetSeriesAttributes();
+    data["ContentCreatorName"] = this->contentCreatorName;
+    if (this->coordinatingCenterName.size())
+      data["ClinicalTrialCoordinatingCenterName"] = this->coordinatingCenterName;
+    data["ClinicalTrialSeriesID"] = this->clinicalTrialSeriesID;
+    data["ClinicalTrialTimePointID"] = this->clinicalTrialTimePointID;
+    data["SeriesDescription"] = this->seriesDescription;
+    data["SeriesNumber"] = this->seriesNumber;
+    data["InstanceNumber"] = this->instanceNumber;
+    data["BodyPartExamined"] = this->bodyPartExamined;
+
     data["segmentAttributes"] = createAndGetSegmentAttributes();
 
     Json::StyledWriter styledWriter;
     ss << styledWriter.write(data);
 
     return ss.str();
-  }
-
-  void JSONSegmentationMetaInformationHandler::readSeriesAttributes() {
-    Json::Value seriesAttributes = this->metaInfoRoot["seriesAttributes"];
-    this->contentCreatorName = seriesAttributes.get("ContentCreatorName", "Reader1").asString();
-    this->coordinatingCenterName =  seriesAttributes.get("ClinicalTrialCoordinatingCenterName", "").asString();
-    this->clinicalTrialSeriesID = seriesAttributes.get("SessionID", "Session1").asString();
-    this->clinicalTrialTimePointID = seriesAttributes.get("ClinicalTrialTimePointID", "1").asString();
-    this->seriesDescription = seriesAttributes.get("SeriesDescription", "Segmentation").asString();
-    this->seriesNumber = seriesAttributes.get("SeriesNumber", "300").asString();
-    this->instanceNumber = seriesAttributes.get("InstanceNumber", "1").asString();
-    this->bodyPartExamined = seriesAttributes.get("BodyPartExamined", "").asString();
-  }
-
-  Json::Value JSONSegmentationMetaInformationHandler::createAndGetSeriesAttributes() {
-    Json::Value value;
-    value["ContentCreatorName"] = this->contentCreatorName;
-    if (this->coordinatingCenterName.size())
-      value["ClinicalTrialCoordinatingCenterName"] = this->coordinatingCenterName;
-    value["ClinicalTrialSeriesID"] = this->clinicalTrialSeriesID;
-    value["ClinicalTrialTimePointID"] = this->clinicalTrialTimePointID;
-    value["SeriesDescription"] = this->seriesDescription;
-    value["SeriesNumber"] = this->seriesNumber;
-    value["InstanceNumber"] = this->instanceNumber;
-    value["BodyPartExamined"] = this->bodyPartExamined;
-    return value;
   }
 
   Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
