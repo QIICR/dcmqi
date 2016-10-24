@@ -342,7 +342,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
       self.createJSONOutput = function() {
 
-        var seriesAttributes = {
+        var doc = {
           "ContentCreatorName": $scope.seriesAttributes.ContentCreatorName,
           "ClinicalTrialSeriesID" : $scope.seriesAttributes.ClinicalTrialSeriesID,
           "ClinicalTrialTimePointID" : $scope.seriesAttributes.ClinicalTrialTimePointID,
@@ -352,7 +352,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         };
 
         if ($scope.seriesAttributes.BodyPartExamined.length > 0)
-          seriesAttributes["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
+          doc["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
         var segmentAttributes = [];
         angular.forEach($scope.segments, function(value, key) {
@@ -377,10 +377,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           segmentAttributes.push(attributes);
         });
 
-        var doc = {
-          "seriesAttributes": seriesAttributes,
-          "segmentAttributes": [segmentAttributes]
-        };
+        doc["segmentAttributes"] = [segmentAttributes];
 
         $scope.output = JSON.stringify(doc, null, 2);
         $scope.onOutputChanged();
