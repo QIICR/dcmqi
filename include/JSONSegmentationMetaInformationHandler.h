@@ -43,10 +43,8 @@ namespace dcmqi {
     string clinicalTrialSeriesID;
     string clinicalTrialTimePointID;
 
-    void readSeriesAttributes();
     void readSegmentAttributes();
 
-    Json::Value createAndGetSeriesAttributes();
     Json::Value createAndGetSegmentAttributes();
   };
 
