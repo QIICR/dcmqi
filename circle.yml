@@ -13,12 +13,16 @@ dependencies:
     - "~/dcmqi-build/SlicerExecutionModel-build"
   pre:
     - sudo apt-get update
+    - sudo apt-get install xutils-dev
     - cd ~
     - wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz
-    - sudo apt-get install dicom3tools
+    - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
+    - wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2
+    - tar xjf dicom3tools.tar.bz2 && cd dicom3tools_1.00.snapshot.20160721064406/
+    - ./Configure && imake -I./config -DInstallInTopDir -DUseQIICRID
+    - make World && sudo make install
     - npm install jsonlint -g
     - npm install ajv-cli -g
-    - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
   post:
     - export PATH=${CMAKE_BIN}:${PATH} && mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
     - export PATH=${CMAKE_BIN}:${PATH} && cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
