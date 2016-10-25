@@ -147,15 +147,13 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       });
 
       function loadDefaultSeriesAttributes() {
-        var doc = {
-          "seriesAttributes": {}
-        };
+        var doc = {};
         if (schemaLoaded) {
           validate = ajv.compile({$ref: segSchemaID});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
-        $scope.seriesAttributes = angular.extend({}, doc.seriesAttributes);
+        $scope.seriesAttributes = angular.extend({}, doc);
       }
 
       function loadAndValidateDefaultSegmentAttributes() {
@@ -261,9 +259,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         return {
           LabelID: currentLabelID,
           SegmentDescription: "",
-          AnatomicRegion: null,
-          AnatomicRegionModifier: null,
-          SegmentedPropertyTypeModifier: null
+          AnatomicRegionSequence: {},
+          AnatomicRegionModifierSequence: {},
+          SegmentedPropertyTypeModifierCodeSequence: {}
         };
       }
 
@@ -342,7 +340,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
       self.createJSONOutput = function() {
 
-        var seriesAttributes = {
+        var doc = {
           "ContentCreatorName": $scope.seriesAttributes.ContentCreatorName,
           "ClinicalTrialSeriesID" : $scope.seriesAttributes.ClinicalTrialSeriesID,
           "ClinicalTrialTimePointID" : $scope.seriesAttributes.ClinicalTrialTimePointID,
@@ -352,7 +350,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         };
 
         if ($scope.seriesAttributes.BodyPartExamined.length > 0)
-          seriesAttributes["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
+          doc["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
         var segmentAttributes = [];
         angular.forEach($scope.segments, function(value, key) {
@@ -362,10 +360,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             attributes["SegmentDescription"] = value.SegmentDescription;
           if (value.SegmentAlgorithmType.length > 0)
             attributes["SegmentAlgorithmType"] = value.SegmentAlgorithmType;
+          if (value.SegmentAlgorithmName.length > 0)
+            attributes["SegmentAlgorithmName"] = value.SegmentAlgorithmName;
           if (value.anatomicRegion)
-            attributes["AnatomicRegionCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
+            attributes["AnatomicRegionSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
           if (value.anatomicRegionModifier)
-            attributes["AnatomicRegionModifierCodeSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
+            attributes["AnatomicRegionModifierSequence"] = getCodeSequenceAttributes(value.anatomicRegionModifier);
           if (value.segmentedPropertyCategory)
             attributes["SegmentedPropertyCategoryCodeSequence"] = getCodeSequenceAttributes(value.segmentedPropertyCategory);
           if (value.segmentedPropertyType)
@@ -377,10 +377,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           segmentAttributes.push(attributes);
         });
 
-        var doc = {
-          "seriesAttributes": seriesAttributes,
-          "segmentAttributes": [segmentAttributes]
-        };
+        doc["segmentAttributes"] = [segmentAttributes];
 
         $scope.output = JSON.stringify(doc, null, 2);
         $scope.onOutputChanged();
