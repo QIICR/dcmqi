@@ -19,7 +19,7 @@ dependencies:
     - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
     - wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2
     - tar xjf dicom3tools.tar.bz2
-    - cd dicom3tools_1.00.snapshot.20160721064406/ && ./Configure && imake -I./config -DInstallInTopDir -DUseQIICRID && make World && sudo make install
+    - cd dicom3tools_1.00.snapshot.20160721064406/ && ./Configure && imake -I./config -DUseQIICRID && make World && sudo make install
     - npm install jsonlint -g
     - npm install ajv-cli -g
   post:
