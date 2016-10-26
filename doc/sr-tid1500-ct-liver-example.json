@@ -46,7 +46,7 @@
         {
           "value": "37.3289",
           "quantity": {
-            "CodeValue": "122713",
+            "CodeValue": "112031",
             "CodingSchemeDesignator": "DCM",
             "CodeMeaning": "Attenuation Coefficient"
           },
@@ -64,7 +64,7 @@
         {
           "value": "-778",
           "quantity": {
-            "CodeValue": "122713",
+            "CodeValue": "112031",
             "CodingSchemeDesignator": "DCM",
             "CodeMeaning": "Attenuation Coefficient"
           },
@@ -82,7 +82,7 @@
         {
           "value": "221",
           "quantity": {
-            "CodeValue": "122713",
+            "CodeValue": "112031",
             "CodingSchemeDesignator": "DCM",
             "CodeMeaning": "Attenuation Coefficient"
           },
@@ -100,7 +100,7 @@
         {
           "value": "59.1691",
           "quantity": {
-            "CodeValue": "122713",
+            "CodeValue": "112031",
             "CodingSchemeDesignator": "DCM",
             "CodeMeaning": "Attenuation Coefficient"
           },
