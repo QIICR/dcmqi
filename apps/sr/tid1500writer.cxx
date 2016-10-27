@@ -50,11 +50,12 @@ DSRCodedEntryValue json2cev(Json::Value& j){
     j["CodeMeaning"].asCString());
 }
 
-void addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
+DcmFileFormat addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
   DcmFileFormat ff;
   OFString fullPath;
   CHECK_COND(ff.loadFile(OFStandard::combineDirAndFilename(fullPath,dirStr.c_str(),fileStr.c_str())));
   CHECK_COND(doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset()));
+  return ff;
 }
 
 int main(int argc, char** argv){
@@ -72,7 +73,6 @@ int main(int argc, char** argv){
 
   TID1500_MeasurementReport report(CMR_CID7021::ImagingMeasurementReport);
 
-  /* set the language */
   CHECK_COND(report.setLanguage(DSRCodedEntryValue("eng", "RFC5646", "English")));
 
   /* set details on the observation context */
@@ -162,7 +162,8 @@ int main(int argc, char** argv){
     CHECK_COND(measurements.setReferencedSegment(segment));
 
     CHECK_COND(measurements.setFinding(json2cev(measurementGroup["Finding"])));
-    CHECK_COND(measurements.setFindingSite(json2cev(measurementGroup["FindingSite"])));
+    if(measurementGroup.isMember("FindingSite"))
+      CHECK_COND(measurements.setFindingSite(json2cev(measurementGroup["FindingSite"])));
 
     if(measurementGroup.isMember("MeasurementMethod"))
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
@@ -215,9 +216,7 @@ int main(int argc, char** argv){
   bool compositeContextInitialized = false;
   if(metaRoot.isMember("compositeContext")){
     for(int i=0;i<metaRoot["compositeContext"].size();i++){
-      OFString fullPath;
-      addFileToEvidence(doc,compositeContextDataDir,metaRoot["compositeContext"][i].asString());
-      CHECK_COND(ccFileFormat.loadFile(OFStandard::combineDirAndFilename(fullPath,compositeContextDataDir.c_str(),metaRoot["compositeContext"][i].asCString())));
+      ccFileFormat = addFileToEvidence(doc,compositeContextDataDir,metaRoot["compositeContext"][i].asString());
       compositeContextInitialized = true;
     }
   }
@@ -236,6 +235,7 @@ int main(int argc, char** argv){
     CHECK_COND(doc.write(*dataset));
 
     if(compositeContextInitialized){
+      cout << "Composite Context initialized" << endl;
       DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
       DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
       DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
