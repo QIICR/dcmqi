@@ -1,27 +1,13 @@
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
-
-// UIDs
-#include "QIICRUIDs.h"
-
-// versioning
-#include "dcmqiVersionConfigure.h"
-
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/ofstd/oftest.h"
-#include "dcmtk/ofstd/ofstd.h"
 
 #include "dcmtk/dcmsr/dsrdoc.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 #include "dcmtk/dcmiod/modhelp.h"
 
 #include "dcmtk/dcmsr/codes/dcm.h"
-#include "dcmtk/dcmsr/codes/srt.h"
 #include "dcmtk/dcmsr/cmr/tid1500.h"
 
-#include "dcmtk/dcmdata/dcdeftag.h"
-
-#include <iostream>
-#include <exception>
 
 #include <json/json.h>
 
@@ -83,35 +69,69 @@ Json::Value getMeasurements(DSRDocument &doc) {
           // TODO: think about it
           cout << "Activity Session: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["ActivitySession"] = st.getCurrentContentItem().getStringValue().c_str();
-          st.gotoParent();
         }
+        st.gotoParent();
         if (st.gotoNamedChildNode(CODE_DCM_ReferencedSegment, OFFalse)) {
-          DSRImageReferenceValue bla;
-          cout << "segmentationSOPInstanceUID: " << st.getCurrentContentItem().getImageReference().getSOPInstanceUID() << endl;
+          DSRImageReferenceValue referenceImage = st.getCurrentContentItem().getImageReference();
           OFVector<Uint16> items;
-          st.getCurrentContentItem().getImageReference().getSegmentList().getItems(items);
+          referenceImage.getSegmentList().getItems(items);
           cout << "Reference Segment: " << items[0]  << endl;
           measurement["ReferencedSegment"] = dcmqi::Helper::toString(items[0]);
-          measurement["segmentationSOPInstanceUID"] = st.getCurrentContentItem().getImageReference().getSOPInstanceUID().c_str();
+          if (!referenceImage.getSOPInstanceUID().empty()){
+            measurement["segmentationSOPInstanceUID"] = referenceImage.getSOPInstanceUID().c_str();
+          }
           st.gotoParent();
         }
+        st.gotoParent();
+        if (st.gotoNamedChildNode(CODE_DCM_SourceSeriesForSegmentation, OFFalse)) {
+          cout << "SourceSeriesForImageSegmentation: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
+          measurement["SourceSeriesForImageSegmentation"] = st.getCurrentContentItem().getStringValue().c_str();
+        }
+        st.gotoParent();
         if (st.gotoNamedChildNode(CODE_DCM_TrackingIdentifier, OFFalse)) {
           cout << "TrackingIdentifier: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["TrackingIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
           st.gotoParent();
         }
-        if (st.gotoNamedChildNode(CODE_DCM_Finding)) {
+        if (st.gotoNamedChildNode(CODE_DCM_Finding, OFFalse)) {
           measurement["Finding"]["CodeMeaning"] = st.getCurrentContentItem().getCodeValue().getCodeMeaning().c_str();
           measurement["Finding"]["CodeSchemeDesignator"] = st.getCurrentContentItem().getCodeValue().getCodingSchemeDesignator().c_str();
           measurement["Finding"]["CodeValue"] = st.getCurrentContentItem().getCodeValue().getCodeValue().c_str();
-          st.gotoParent();
         }
-        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C0E3", "SRT", "Finding Site"))) {
+        st.gotoParent();
+        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C0E3", "SRT", "Finding Site"), OFFalse)) {
           measurement["FindingSite"]["CodeMeaning"] = st.getCurrentContentItem().getCodeValue().getCodeMeaning().c_str();
           measurement["FindingSite"]["CodeSchemeDesignator"] = st.getCurrentContentItem().getCodeValue().getCodingSchemeDesignator().c_str();
           measurement["FindingSite"]["CodeValue"] = st.getCurrentContentItem().getCodeValue().getCodeValue().c_str();
-          st.gotoParent();
         }
+        st.gotoParent();
+        st.gotoChild();
+
+        Json::Value measurementItems(Json::arrayValue);
+        while (st.gotoNext()){
+          if (st.getCurrentContentItem().getNumericValuePtr() != NULL) {
+            DSRNumericMeasurementValue measurementValue = st.getCurrentContentItem().getNumericValue();
+
+            Json::Value localMeasurement;
+            localMeasurement["value"] = measurementValue.getNumericValue().c_str();
+
+            localMeasurement["units"]["CodeValue"] = measurementValue.getMeasurementUnit().getCodeValue().c_str();
+            localMeasurement["units"]["CodeMeaning"] = measurementValue.getMeasurementUnit().getCodeMeaning().c_str();
+            localMeasurement["units"]["CodeSchemeDesignator"] = measurementValue.getMeasurementUnit().getCodingSchemeDesignator().c_str();
+
+            localMeasurement["quantity"]["CodeValue"] = st.getCurrentContentItem().getConceptName().getCodeValue().c_str();
+            localMeasurement["quantity"]["CodeMeaning"] = st.getCurrentContentItem().getConceptName().getCodeMeaning().c_str();
+            localMeasurement["quantity"]["CodeSchemeDesignator"] = st.getCurrentContentItem().getConceptName().getCodingSchemeDesignator().c_str();
+
+            if(st.getCurrentNode()->hasChildNodes()) {
+              localMeasurement["derivationModifier"]["CodeValue"] = st.getChildNode()->getConceptName().getCodeValue().c_str();
+              localMeasurement["derivationModifier"]["CodeMeaning"] = st.getChildNode()->getConceptName().getCodeMeaning().c_str();
+              localMeasurement["derivationModifier"]["CodeSchemeDesignator"] = st.getChildNode()->getConceptName().getCodingSchemeDesignator().c_str();
+            }
+            measurementItems.append(localMeasurement);
+          }
+        }
+        measurement["measurementItems"] = measurementItems;
         measurements.append(measurement);
       }
     } while (st.gotoNextNamedNode(CODE_DCM_MeasurementGroup));
