@@ -60,16 +60,16 @@ Json::Value getMeasurements(DSRDocument &doc) {
   DSRDocumentTreeNodeCursor cursor;
   st.getCursorToRootNode(cursor);
   if(st.gotoNamedChildNode(CODE_DCM_ImagingMeasurements)) {
-    // can have 1-n MeasurementGroups
+    size_t nnid = st.gotoNamedChildNode(CODE_DCM_MeasurementGroup);
     do {
-      if (st.gotoNamedChildNode(CODE_DCM_MeasurementGroup)) {
+      if (nnid) {
         Json::Value measurement;
         if (st.gotoNamedChildNode(DSRCodedEntryValue("C67447", "NCIt", "Activity Session"))) {
           // TODO: think about it
           cout << "Activity Session: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["ActivitySession"] = st.getCurrentContentItem().getStringValue().c_str();
         }
-        st.gotoParent();
+        st.gotoNode(nnid);
         if (st.gotoNamedChildNode(CODE_DCM_ReferencedSegment)) {
           DSRImageReferenceValue referenceImage = st.getCurrentContentItem().getImageReference();
           OFVector<Uint16> items;
@@ -79,27 +79,26 @@ Json::Value getMeasurements(DSRDocument &doc) {
           if (!referenceImage.getSOPInstanceUID().empty()){
             measurement["segmentationSOPInstanceUID"] = referenceImage.getSOPInstanceUID().c_str();
           }
-          st.gotoParent();
         }
-        st.gotoParent();
+        st.gotoNode(nnid);
         if (st.gotoNamedChildNode(CODE_DCM_SourceSeriesForSegmentation)) {
           cout << "SourceSeriesForImageSegmentation: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["SourceSeriesForImageSegmentation"] = st.getCurrentContentItem().getStringValue().c_str();
-          st.gotoParent();
         }
+        st.gotoNode(nnid);
         if (st.gotoNamedChildNode(CODE_DCM_TrackingIdentifier)) {
           cout << "TrackingIdentifier: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["TrackingIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
-          st.gotoParent();
         }
+        st.gotoNode(nnid);
         if (st.gotoNamedChildNode(CODE_DCM_Finding)) {
           measurement["Finding"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
-        st.gotoParent();
+        st.gotoNode(nnid);
         if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C0E3", "SRT", "Finding Site"))) {
           measurement["FindingSite"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
-        st.gotoParent();
+        st.gotoNode(nnid);
         st.gotoChild();
 
         Json::Value measurementItems(Json::arrayValue);
@@ -122,7 +121,9 @@ Json::Value getMeasurements(DSRDocument &doc) {
         measurement["measurementItems"] = measurementItems;
         measurements.append(measurement);
       }
-    } while (st.gotoNextNamedNode(CODE_DCM_MeasurementGroup));
+      st.gotoNode(nnid);
+      nnid = st.gotoNextNamedNode(CODE_DCM_MeasurementGroup);
+    } while (nnid);
   }
   return measurements;
 }
