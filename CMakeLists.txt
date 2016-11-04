@@ -58,15 +58,18 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   mark_as_superbuild(VARS CMAKE_BUILD_TYPE ALL_PROJECTS)
 endif()
 
-option(BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF)
-mark_as_advanced(BUILD_PARAMETRIC_MAPS)
-
 mark_as_superbuild(
   VARS
     CMAKE_PREFIX_PATH:STRING
     CMAKE_DEBUG_POSTFIX:STRING
   ALL_PROJECTS
   )
+
+#-----------------------------------------------------------------------------
+# Options
+
+option(BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF)
+mark_as_advanced(BUILD_PARAMETRIC_MAPS)
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
