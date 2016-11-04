@@ -22,13 +22,6 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 #include "tid1500readerCLP.h"
 
-#define CHECK_BOOL(condition) \
-  do { \
-    if (!condition) { \
-      std::cerr << "Expected True in " __FILE__ << ":" << __LINE__ << " " << std::cout; \
-      throw -1; \
-    } \
-  } while (0);
 
 #define STATIC_ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
