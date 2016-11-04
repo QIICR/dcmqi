@@ -1,3 +1,11 @@
+#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
+
+// UIDs
+#include "QIICRUIDs.h"
+
+// versioning
+#include "dcmqiVersionConfigure.h"
+
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/ofstd/oftest.h"
 
