@@ -226,7 +226,7 @@ int main(int argc, char** argv){
     if (DSRTypes::enumeratedValueToVerificationFlag(metaRoot["VerificationFlag"].asCString()) ==
         DSRTypes::VF_Verified) {
       // TODO: get organization from meta information?
-      CHECK_COND(doc.verifyDocument(metaRoot["observerContext"]["PersonObserverName"].asCString(), "BWH"));
+      CHECK_COND(doc.verifyDocument(metaRoot["observerContext"]["PersonObserverName"].asCString(), "QIICR"));
     }
   }
 

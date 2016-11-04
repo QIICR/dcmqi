@@ -37,26 +37,20 @@ static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 #define STATIC_ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-DSRCodedEntryValue json2cev(Json::Value& j){
-  return DSRCodedEntryValue(j["codeValue"].asCString(),
-                            j["codingSchemeDesignator"].asCString(),
-                            j["codeMeaning"].asCString());
-}
-
-void addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
-  DcmFileFormat ff;
-  OFString fullPath;
-  CHECK_COND(ff.loadFile(OFStandard::combineDirAndFilename(fullPath,dirStr.c_str(),fileStr.c_str())));
-  CHECK_COND(doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset()));
-}
-
 bool isCompositeEvidence(OFString& sopClassUID) {
   const char* compositeContextSOPClasses[] = {UID_SegmentationStorage, UID_RealWorldValueMappingStorage};
-  int length = sizeof(compositeContextSOPClasses)/sizeof(*compositeContextSOPClasses);
-  for( unsigned int i=0; i<length; i++)
+  for( unsigned int i=0; i<STATIC_ARRAY_SIZE(compositeContextSOPClasses); i++)
     if (sopClassUID == compositeContextSOPClasses[i])
       return true;
   return false;
+}
+
+Json::Value DSRCodedEntryValue2CodeSequence(const DSRCodedEntryValue &value) {
+  Json::Value codeSequence;
+  codeSequence["CodeValue"] = value.getCodeValue().c_str();
+  codeSequence["CodeMeaning"] = value.getCodeMeaning().c_str();
+  codeSequence["CodingSchemeDesignator"] = value.getCodingSchemeDesignator().c_str();
+  return codeSequence;
 }
 
 Json::Value getMeasurements(DSRDocument &doc) {
@@ -99,15 +93,11 @@ Json::Value getMeasurements(DSRDocument &doc) {
           st.gotoParent();
         }
         if (st.gotoNamedChildNode(CODE_DCM_Finding)) {
-          measurement["Finding"]["CodeMeaning"] = st.getCurrentContentItem().getCodeValue().getCodeMeaning().c_str();
-          measurement["Finding"]["CodingSchemeDesignator"] = st.getCurrentContentItem().getCodeValue().getCodingSchemeDesignator().c_str();
-          measurement["Finding"]["CodeValue"] = st.getCurrentContentItem().getCodeValue().getCodeValue().c_str();
+          measurement["Finding"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoParent();
         if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C0E3", "SRT", "Finding Site"))) {
-          measurement["FindingSite"]["CodeMeaning"] = st.getCurrentContentItem().getCodeValue().getCodeMeaning().c_str();
-          measurement["FindingSite"]["CodingSchemeDesignator"] = st.getCurrentContentItem().getCodeValue().getCodingSchemeDesignator().c_str();
-          measurement["FindingSite"]["CodeValue"] = st.getCurrentContentItem().getCodeValue().getCodeValue().c_str();
+          measurement["FindingSite"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoParent();
         st.gotoChild();
@@ -119,19 +109,11 @@ Json::Value getMeasurements(DSRDocument &doc) {
 
             Json::Value localMeasurement;
             localMeasurement["value"] = measurementValue.getNumericValue().c_str();
-
-            localMeasurement["units"]["CodeValue"] = measurementValue.getMeasurementUnit().getCodeValue().c_str();
-            localMeasurement["units"]["CodeMeaning"] = measurementValue.getMeasurementUnit().getCodeMeaning().c_str();
-            localMeasurement["units"]["CodingSchemeDesignator"] = measurementValue.getMeasurementUnit().getCodingSchemeDesignator().c_str();
-
-            localMeasurement["quantity"]["CodeValue"] = st.getCurrentContentItem().getConceptName().getCodeValue().c_str();
-            localMeasurement["quantity"]["CodeMeaning"] = st.getCurrentContentItem().getConceptName().getCodeMeaning().c_str();
-            localMeasurement["quantity"]["CodingSchemeDesignator"] = st.getCurrentContentItem().getConceptName().getCodingSchemeDesignator().c_str();
+            localMeasurement["units"] = DSRCodedEntryValue2CodeSequence(measurementValue.getMeasurementUnit());
+            localMeasurement["quantity"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getConceptName());
 
             if(st.gotoNamedChildNode(CODE_DCM_Derivation)){
-              localMeasurement["derivationModifier"]["CodeValue"] = st.getCurrentContentItem().getCodeValue().getCodeValue().c_str();
-              localMeasurement["derivationModifier"]["CodeMeaning"] = st.getCurrentContentItem().getCodeValue().getCodeMeaning().c_str();
-              localMeasurement["derivationModifier"]["CodingSchemeDesignator"] = st.getCurrentContentItem().getCodeValue().getCodingSchemeDesignator().c_str();
+              localMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
               st.gotoParent();
             }
             measurementItems.append(localMeasurement);
