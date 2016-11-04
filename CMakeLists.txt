@@ -178,29 +178,7 @@ endif()
 #
 foreach(file
   CMake/ctkListToString.cmake
-  CMake/ctkMacroParseArguments.cmake
-  CMake/ctkMacroSetPaths.cmake
   CMake/ctkMacroListFilter.cmake
-  CMake/ctkMacroOptionUtils.cmake
-  CMake/ctkMacroBuildLib.cmake
-  CMake/ctkMacroBuildLibWrapper.cmake
-  CMake/ctkMacroBuildApp.cmake
-  CMake/ctkMacroSetupQt.cmake
-  CMake/ctkMacroTargetLibraries.cmake # Import multiple macros
-  CMake/ctkFunctionExtractOptionNameAndValue.cmake
-  CMake/ctkMacroValidateBuildOptions.cmake
-  CMake/ctkMacroAddCtkLibraryOptions.cmake
-  CMake/ctkFunctionGenerateDGraphInput.cmake
-  CMake/ctkFunctionGeneratePluginManifest.cmake
-  CMake/ctkMacroGeneratePluginResourceFile.cmake
-  CMake/ctkFunctionAddPluginRepo.cmake
-  CMake/ctkFunctionCheckCompilerFlags.cmake
-  CMake/ctkFunctionCheckoutRepo.cmake
-  CMake/ctkFunctionGetIncludeDirs.cmake
-  CMake/ctkFunctionGetLibraryDirs.cmake
-  CMake/ctkFunctionGetGccVersion.cmake
-  CMake/ctkFunctionGetCompilerVisibilityFlags.cmake
-  CMake/ctkFunctionCompileSnippets.cmake
   )
   include(${file})
   install(FILES ${file} DESTINATION ${DCMQI_INSTALL_CMAKE_DIR} COMPONENT Development)
