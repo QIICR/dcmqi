@@ -53,8 +53,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
     "MinSizeRel" "RelWithDebInfo")
 endif()
-message("Configuring with build type ${CMAKE_BUILD_TYPE}")
 if(NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Configuring with build type '${CMAKE_BUILD_TYPE}'")
   mark_as_superbuild(VARS CMAKE_BUILD_TYPE ALL_PROJECTS)
 endif()
 
