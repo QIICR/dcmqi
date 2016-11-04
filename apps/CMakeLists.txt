@@ -1,5 +1,5 @@
-IF(BUILD_PARAMETRIC_MAPS)
+if(BUILD_PARAMETRIC_MAPS)
   add_subdirectory(paramaps)
-ENDIF()
+endif()
 add_subdirectory(seg)
 add_subdirectory(sr)
