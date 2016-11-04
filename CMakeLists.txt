@@ -15,7 +15,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 set(EXTERNAL_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMakeExternals)
 set(EXTERNAL_PROJECT_FILE_PREFIX "")
 include(ExternalProject)
-include(ctkMacroCheckExternalProjectDependency)
+include(ExternalProjectDependency)
 
 #-----------------------------------------------------------------------------
 if(APPLE)
@@ -183,19 +183,6 @@ foreach(file
   include(${file})
   install(FILES ${file} DESTINATION ${DCMQI_INSTALL_CMAKE_DIR} COMPONENT Development)
 endforeach()
-
-#-----------------------------------------------------------------------------
-# DCMQI dependencies - Projects should be TOPOLOGICALLY ordered
-#-----------------------------------------------------------------------------
-set(DCMQI_DEPENDENCIES
-  zlib
-  DCMTK
-  ITK
-  SlicerExecutionModel
-  )
-
-include(CMake/ctkBlockCheckDependencies.cmake)
-
 
 #-----------------------------------------------------------------------------
 # Superbuild script

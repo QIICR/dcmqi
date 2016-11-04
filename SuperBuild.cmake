@@ -18,6 +18,15 @@
 #
 ###########################################################################
 
+#-----------------------------------------------------------------------------
+# DCMQI dependencies - Projects should be TOPOLOGICALLY ordered
+#-----------------------------------------------------------------------------
+set(DCMQI_DEPENDENCIES
+  zlib
+  DCMTK
+  ITK
+  SlicerExecutionModel
+  )
 
 #-----------------------------------------------------------------------------
 # WARNING - No change should be required after this comment
@@ -33,6 +42,8 @@ endif()
 
 #-----------------------------------------------------------------------------
 set(proj DCMQI)
+
+ExternalProject_Include_Dependencies(DCMQI DEPENDS_VAR DCMQI_DEPENDENCIES)
 
 message("${DCMQI_DEPENDENCIES}")
 
