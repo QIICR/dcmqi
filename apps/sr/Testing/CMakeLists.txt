@@ -47,3 +47,10 @@ add_test(NAME ${READER_MODULE_NAME}_ct-liver
 set_property(TEST ${READER_MODULE_NAME}_ct-liver PROPERTY LABELS ${MODULE_NAME})
 set_tests_properties(${READER_MODULE_NAME}_ct-liver PROPERTIES DEPENDS ${WRITER_MODULE_NAME}_ct-liver)
 
+add_test(NAME ${MODULE_NAME}_meta_roundtrip
+  COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-ct-liver-example.json
+  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.json
+  "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext']")
+set_tests_properties(${MODULE_NAME}_meta_roundtrip PROPERTIES DEPENDS ${READER_MODULE_NAME}_ct-liver)
+set_property(TEST ${MODULE_NAME}_meta_roundtrip PROPERTY LABELS ${MODULE_NAME})
