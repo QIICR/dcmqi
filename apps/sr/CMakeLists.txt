@@ -37,4 +37,7 @@ SEMMacroBuildCLI(
   EXECUTABLE_ONLY
   )
 
-add_subdirectory(Testing)
+#-----------------------------------------------------------------------------
+if(BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()

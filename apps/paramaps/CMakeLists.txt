@@ -57,4 +57,7 @@ SEMMacroBuildCLI(
   INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
 
-add_subdirectory(Testing)
+#-----------------------------------------------------------------------------
+if(BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()
