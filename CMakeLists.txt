@@ -68,59 +68,59 @@ mark_as_superbuild(
   ALL_PROJECTS
   )
 
-  #-----------------------------------------------------------------------------
-  # Superbuild Option - Enabled by default
-  #
-  option(DCMQI_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
-  mark_as_advanced(DCMQI_SUPERBUILD)
+#-----------------------------------------------------------------------------
+# Superbuild Option - Enabled by default
+#
+option(DCMQI_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
+mark_as_advanced(DCMQI_SUPERBUILD)
 
-  #-----------------------------------------------------------------------------
-  # Output directories.
-  #
-  foreach(type LIBRARY RUNTIME ARCHIVE)
-    # Make sure the directory exists
-    if(DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY
-       AND NOT EXISTS ${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY})
-      message(FATAL_ERROR "DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY is set to a non-existing directory [${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY}]")
-    endif()
-
-    if(DCMQI_SUPERBUILD)
-      set(output_dir ${DCMQI_BINARY_DIR}/bin)
-      if(NOT DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY)
-        set(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY ${DCMQI_BINARY_DIR}/dcmqi-build/bin)
-      endif()
-      mark_as_superbuild(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY:PATH)
-    else()
-      if(NOT DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY)
-        set(output_dir ${DCMQI_BINARY_DIR}/bin)
-      else()
-        set(output_dir ${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY})
-      endif()
-    endif()
-    set(CMAKE_${type}_OUTPUT_DIRECTORY ${output_dir} CACHE INTERNAL "Single output directory for building all libraries.")
-    if(NOT DEFINED DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY)
-      set(DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY ${CMAKE_${type}_OUTPUT_DIRECTORY})
-    endif()
-  endforeach()
-
-  #-----------------------------------------------------------------------------
-  # DCMQI version number.  An even minor number corresponds to releases.
-  #
-  set(DCMQI_MAJOR_VERSION 0)
-  set(DCMQI_MINOR_VERSION 0)
-  set(DCMQI_PATCH_VERSION 1)
-  set(DCMQI_VERSION
-      "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}.${DCMQI_PATCH_VERSION}")
-
-  # Append the library version information to the library target
-  # properties.  A parent project may set its own properties and/or may
-  # block this.
-  if(NOT DCMQI_NO_LIBRARY_VERSION)
-    set(DCMQI_LIBRARY_PROPERTIES ${DCMQI_LIBRARY_PROPERTIES}
-      VERSION "${DCMQI_VERSION}"
-      SOVERSION "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}"
-      )
+#-----------------------------------------------------------------------------
+# Output directories.
+#
+foreach(type LIBRARY RUNTIME ARCHIVE)
+  # Make sure the directory exists
+  if(DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY
+     AND NOT EXISTS ${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY})
+    message(FATAL_ERROR "DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY is set to a non-existing directory [${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY}]")
   endif()
+
+  if(DCMQI_SUPERBUILD)
+    set(output_dir ${DCMQI_BINARY_DIR}/bin)
+    if(NOT DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY)
+      set(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY ${DCMQI_BINARY_DIR}/dcmqi-build/bin)
+    endif()
+    mark_as_superbuild(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY:PATH)
+  else()
+    if(NOT DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY)
+      set(output_dir ${DCMQI_BINARY_DIR}/bin)
+    else()
+      set(output_dir ${DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY})
+    endif()
+  endif()
+  set(CMAKE_${type}_OUTPUT_DIRECTORY ${output_dir} CACHE INTERNAL "Single output directory for building all libraries.")
+  if(NOT DEFINED DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY)
+    set(DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY ${CMAKE_${type}_OUTPUT_DIRECTORY})
+  endif()
+endforeach()
+
+#-----------------------------------------------------------------------------
+# DCMQI version number.  An even minor number corresponds to releases.
+#
+set(DCMQI_MAJOR_VERSION 0)
+set(DCMQI_MINOR_VERSION 0)
+set(DCMQI_PATCH_VERSION 1)
+set(DCMQI_VERSION
+    "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}.${DCMQI_PATCH_VERSION}")
+
+# Append the library version information to the library target
+# properties.  A parent project may set its own properties and/or may
+# block this.
+if(NOT DCMQI_NO_LIBRARY_VERSION)
+  set(DCMQI_LIBRARY_PROPERTIES ${DCMQI_LIBRARY_PROPERTIES}
+    VERSION "${DCMQI_VERSION}"
+    SOVERSION "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}"
+    )
+endif()
 
 
 #-----------------------------------------------------------------------------
