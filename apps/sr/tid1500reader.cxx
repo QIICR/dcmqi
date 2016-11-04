@@ -8,20 +8,24 @@
 
 #include "dcmtk/ofstd/ofstream.h"
 #include "dcmtk/ofstd/oftest.h"
+#include "dcmtk/ofstd/ofstd.h"
 
 #include "dcmtk/dcmsr/dsrdoc.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 #include "dcmtk/dcmiod/modhelp.h"
 
 #include "dcmtk/dcmsr/codes/dcm.h"
+#include "dcmtk/dcmsr/codes/srt.h"
 #include "dcmtk/dcmsr/cmr/tid1500.h"
 
+#include "dcmtk/dcmdata/dcdeftag.h"
+
+#include <iostream>
+#include <exception>
 
 #include <json/json.h>
 
 #include "Exceptions.h"
-
-#include "Helper.h"
 
 using namespace std;
 
@@ -141,8 +145,6 @@ Json::Value getMeasurements(DSRDocument &doc) {
   return measurements;
 }
 
-
-
 int main(int argc, char** argv){
   PARSE_ARGS;
 
@@ -211,14 +213,6 @@ int main(int argc, char** argv){
 
   outputFile << metaRoot;
   outputFile.close();
-
-//  std::filebuf fb;
-//  fb.open (metaDataFileName.c_str(),std::ios::out);
-//
-//  ostream out(&fb);
-//  DSRDocumentTree &st = doc.getTree();
-//  st.print(out);
-//  fb.close();
 
   return 0;
 }
