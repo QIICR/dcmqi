@@ -102,9 +102,6 @@ foreach(type LIBRARY RUNTIME ARCHIVE)
     endif()
   endif()
   set(CMAKE_${type}_OUTPUT_DIRECTORY ${output_dir} CACHE INTERNAL "Single output directory for building all libraries.")
-  if(NOT DEFINED DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY)
-    set(DCMQI_PLUGIN_${type}_OUTPUT_DIRECTORY ${CMAKE_${type}_OUTPUT_DIRECTORY})
-  endif()
 endforeach()
 
 #-----------------------------------------------------------------------------
