@@ -404,8 +404,8 @@ namespace dcmqi {
       DcmDate::getCurrentDate(contentDate);
       DcmTime::getCurrentTime(contentTime);
 
-      segdoc->getSeries().setSeriesDate(contentDate.c_str());
-      segdoc->getSeries().setSeriesTime(contentTime.c_str());
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str()));
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str()));
       segdoc->getGeneralImage().setContentDate(contentDate.c_str());
       segdoc->getGeneralImage().setContentTime(contentTime.c_str());
     }
