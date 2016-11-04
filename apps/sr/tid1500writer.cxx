@@ -134,7 +134,7 @@ int main(int argc, char** argv){
 
     CHECK_COND(report.addVolumetricROIMeasurements());
     /* fill volumetric ROI measurements with data */
-    TID1500_MeasurementReport::TID1411_Measurements &measurements =   report.getVolumetricROIMeasurements();
+    TID1500_MeasurementReport::TID1411_Measurements &measurements = report.getVolumetricROIMeasurements();
     //std::cout << measurementGroup["TrackingIdentifier"] << std::endl;
     CHECK_COND(measurements.setTrackingIdentifier(measurementGroup["TrackingIdentifier"].asCString()));
 
@@ -208,6 +208,34 @@ int main(int argc, char** argv){
         }
       }
     }
+  }
+
+  if(metaRoot.isMember("SeriesDescription")) {
+    CHECK_COND(doc.setSeriesDescription(metaRoot["SeriesDescription"].asCString()));
+  }
+
+  if(metaRoot.isMember("CompletionFlag")) {
+    if (DSRTypes::enumeratedValueToCompletionFlag(metaRoot["CompletionFlag"].asCString())
+        == DSRTypes::CF_Complete) {
+      doc.completeDocument();
+    }
+  }
+
+  // TODO: we should think about storing those information in json as well
+  if(metaRoot.isMember("VerificationFlag") && observerType=="PERSON" && doc.getCompletionFlag() == DSRTypes::CF_Complete) {
+    if (DSRTypes::enumeratedValueToVerificationFlag(metaRoot["VerificationFlag"].asCString()) ==
+        DSRTypes::VF_Verified) {
+      // TODO: get organization from meta information?
+      CHECK_COND(doc.verifyDocument(metaRoot["observerContext"]["PersonObserverName"].asCString(), "BWH"));
+    }
+  }
+
+  if(metaRoot.isMember("InstanceNumber")) {
+    CHECK_COND(doc.setInstanceNumber(metaRoot["InstanceNumber"].asCString()))
+  }
+
+  if(metaRoot.isMember("SeriesNumber")) {
+    CHECK_COND(doc.setSeriesNumber(metaRoot["SeriesNumber"].asCString()))
   }
 
   // WARNING: no consistency checks between the referenced UIDs and the
