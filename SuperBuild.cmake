@@ -34,10 +34,10 @@ set(DCMQI_DEPENDENCIES
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
-# Make sure ${DCMQI_BINARY_DIR}/DCMQI-build/bin exists
+# Make sure ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build/bin exists
 # May be used by some external project to install libs
-if(NOT EXISTS ${DCMQI_BINARY_DIR}/dcmqi-build/bin)
-  file(MAKE_DIRECTORY ${DCMQI_BINARY_DIR}/dcmqi-build/bin)
+if(NOT EXISTS ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build/bin)
+  file(MAKE_DIRECTORY ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build/bin)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -59,7 +59,8 @@ ExternalProject_Add(${proj}
     -DCMAKE_C_FLAGS_INIT:STRING=${CMAKE_C_FLAGS_INIT}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
   SOURCE_DIR ${DCMQI_SOURCE_DIR}
-  BINARY_DIR ${DCMQI_BINARY_DIR}/dcmqi-build
+  BINARY_DIR ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build
+  PREFIX ${PROJECT_NAME_LC}-prefix
   INSTALL_COMMAND ""
   DEPENDS
     ${DCMQI_DEPENDENCIES}

@@ -29,6 +29,7 @@ if(APPLE)
 endif()
 
 project(DCMQI)
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)
 
 #-----------------------------------------------------------------------------
 # Library mode: SHARED (default) or STATIC
@@ -90,7 +91,7 @@ foreach(type LIBRARY RUNTIME ARCHIVE)
   if(DCMQI_SUPERBUILD)
     set(output_dir ${DCMQI_BINARY_DIR}/bin)
     if(NOT DEFINED DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY)
-      set(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY ${DCMQI_BINARY_DIR}/dcmqi-build/bin)
+      set(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build/bin)
     endif()
     mark_as_superbuild(DCMQI_CMAKE_${type}_OUTPUT_DIRECTORY:PATH)
   else()
