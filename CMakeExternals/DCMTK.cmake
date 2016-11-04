@@ -51,7 +51,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     ${${proj}_EXTERNAL_PROJECT_ARGS}
     SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
     BINARY_DIR ${proj}-build
-    PREFIX ${proj}${ep_suffix}
     ${location_args}
     INSTALL_COMMAND ""
     CMAKE_ARGS
