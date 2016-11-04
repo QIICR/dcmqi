@@ -1,3 +1,5 @@
+
+#-----------------------------------------------------------------------------
 set(COMMON_INCLUDE_DIRECTORIES
   )
 
@@ -11,12 +13,15 @@ set(COMMON_TARGET_LIBRARIES
 set(COMMON_SOURCE_FILES
   )
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME itkimage2paramap)
 
+#-----------------------------------------------------------------------------
 set(${MODULE_NAME}_TARGET_LIBRARIES
   ${COMMON_TARGET_LIBRARIES}
   )
 
+#-----------------------------------------------------------------------------
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
@@ -30,12 +35,15 @@ SEMMacroBuildCLI(
   INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME paramap2itkimage)
 
+#-----------------------------------------------------------------------------
 set(${MODULE_NAME}_TARGET_LIBRARIES
   ${COMMON_TARGET_LIBRARIES}
   )
 
+#-----------------------------------------------------------------------------
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
