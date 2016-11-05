@@ -1,3 +1,5 @@
+
+#-----------------------------------------------------------------------------
 set(COMMON_INCLUDE_DIRECTORIES
   )
 
@@ -11,42 +13,39 @@ set(COMMON_TARGET_LIBRARIES
 set(COMMON_SOURCE_FILES
   )
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME itkimage2paramap)
 
+#-----------------------------------------------------------------------------
 set(${MODULE_NAME}_TARGET_LIBRARIES
   ${COMMON_TARGET_LIBRARIES}
   )
 
+#-----------------------------------------------------------------------------
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
   ADDITIONAL_SRCS ${COMMON_SOURCE_FILES} ${MODULE_NAME}.cxx
   TARGET_LIBRARIES ${${MODULE_NAME}_TARGET_LIBRARIES}
-  RUNTIME_OUTPUT_DIRECTORY        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-  LIBRARY_OUTPUT_DIRECTORY        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-  ARCHIVE_OUTPUT_DIRECTORY        "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}"
-  INSTALL_RUNTIME_DESTINATION ${CMAKE_BINARY_DIR}
-  INSTALL_LIBRARY_DESTINATION ${CMAKE_BINARY_DIR}
-  INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME paramap2itkimage)
 
+#-----------------------------------------------------------------------------
 set(${MODULE_NAME}_TARGET_LIBRARIES
   ${COMMON_TARGET_LIBRARIES}
   )
 
+#-----------------------------------------------------------------------------
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}
   INCLUDE_DIRECTORIES ${COMMON_INCLUDE_DIRECTORIES}
   ADDITIONAL_SRCS ${COMMON_SOURCE_FILES} ${MODULE_NAME}.cxx
   TARGET_LIBRARIES ${${MODULE_NAME}_TARGET_LIBRARIES}
-  RUNTIME_OUTPUT_DIRECTORY        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-  LIBRARY_OUTPUT_DIRECTORY        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-  ARCHIVE_OUTPUT_DIRECTORY        "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}"
-  INSTALL_RUNTIME_DESTINATION ${CMAKE_BINARY_DIR}
-  INSTALL_LIBRARY_DESTINATION ${CMAKE_BINARY_DIR}
-  INSTALL_ARCHIVE_DESTINATION ${CMAKE_BINARY_DIR}
   )
 
-add_subdirectory(Testing)
+#-----------------------------------------------------------------------------
+if(BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()

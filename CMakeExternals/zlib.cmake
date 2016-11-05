@@ -4,15 +4,10 @@ set(proj zlib)
 # Set dependency list
 set(${proj}_DEPENDENCIES "")
 
-message("===> Building zlib!")
-
 # Include dependent projects if any
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
 
-message("===> Building zlib after dependencies!")
-
 if(${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  message("===> Using system zlib!")
   unset(zlib_DIR CACHE)
   find_package(ZLIB REQUIRED)
   set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
@@ -25,7 +20,6 @@ if(DEFINED zlib_DIR AND NOT EXISTS ${zlib_DIR})
 endif()
 
 if(NOT DEFINED zlib_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  message("zlib HERE")
   if(NOT DEFINED git_protocol)
     set(git_protocol "git")
   endif()
