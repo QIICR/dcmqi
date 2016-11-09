@@ -71,6 +71,7 @@ mark_as_superbuild(
 
 option(BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF)
 mark_as_advanced(BUILD_PARAMETRIC_MAPS)
+mark_as_superbuild(BUILD_PARAMETRIC_MAPS)
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
