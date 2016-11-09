@@ -82,6 +82,10 @@ cmake_dependent_option(
 mark_as_advanced(BUILD_PARAMETRIC_MAPS)
 mark_as_superbuild(BUILD_PARAMETRIC_MAPS)
 
+option(BUILD_DOC "Build ${PROJECT_NAME} documentation." ON)
+mark_as_advanced(BUILD_DOC)
+mark_as_superbuild(BUILD_DOC)
+
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
 #
@@ -234,4 +238,6 @@ if(BUILD_APPS)
   add_subdirectory("apps")
 endif()
 
-add_subdirectory("doc")
+if(BUILD_DOC)
+  add_subdirectory("doc")
+endif()
