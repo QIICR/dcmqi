@@ -69,7 +69,16 @@ mark_as_superbuild(
 #-----------------------------------------------------------------------------
 # Options
 
-option(BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF)
+include(CMakeDependentOption)
+
+option(BUILD_APPS "Build ${PROJECT_NAME} applications." ON)
+mark_as_advanced(BUILD_APPS)
+mark_as_superbuild(BUILD_APPS)
+
+cmake_dependent_option(
+  BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF
+  "BUILD_APPS" OFF
+  )
 mark_as_advanced(BUILD_PARAMETRIC_MAPS)
 mark_as_superbuild(BUILD_PARAMETRIC_MAPS)
 
@@ -223,6 +232,8 @@ set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
 
 add_subdirectory("libsrc")
 
-add_subdirectory("apps")
+if(BUILD_APPS)
+  add_subdirectory("apps")
+endif()
 
 add_subdirectory("doc")
