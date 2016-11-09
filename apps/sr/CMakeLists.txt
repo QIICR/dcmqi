@@ -1,5 +1,13 @@
 
 #-----------------------------------------------------------------------------
+
+#
+# SlicerExecutionModel
+#
+find_package(SlicerExecutionModel REQUIRED)
+include(${SlicerExecutionModel_USE_FILE})
+
+#-----------------------------------------------------------------------------
 set(COMMON_INCLUDE_DIRECTORIES
   )
 

@@ -204,12 +204,10 @@ if(DCMQI_SUPERBUILD)
   return()
 endif()
 
+#-----------------------------------------------------------------------------
 find_package(DCMTK NO_MODULE REQUIRED)
-find_package(SlicerExecutionModel NO_MODULE REQUIRED GenerateCLP)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
-
-include(${SlicerExecutionModel_USE_FILE})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/FindGit.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
