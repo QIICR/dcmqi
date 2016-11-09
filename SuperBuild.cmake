@@ -25,8 +25,12 @@ set(DCMQI_DEPENDENCIES
   zlib
   DCMTK
   ITK
-  SlicerExecutionModel
   )
+if(BUILD_APPS)
+  list(APPEND DCMQI_DEPENDENCIES
+    SlicerExecutionModel
+    )
+endif()
 
 #-----------------------------------------------------------------------------
 # WARNING - No change should be required after this comment
