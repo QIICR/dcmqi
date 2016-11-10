@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------
-include(${DCMQI_SOURCE_DIR}/CMake/FindGit.cmake)
-include(${DCMQI_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
+include(FindGit)
+include(dcmqiMacroExtractRepositoryInfo)
 
 dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
 configure_file(
