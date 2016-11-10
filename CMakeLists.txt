@@ -213,17 +213,6 @@ find_package(DCMTK NO_MODULE REQUIRED)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/FindGit.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/dcmqiVersionConfigure.h
-)
-
 enable_testing()
 set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 

@@ -1,3 +1,15 @@
+
+#-----------------------------------------------------------------------------
+include(${DCMQI_SOURCE_DIR}/CMake/FindGit.cmake)
+include(${DCMQI_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
+
+dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
+configure_file(
+  ${DCMQI_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
+  ${DCMQI_BINARY_DIR}/include/dcmqiVersionConfigure.h
+  )
+
+#-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
 
 if(BUILD_PARAMETRIC_MAPS)
@@ -24,6 +36,7 @@ target_include_directories(dcmqi PUBLIC
   ${ITK_INSTALL_PREFIX}/include/vxl/core
   ${ITK_INSTALL_PREFIX}/include/vxl/vcl
   ${DCMQI_SOURCE_DIR}/include
+  ${DCMQI_BINARY_DIR}/include
   ${DCMQI_SOURCE_DIR}/jsoncpp
   )
 
