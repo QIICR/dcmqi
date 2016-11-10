@@ -24,16 +24,6 @@ project(DCMQI)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)
 
 #-----------------------------------------------------------------------------
-# Library mode: SHARED (default) or STATIC
-#
-set(DCMQI_LIBRARY_MODE "SHARED")
-
-option(DCMQI_BUILD_SHARED_LIBS "Build DCMQI libraries as shared module." ON)
-mark_as_advanced(DCMQI_BUILD_SHARED_LIBS)
-mark_as_superbuild(DCMQI_BUILD_SHARED_LIBS)
-if(NOT DCMQI_BUILD_SHARED_LIBS)
-  set(DCMQI_LIBRARY_MODE "STATIC")
-endif()
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
