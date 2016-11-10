@@ -1,6 +1,3 @@
-machine:
-  environment:
-    CMAKE_BIN: /home/ubuntu/dcmqi/cmake-3.6.0-rc4-Linux-x86_64/bin
 dependencies:
   cache_directories:
     - "~/dcmqi-build/zlib"
@@ -11,20 +8,38 @@ dependencies:
     - "~/dcmqi-build/DCMTK-build"
     - "~/dcmqi-build/SlicerExecutionModel"
     - "~/dcmqi-build/SlicerExecutionModel-build"
+    - dicom3tools_1.00.snapshot.20160721064406
   pre:
-    - sudo apt-get update
-    - sudo apt-get install xutils-dev
-    - cd ~
-    - wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz
-    - tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz
-    - wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2
-    - tar xjf dicom3tools.tar.bz2
-    - cd dicom3tools_1.00.snapshot.20160721064406/ && ./Configure && imake -I./config -DUseQIICRID && make World && sudo make install
+    # Install tools required to run DCMQI "doc" tests
     - npm install jsonlint -g
     - npm install ajv-cli -g
+    # Install xutils-dev package providing "imake"
+    - sudo apt-get update
+    - sudo apt-get install xutils-dev
+    # If needed, download and build dicom3tools
+    - |
+      dicom3tools_version=dicom3tools_1.00.snapshot.20160721064406
+      if [[ ! -e $dicom3tools_version ]]; then
+        wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/$dicom3tools_version.tar.bz2 -O dicom3tools.tar.bz2 \
+          && tar xjf dicom3tools.tar.bz2 \
+          && (cd $dicom3tools_version/ \
+          && ./Configure \
+          && imake -I./config -DUseQIICRID \
+          && make -j$(grep -c processor /proc/cpuinfo) World > /dev/null 2>&1)
+      else
+        echo "Reusing "
+      fi
+      cd $dicom3tools_version && sudo make install
+    # Install Ninja
+    - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip
+    - unzip ninja-linux.zip && sudo cp ninja /usr/local/bin/ && sudo chmod 755 /usr/local/bin/ninja
+    # Use scikit-ci-addons to streamline installation of CMake
+    - sudo pip install scikit-ci-addons==0.11.0
+    - ci_addons circle/install_cmake 3.6.2
+
   post:
-    - export PATH=${CMAKE_BIN}:${PATH} && mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake ../dcmqi && make
-    - export PATH=${CMAKE_BIN}:${PATH} && cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
+    - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake -G Ninja ../dcmqi && ninja
+    - cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
 test:
   post:
     - mkdir -p ${CIRCLE_TEST_REPORTS}/junit
