@@ -5,16 +5,13 @@
 #include <zlib.h>           /* for zlibVersion() */
 #endif
 
-#include "dcmtk/dcmseg/segdoc.h"
-#include "dcmtk/dcmseg/segment.h"
-
-#include "dcmtk/dcmfg/fgderimg.h"
-#include "dcmtk/dcmfg/fgseg.h"
-
-#include "dcmtk/dcmseg/segutils.h"
-
-#include "dcmtk/dcmdata/dcrledrg.h"
-
+// DCMTK includes
+#include <dcmtk/dcmfg/fgderimg.h>
+#include <dcmtk/dcmfg/fgseg.h>
+#include <dcmtk/dcmseg/segdoc.h>
+#include <dcmtk/dcmseg/segment.h>
+#include <dcmtk/dcmseg/segutils.h>
+#include <dcmtk/dcmdata/dcrledrg.h>
 
 #include <itkImageDuplicator.h>
 #include <itkImageRegionConstIterator.h>

@@ -1,4 +1,3 @@
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 
 // UIDs
 #include "QIICRUIDs.h"
@@ -6,19 +5,21 @@
 // versioning
 #include "dcmqiVersionConfigure.h"
 
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/ofstd/oftest.h"
-#include "dcmtk/ofstd/ofstd.h"
+// DCMTK
+#include <dcmtk/config/osconfig.h>   // make sure OS specific configuration is included first
+#include <dcmtk/ofstd/ofstream.h>
+#include <dcmtk/ofstd/oftest.h>
+#include <dcmtk/ofstd/ofstd.h>
 
-#include "dcmtk/dcmsr/dsrdoc.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmiod/modhelp.h"
+#include <dcmtk/dcmsr/dsrdoc.h>
+#include <dcmtk/dcmdata/dcfilefo.h>
+#include <dcmtk/dcmiod/modhelp.h>
 
-#include "dcmtk/dcmsr/codes/dcm.h"
-#include "dcmtk/dcmsr/codes/srt.h"
-#include "dcmtk/dcmsr/cmr/tid1500.h"
+#include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/dcmsr/codes/srt.h>
+#include <dcmtk/dcmsr/cmr/tid1500.h>
 
-#include "dcmtk/dcmdata/dcdeftag.h"
+#include <dcmtk/dcmdata/dcdeftag.h>
 
 #include <iostream>
 #include <exception>

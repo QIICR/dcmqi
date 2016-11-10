@@ -1,7 +1,8 @@
 #ifndef DCMQI_PARAMAP_CONVERTER_H
 #define DCMQI_PARAMAP_CONVERTER_H
 
-#include "dcmtk/dcmpmap/dpmparametricmapiod.h"
+// DCMTK includes
+#include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
 #include <stdlib.h>
 

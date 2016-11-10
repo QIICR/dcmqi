@@ -5,10 +5,11 @@
 #include <iostream>
 #include "vnl/vnl_cross.h"
 
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/oflog/loglevel.h"
-#include "dcmtk/oflog/oflog.h"
+// DCMTK includes
+#include <dcmtk/config/osconfig.h>   // make sure OS specific configuration is included first
+#include <dcmtk/ofstd/ofstream.h>
+#include <dcmtk/oflog/loglevel.h>
+#include <dcmtk/oflog/oflog.h>
 #include <dcmtk/dcmiod/iodmacro.h>
 #include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modequipment.h>
@@ -16,7 +17,7 @@
 #include <dcmtk/dcmfg/fgplanor.h>
 #include <dcmtk/dcmfg/fgplanpo.h>
 #include <dcmtk/dcmfg/fgpixmsr.h>
-#include "dcmtk/dcmdata/dcrledrg.h"
+#include <dcmtk/dcmdata/dcrledrg.h>
 
 // UIDs
 #include "QIICRUIDs.h"
