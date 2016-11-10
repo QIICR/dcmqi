@@ -23,11 +23,13 @@ before_script:
 # Use scikit-ci-addons to streamline installation of CMake
 - pip install scikit-ci-addons==0.11.0
 - ci_addons travis/install_cmake 3.6.2
-
+# Install Ninja
+- wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
+- unzip ninja-mac.zip && sudo cp ninja /usr/local/bin/
 script:
 - mkdir -p /Users/travis/build/QIICR/dcmqi-build
-- cd /Users/travis/build/QIICR/dcmqi-build && cmake /Users/travis/build/QIICR/dcmqi
-- make
+- cd /Users/travis/build/QIICR/dcmqi-build && cmake -G Ninja /Users/travis/build/QIICR/dcmqi
+- ninja
 - |
   cd /Users/travis/build/QIICR/dcmqi-build/dcmqi-build
   ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
