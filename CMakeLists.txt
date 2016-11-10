@@ -183,12 +183,23 @@ if(DCMQI_SUPERBUILD)
 endif()
 
 #-----------------------------------------------------------------------------
+# Dependencies
+#
+
 find_package(DCMTK NO_MODULE REQUIRED)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
 
+
+#-----------------------------------------------------------------------------
+# Testing
+#
 enable_testing()
 set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
+
+#-----------------------------------------------------------------------------
+# DCMQI library, applications and tests
+#
 
 add_subdirectory("libsrc")
 
