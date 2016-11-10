@@ -28,11 +28,10 @@
 #include <itkLabelImageToLabelMapFilter.h>
 
 // DCMQI includes
-#include "dcmqiVersionConfigure.h" // versioning
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/JSONMetaInformationHandlerBase.h"
-#include "dcmqi/QIICRUIDs.h"      // UIDs
-#include "dcmqi/QIICRConstants.h" // UIDs
+#include "dcmqi/QIICRUIDs.h"
+#include "dcmqi/QIICRConstants.h"
 
 using namespace std;
 

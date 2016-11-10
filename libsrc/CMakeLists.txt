@@ -6,7 +6,7 @@ include(dcmqiMacroExtractRepositoryInfo)
 dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
 configure_file(
   ${DCMQI_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
-  ${DCMQI_BINARY_DIR}/include/dcmqiVersionConfigure.h
+  ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
   )
 
 #-----------------------------------------------------------------------------

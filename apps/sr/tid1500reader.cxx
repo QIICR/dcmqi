@@ -22,9 +22,9 @@
 #include <json/json.h>
 
 // DCMQI includes
-#include "dcmqiVersionConfigure.h" // versioning
 #include "dcmqi/Exceptions.h"
-#include "dcmqi/QIICRUIDs.h" // UIDs
+#include "dcmqi/QIICRConstants.h"
+#include "dcmqi/QIICRUIDs.h"
 
 using namespace std;
 
