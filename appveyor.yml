@@ -29,11 +29,10 @@ before_build:
   - cmd: 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
   - cmd: mkdir c:\dcmqi\dcmqi-build
   - cmd: cd c:\dcmqi\dcmqi-build
-  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE:STRING=Release -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-4.10 -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
+  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-4.10 -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
   - cmd: dir
 build_script:
-  - cmd: type DCMQI.sln
-  - cmd: msbuild DCMQI.sln /m
+  - cmd: cmake --build . --config Release -- /m
 after_build:
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv help
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv.cmd help
