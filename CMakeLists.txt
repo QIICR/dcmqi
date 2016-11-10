@@ -171,15 +171,7 @@ if(NOT DCMQI_USE_GIT_PROTOCOL)
 endif()
 
 #-----------------------------------------------------------------------------
-# CMake function(s) and macro(s)
 #
-foreach(file
-  CMake/ctkListToString.cmake
-  CMake/ctkMacroListFilter.cmake
-  )
-  include(${file})
-  install(FILES ${file} DESTINATION ${DCMQI_INSTALL_CMAKE_DIR} COMPONENT Development)
-endforeach()
 
 #-----------------------------------------------------------------------------
 # Superbuild script
