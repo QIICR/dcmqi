@@ -19,6 +19,13 @@ if(BUILD_PARAMETRIC_MAPS)
     )
 endif()
 
+if(BUILTIN_JSONCPP)
+  list(APPEND ADDITIONAL_SRCS
+    ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
+    )
+  set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp)
+endif()
+
 add_library(dcmqi STATIC
   ConverterBase.cpp
   SegmentAttributes.cpp
@@ -26,7 +33,6 @@ add_library(dcmqi STATIC
   JSONMetaInformationHandlerBase.cpp
   ImageSEGConverter.cpp
   JSONSegmentationMetaInformationHandler.cpp
-  ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
   ${ADDITIONAL_SRCS}
   )
 
@@ -37,10 +43,11 @@ target_include_directories(dcmqi PUBLIC
   ${ITK_INSTALL_PREFIX}/include/vxl/vcl
   ${DCMQI_SOURCE_DIR}/include
   ${DCMQI_BINARY_DIR}/include
-  ${DCMQI_SOURCE_DIR}/jsoncpp
+  ${JsonCpp_INCLUDE_DIR}
   )
 
 target_link_libraries(dcmqi PUBLIC
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
+  $<$<NOT:$<BOOL:${BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )

@@ -171,7 +171,22 @@ if(NOT DCMQI_USE_GIT_PROTOCOL)
 endif()
 
 #-----------------------------------------------------------------------------
+# Dependencies
 #
+
+# JsonCpp
+set(_msg "Checking if using built-in JsonCpp")
+message(STATUS ${_msg})
+if(EXISTS "${JsonCpp_LIBRARY}" AND EXISTS "${JsonCpp_INCLUDE_DIR}")
+  set(BUILTIN_JSONCPP 0)
+  message(STATUS "${_msg} - no")
+else()
+  set(BUILTIN_JSONCPP 1)
+  message(STATUS "${_msg} - yes")
+endif()
+mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
+mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
+mark_as_superbuild(BUILTIN_JSONCPP:BOOL)
 
 #-----------------------------------------------------------------------------
 # Superbuild script
