@@ -1,12 +1,4 @@
-cmake_minimum_required (VERSION 2.8.9)
-
-foreach(p
-  CMP0054 # CMake 3.1
-  )
-  if(POLICY ${p})
-    cmake_policy(SET ${p} NEW)
-  endif()
-endforeach()
+cmake_minimum_required (VERSION 3.5.0)
 
 #-----------------------------------------------------------------------------
 # Superbuild
@@ -32,16 +24,6 @@ project(DCMQI)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)
 
 #-----------------------------------------------------------------------------
-# Library mode: SHARED (default) or STATIC
-#
-set(DCMQI_LIBRARY_MODE "SHARED")
-
-option(DCMQI_BUILD_SHARED_LIBS "Build DCMQI libraries as shared module." ON)
-mark_as_advanced(DCMQI_BUILD_SHARED_LIBS)
-mark_as_superbuild(DCMQI_BUILD_SHARED_LIBS)
-if(NOT DCMQI_BUILD_SHARED_LIBS)
-  set(DCMQI_LIBRARY_MODE "STATIC")
-endif()
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
@@ -189,15 +171,22 @@ if(NOT DCMQI_USE_GIT_PROTOCOL)
 endif()
 
 #-----------------------------------------------------------------------------
-# CMake function(s) and macro(s)
+# Dependencies
 #
-foreach(file
-  CMake/ctkListToString.cmake
-  CMake/ctkMacroListFilter.cmake
-  )
-  include(${file})
-  install(FILES ${file} DESTINATION ${DCMQI_INSTALL_CMAKE_DIR} COMPONENT Development)
-endforeach()
+
+# JsonCpp
+set(_msg "Checking if using built-in JsonCpp")
+message(STATUS ${_msg})
+if(EXISTS "${JsonCpp_LIBRARY}" AND EXISTS "${JsonCpp_INCLUDE_DIR}")
+  set(BUILTIN_JSONCPP 0)
+  message(STATUS "${_msg} - no")
+else()
+  set(BUILTIN_JSONCPP 1)
+  message(STATUS "${_msg} - yes")
+endif()
+mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
+mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
+mark_as_superbuild(BUILTIN_JSONCPP:BOOL)
 
 #-----------------------------------------------------------------------------
 # Superbuild script
@@ -209,28 +198,23 @@ if(DCMQI_SUPERBUILD)
 endif()
 
 #-----------------------------------------------------------------------------
+# Dependencies
+#
+
 find_package(DCMTK NO_MODULE REQUIRED)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/FindGit.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/dcmqiVersionConfigure.h
-)
-
+#-----------------------------------------------------------------------------
+# Testing
+#
 enable_testing()
 set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
-# jsoncpp
-# https://github.com/open-source-parsers/jsoncpp/
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp)
-set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
+#-----------------------------------------------------------------------------
+# DCMQI library, applications and tests
+#
 
 add_subdirectory("libsrc")
 
