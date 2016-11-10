@@ -150,7 +150,7 @@ namespace itk
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkTestingComparisonImageFilter.hxx"
+#include "dcmqi/itkTestingComparisonImageFilter.hxx"
 #endif
 
 

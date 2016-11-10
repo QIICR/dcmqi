@@ -22,8 +22,8 @@
 #include <itkChangeInformationImageFilter.h>
 
 // DCMQI includes
-#include "ConverterBase.h"
-#include "JSONSegmentationMetaInformationHandler.h"
+#include "dcmqi/ConverterBase.h"
+#include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
 using namespace std;
 

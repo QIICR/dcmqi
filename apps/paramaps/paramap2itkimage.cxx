@@ -2,7 +2,7 @@
 #include "paramap2itkimageCLP.h"
 
 // DCMQI includes
-#include "ParaMapConverter.h"
+#include "dcmqi/ParaMapConverter.h"
 
 int main(int argc, char *argv[])
 {

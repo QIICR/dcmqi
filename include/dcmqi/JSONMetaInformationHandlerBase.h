@@ -7,8 +7,8 @@
 #include <vector>
 
 // DCMQI includes
-#include "SegmentAttributes.h"
-#include "Exceptions.h"
+#include "dcmqi/SegmentAttributes.h"
+#include "dcmqi/Exceptions.h"
 
 
 using namespace std;

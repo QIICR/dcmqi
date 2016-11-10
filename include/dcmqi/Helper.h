@@ -14,7 +14,7 @@
 #include <map>
 
 // DCMQI includes
-#include "Exceptions.h"
+#include "dcmqi/Exceptions.h"
 
 using namespace std;
 

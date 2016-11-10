@@ -1,6 +1,6 @@
 
 // DCMQI includes
-#include "SegmentAttributes.h"
+#include "dcmqi/SegmentAttributes.h"
 
 
 namespace dcmqi {

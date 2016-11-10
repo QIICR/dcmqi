@@ -12,8 +12,8 @@
 #include <itkMinimumMaximumImageCalculator.h>
 
 // DCMQI includes
-#include "ConverterBase.h"
-#include "JSONParametricMapMetaInformationHandler.h"
+#include "dcmqi/ConverterBase.h"
+#include "dcmqi/JSONParametricMapMetaInformationHandler.h"
 
 typedef IODFloatingPointImagePixelModule::value_type PixelType;
 typedef itk::Image<PixelType, 3> ImageType;

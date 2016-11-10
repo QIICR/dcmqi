@@ -8,8 +8,8 @@
 #include <math.h>
 
 // DCMQI includes
-#include "Helper.h"
-#include "JSONMetaInformationHandlerBase.h"
+#include "dcmqi/Helper.h"
+#include "dcmqi/JSONMetaInformationHandlerBase.h"
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 
 // DCMQI includes
-#include "JSONParametricMapMetaInformationHandler.h"
+#include "dcmqi/JSONParametricMapMetaInformationHandler.h"
 
 namespace dcmqi {
 

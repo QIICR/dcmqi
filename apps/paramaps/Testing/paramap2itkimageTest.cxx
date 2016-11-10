@@ -1,4 +1,4 @@
-#include "itkTestMain.h"
+#include "dcmqi/itkTestMain.h"
 
 void RegisterTests()
 {

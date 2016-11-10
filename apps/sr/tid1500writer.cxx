@@ -23,8 +23,8 @@
 
 // DCMQI includes
 #include "dcmqiVersionConfigure.h" // versioning
-#include "Exceptions.h"
-#include "QIICRUIDs.h" // UIDs
+#include "dcmqi/Exceptions.h"
+#include "dcmqi/QIICRUIDs.h" // UIDs
 
 using namespace std;
 

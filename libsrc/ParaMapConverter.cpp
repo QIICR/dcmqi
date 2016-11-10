@@ -3,7 +3,7 @@
 #include <itkImageDuplicator.h>
 
 // DCMQI includes
-#include "ParaMapConverter.h"
+#include "dcmqi/ParaMapConverter.h"
 
 
 using namespace std;

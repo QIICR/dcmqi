@@ -29,10 +29,10 @@
 
 // DCMQI includes
 #include "dcmqiVersionConfigure.h" // versioning
-#include "Exceptions.h"
-#include "JSONMetaInformationHandlerBase.h"
-#include "QIICRUIDs.h"      // UIDs
-#include "QIICRConstants.h" // UIDs
+#include "dcmqi/Exceptions.h"
+#include "dcmqi/JSONMetaInformationHandlerBase.h"
+#include "dcmqi/QIICRUIDs.h"      // UIDs
+#include "dcmqi/QIICRConstants.h" // UIDs
 
 using namespace std;
 

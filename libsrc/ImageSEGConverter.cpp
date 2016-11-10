@@ -1,6 +1,6 @@
 
 // DCMQI includes
-#include "ImageSEGConverter.h"
+#include "dcmqi/ImageSEGConverter.h"
 
 
 namespace dcmqi {

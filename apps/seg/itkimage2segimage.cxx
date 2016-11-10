@@ -2,7 +2,7 @@
 #include "itkimage2segimageCLP.h"
 
 // DCMQI includes
-#include "ImageSEGConverter.h"
+#include "dcmqi/ImageSEGConverter.h"
 
 int main(int argc, char *argv[])
 {
