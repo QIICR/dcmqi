@@ -52,7 +52,7 @@ foreach(json_schema_file ${json_schema_files})
   createSchemaValidationTest(${json_schema_file})
 endforeach()
 
-# function to simpify creation of example validation tests
+# function to simplify creation of example validation tests
 function(createExampleDataTest example_name schema)
   set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
   add_test(NAME ajv_${example_name}-example

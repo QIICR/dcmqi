@@ -69,8 +69,22 @@ mark_as_superbuild(
 #-----------------------------------------------------------------------------
 # Options
 
-option(BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF)
+include(CMakeDependentOption)
+
+option(BUILD_APPS "Build ${PROJECT_NAME} applications." ON)
+mark_as_advanced(BUILD_APPS)
+mark_as_superbuild(BUILD_APPS)
+
+cmake_dependent_option(
+  BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF
+  "BUILD_APPS" OFF
+  )
 mark_as_advanced(BUILD_PARAMETRIC_MAPS)
+mark_as_superbuild(BUILD_PARAMETRIC_MAPS)
+
+option(BUILD_DOC "Build ${PROJECT_NAME} documentation." ON)
+mark_as_advanced(BUILD_DOC)
+mark_as_superbuild(BUILD_DOC)
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
@@ -194,12 +208,10 @@ if(DCMQI_SUPERBUILD)
   return()
 endif()
 
+#-----------------------------------------------------------------------------
 find_package(DCMTK NO_MODULE REQUIRED)
-find_package(SlicerExecutionModel NO_MODULE REQUIRED GenerateCLP)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
-
-include(${SlicerExecutionModel_USE_FILE})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/FindGit.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/dcmqiMacroExtractRepositoryInfo.cmake)
@@ -222,6 +234,10 @@ set(JSONCPP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp/jsoncpp.cpp)
 
 add_subdirectory("libsrc")
 
-add_subdirectory("apps")
+if(BUILD_APPS)
+  add_subdirectory("apps")
+endif()
 
-add_subdirectory("doc")
+if(BUILD_DOC)
+  add_subdirectory("doc")
+endif()
