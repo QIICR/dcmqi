@@ -9,28 +9,41 @@ configuration:
 platform:
   - x64
 before_build:
+  # Install tools required to run DCMQI "doc" tests
   - npm install jsonlint -g
   - npm install ajv-cli -g
-  - cmd: cmake --version
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("http://www.dclunie.com/dicom3tools/workinprogress/winexe/dicom3tools_winexe_1.00.snapshot.20160721064406.zip", "C:\dicom3tools.zip")
-  - cmd: 7z x C:\dicom3tools.zip -oC:\dicom3tools
-  - cmd: set PATH=%PATH%;C:\dicom3tools
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
-  - cmd: 7z x C:\zlib-dcmqi.zip -oC:\zlib-install
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/QIICR/dcmtk/releases/download/DCMTK-dcmqi-3.6.1_20161102-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
-  - cmd: 7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.23/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
-  - cmd: 7z x C:\ITK-dcmqi.zip -oC:\ITK-install
-  - cmd: cd c:\
-  - cmd: git clone https://github.com/fedorov/SlicerExecutionModel.git SlicerExecutionModel
-  - cmd: cd c:\SlicerExecutionModel
-  - cmd: git checkout dcmqi-311eff
-  - ps: $client = new-object System.Net.WebClient;$client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.5/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
-  - cmd: 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
-  - cmd: mkdir c:\dcmqi\dcmqi-build
-  - cmd: cd c:\dcmqi\dcmqi-build
-  - cmd: cmake -G "Visual Studio 12 2013 Win64" -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-4.10 -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
-  - cmd: dir
+  # Display infos
+  - cmake --version
+  # Downloads
+  - ps: |
+        $client = new-object System.Net.WebClient;
+        $client.DownloadFile("http://www.dclunie.com/dicom3tools/workinprogress/winexe/dicom3tools_winexe_1.00.snapshot.20160721064406.zip",          "C:\dicom3tools.zip")
+        $client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip",                  "C:\zlib-dcmqi.zip")
+        $client.DownloadFile("https://github.com/QIICR/dcmtk/releases/download/DCMTK-dcmqi-3.6.1_20161102-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
+        $client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.23/ITK-dcmqi.zip",             "C:\ITK-dcmqi.zip")
+  # Extract
+  - |
+    7z x C:\dicom3tools.zip -oC:\dicom3tools
+    7z x C:\zlib-dcmqi.zip  -oC:\zlib-install
+    7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
+    7z x C:\ITK-dcmqi.zip   -oC:\ITK-install
+  # Update PATH
+  - set PATH=%PATH%;C:\dicom3tools
+  # Download SlicerExecutionModel source
+  - |
+    cd c:\
+    git clone https://github.com/fedorov/SlicerExecutionModel.git -b dcmqi-311eff SlicerExecutionModel
+  # Download SlicerExecutionModel binaries
+  - ps: |
+        $client = new-object System.Net.WebClient;
+        $client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.5/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
+  - 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
+  # Configure project
+  - |
+    mkdir c:\dcmqi\dcmqi-build
+    cd c:\dcmqi\dcmqi-build
+    cmake -G "Visual Studio 12 2013 Win64" -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-4.10 -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib c:\dcmqi
+    dir
 build_script:
   - cmd: cmake --build . --config Release -- /m
 after_build:
