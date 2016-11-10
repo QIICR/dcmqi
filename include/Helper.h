@@ -7,11 +7,13 @@
 #include <dcmtk/dcmseg/segdoc.h>
 #include <dcmtk/dcmsr/dsrcodtn.h>
 
+// STD includes
 #include <sstream>
 #include <string>
 #include <vector>
 #include <map>
 
+// DCMQI includes
 #include "Exceptions.h"
 
 using namespace std;

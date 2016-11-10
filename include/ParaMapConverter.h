@@ -4,15 +4,16 @@
 // DCMTK includes
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
+// STD includes
 #include <stdlib.h>
 
+// ITK includes
 #include <itkImageRegionConstIteratorWithIndex.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
-#include "JSONParametricMapMetaInformationHandler.h"
-
+// DCMQI includes
 #include "ConverterBase.h"
-
-#include "itkMinimumMaximumImageCalculator.h"
+#include "JSONParametricMapMetaInformationHandler.h"
 
 typedef IODFloatingPointImagePixelModule::value_type PixelType;
 typedef itk::Image<PixelType, 3> ImageType;

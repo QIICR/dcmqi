@@ -1,10 +1,4 @@
 
-// UIDs
-#include "QIICRUIDs.h"
-
-// versioning
-#include "dcmqiVersionConfigure.h"
-
 // DCMTK
 #include <dcmtk/config/osconfig.h>   // make sure OS specific configuration is included first
 #include <dcmtk/ofstd/ofstream.h>
@@ -21,12 +15,16 @@
 
 #include <dcmtk/dcmdata/dcdeftag.h>
 
+// STD includes
 #include <iostream>
 #include <exception>
 
 #include <json/json.h>
 
+// DCMQI includes
+#include "dcmqiVersionConfigure.h" // versioning
 #include "Exceptions.h"
+#include "QIICRUIDs.h" // UIDs
 
 using namespace std;
 

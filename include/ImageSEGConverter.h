@@ -1,6 +1,7 @@
 #ifndef DCMQI_SEGMENTATION_CONVERTER_H
 #define DCMQI_SEGMENTATION_CONVERTER_H
 
+// ZLIB includes
 #ifdef WITH_ZLIB
 #include <zlib.h>           /* for zlibVersion() */
 #endif
@@ -13,15 +14,16 @@
 #include <dcmtk/dcmseg/segutils.h>
 #include <dcmtk/dcmdata/dcrledrg.h>
 
+// ITK includes
 #include <itkImageDuplicator.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkLabelStatisticsImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
 #include <itkChangeInformationImageFilter.h>
 
-#include "JSONSegmentationMetaInformationHandler.h"
-
+// DCMQI includes
 #include "ConverterBase.h"
+#include "JSONSegmentationMetaInformationHandler.h"
 
 using namespace std;
 

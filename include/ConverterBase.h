@@ -1,8 +1,11 @@
 #ifndef DCMQI_CONVERTERBASE_H
 #define DCMQI_CONVERTERBASE_H
 
-#include <vector>
+// STD includes
 #include <iostream>
+#include <vector>
+
+// VNL includes
 #include "vnl/vnl_cross.h"
 
 // DCMTK includes
@@ -19,20 +22,17 @@
 #include <dcmtk/dcmfg/fgpixmsr.h>
 #include <dcmtk/dcmdata/dcrledrg.h>
 
-// UIDs
-#include "QIICRUIDs.h"
-#include "QIICRConstants.h"
-
-// versioning
-#include "dcmqiVersionConfigure.h"
-
-#include "Exceptions.h"
-
+// ITK includes
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkLabelImageToLabelMapFilter.h>
 
+// DCMQI includes
+#include "dcmqiVersionConfigure.h" // versioning
+#include "Exceptions.h"
 #include "JSONMetaInformationHandlerBase.h"
+#include "QIICRUIDs.h"      // UIDs
+#include "QIICRConstants.h" // UIDs
 
 using namespace std;
 

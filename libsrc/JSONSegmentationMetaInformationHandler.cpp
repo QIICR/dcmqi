@@ -1,3 +1,5 @@
+
+// DCMQI includes
 #include "JSONSegmentationMetaInformationHandler.h"
 
 using namespace std;

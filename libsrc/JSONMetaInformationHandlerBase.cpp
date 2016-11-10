@@ -1,3 +1,5 @@
+
+// DCMQI includes
 #include "JSONMetaInformationHandlerBase.h"
 
 namespace dcmqi {

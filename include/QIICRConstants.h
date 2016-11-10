@@ -1,6 +1,7 @@
 #ifndef DCMQI_QIICRCONSTANTS_H
 #define DCMQI_QIICRCONSTANTS_H
 
+// DCMQI includes
 #include "dcmqiVersionConfigure.h"
 
 #define QIICR_MANUFACTURER "QIICR"
