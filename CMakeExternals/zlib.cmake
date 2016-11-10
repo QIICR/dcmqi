@@ -8,18 +8,18 @@ set(${proj}_DEPENDENCIES "")
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
 
 if(${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  unset(zlib_DIR CACHE)
+  unset(ZLIB_ROOT CACHE)
   find_package(ZLIB REQUIRED)
   set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
   set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
 endif()
 
 # Sanity checks
-if(DEFINED zlib_DIR AND NOT EXISTS ${zlib_DIR})
-  message(FATAL_ERROR "zlib_DIR variable is defined but corresponds to nonexistent directory")
+if(DEFINED ZLIB_ROOT AND NOT EXISTS ${ZLIB_ROOT})
+  message(FATAL_ERROR "ZLIB_ROOT variable is defined but corresponds to nonexistent directory")
 endif()
 
-if(NOT DEFINED zlib_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
+if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   if(NOT DEFINED git_protocol)
     set(git_protocol "git")
   endif()
@@ -45,16 +45,15 @@ if(NOT DEFINED zlib_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
-  set(zlib_DIR ${EP_INSTALL_DIR})
-  set(ZLIB_ROOT ${zlib_DIR})
-  set(ZLIB_INCLUDE_DIR ${zlib_DIR}/include)
+  set(ZLIB_ROOT ${EP_INSTALL_DIR})
+  set(ZLIB_INCLUDE_DIR ${ZLIB_ROOT}/include)
   if(WIN32)
-    set(ZLIB_LIBRARY ${zlib_DIR}/lib/zlib.lib)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/zlib.lib)
   else()
-    set(ZLIB_LIBRARY ${zlib_DIR}/lib/libzlib.a)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/libzlib.a)
   endif()
 else()
-  # The project is provided using zlib_DIR, nevertheless since other project may depend on zlib,
+  # The project is provided using ZLIB_ROOT, nevertheless since other project may depend on zlib,
   # let's add an 'empty' one
   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
