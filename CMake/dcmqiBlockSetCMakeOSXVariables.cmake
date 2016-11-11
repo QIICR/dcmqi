@@ -19,7 +19,7 @@
 ###########################################################################
 
 #
-# ctkBlockSetCMakeOSXVariables
+# dcmqiBlockSetCMakeOSXVariables
 #
 
 #
