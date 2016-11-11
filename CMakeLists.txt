@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 #-----------------------------------------------------------------------------
 # Superbuild
@@ -233,3 +233,28 @@ endif()
 get_property(DCMQI_TARGETS GLOBAL PROPERTY DCMQI_TARGETS)
 export(TARGETS ${DCMQI_TARGETS} FILE ${CMAKE_BINARY_DIR}/DCMQITargets.cmake)
 
+#-----------------------------------------------------------------------------
+# DCMQIConfig
+#
+
+# Configure 'DCMQIConfig.cmake'
+include(CMakePackageConfigHelpers)
+
+# For a build tree
+set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
+set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
+set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
+set(${PROJECT_NAME}_CONFIG_CODE "####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
+set(${PROJECT_NAME}_CONFIG_CODE "find_package(DCMTK NO_MODULE REQUIRED)\n")
+set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}##################################################")
+set(_config ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake)
+configure_package_config_file(
+    CMake/${PROJECT_NAME}Config.cmake.in
+    ${_config}
+    INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
+    PATH_VARS
+      CONFIG_DIR_CONFIG
+      DCMTK_DIR_CONFIG
+      SlicerExecutionModel_DIR_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
