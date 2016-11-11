@@ -49,6 +49,17 @@ mark_as_superbuild(
   )
 
 #-----------------------------------------------------------------------------
+# Option default values
+
+set(build_doc_default ON)
+set(superbuild_default ON)
+if(Slicer_SOURCE_DIR)
+  # Default values used when DCMQI is integrated into Slicer as Remote project.
+  set(build_doc_default OFF)
+  set(superbuild_default OFF)
+endif()
+
+#-----------------------------------------------------------------------------
 # Options
 
 include(CMakeDependentOption)
@@ -62,13 +73,13 @@ cmake_dependent_option(
   )
 mark_as_superbuild(DCMQI_BUILD_PARAMETRIC_MAPS)
 
-option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ON)
+option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ${build_doc_default})
 mark_as_superbuild(DCMQI_BUILD_DOC)
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
 #
-option(DCMQI_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
+option(DCMQI_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ${superbuild_default})
 mark_as_advanced(DCMQI_SUPERBUILD)
 
 #-----------------------------------------------------------------------------

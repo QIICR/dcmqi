@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5.0)
 #
 # DCMQI
 #
-if(NOT DCMQI_SOURCE_DIR)
+if(NOT DCMQI_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
   find_package(DCMQI REQUIRED)
 endif()
 
