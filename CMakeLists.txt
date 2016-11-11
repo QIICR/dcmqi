@@ -225,3 +225,11 @@ endif()
 if(BUILD_DOC)
   add_subdirectory("doc")
 endif()
+
+#-----------------------------------------------------------------------------
+# DCMQITargets
+#
+
+get_property(DCMQI_TARGETS GLOBAL PROPERTY DCMQI_TARGETS)
+export(TARGETS ${DCMQI_TARGETS} FILE ${CMAKE_BINARY_DIR}/DCMQITargets.cmake)
+

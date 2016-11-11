@@ -46,6 +46,8 @@ if(DCMQI_LIBRARY_PROPERTIES)
   set_target_properties(${lib_name} PROPERTIES ${DCMQI_LIBRARY_PROPERTIES})
 endif()
 
+set_property(GLOBAL APPEND PROPERTY DCMQI_TARGETS ${lib_name})
+
 target_include_directories(${lib_name} PUBLIC
   ${DCMTK_INCLUDE_DIRS}
   ${ITK_INCLUDE_DIRS}
