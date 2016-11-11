@@ -42,6 +42,10 @@ add_library(${lib_name} STATIC
   ${ADDITIONAL_SRCS}
   )
 
+if(DCMQI_LIBRARY_PROPERTIES)
+  set_target_properties(${lib_name} PROPERTIES ${DCMQI_LIBRARY_PROPERTIES})
+endif()
+
 target_include_directories(${lib_name} PUBLIC
   ${DCMTK_INCLUDE_DIRS}
   ${ITK_INCLUDE_DIRS}
