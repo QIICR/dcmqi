@@ -42,13 +42,13 @@
       <description>File name of the SEG object that will keep the result.</description>
     </file>
 
-    <!--<boolean>-->
-      <!--<name>skipEmptySlices</name>-->
-      <!--<label>Skip empty slices</label>-->
-      <!--<channel>input</channel>-->
-      <!--<longflag>skip</longflag>-->
-      <!--<description>Skip empty slices while encoding segmentation image.</description>-->
-    <!--</boolean>-->
+    <boolean>
+      <name>noSkipEmptySlices</name>
+      <label>Skip empty slices</label>
+      <channel>input</channel>
+      <longflag>noskip</longflag>
+      <description>Don't skip empty slices while encoding segmentation image.</description>-->
+    </boolean>
 
     <!--<boolean>-->
       <!--<name>compress</name>-->
