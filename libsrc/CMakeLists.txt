@@ -23,7 +23,7 @@ if(BUILD_PARAMETRIC_MAPS)
     )
 endif()
 
-if(BUILTIN_JSONCPP)
+if(DCMQI_BUILTIN_JSONCPP)
   list(APPEND ADDITIONAL_SRCS
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
     )
@@ -66,5 +66,5 @@ target_include_directories(${lib_name} PUBLIC ${${lib_name}_INCLUDE_DIRS})
 target_link_libraries(${lib_name} PUBLIC
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
-  $<$<NOT:$<BOOL:${BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
+  $<$<NOT:$<BOOL:${DCMQI_BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )
