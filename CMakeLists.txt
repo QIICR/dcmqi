@@ -53,20 +53,17 @@ mark_as_superbuild(
 
 include(CMakeDependentOption)
 
-option(BUILD_APPS "Build ${PROJECT_NAME} applications." ON)
-mark_as_advanced(BUILD_APPS)
-mark_as_superbuild(BUILD_APPS)
+option(DCMQI_BUILD_APPS "Build ${PROJECT_NAME} applications." ON)
+mark_as_superbuild(DCMQI_BUILD_APPS)
 
 cmake_dependent_option(
-  BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF
-  "BUILD_APPS" OFF
+  DCMQI_BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." OFF
+  "DCMQI_BUILD_APPS" OFF
   )
-mark_as_advanced(BUILD_PARAMETRIC_MAPS)
-mark_as_superbuild(BUILD_PARAMETRIC_MAPS)
+mark_as_superbuild(DCMQI_BUILD_PARAMETRIC_MAPS)
 
-option(BUILD_DOC "Build ${PROJECT_NAME} documentation." ON)
-mark_as_advanced(BUILD_DOC)
-mark_as_superbuild(BUILD_DOC)
+option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ON)
+mark_as_superbuild(DCMQI_BUILD_DOC)
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
@@ -218,11 +215,11 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
 add_subdirectory("libsrc")
 
-if(BUILD_APPS)
+if(DCMQI_BUILD_APPS)
   add_subdirectory("apps")
 endif()
 
-if(BUILD_DOC)
+if(DCMQI_BUILD_DOC)
   add_subdirectory("doc")
 endif()
 

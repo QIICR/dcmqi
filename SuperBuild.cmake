@@ -26,7 +26,7 @@ set(DCMQI_DEPENDENCIES
   DCMTK
   ITK
   )
-if(BUILD_APPS)
+if(DCMQI_BUILD_APPS)
   list(APPEND DCMQI_DEPENDENCIES
     SlicerExecutionModel
     )
