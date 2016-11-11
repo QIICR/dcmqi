@@ -9,6 +9,10 @@ configure_file(
   ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
   )
 
+source_group("Generated" FILES
+  ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
+  )
+
 #-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
 
