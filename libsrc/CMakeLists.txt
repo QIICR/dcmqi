@@ -18,8 +18,8 @@ set(ADDITIONAL_SRCS)
 
 if(BUILD_PARAMETRIC_MAPS)
   list(APPEND ADDITIONAL_SRCS
-    ParaMapConverter.cpp
     JSONParametricMapMetaInformationHandler.cpp
+    ParaMapConverter.cpp
     )
 endif()
 
@@ -34,11 +34,11 @@ set(lib_name dcmqi)
 
 add_library(${lib_name} STATIC
   ConverterBase.cpp
-  SegmentAttributes.cpp
   Helper.cpp
-  JSONMetaInformationHandlerBase.cpp
   ImageSEGConverter.cpp
+  JSONMetaInformationHandlerBase.cpp
   JSONSegmentationMetaInformationHandler.cpp
+  SegmentAttributes.cpp
   ${ADDITIONAL_SRCS}
   )
 
