@@ -48,15 +48,20 @@ endif()
 
 set_property(GLOBAL APPEND PROPERTY DCMQI_TARGETS ${lib_name})
 
-target_include_directories(${lib_name} PUBLIC
+set(${lib_name}_INCLUDE_DIRS
   ${DCMTK_INCLUDE_DIRS}
   ${ITK_INCLUDE_DIRS}
-  ${ITK_INSTALL_PREFIX}/include/vxl/core
-  ${ITK_INSTALL_PREFIX}/include/vxl/vcl
   ${DCMQI_SOURCE_DIR}/include
   ${DCMQI_BINARY_DIR}/include
   ${JsonCpp_INCLUDE_DIR}
   )
+if(ITK_INSTALL_PREFIX)
+  list(APPEND ${lib_name}_INCLUDE_DIRS
+    ${ITK_INSTALL_PREFIX}/include/vxl/core
+    ${ITK_INSTALL_PREFIX}/include/vxl/vcl
+    )
+endif()
+target_include_directories(${lib_name} PUBLIC ${${lib_name}_INCLUDE_DIRS})
 
 target_link_libraries(${lib_name} PUBLIC
   ${DCMTK_LIBRARIES}
