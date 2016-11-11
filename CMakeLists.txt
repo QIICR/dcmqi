@@ -24,6 +24,14 @@ project(DCMQI)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)
 
 #-----------------------------------------------------------------------------
+# Extension meta-information
+set(EXTENSION_HOMEPAGE "https://www.slicer.org/wiki/Documentation/Nightly/Extensions/DCMQI")
+set(EXTENSION_CATEGORY "DICOM")
+set(EXTENSION_CONTRIBUTORS "Andrey Fedorov (BWH, SPL), Christian Herz (BWH, SPL), Jean-Christophe Fillion-Robin (Kitware)")
+set(EXTENSION_DESCRIPTION "dcmqi (DICOM (dcm) for Quantitative Imaging (qi)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of quantitative image analysis research data using DICOM standard.")
+set(EXTENSION_ICONURL "https://raw.githubusercontent.com/QIICR/dcmqi/master/dcmqi.png")
+set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QIICR/dcmqi/master/Design/DataFlow-001.png")
+set(EXTENSION_BUILD_SUBDIRECTORY ${PROJECT_NAME_LC}-build)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
@@ -75,6 +83,31 @@ mark_as_superbuild(DCMQI_BUILD_PARAMETRIC_MAPS)
 
 option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ${build_doc_default})
 mark_as_superbuild(DCMQI_BUILD_DOC)
+
+#-----------------------------------------------------------------------------
+# Standalone vs Slicer extension option
+#
+
+# This option should be named after the project name, it corresponds to the
+# option set to ON when the project is build by the Slicer Extension build
+# system.
+
+set(_default OFF)
+set(_reason "DCMQI_BUILD_SLICER_EXTENSION is ON")
+if(NOT DEFINED DCMQI_BUILD_SLICER_EXTENSION AND DEFINED Slicer_DIR)
+  set(_default ON)
+  set(_reason "Slicer_DIR is SET")
+endif()
+
+option(DCMQI_BUILD_SLICER_EXTENSION "Build as a Slicer Extension" ${_default})
+
+set(_msg "Checking if building as a Slicer extension")
+message(STATUS ${_msg})
+if(DCMQI_BUILD_SLICER_EXTENSION)
+  message(STATUS "${_msg} - yes (${_reason})")
+else()
+  message(STATUS "${_msg} - no (DCMQI_BUILD_SLICER_EXTENSION is OFF)")
+endif()
 
 #-----------------------------------------------------------------------------
 # Superbuild Option - Enabled by default
@@ -182,6 +215,13 @@ endif()
 # Dependencies
 #
 
+# Slicer
+if(DCMQI_BUILD_SLICER_EXTENSION)
+  find_package(Slicer REQUIRED)
+  include(${Slicer_USE_FILE})
+  mark_as_superbuild(Slicer_DIR)
+endif()
+
 # JsonCpp
 set(_msg "Checking if using built-in JsonCpp")
 message(STATUS ${_msg})
@@ -210,9 +250,14 @@ endif()
 #
 
 find_package(DCMTK NO_MODULE REQUIRED)
-find_package(ITK NO_MODULE REQUIRED)
-include(${ITK_USE_FILE})
 
+if(NOT EXISTS "${Slicer_DIR}")
+  # XXX Do not attempt to find ITK if it was already included by Slicer.
+  #     Doing so would remove the "ITKFactoryRegistration" include directory
+  #     and library automatically appended to ITK_LIBRARIES and ITK_INCLUDE_DIRS
+  find_package(ITK NO_MODULE REQUIRED)
+  include(${ITK_USE_FILE})
+endif()
 
 #-----------------------------------------------------------------------------
 # Testing
@@ -238,31 +283,47 @@ endif()
 # DCMQITargets
 #
 
-get_property(DCMQI_TARGETS GLOBAL PROPERTY DCMQI_TARGETS)
-export(TARGETS ${DCMQI_TARGETS} FILE ${CMAKE_BINARY_DIR}/DCMQITargets.cmake)
+if(NOT Slicer_DIR)
+
+  get_property(DCMQI_TARGETS GLOBAL PROPERTY DCMQI_TARGETS)
+  export(TARGETS ${DCMQI_TARGETS} FILE ${CMAKE_BINARY_DIR}/DCMQITargets.cmake)
+
+endif()
 
 #-----------------------------------------------------------------------------
 # DCMQIConfig
 #
 
-# Configure 'DCMQIConfig.cmake'
-include(CMakePackageConfigHelpers)
+if(NOT Slicer_DIR)
 
-# For a build tree
-set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
-set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
-set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
-set(${PROJECT_NAME}_CONFIG_CODE "####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
-set(${PROJECT_NAME}_CONFIG_CODE "find_package(DCMTK NO_MODULE REQUIRED)\n")
-set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}##################################################")
-set(_config ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake)
-configure_package_config_file(
-    CMake/${PROJECT_NAME}Config.cmake.in
-    ${_config}
-    INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
-    PATH_VARS
-      CONFIG_DIR_CONFIG
-      DCMTK_DIR_CONFIG
-      SlicerExecutionModel_DIR_CONFIG
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO
-)
+  # Configure 'DCMQIConfig.cmake'
+  include(CMakePackageConfigHelpers)
+
+  # For a build tree
+  set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
+  set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
+  set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
+  set(${PROJECT_NAME}_CONFIG_CODE "####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
+  set(${PROJECT_NAME}_CONFIG_CODE "find_package(DCMTK NO_MODULE REQUIRED)\n")
+  set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}##################################################")
+  set(_config ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake)
+  configure_package_config_file(
+      CMake/${PROJECT_NAME}Config.cmake.in
+      ${_config}
+      INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
+      PATH_VARS
+        CONFIG_DIR_CONFIG
+        DCMTK_DIR_CONFIG
+        SlicerExecutionModel_DIR_CONFIG
+      NO_CHECK_REQUIRED_COMPONENTS_MACRO
+  )
+
+endif()
+
+#-----------------------------------------------------------------------------
+# Packaging
+#
+
+if(DEFINED Slicer_DIR)
+  include(${Slicer_EXTENSION_CPACK})
+endif()

@@ -46,7 +46,7 @@ if(DCMQI_LIBRARY_PROPERTIES)
   set_target_properties(${lib_name} PROPERTIES ${DCMQI_LIBRARY_PROPERTIES})
 endif()
 
-set_property(GLOBAL APPEND PROPERTY DCMQI_TARGETS ${lib_name})
+set_property(GLOBAL APPEND PROPERTY ${CMAKE_PROJECT_NAME}_TARGETS ${lib_name})
 
 set(${lib_name}_INCLUDE_DIRS
   ${DCMTK_INCLUDE_DIRS}
