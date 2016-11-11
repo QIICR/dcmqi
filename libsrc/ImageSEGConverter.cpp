@@ -5,7 +5,8 @@ namespace dcmqi {
 
   DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ImageType::Pointer> segmentations,
-                                                          const string &metaData) {
+                                                          const string &metaData,
+                                                          bool skipEmptySlices) {
 
     ImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
@@ -168,7 +169,8 @@ namespace dcmqi {
 
         LabelStatisticsType::BoundingBoxType bbox = labelStats->GetBoundingBox(label);
         unsigned firstSlice, lastSlice;
-        bool skipEmptySlices = true; // TODO: what to do with that line?
+        //bool skipEmptySlices = true; // TODO: what to do with that line?
+        //bool skipEmptySlices = false; // TODO: what to do with that line?
         if(skipEmptySlices){
           firstSlice = bbox[4];
           lastSlice = bbox[5]+1;
