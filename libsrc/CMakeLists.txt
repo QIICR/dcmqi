@@ -26,7 +26,9 @@ if(BUILTIN_JSONCPP)
   set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp)
 endif()
 
-add_library(dcmqi STATIC
+set(lib_name dcmqi)
+
+add_library(${lib_name} STATIC
   ConverterBase.cpp
   SegmentAttributes.cpp
   Helper.cpp
@@ -36,7 +38,7 @@ add_library(dcmqi STATIC
   ${ADDITIONAL_SRCS}
   )
 
-target_include_directories(dcmqi PUBLIC
+target_include_directories(${lib_name} PUBLIC
   ${DCMTK_INCLUDE_DIRS}
   ${ITK_INCLUDE_DIRS}
   ${ITK_INSTALL_PREFIX}/include/vxl/core
@@ -46,7 +48,7 @@ target_include_directories(dcmqi PUBLIC
   ${JsonCpp_INCLUDE_DIR}
   )
 
-target_link_libraries(dcmqi PUBLIC
+target_link_libraries(${lib_name} PUBLIC
   ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
   $<$<NOT:$<BOOL:${BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
