@@ -31,7 +31,7 @@ set(EXTENSION_CONTRIBUTORS "Andrey Fedorov (BWH, SPL), Christian Herz (BWH, SPL)
 set(EXTENSION_DESCRIPTION "dcmqi (DICOM (dcm) for Quantitative Imaging (qi)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of quantitative image analysis research data using DICOM standard.")
 set(EXTENSION_ICONURL "https://raw.githubusercontent.com/QIICR/dcmqi/master/dcmqi.png")
 set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QIICR/dcmqi/master/Design/DataFlow-001.png")
-set(EXTENSION_BUILD_SUBDIRECTORY ${PROJECT_NAME_LC}-build)
+set(EXTENSION_BUILD_SUBDIRECTORY "dcmqi-build")
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
