@@ -1,31 +1,30 @@
-#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 
-// UIDs
-#include "QIICRUIDs.h"
+// DCMTK includes
+#include <dcmtk/config/osconfig.h>   // make sure OS specific configuration is included first
+#include <dcmtk/ofstd/ofstd.h>
+#include <dcmtk/ofstd/ofstream.h>
+#include <dcmtk/ofstd/oftest.h>
 
-// versioning
-#include "dcmqiVersionConfigure.h"
+#include <dcmtk/dcmsr/dsrdoc.h>
+#include <dcmtk/dcmdata/dcfilefo.h>
+#include <dcmtk/dcmiod/modhelp.h>
 
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/ofstd/oftest.h"
-#include "dcmtk/ofstd/ofstd.h"
+#include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/dcmsr/codes/srt.h>
+#include <dcmtk/dcmsr/cmr/tid1500.h>
 
-#include "dcmtk/dcmsr/dsrdoc.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmiod/modhelp.h"
+#include <dcmtk/dcmdata/dcdeftag.h>
 
-#include "dcmtk/dcmsr/codes/dcm.h"
-#include "dcmtk/dcmsr/codes/srt.h"
-#include "dcmtk/dcmsr/cmr/tid1500.h"
-
-#include "dcmtk/dcmdata/dcdeftag.h"
-
+// STD includes
 #include <iostream>
 #include <exception>
 
 #include <json/json.h>
 
-#include "Exceptions.h"
+// DCMQI includes
+#include "dcmqi/Exceptions.h"
+#include "dcmqi/QIICRConstants.h"
+#include "dcmqi/QIICRUIDs.h"
 
 using namespace std;
 

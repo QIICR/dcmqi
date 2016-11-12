@@ -1,9 +1,10 @@
 #ifndef DCMQI_EXCEPTIONS_H
 #define DCMQI_EXCEPTIONS_H
 
-#include <vector>
-#include <stdexcept>
+// STD includes
 #include <map>
+#include <stdexcept>
+#include <vector>
 
 #define CHECK_COND(condition) \
   do { \

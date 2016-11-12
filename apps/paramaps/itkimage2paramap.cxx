@@ -1,7 +1,8 @@
 // CLP includes
 #include "itkimage2paramapCLP.h"
 
-#include "ParaMapConverter.h"
+// DCMQI includes
+#include "dcmqi/ParaMapConverter.h"
 
 int main(int argc, char *argv[])
 {

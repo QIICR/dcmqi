@@ -1,5 +1,9 @@
+
+// ITK includes
 #include <itkImageDuplicator.h>
-#include "ParaMapConverter.h"
+
+// DCMQI includes
+#include "dcmqi/ParaMapConverter.h"
 
 
 using namespace std;

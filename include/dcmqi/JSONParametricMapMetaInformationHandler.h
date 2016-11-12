@@ -1,7 +1,8 @@
 #ifndef DCMQI_JSONPARAMETRICMAPMETAINFORMATIONHANDLER_H
 #define DCMQI_JSONPARAMETRICMAPMETAINFORMATIONHANDLER_H
 
-#include "JSONMetaInformationHandlerBase.h"
+// DCMQI includes
+#include "dcmqi/JSONMetaInformationHandlerBase.h"
 
 
 using namespace std;

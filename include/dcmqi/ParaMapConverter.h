@@ -1,17 +1,19 @@
 #ifndef DCMQI_PARAMAP_CONVERTER_H
 #define DCMQI_PARAMAP_CONVERTER_H
 
-#include "dcmtk/dcmpmap/dpmparametricmapiod.h"
+// DCMTK includes
+#include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
+// STD includes
 #include <stdlib.h>
 
+// ITK includes
 #include <itkImageRegionConstIteratorWithIndex.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
-#include "JSONParametricMapMetaInformationHandler.h"
-
-#include "ConverterBase.h"
-
-#include "itkMinimumMaximumImageCalculator.h"
+// DCMQI includes
+#include "dcmqi/ConverterBase.h"
+#include "dcmqi/JSONParametricMapMetaInformationHandler.h"
 
 typedef IODFloatingPointImagePixelModule::value_type PixelType;
 typedef itk::Image<PixelType, 3> ImageType;

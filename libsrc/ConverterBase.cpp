@@ -1,4 +1,6 @@
-#include "ConverterBase.h"
+
+// DCMQI includes
+#include "dcmqi/ConverterBase.h"
 
 
 namespace dcmqi {

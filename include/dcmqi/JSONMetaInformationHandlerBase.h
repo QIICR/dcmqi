@@ -3,10 +3,12 @@
 
 #include <json/json.h>
 
+// STD includes
 #include <vector>
 
-#include "SegmentAttributes.h"
-#include "Exceptions.h"
+// DCMQI includes
+#include "dcmqi/SegmentAttributes.h"
+#include "dcmqi/Exceptions.h"
 
 
 using namespace std;

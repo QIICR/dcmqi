@@ -1,4 +1,6 @@
-#include "Helper.h"
+
+// DCMQI includes
+#include "dcmqi/Helper.h"
 
 namespace dcmqi {
 

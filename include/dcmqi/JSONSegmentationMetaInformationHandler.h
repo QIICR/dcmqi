@@ -1,7 +1,8 @@
 #ifndef DCMQI_JSONSEGMENTATIONMETAINFORMATIONHANDLER_H
 #define DCMQI_JSONSEGMENTATIONMETAINFORMATIONHANDLER_H
 
-#include "JSONMetaInformationHandlerBase.h"
+// DCMQI includes
+#include "dcmqi/JSONMetaInformationHandlerBase.h"
 
 using namespace std;
 

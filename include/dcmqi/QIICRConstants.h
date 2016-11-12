@@ -1,7 +1,8 @@
 #ifndef DCMQI_QIICRCONSTANTS_H
 #define DCMQI_QIICRCONSTANTS_H
 
-#include "dcmqiVersionConfigure.h"
+// DCMQI includes
+#include "dcmqi/internal/VersionConfigure.h"
 
 #define QIICR_MANUFACTURER "QIICR"
 #define QIICR_DEVICE_SERIAL_NUMBER "0"

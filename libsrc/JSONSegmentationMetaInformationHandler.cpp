@@ -1,4 +1,6 @@
-#include "JSONSegmentationMetaInformationHandler.h"
+
+// DCMQI includes
+#include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
 using namespace std;
 

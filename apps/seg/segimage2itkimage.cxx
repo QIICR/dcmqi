@@ -1,7 +1,8 @@
 // CLP includes
 #include "segimage2itkimageCLP.h"
 
-#include "ImageSEGConverter.h"
+// DCMQI includes
+#include "dcmqi/ImageSEGConverter.h"
 
 int main(int argc, char *argv[])
 {

@@ -47,7 +47,7 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkFloatingPointExceptions.h"
-#include "itkTestingComparisonImageFilter.h"
+#include "dcmqi/itkTestingComparisonImageFilter.h"
 #include "itksys/SystemTools.hxx"
 #include "itkIntTypes.h"
 

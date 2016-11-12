@@ -1,13 +1,15 @@
 #ifndef SegmentAttributes_h
 #define SegmentAttributes_h
 
+// STD includes
 #include <map>
 #include <cmath>
 
 #include <math.h>
 
-#include "Helper.h"
-#include "JSONMetaInformationHandlerBase.h"
+// DCMQI includes
+#include "dcmqi/Helper.h"
+#include "dcmqi/JSONMetaInformationHandlerBase.h"
 
 using namespace std;
 

@@ -1,17 +1,20 @@
 #ifndef DCMQI_HELPER_H
 #define DCMQI_HELPER_H
 
-#include "dcmtk/dcmseg/segdoc.h"
-#include "dcmtk/dcmfg/fgderimg.h"
-#include "dcmtk/dcmiod/iodmacro.h"
-#include "dcmtk/dcmsr/dsrcodtn.h"
+// DCMTK includes
+#include <dcmtk/dcmfg/fgderimg.h>
+#include <dcmtk/dcmiod/iodmacro.h>
+#include <dcmtk/dcmseg/segdoc.h>
+#include <dcmtk/dcmsr/dsrcodtn.h>
 
+// STD includes
 #include <sstream>
 #include <string>
 #include <vector>
 #include <map>
 
-#include "Exceptions.h"
+// DCMQI includes
+#include "dcmqi/Exceptions.h"
 
 using namespace std;
 
