@@ -16,7 +16,7 @@ source_group("Generated" FILES
 #-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
 
-if(BUILD_PARAMETRIC_MAPS)
+if(DCMQI_BUILD_PARAMETRIC_MAPS)
   list(APPEND ADDITIONAL_SRCS
     JSONParametricMapMetaInformationHandler.cpp
     ParaMapConverter.cpp
