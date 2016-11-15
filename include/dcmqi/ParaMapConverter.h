@@ -2,6 +2,12 @@
 #define DCMQI_PARAMAP_CONVERTER_H
 
 // DCMTK includes
+#include <dcmtk/dcmfg/fgderimg.h>
+#include <dcmtk/dcmfg/fgseg.h>
+#include <dcmtk/dcmseg/segdoc.h>
+#include <dcmtk/dcmseg/segment.h>
+#include <dcmtk/dcmseg/segutils.h>
+#include <dcmtk/dcmdata/dcrledrg.h>
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
 // STD includes
