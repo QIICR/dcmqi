@@ -14,10 +14,10 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  ReaderType::Pointer reader = ReaderType::New();
   vector<ImageType::Pointer> segmentations;
 
   for(size_t segFileNumber=0; segFileNumber<segImageFiles.size(); segFileNumber++){
+    ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(segImageFiles[segFileNumber]);
     reader->Update();
     ImageType::Pointer labelImage = reader->GetOutput();
