@@ -7,7 +7,7 @@ make_directory(${MODULE_TEMP_DIR})
 set(itk2dcm itkimage2segimage)
 
 add_test(NAME ${itk2dcm}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${itk2dcm} --help)
+  COMMAND $<TARGET_FILE:${itk2dcm}> --help)
 set_property(TEST ${itk2dcm}_hello PROPERTY LABELS ${MODULE_NAME})
 
 add_test(NAME ${itk2dcm}_makeSEG
