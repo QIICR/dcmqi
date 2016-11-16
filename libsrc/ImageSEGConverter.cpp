@@ -191,7 +191,7 @@ namespace dcmqi {
 
         SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributesMappingList[segFileNumber][label];
 
-        DcmSegTypes::E_SegmentAlgoType algoType;
+        DcmSegTypes::E_SegmentAlgoType algoType = DcmSegTypes::SAT_UNKNOWN;
         string algoName = "";
         string algoTypeStr = segmentAttributes->getSegmentAlgorithmType();
         if(algoTypeStr == "MANUAL"){

@@ -103,7 +103,7 @@ namespace dcmqi {
       vector<double> originDistances;
       map<OFString, double> originStr2distance;
       map<OFString, unsigned> frame2overlap;
-      double minDistance;
+      double minDistance = 0.0;
 
       sliceSpacing = 0;
 
