@@ -19,9 +19,6 @@ include(${SlicerExecutionModel_USE_FILE})
 set(COMMON_INCLUDE_DIRECTORIES
   )
 
-message("Include")
-message(${DCMQI_SOURCE_DIR}/include)
-
 set(COMMON_TARGET_LIBRARIES
   dcmqi
   )
