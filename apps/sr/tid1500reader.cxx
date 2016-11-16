@@ -31,6 +31,8 @@ using namespace std;
 // not used yet
 static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
+// CLP includes
+#undef HAVE_SSTREAM // Avoid redefinition warning
 #include "tid1500readerCLP.h"
 
 

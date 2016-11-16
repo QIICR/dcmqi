@@ -2,6 +2,7 @@
 #include "itkimage2paramapCLP.h"
 
 // DCMQI includes
+#undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ParaMapConverter.h"
 
 int main(int argc, char *argv[])

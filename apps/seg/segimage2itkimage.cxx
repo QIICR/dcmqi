@@ -2,6 +2,7 @@
 #include "segimage2itkimageCLP.h"
 
 // DCMQI includes
+#undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
 int main(int argc, char *argv[])
