@@ -1,3 +1,7 @@
+
+find_program(JSONLINT_EXECUTABLE NAMES jsonlint.cmd jsonlint)
+find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
+
 file(GLOB json_files
   *.json
   )
@@ -15,17 +19,25 @@ file(GLOB json_schema_files
   )
 list(REMOVE_ITEM json_schema_files ${json_common_schema_files})
 
-if(WIN32)
-  set(NPM_SUFFIX ".cmd")
-endif()
+#-----------------------------------------------------------------------------
+# General json syntax validation
+#-----------------------------------------------------------------------------
 
-# general json syntax validation
 foreach(json_file ${json_files})
   get_filename_component(json_name ${json_file} NAME_WE)
-  add_test(NAME jsonlint_${json_name}
-    COMMAND jsonlint${NPM_SUFFIX} ${json_file})
-  set_property(TEST jsonlint_${json_name} PROPERTY LABELS jsonlint)
+  set(testname jsonlint_${json_name})
+  if(JSONLINT_EXECUTABLE)
+    add_test(NAME ${testname}
+      COMMAND ${JSONLINT_EXECUTABLE} ${json_file})
+    set_property(TEST ${testname} PROPERTY LABELS jsonlint)
+  else()
+    message(STATUS "Skipping '${testname}' test: jsonlint executable not found")
+  endif()
 endforeach()
+
+#-----------------------------------------------------------------------------
+# Schema validation
+#-----------------------------------------------------------------------------
 
 set(AJV_OPTIONS --all-errors)
 
@@ -37,9 +49,14 @@ endforeach()
 
 function(createSchemaValidationTest schema_name)
   get_filename_component(json_name ${schema_name} NAME_WE)
-  add_test(NAME ajv_${json_name}-schema
-    COMMAND ajv${NPM_SUFFIX} compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
-  set_property(TEST ajv_${json_name}-schema PROPERTY LABELS ajv)
+  set(testname ajv_${json_name}-schema)
+  if(AJV_EXECUTABLE)
+    add_test(NAME ${testname}
+      COMMAND ${AJV_EXECUTABLE} compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
+    set_property(TEST ${testname} PROPERTY LABELS ajv)
+  else()
+    message(STATUS "Skipping '${testname}' test: ajv executable not found")
+  endif()
 endfunction()
 
 # validation of each common schema
@@ -52,13 +69,22 @@ foreach(json_schema_file ${json_schema_files})
   createSchemaValidationTest(${json_schema_file})
 endforeach()
 
+#-----------------------------------------------------------------------------
+# Example of validation tests
+#-----------------------------------------------------------------------------
+
 # function to simplify creation of example validation tests
 function(createExampleDataTest example_name schema)
   set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
-  add_test(NAME ajv_${example_name}-example
-    # -d stands for data that needs to be validated
-    COMMAND ajv${NPM_SUFFIX} -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
-  set_property(TEST ajv_${example_name}-example PROPERTY LABELS ajv)
+  set(testname ajv_${example_name}-example)
+  if(AJV_EXECUTABLE)
+    add_test(NAME ${testname}
+      # -d stands for data that needs to be validated
+      COMMAND ${AJV_EXECUTABLE} -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
+    set_property(TEST ${testname} PROPERTY LABELS ajv)
+  else()
+    message(STATUS "Skipping '${testname}' test: ajv executable not found")
+  endif()
 endfunction()
 
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
