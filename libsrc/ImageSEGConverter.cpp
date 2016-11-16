@@ -43,7 +43,6 @@ namespace dcmqi {
                        DcmTag(DCM_ImagePositionPatient).getTagName()));
 
     /* Initialize shared functional groups */
-    FGInterface &segFGInt = segdoc->getFunctionalGroups();
     vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
 
     const unsigned frameSize = inputSize[0] * inputSize[1];
@@ -112,7 +111,7 @@ namespace dcmqi {
     int uidfound = 0, uidnotfound = 0;
 
     Uint8 *frameData = new Uint8[frameSize];
-    for(int segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
+    for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
       cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
@@ -157,7 +156,7 @@ namespace dcmqi {
         return NULL;
       }
 
-      for(int segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
+      for(unsigned segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
         LabelType* labelObject = l2lm->GetOutput()->GetNthLabelObject(segLabelNumber);
         short label = labelObject->GetLabel();
 
@@ -192,7 +191,7 @@ namespace dcmqi {
 
         SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributesMappingList[segFileNumber][label];
 
-        DcmSegTypes::E_SegmentAlgoType algoType;
+        DcmSegTypes::E_SegmentAlgoType algoType = DcmSegTypes::SAT_UNKNOWN;
         string algoName = "";
         string algoTypeStr = segmentAttributes->getSegmentAlgorithmType();
         if(algoTypeStr == "MANUAL"){
@@ -252,7 +251,7 @@ namespace dcmqi {
 
         // TODO: make it possible to skip empty frames (optional)
         // iterate over slices for an individual label and populate output frames
-        for(int sliceNumber=firstSlice;sliceNumber<lastSlice;sliceNumber++){
+        for(unsigned sliceNumber=firstSlice;sliceNumber<lastSlice;sliceNumber++){
 
           // PerFrame FG: FrameContentSequence
           //fracon->setStackID("1"); // all frames go into the same stack
@@ -331,7 +330,9 @@ namespace dcmqi {
             }
 
             OFVector<DcmDataset*> siVector;
-            for(unsigned derImageInstanceNum=0;derImageInstanceNum<slice2derimg[sliceNumber].size();derImageInstanceNum++){
+            for(size_t derImageInstanceNum=0;
+                derImageInstanceNum<slice2derimg[sliceNumber].size();
+                derImageInstanceNum++){
               siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
             }
 
@@ -500,7 +501,7 @@ namespace dcmqi {
 
     populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
-    for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
+    for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
       const DcmIODTypes::Frame *frame = segdoc->getFrame(frameId);
       bool isPerFrame;
 
@@ -508,9 +509,11 @@ namespace dcmqi {
           OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
       assert(planposfg);
 
+#ifndef NDEBUG
       FGFrameContent *fracon =
           OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
       assert(fracon);
+#endif
 
       FGSegmentation *fgseg =
           OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
@@ -646,8 +649,8 @@ namespace dcmqi {
         unpackedFrame = new DcmIODTypes::Frame(*frame);
 
       // initialize slice with the frame content
-      for(int row=0;row<imageSize[1];row++){
-        for(int col=0;col<imageSize[0];col++){
+      for(unsigned row=0;row<imageSize[1];row++){
+        for(unsigned col=0;col<imageSize[0];col++){
           ImageType::PixelType pixel;
           unsigned bitCnt = row*imageSize[0]+col;
           pixel = unpackedFrame->pixData[bitCnt];
@@ -675,7 +678,7 @@ namespace dcmqi {
     // Assume that orientation of the segmentation is the same as the source series
     unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
     vector<vector<int> > slice2derimg(numLabelSlices);
-    for(int i=0;i<dcmDatasets.size();i++){
+    for(size_t i=0;i<dcmDatasets.size();i++){
       OFString ippStr;
       ImageType::PointType ippPoint;
       ImageType::IndexType ippIndex;

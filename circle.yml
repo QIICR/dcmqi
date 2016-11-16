@@ -1,3 +1,6 @@
+machine:
+  python:
+    version: 2.7.11
 dependencies:
   cache_directories:
     - "~/dcmqi-build/zlib"
@@ -34,11 +37,13 @@ dependencies:
     - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip
     - unzip ninja-linux.zip && sudo cp ninja /usr/local/bin/ && sudo chmod 755 /usr/local/bin/ninja
     # Use scikit-ci-addons to streamline installation of CMake
-    - sudo pip install scikit-ci-addons==0.11.0
+    - pip install scikit-ci-addons==0.11.0
     - ci_addons circle/install_cmake 3.6.2
 
   post:
     - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake -G Ninja ../dcmqi && ninja
+    # Install package required by convert.py
+    - pip install lxml==3.6.4
     - cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
 test:
   post:

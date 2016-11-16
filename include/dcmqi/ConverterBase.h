@@ -103,7 +103,7 @@ namespace dcmqi {
       vector<double> originDistances;
       map<OFString, double> originStr2distance;
       map<OFString, unsigned> frame2overlap;
-      double minDistance;
+      double minDistance = 0.0;
 
       sliceSpacing = 0;
 
@@ -136,7 +136,7 @@ namespace dcmqi {
         }
       }
 
-      for(int frameId=0;frameId<numFrames;frameId++){
+      for(size_t frameId=0;frameId<numFrames;frameId++){
         OFBool isPerFrame;
         FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
                                                      fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
@@ -213,7 +213,7 @@ namespace dcmqi {
 
         sliceSpacing = fabs(originDistances[0]-originDistances[1]);
 
-        for(int i=1;i<originDistances.size();i++){
+        for(size_t i=1;i<originDistances.size(); i++){
           float dist1 = fabs(originDistances[i-1]-originDistances[i]);
           float delta = sliceSpacing-dist1;
           if(delta > 0.001){

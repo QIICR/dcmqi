@@ -2,6 +2,7 @@
 #include "itkimage2segimageCLP.h"
 
 // DCMQI includes
+#undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
 int main(int argc, char *argv[])
@@ -16,7 +17,7 @@ int main(int argc, char *argv[])
   ReaderType::Pointer reader = ReaderType::New();
   vector<ImageType::Pointer> segmentations;
 
-  for(int segFileNumber=0; segFileNumber<segImageFiles.size(); segFileNumber++){
+  for(size_t segFileNumber=0; segFileNumber<segImageFiles.size(); segFileNumber++){
     reader->SetFileName(segImageFiles[segFileNumber]);
     reader->Update();
     ImageType::Pointer labelImage = reader->GetOutput();
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
   vector<DcmDataset*> dcmDatasets;
 
   DcmFileFormat* sliceFF = new DcmFileFormat();
-  for(int dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
+  for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
     CHECK_COND(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()));
     dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
   }
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
   }
 
   delete sliceFF;
-  for(int i=0;i<dcmDatasets.size();i++) {
+  for(size_t i=0;i<dcmDatasets.size();i++) {
     delete dcmDatasets[i];
   }
   if (result != NULL)
