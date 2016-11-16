@@ -88,7 +88,7 @@ int main(int argc, char** argv){
   CHECK_COND(report.getImageLibrary().addImageGroup());
 
   if(metaRoot.isMember("imageLibrary")){
-    for(int i=0;i<metaRoot["imageLibrary"].size();i++){
+    for(Json::ArrayIndex i=0;i<metaRoot["imageLibrary"].size();i++){
       DcmFileFormat ff;
       // Not sure what is a safe way to combine path components ...
       string dicomFilePath = (imageLibraryDataDir+"/"+metaRoot["imageLibrary"][i].asCString());
@@ -99,7 +99,7 @@ int main(int argc, char** argv){
       if(i==0){
         DcmDataset imageLibGroupDataset;
         const DcmTagKey commonTagsToCopy[] =   {DCM_SOPClassUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
-        for(int t=0;t<STATIC_ARRAY_SIZE(commonTagsToCopy);t++){
+        for(size_t t=0;t<STATIC_ARRAY_SIZE(commonTagsToCopy);t++){
           ff.getDataset()->findAndInsertCopyOfElement(commonTagsToCopy[t],&imageLibGroupDataset);
         }
         CHECK_COND(report.getImageLibrary().addImageEntryDescriptors(imageLibGroupDataset));
@@ -107,7 +107,7 @@ int main(int argc, char** argv){
 
       DcmDataset imageEntryDataset;
       const DcmTagKey imageTagsToCopy[] = {DCM_Modality,DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_ImagePositionPatient};
-      for(int t=0;t<STATIC_ARRAY_SIZE(imageTagsToCopy);t++)
+      for(size_t t=0;t<STATIC_ARRAY_SIZE(imageTagsToCopy);t++)
         ff.getDataset()->findAndInsertCopyOfElement(imageTagsToCopy[t],&imageEntryDataset);
       CHECK_COND(report.getImageLibrary().addImageEntry(imageEntryDataset,TID1600_ImageLibrary::withAllDescriptors));
 
@@ -128,7 +128,7 @@ int main(int argc, char** argv){
 
   std::cout << "Total measurement groups: " << metaRoot["Measurements"].size() << std::endl;
 
-  for(int i=0;i<metaRoot["Measurements"].size();i++){
+  for(Json::ArrayIndex i=0;i<metaRoot["Measurements"].size();i++){
     Json::Value measurementGroup = metaRoot["Measurements"][i];
 
     CHECK_COND(report.addVolumetricROIMeasurements());
@@ -168,7 +168,7 @@ int main(int argc, char** argv){
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
 
     // TODO - handle conditional items!
-    for(int j=0;j<measurementGroup["measurementItems"].size();j++){
+    for(Json::ArrayIndex j=0;j<measurementGroup["measurementItems"].size();j++){
       Json::Value measurement = measurementGroup["measurementItems"][j];
       // TODO - add measurement method and derivation!
       const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), json2cev(measurement["units"]));
@@ -242,14 +242,14 @@ int main(int argc, char** argv){
   DcmFileFormat ccFileFormat;
   bool compositeContextInitialized = false;
   if(metaRoot.isMember("compositeContext")){
-    for(int i=0;i<metaRoot["compositeContext"].size();i++){
+    for(Json::ArrayIndex i=0;i<metaRoot["compositeContext"].size();i++){
       ccFileFormat = addFileToEvidence(doc,compositeContextDataDir,metaRoot["compositeContext"][i].asString());
       compositeContextInitialized = true;
     }
   }
 
   if(metaRoot.isMember("imageLibrary")){
-    for(int i=0;i<metaRoot["imageLibrary"].size();i++){
+    for(Json::ArrayIndex i=0;i<metaRoot["imageLibrary"].size();i++){
       addFileToEvidence(doc,imageLibraryDataDir,metaRoot["imageLibrary"][i].asString());
     }
   }
