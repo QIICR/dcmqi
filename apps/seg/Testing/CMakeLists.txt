@@ -7,11 +7,11 @@ make_directory(${MODULE_TEMP_DIR})
 set(itk2dcm itkimage2segimage)
 
 add_test(NAME ${itk2dcm}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${itk2dcm} --help)
+  COMMAND $<TARGET_FILE:${itk2dcm}> --help)
 set_property(TEST ${itk2dcm}_hello PROPERTY LABELS ${MODULE_NAME})
 
 add_test(NAME ${itk2dcm}_makeSEG
-  COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${itk2dcm}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
   --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example.json
   --segImageFiles ${BASELINE}/liver_seg.nrrd
   --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
