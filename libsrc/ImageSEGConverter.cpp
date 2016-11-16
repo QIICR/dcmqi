@@ -43,7 +43,6 @@ namespace dcmqi {
                        DcmTag(DCM_ImagePositionPatient).getTagName()));
 
     /* Initialize shared functional groups */
-    FGInterface &segFGInt = segdoc->getFunctionalGroups();
     vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
 
     const unsigned frameSize = inputSize[0] * inputSize[1];
@@ -510,9 +509,11 @@ namespace dcmqi {
           OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
       assert(planposfg);
 
+#ifndef NDEBUG
       FGFrameContent *fracon =
           OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
       assert(fracon);
+#endif
 
       FGSegmentation *fgseg =
           OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
