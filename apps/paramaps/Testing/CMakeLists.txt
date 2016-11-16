@@ -1,10 +1,11 @@
 set(BASELINE ${CMAKE_SOURCE_DIR}/data/paramaps/)
 include_directories(${ITK_INCLUDE_DIRS})
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME itkimage2paramap)
 
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${${MODULE_NAME}_TARGET_LIBRARIES})
+target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib)
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
 
@@ -28,10 +29,11 @@ add_test(NAME ${MODULE_NAME}_makeParametricMapFP
 
 set_property(TEST ${testname} PROPERTY LABELS ${MODULE_NAME})
 
+#-----------------------------------------------------------------------------
 set(MODULE_NAME paramap2itkimage)
 
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib ${ITK_LIBRARIES})
+target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib)
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
 

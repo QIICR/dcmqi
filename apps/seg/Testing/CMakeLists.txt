@@ -4,6 +4,7 @@ set(BASELINE ${CMAKE_SOURCE_DIR}/data/ct-3slice/)
 set(MODULE_TEMP_DIR ${TEMP_DIR}/seg)
 make_directory(${MODULE_TEMP_DIR})
 
+#-----------------------------------------------------------------------------
 set(itk2dcm itkimage2segimage)
 
 add_test(NAME ${itk2dcm}_hello
@@ -28,6 +29,7 @@ else()
   message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
 endif()
 
+#-----------------------------------------------------------------------------
 set(dcm2itk segimage2itkimage)
 
 add_test(NAME ${dcm2itk}_hello
@@ -36,7 +38,7 @@ set_property(TEST ${dcm2itk}_hello PROPERTY LABELS ${MODULE_NAME})
 
 include_directories(${ITK_INCLUDE_DIRS})
 add_executable(${dcm2itk}Test ${dcm2itk}Test.cxx )
-target_link_libraries(${dcm2itk}Test ${${dcm2itk}_TARGET_LIBRARIES})
+target_link_libraries(${dcm2itk}Test ${dcm2itk}Lib)
 set_target_properties(${dcm2itk}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${dcm2itk}Test PROPERTIES FOLDER ${${dcm2itk}_TARGETS_FOLDER})
 
