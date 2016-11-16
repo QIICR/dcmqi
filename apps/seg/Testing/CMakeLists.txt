@@ -18,14 +18,20 @@ add_test(NAME ${itk2dcm}_makeSEG
   --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm)
 set_property(TEST ${itk2dcm}_makeSEG PROPERTY LABELS ${MODULE_NAME})
 
-add_test(NAME ${itk2dcm}_dciodvfy
-  COMMAND dciodvfy ${MODULE_TEMP_DIR}/liver.dcm)
-set_property(TEST ${itk2dcm}_dciodvfy PROPERTY LABELS dciodvfy)
+find_program(DCIODVFY_EXECUTABLE dciodvfy)
+
+if(EXISTS ${DCIODVFY_EXECUTABLE})
+  add_test(NAME ${itk2dcm}_dciodvfy
+    COMMAND ${DCIODVFY_EXECUTABLE} ${MODULE_TEMP_DIR}/liver.dcm)
+  set_property(TEST ${itk2dcm}_dciodvfy PROPERTY LABELS dciodvfy)
+else()
+  message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
+endif()
 
 set(dcm2itk segimage2itkimage)
 
 add_test(NAME ${dcm2itk}_hello
-         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${dcm2itk} --help)
+         COMMAND $<TARGET_FILE:${dcm2itk}> --help)
 set_property(TEST ${dcm2itk}_hello PROPERTY LABELS ${MODULE_NAME})
 
 include_directories(${ITK_INCLUDE_DIRS})

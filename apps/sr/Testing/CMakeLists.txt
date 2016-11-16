@@ -7,7 +7,7 @@ add_test(NAME ${WRITER_MODULE_NAME}_hello
 set_property(TEST ${WRITER_MODULE_NAME}_hello PROPERTY LABELS ${MODULE_NAME})
 
 add_test(NAME ${WRITER_MODULE_NAME}_example
-COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WRITER_MODULE_NAME}
+COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
   --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-example.json
   --outputFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
   --imageLibraryDataDir ${CMAKE_SOURCE_DIR}/data/ct-3slice
@@ -16,7 +16,7 @@ COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WRITER_MODULE_NAME}
 set_property(TEST ${WRITER_MODULE_NAME}_example PROPERTY LABELS ${MODULE_NAME})
 
 add_test(NAME ${WRITER_MODULE_NAME}_ct-liver
-COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WRITER_MODULE_NAME}
+COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
   --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-ct-liver-example.json
   --outputFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
   --imageLibraryDataDir ${CMAKE_SOURCE_DIR}/data/ct-3slice
@@ -32,7 +32,7 @@ add_test(NAME ${READER_MODULE_NAME}_hello
 set_property(TEST ${READER_MODULE_NAME}_hello PROPERTY LABELS ${MODULE_NAME})
 
 #add_test(NAME ${READER_MODULE_NAME}_example
-#  COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${READER_MODULE_NAME}
+#  COMMAND $<TARGET_FILE:${READER_MODULE_NAME}>
 #  --inputSRFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
 #  --metaDataFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.json
 #  )
@@ -40,7 +40,7 @@ set_property(TEST ${READER_MODULE_NAME}_hello PROPERTY LABELS ${MODULE_NAME})
 #set_tests_properties(${READER_MODULE_NAME}_example PROPERTIES DEPENDS ${WRITER_MODULE_NAME}_example)
 
 add_test(NAME ${READER_MODULE_NAME}_ct-liver
-  COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${READER_MODULE_NAME}
+  COMMAND $<TARGET_FILE:${READER_MODULE_NAME}>
   --inputSRFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
   --metaDataFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.json
   )
