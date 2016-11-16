@@ -84,6 +84,8 @@ mark_as_superbuild(DCMQI_BUILD_PARAMETRIC_MAPS)
 option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ${build_doc_default})
 mark_as_superbuild(DCMQI_BUILD_DOC)
 
+option(BUILD_TESTING "Build Testing" ON)
+
 #-----------------------------------------------------------------------------
 # Standalone vs Slicer extension option
 #
