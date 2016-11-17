@@ -52,9 +52,12 @@ dcmqi_add_test(
 
 include_directories(${ITK_INCLUDE_DIRS})
 add_executable(${dcm2itk}Test ${dcm2itk}Test.cxx )
-target_link_libraries(${dcm2itk}Test ${dcm2itk}Lib)
+target_link_libraries(${dcm2itk}Test ${dcm2itk}Lib ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES})
 set_target_properties(${dcm2itk}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${dcm2itk}Test PROPERTIES FOLDER ${${dcm2itk}_TARGETS_FOLDER})
+if(TARGET ITKFactoryRegistration)
+  target_compile_definitions(${dcm2itk}Test PUBLIC HAS_ITK_FACTORY_REGISTRATION)
+endif()
 
 dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD

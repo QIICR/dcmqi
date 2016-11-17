@@ -10,9 +10,12 @@ include_directories(${ITK_INCLUDE_DIRS})
 set(MODULE_NAME itkimage2paramap)
 
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib)
+target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES})
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
+if(TARGET ITKFactoryRegistration)
+  target_compile_definitions(${MODULE_NAME}Test PUBLIC HAS_ITK_FACTORY_REGISTRATION)
+endif()
 
 dcmqi_add_test(
   NAME ${MODULE_NAME}_hello
@@ -44,9 +47,12 @@ dcmqi_add_test(
 set(MODULE_NAME paramap2itkimage)
 
 add_executable(${MODULE_NAME}Test ${MODULE_NAME}Test.cxx )
-target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib)
+target_link_libraries(${MODULE_NAME}Test ${MODULE_NAME}Lib ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES})
 set_target_properties(${MODULE_NAME}Test PROPERTIES LABELS ${MODULE_NAME})
 set_target_properties(${MODULE_NAME}Test PROPERTIES FOLDER ${${MODULE_NAME}_TARGETS_FOLDER})
+if(TARGET ITKFactoryRegistration)
+  target_compile_definitions(${MODULE_NAME}Test PUBLIC HAS_ITK_FACTORY_REGISTRATION)
+endif()
 
 dcmqi_add_test(
   NAME ${MODULE_NAME}_hello

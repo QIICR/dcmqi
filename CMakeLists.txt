@@ -253,13 +253,8 @@ endif()
 
 find_package(DCMTK NO_MODULE REQUIRED)
 
-if(NOT EXISTS "${Slicer_DIR}")
-  # XXX Do not attempt to find ITK if it was already included by Slicer.
-  #     Doing so would remove the "ITKFactoryRegistration" include directory
-  #     and library automatically appended to ITK_LIBRARIES and ITK_INCLUDE_DIRS
-  find_package(ITK NO_MODULE REQUIRED)
-  include(${ITK_USE_FILE})
-endif()
+find_package(ITK NO_MODULE REQUIRED)
+include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # Testing
