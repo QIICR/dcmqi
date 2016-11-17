@@ -18,6 +18,15 @@
       <description>File name of the SEG object.</description>
     </file>
 
+    <string>
+      <name>prefix</name>
+      <label>Output prefix</label>
+      <flag>-n</flag>
+      <longflag>--prefix</longflag>
+      <description>Prefix for output files</description>
+      <default></default>
+    </string>
+
     <!--<boolean>-->
       <!--<name>combineSegments</name>-->
       <!--<flag>c</flag>-->

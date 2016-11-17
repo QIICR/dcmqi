@@ -1,0 +1,81 @@
+{
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
+
+  "ContentCreatorName": "Doe^John",
+  "ClinicalTrialSeriesID": "Session1",
+  "ClinicalTrialTimePointID": "1",
+  "ClinicalTrialCoordinatingCenterName": "BWH",
+  "SeriesDescription": "Segmentation",
+  "SeriesNumber": "300",
+  "InstanceNumber": "1",
+
+  "segmentAttributes": [
+    [
+      {
+        "LabelID": 1,
+        "SegmentDescription": "Liver Segmentation",
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeValue": "T-D0050",
+          "CodingSchemeDesignator": "SRT",
+          "CodeMeaning": "Tissue"
+        },
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeValue": "T-62000",
+          "CodingSchemeDesignator": "SRT",
+          "CodeMeaning": "Liver"
+        },
+        "SegmentAlgorithmType": "SEMIAUTOMATIC",
+        "SegmentAlgorithmName": "SlicerEditor",
+        "recommendedDisplayRGBValue": [
+          221,
+          130,
+          101
+        ]
+      }
+    ],
+    [
+      {
+        "LabelID": 1,
+        "SegmentDescription": "Anatomical Structure",
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeMeaning": "Thoracic spine",
+          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "T-11502"
+        },
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeMeaning": "Anatomical Structure",
+          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "T-D000A"
+        },
+        "SegmentAlgorithmType": "MANUAL",
+        "recommendedDisplayRGBValue": [
+          226,
+          202,
+          134
+        ]
+      }
+    ],
+    [
+      {
+        "LabelID": 1,
+        "SegmentDescription": "Anatomical Structure",
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeMeaning": "Anatomical Structure",
+          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "T-D000A"
+        },
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeMeaning": "Heart",
+          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "T-32000"
+        },
+        "SegmentAlgorithmType": "MANUAL",
+        "recommendedDisplayRGBValue": [
+          206,
+          110,
+          84
+        ]
+      }
+    ]
+  ]
+}

@@ -115,11 +115,15 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
         return expected == actual, Stack()
 
     if not ignore_missing_keys and len(expected) > len(actual):
-        stack = Stack().append(StackItem('Length Mismatch: Expected Length: {0}, Actual Length: {1}'
-                                          .format(len(expected), len(actual)), expected, actual))
-        if isinstance(expected, dict):
-          stack.append('Missing keys: {0}'.format(get_missing_keys(expected, actual)))
-        return False, stack
+        all_missing_keys = get_missing_keys(expected, actual)
+        missing_keys = [x for x in all_missing_keys if x not in ignore_value_of_keys]
+        if len(missing_keys):
+            stack = Stack().append(StackItem('Length Mismatch: Expected Length: {0}, Actual Length: {1}'
+                                              .format(len(expected), len(actual)), expected, actual))
+            if isinstance(expected, dict):
+              stack.append('\nMissing keys: {0}'.format(missing_keys))
+              stack.append('\nIgnored keys: {0}'.format([x for x in ignore_value_of_keys if x not in all_missing_keys]))
+            return False, stack
 
     if isinstance(expected, dict):
         return _is_dict_same(expected, actual, ignore_value_of_keys)
