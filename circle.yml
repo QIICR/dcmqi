@@ -44,7 +44,13 @@ dependencies:
     - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake -G Ninja ../dcmqi && ninja
     # Install package required by convert.py
     - pip install lxml==3.6.4
-    - cd ~/dcmqi-build/dcmqi-build && ctest -D ExperimentalTest -VV --no-compress-output && python ../../dcmqi/util/convert.py ~/dcmqi-build/dcmqi-build/ ../../dcmqi/util/conv.xsl > ~/dcmqi-build/BaseTest.xml
+    - |
+      cd ~/dcmqi-build/dcmqi-build && \
+      ctest -D ExperimentalTest -VV --no-compress-output && \
+      python ../../dcmqi/util/junit/convert.py \
+        ~/dcmqi-build/dcmqi-build/ \
+        ../../dcmqi/util/junit/conv.xsl > ~/dcmqi-build/BaseTest.xml
+
 test:
   post:
     - mkdir -p ${CIRCLE_TEST_REPORTS}/junit
