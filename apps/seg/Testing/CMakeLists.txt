@@ -77,7 +77,7 @@ dcmqi_add_test(
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
     --compare ${BASELINE}/liver_seg.nrrd
-    ${MODULE_TEMP_DIR}/1.nrrd
+    ${MODULE_TEMP_DIR}/makeNRRD-1.nrrd
     ${dcm2itk}Test
     ${MODULE_TEMP_DIR}/liver.dcm
     ${MODULE_TEMP_DIR}
@@ -90,9 +90,9 @@ dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}liver_seg.nrrd ${MODULE_TEMP_DIR}/1.nrrd
-    --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/2.nrrd
-    --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/3.nrrd
+    --compare ${BASELINE}liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
+    --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
+    --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
     ${dcm2itk}Test
     ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
     ${MODULE_TEMP_DIR}
