@@ -15,10 +15,12 @@ int main(int argc, char *argv[])
 
   pair <map<unsigned,ImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
 
+  string outputPrefix = prefix.empty() ? "" : prefix + "-";
+
   for(map<unsigned,ImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
     typedef itk::ImageFileWriter<ImageType> WriterType;
     stringstream imageFileNameSStream;
-    imageFileNameSStream << outputDirName << "/" << sI->first << ".nrrd";
+    imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << ".nrrd";
 
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName(imageFileNameSStream.str().c_str());
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
   }
 
   stringstream jsonOutput;
-  jsonOutput << outputDirName << "/" << "meta.json";
+  jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
 
   ofstream outputFile;
   outputFile.open(jsonOutput.str().c_str());
