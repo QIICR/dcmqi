@@ -43,17 +43,17 @@ find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
   dcmqi_add_test(
-    NAME ${itk2dcm}_dciodvfy
+    NAME ${itk2dcm}_makeSEG_dciodvfy
     MODULE_NAME dciodvfy
     COMMAND ${DCIODVFY_EXECUTABLE}
       ${MODULE_TEMP_DIR}/liver.dcm
     )
   dcmqi_add_test(
-    NAME ${itk2dcm}_dciodvfy
+    NAME ${itk2dcm}_makeSEG_multiple_segment_files_dciodvfy
     MODULE_NAME dciodvfy
     COMMAND ${DCIODVFY_EXECUTABLE}
-    ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
-  )
+      ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
+    )
 else()
   message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
 endif()
