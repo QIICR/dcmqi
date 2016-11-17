@@ -59,7 +59,7 @@ set_target_properties(${dcm2itk}Test PROPERTIES FOLDER ${${dcm2itk}_TARGETS_FOLD
 dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
     --compare ${BASELINE}/liver_seg.nrrd
     ${MODULE_TEMP_DIR}/1.nrrd
     ${dcm2itk}Test

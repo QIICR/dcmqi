@@ -57,7 +57,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME ${MODULE_NAME}_makeNRRDParametricMap
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
+  COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
       --inputFileName ${TEMP_DIR}/paramap.dcm
@@ -67,7 +67,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME ${MODULE_NAME}_makeNRRDParametricMapFP
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${MODULE_NAME}Test>
+  COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example-float.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
       --inputFileName ${TEMP_DIR}/paramap-float.dcm
