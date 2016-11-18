@@ -2,6 +2,49 @@
 # libraries and modules.
 
 #-----------------------------------------------------------------------------
+# Create DCMQI executable wrapper for testing the selected command-line modules.
+#
+# Arguments - Input
+#   EXECUTABLE_NAME - name of the executable wrapper
+#   MODULE_NAME     - name of the module to test
+#
+macro(dcmqi_add_test_executable)
+  set(options
+  )
+  set(oneValueArgs
+    EXECUTABLE_NAME
+    MODULE_NAME
+  )
+  set(multiValueArgs
+    SOURCES
+  )
+  cmake_parse_arguments(_SELF
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+    )
+  set(_name ${_SELF_EXECUTABLE_NAME})
+
+  set(_source ${_name}.cxx)
+
+  if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
+    message(FATAL_ERROR "Failed to add test executable: Source file '${_source}' is missing")
+  endif()
+
+  add_executable(${_name} ${_source})
+  target_link_libraries(${_name}
+    ${_SELF_MODULE_NAME}Lib
+    ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES}
+    )
+  set_target_properties(${_name} PROPERTIES LABELS ${_SELF_MODULE_NAME})
+  set_target_properties(${_name} PROPERTIES FOLDER ${${_SELF_MODULE_NAME}_TARGETS_FOLDER})
+  if(TARGET ITKFactoryRegistration)
+    target_compile_definitions(${_name} PUBLIC HAS_ITK_FACTORY_REGISTRATION)
+  endif()
+endmacro()
+
+#-----------------------------------------------------------------------------
 # DCMQI wrapper for add_test that set test LABELS using MODULE_NAME value
 # and add test dependencies if TEST_DEPENDS is specified.
 #
