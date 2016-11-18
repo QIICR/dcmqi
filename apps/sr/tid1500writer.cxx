@@ -261,14 +261,15 @@ int main(int argc, char** argv){
   if(!outputFileName.empty()){
     DcmFileFormat ff;
     DcmDataset *dataset = ff.getDataset();
-    CHECK_COND(doc.write(*dataset));
 
     OFString contentDate, contentTime;
     DcmDate::getCurrentDate(contentDate);
     DcmTime::getCurrentTime(contentTime);
 
-    CHECK_COND(dataset->putAndInsertString(DCM_SeriesDate, contentDate.c_str()));
-    CHECK_COND(dataset->putAndInsertString(DCM_SeriesTime, contentTime.c_str()));
+    CHECK_COND(doc.setSeriesDate(contentDate.c_str()));
+    CHECK_COND(doc.setSeriesTime(contentTime.c_str()));
+
+    CHECK_COND(doc.write(*dataset));
 
     if(compositeContextInitialized){
       cout << "Composite Context initialized" << endl;
