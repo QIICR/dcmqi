@@ -63,6 +63,8 @@ dcmqi_add_test(
     ${MODULE_NAME}Test
       --inputFileName ${TEMP_DIR}/paramap.dcm
       --outputDirName ${TEMP_DIR}
+  TEST_DEPENDS
+    itkimage2paramap_makeParametricMap
   )
 
 dcmqi_add_test(
@@ -74,4 +76,6 @@ dcmqi_add_test(
     ${MODULE_NAME}Test
       --inputFileName ${TEMP_DIR}/paramap-float.dcm
       --outputDirName ${TEMP_DIR}
+  TEST_DEPENDS
+    itkimage2paramap_makeParametricMapFP
   )
