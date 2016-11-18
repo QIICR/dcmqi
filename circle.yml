@@ -46,7 +46,7 @@ dependencies:
     - pip install lxml==3.6.4
     - |
       cd ~/dcmqi-build/dcmqi-build && \
-      ctest -D ExperimentalTest -VV --no-compress-output && \
+      ctest -j4 -D ExperimentalTest -VV --no-compress-output && \
       python ../../dcmqi/util/junit/convert.py \
         ~/dcmqi-build/dcmqi-build/ \
         ../../dcmqi/util/junit/conv.xsl > ~/dcmqi-build/BaseTest.xml
