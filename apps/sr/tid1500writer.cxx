@@ -263,6 +263,13 @@ int main(int argc, char** argv){
     DcmDataset *dataset = ff.getDataset();
     CHECK_COND(doc.write(*dataset));
 
+    OFString contentDate, contentTime;
+    DcmDate::getCurrentDate(contentDate);
+    DcmTime::getCurrentTime(contentTime);
+
+    CHECK_COND(dataset->putAndInsertString(DCM_SeriesDate, contentDate.c_str()));
+    CHECK_COND(dataset->putAndInsertString(DCM_SeriesTime, contentTime.c_str()));
+
     if(compositeContextInitialized){
       cout << "Composite Context initialized" << endl;
       DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
