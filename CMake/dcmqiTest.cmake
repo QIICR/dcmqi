@@ -100,7 +100,7 @@ macro(dcmqi_add_test)
     )
   set_property(TEST ${_SELF_NAME} PROPERTY LABELS ${_SELF_MODULE_NAME})
 
-  if(_SELF_DEPENDS)
+  if(_SELF_TEST_DEPENDS)
     set_tests_properties(${_SELF_NAME}
       PROPERTIES DEPENDS ${_SELF_TEST_DEPENDS}
       )
