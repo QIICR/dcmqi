@@ -189,18 +189,6 @@ mark_as_superbuild(
   )
 
 #-----------------------------------------------------------------------------
-# Additional CXX/C Flags
-#
-set(CMAKE_C_FLAGS "-fPIC")
-set(ADDITIONAL_C_FLAGS "" CACHE STRING "Additional C Flags")
-mark_as_advanced(ADDITIONAL_C_FLAGS)
-mark_as_superbuild(ADDITIONAL_C_FLAGS)
-
-set(ADDITIONAL_CXX_FLAGS "" CACHE STRING "Additional CXX Flags")
-mark_as_advanced(ADDITIONAL_CXX_FLAGS)
-mark_as_superbuild(ADDITIONAL_CXX_FLAGS)
-
-#-----------------------------------------------------------------------------
 # Other options
 
 # Git protocol option
