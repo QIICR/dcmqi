@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
   PARSE_ARGS;
 
   DcmFileFormat sliceFF;
+  std::cout << "Opening input file " << inputFileName.c_str() << std::endl;
   CHECK_COND(sliceFF.loadFile(inputFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
