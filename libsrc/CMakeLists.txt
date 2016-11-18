@@ -16,13 +16,6 @@ source_group("Generated" FILES
 #-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
 
-if(DCMQI_BUILD_PARAMETRIC_MAPS)
-  list(APPEND ADDITIONAL_SRCS
-    JSONParametricMapMetaInformationHandler.cpp
-    ParaMapConverter.cpp
-    )
-endif()
-
 if(DCMQI_BUILTIN_JSONCPP)
   list(APPEND ADDITIONAL_SRCS
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
@@ -36,7 +29,9 @@ add_library(${lib_name} STATIC
   ConverterBase.cpp
   Helper.cpp
   ImageSEGConverter.cpp
+  ParaMapConverter.cpp
   JSONMetaInformationHandlerBase.cpp
+  JSONParametricMapMetaInformationHandler.cpp
   JSONSegmentationMetaInformationHandler.cpp
   SegmentAttributes.cpp
   ${ADDITIONAL_SRCS}

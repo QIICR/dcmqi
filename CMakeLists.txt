@@ -75,12 +75,6 @@ include(CMakeDependentOption)
 option(DCMQI_BUILD_APPS "Build ${PROJECT_NAME} applications." ON)
 mark_as_superbuild(DCMQI_BUILD_APPS)
 
-cmake_dependent_option(
-  DCMQI_BUILD_PARAMETRIC_MAPS "Build parametric maps for ${PROJECT_NAME}." ON
-  "DCMQI_BUILD_APPS" OFF
-  )
-mark_as_superbuild(DCMQI_BUILD_PARAMETRIC_MAPS)
-
 option(DCMQI_BUILD_DOC "Build ${PROJECT_NAME} documentation." ${build_doc_default})
 mark_as_superbuild(DCMQI_BUILD_DOC)
 
