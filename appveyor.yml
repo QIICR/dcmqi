@@ -52,7 +52,7 @@ build_script:
 after_build:
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv help
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv.cmd help
-  - cmd: cd c:\dcmqi\dcmqi-build\dcmqi-build && set PATH=%PATH%;c:\DCMTK-install\bin;c:\ITK-install\bin;c:\zlib-install\lib;c:\Users\appveyor\AppData\Roaming\npm && ctest -VV -C Release -D ExperimentalTest --no-compress-output
+  - cmd: cd c:\dcmqi\dcmqi-build\dcmqi-build && set PATH=%PATH%;c:\DCMTK-install\bin;c:\ITK-install\bin;c:\zlib-install\lib;c:\Users\appveyor\AppData\Roaming\npm && ctest -j4 -VV -C Release -D ExperimentalTest --no-compress-output
 artifacts:
   - path: dcmqi-build
     name: dcmqi

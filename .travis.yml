@@ -36,4 +36,4 @@ script:
 - ninja
 - |
   cd /Users/travis/build/QIICR/dcmqi-build/dcmqi-build
-  ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
+  ctest -j4 -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
