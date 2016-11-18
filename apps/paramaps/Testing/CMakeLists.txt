@@ -57,6 +57,7 @@ dcmqi_add_test_executable(
 dcmqi_add_test(
   NAME ${MODULE_NAME}_makeNRRDParametricMap
   MODULE_NAME ${MODULE_NAME}
+  RESOURCE_LOCK ${TEMP_DIR}/pmap.nrrd
   COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
@@ -67,6 +68,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME ${MODULE_NAME}_makeNRRDParametricMapFP
   MODULE_NAME ${MODULE_NAME}
+  RESOURCE_LOCK ${TEMP_DIR}/pmap.nrrd
   COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example-float.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
