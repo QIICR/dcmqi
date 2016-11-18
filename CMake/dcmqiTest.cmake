@@ -64,6 +64,9 @@ endmacro()
 #                    When build as a Slicer extension the command will be
 #                    executed using ${SEM_LAUNCH_COMMAND
 # TEST_DEPENDS     - list of test dependencies (optional)
+# RESOURCE_LOCK    - Specify a list of resources that are locked by this test.
+#                    If multiple tests specify the same resource lock, they are
+#                    guaranteed not to run concurrently.
 #
 #
 macro(dcmqi_add_test)
@@ -76,6 +79,7 @@ macro(dcmqi_add_test)
   set(multiValueArgs
     COMMAND
     TEST_DEPENDS
+    RESOURCE_LOCK
   )
   cmake_parse_arguments(_SELF
     "${options}"
@@ -99,6 +103,11 @@ macro(dcmqi_add_test)
   if(_SELF_DEPENDS)
     set_tests_properties(${_SELF_NAME}
       PROPERTIES DEPENDS ${_SELF_TEST_DEPENDS}
+      )
+  endif()
+  if(_SELF_RESOURCE_LOCK)
+    set_tests_properties(${_SELF_NAME}
+      PROPERTIES RESOURCE_LOCK ${_SELF_RESOURCE_LOCK}
       )
   endif()
 
