@@ -25,3 +25,10 @@ Thumbs.db
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+
+# Python             #
+######################
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
