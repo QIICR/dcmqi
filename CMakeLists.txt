@@ -202,8 +202,6 @@ if(DCMQI_BUILD_SLICER_EXTENSION)
   find_package(Slicer REQUIRED)
   include(${Slicer_USE_FILE})
   mark_as_superbuild(Slicer_DIR)
-  # XXX Temporary workaround until issue is fixed in Slicer
-  set(EXTENSION_SUPERBUILD_BINARY_DIR "${EXTENSION_SUPERBUILD_BINARY_DIR}/..")
 endif()
 
 # JsonCpp
