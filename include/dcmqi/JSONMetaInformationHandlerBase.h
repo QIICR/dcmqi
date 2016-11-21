@@ -38,6 +38,7 @@ namespace dcmqi {
     static string getCodeSequenceValue(CodeSequenceMacro* codeSequence);
     static string getCodeSequenceDesignator(CodeSequenceMacro* codeSequence);
     static string getCodeSequenceMeaning(CodeSequenceMacro* codeSequence);
+    static Json::Value codeSequence2Json(CodeSequenceMacro *codeSequence);
 
     // need to revisit
     Json::Value metaInfoRoot;
@@ -50,8 +51,6 @@ namespace dcmqi {
     string seriesNumber;
     string instanceNumber;
     string bodyPartExamined;
-
-    Json::Value codeSequence2Json(CodeSequenceMacro *codeSequence);
   };
 }
 

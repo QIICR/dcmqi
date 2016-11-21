@@ -17,9 +17,12 @@ namespace dcmqi {
     ~JSONParametricMapMetaInformationHandler();
 
     void setFrameLaterality(const string& value);
-    void setRealWorldValueSlope(const string& value);
-    void setRealWorldValueIntercept(const string &value);
+    void setRealWorldValueSlope(const float& value);
+    void setRealWorldValueIntercept(const string& value);
     void setDerivedPixelContrast(const string& value);
+    void setDerivationDescription(const string& value);
+
+    void setDerivationCode(const string& code, const string& designator, const string& meaning);
     void setMeasurementUnitsCode(const string& code, const string& designator, const string& meaning);
     void setMeasurementUnitsCode(const CodeSequenceMacro& codeSequence);
     void setMeasurementMethodCode(const string& code, const string& designator, const string& meaning);
@@ -27,16 +30,20 @@ namespace dcmqi {
     void setQuantityValueCode(const string& code, const string& designator, const string& meaning);
     void setQuantityValueCode(const CodeSequenceMacro& codeSequence);
     void setAnatomicRegionSequence(const string &code, const string &designator, const string &meaning);
-    void setAnatomicRegionSequence(const CodeSequenceMacro &codeSequence);
+    void setAnatomicRegionSequence(const CodeSequenceMacro& codeSequence);
     void setFirstValueMapped(const short &value);
     void setLastValueMapped(const short &value);
 
+    void addSourceImageDiffusionBValue(const string& value);
+
     string getFrameLaterality() const { return frameLaterality; }
-    string getRealWorldValueSlope() const { return realWorldValueSlope; }
+    string getDerivationDescription() const { return derivationDescription; }
+    float getRealWorldValueSlope() const { return realWorldValueSlope; }
     string getRealWorldValueIntercept() const { return realWorldValueIntercept; }
     string getDerivedPixelContrast() const { return derivedPixelContrast; }
     short getFirstValueMapped() const { return firstValueMapped; }
     short getLastValueMapped() const { return lastValueMapped; }
+    CodeSequenceMacro* getDerivationCode() const { return derivationCode; }
     CodeSequenceMacro* getMeasurementUnitsCode() const { return measurementUnitsCode; }
     CodeSequenceMacro* getMeasurementMethodCode() const { return measurementMethodCode; }
     CodeSequenceMacro* getQuantityValueCode() const { return quantityValueCode; }
@@ -48,10 +55,13 @@ namespace dcmqi {
     virtual bool write(string filename);
   protected:
 
-    string realWorldValueSlope;
+    float realWorldValueSlope;
     string realWorldValueIntercept;
+    string derivationDescription;
     string derivedPixelContrast;
     string frameLaterality;
+
+    vector<string> diffusionBValues;
 
     Sint16 firstValueMapped;
     Sint16 lastValueMapped;
@@ -60,6 +70,7 @@ namespace dcmqi {
     CodeSequenceMacro* measurementMethodCode;
     CodeSequenceMacro* quantityValueCode;
     CodeSequenceMacro* anatomicRegionSequence;
+    CodeSequenceMacro* derivationCode;
   };
 
 }

@@ -42,6 +42,14 @@
       <element>img</element>
     </string-enumeration>
 
+    <string>
+      <name>prefix</name>
+      <label>Output prefix</label>
+      <flag>-n</flag>
+      <longflag>--prefix</longflag>
+      <description>Prefix for output files</description>
+      <default></default>
+    </string>
   </parameters>
 
 </executable>

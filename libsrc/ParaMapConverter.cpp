@@ -130,7 +130,7 @@ namespace dcmqi {
       return NULL;
     }
 
-    realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
+    realWorldValueMappingItem->setRealWorldValueSlope(metaInfo.getRealWorldValueSlope());
     realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
 
     realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(metaInfo.getFirstValueMapped());
@@ -294,16 +294,10 @@ namespace dcmqi {
 
         // Mandatory, defined in CID 7203
         // http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_7203.html
-        if(metaInfo.metaInfoRoot.isMember("DerivationCode")){
-          CodeSequenceMacro derivationCode = CodeSequenceMacro(
-            metaInfo.metaInfoRoot["DerivationCode"]["CodeValue"].asCString(),
-            metaInfo.metaInfoRoot["DerivationCode"]["CodingSchemeDesignator"].asCString(),
-            metaInfo.metaInfoRoot["DerivationCode"]["CodeMeaning"].asCString());
-            string derivationDescription = "";
-            if(metaInfo.metaInfoRoot.isMember("DerivationDescription"))
-              derivationDescription = metaInfo.metaInfoRoot["DerivationDescription"].asCString();
-
-            CHECK_COND(fgder->addDerivationImageItem(derivationCode,derivationDescription.c_str(),derimgItem));
+        if(metaInfo.getDerivationCode() != NULL) {
+          CHECK_COND(fgder->addDerivationImageItem(*metaInfo.getDerivationCode(),
+                                                   metaInfo.getDerivationDescription().c_str(),
+                                                   derimgItem));
         } else {
           cerr << "DerivationCode must be specified in the input metadata!" << endl;
           return NULL;
@@ -642,8 +636,7 @@ namespace dcmqi {
       FGInterface& fg = pMapDoc->getFunctionalGroups();
       FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
                                                   fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
-      size_t numMappings = rw->getRealWorldValueMapping().size();
-      if (numMappings > 0) {
+      if (rw->getRealWorldValueMapping().size() > 0) {
         FGRealWorldValueMapping::RWVMItem *item = rw->getRealWorldValueMapping()[0];
         metaInfo.setMeasurementUnitsCode(item->getMeasurementUnitsCode());
 
@@ -651,25 +644,55 @@ namespace dcmqi {
         // TODO: replace the following call by following getter once it is available
 //        item->getRealWorldValueSlope(slope);
         item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
-        metaInfo.setRealWorldValueSlope(Helper::floatToStrScientific(slope));
+        metaInfo.setRealWorldValueSlope(slope);
 
-        size_t numQuant = item->getEntireQuantityDefinitionSequence().size();
-        if (numQuant > 0) {
-          ContentItemMacro *macro = item->getEntireQuantityDefinitionSequence()[0];
-          size_t numEntireConcept = macro->getEntireConceptCodeSequence().size();
-          if (numEntireConcept > 0) {
-//            BUG??? For any reason metaInfo.setQuantityValueCode(macro->getConceptCodeSequence()); results in an empty code sequence
-            CodeSequenceMacro* quantityValueCode = macro->getConceptCodeSequence();
-            if (quantityValueCode != NULL) {
-              OFString designator, meaning, value;
-              quantityValueCode->getCodeValue(value);
-              quantityValueCode->getCodeMeaning(meaning);
-              quantityValueCode->getCodingSchemeDesignator(designator);
-              metaInfo.setQuantityValueCode(value.c_str(), designator.c_str(), meaning.c_str());
+        for(int quantIdx=0; quantIdx<item->getEntireQuantityDefinitionSequence().size(); quantIdx++) {
+          ContentItemMacro* macro = item->getEntireQuantityDefinitionSequence()[quantIdx];
+          CodeSequenceMacro* codeSequence= macro->getConceptNameCodeSequence();
+          if (codeSequence != NULL) {
+            OFString codeMeaning;
+            codeSequence->getCodeMeaning(codeMeaning);
+            OFString designator, meaning, value;
+
+            if (codeMeaning == "Quantity") {
+              CodeSequenceMacro* quantityValueCode = macro->getConceptCodeSequence();
+              if (quantityValueCode != NULL) {
+                quantityValueCode->getCodeValue(value);
+                quantityValueCode->getCodeMeaning(meaning);
+                quantityValueCode->getCodingSchemeDesignator(designator);
+                metaInfo.setQuantityValueCode(value.c_str(), designator.c_str(), meaning.c_str());
+              }
+            } else if (codeMeaning == "Measurement Method") {
+              CodeSequenceMacro* measurementMethodValueCode = macro->getConceptCodeSequence();
+              if (measurementMethodValueCode != NULL) {
+                measurementMethodValueCode->getCodeValue(value);
+                measurementMethodValueCode->getCodeMeaning(meaning);
+                measurementMethodValueCode->getCodingSchemeDesignator(designator);
+                metaInfo.setMeasurementMethodCode(value.c_str(), designator.c_str(), meaning.c_str());
+              }
+            } else if (codeMeaning == "Source image diffusion b-value") {
+              macro->getNumericValue(value);
+              metaInfo.addSourceImageDiffusionBValue(value.c_str());
             }
           }
         }
       }
+
+      FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
+      OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
+
+      if(derivationImageItems.size()>0){
+        DerivationImageItem* derivationImageItem = derivationImageItems[0];
+        CodeSequenceMacro* derivationCode = derivationImageItem->getDerivationCodeItems()[0];
+        if (derivationCode != NULL) {
+          OFString designator, meaning, value;
+          derivationCode->getCodeValue(value);
+          derivationCode->getCodeMeaning(meaning);
+          derivationCode->getCodingSchemeDesignator(designator);
+          metaInfo.setDerivationCode(value.c_str(), designator.c_str(), meaning.c_str());
+        }
+      }
+
       FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
         metaInfo.setAnatomicRegionSequence(fa->getAnatomy().getAnatomicRegion());
       FGFrameAnatomy::LATERALITY frameLaterality;
