@@ -84,12 +84,10 @@ namespace dcmqi {
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();
-    FGDerivationImage* fgder = new FGDerivationImage();
     OFVector<FGBase*> perFrameFGs;
 
     perFrameFGs.push_back(fgppp);
     perFrameFGs.push_back(fgfc);
-    perFrameFGs.push_back(fgder);
 
     // Iterate over the files and labels available in each file, create a segment for each label,
     //  initialize segment frames and add to the document
@@ -310,24 +308,11 @@ namespace dcmqi {
                 frameData[framePixelCnt] = 0;
             }
 
-            if(sliceNumber!=firstSlice)
-              Helper::checkValidityOfFirstSrcImage(segdoc);
-
-            FGDerivationImage* fgder = new FGDerivationImage();
-            perFrameFGs[2] = fgder;
-            //fgder->clearData();
-
-            if(sliceNumber!=firstSlice)
-              Helper::checkValidityOfFirstSrcImage(segdoc);
-
-            DerivationImageItem *derimgItem;
-            CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
-
-
+            /*
             if(sliceNumber>=dcmDatasets.size()){
               cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
               return NULL;
-            }
+            }*/
 
             OFVector<DcmDataset*> siVector;
             for(size_t derImageInstanceNum=0;
@@ -336,46 +321,71 @@ namespace dcmqi {
               siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
             }
 
-            OFVector<SourceImageItem*> srcimgItems;
-            CHECK_COND(derimgItem->addSourceImageItems(siVector,
+            FGDerivationImage* fgder = NULL;
+            if(siVector.size()>0){
+
+              fgder = new FGDerivationImage();
+              perFrameFGs.push_back(fgder);
+
+              DerivationImageItem *derimgItem;
+              CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
+
+              cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+
+              OFVector<SourceImageItem*> srcimgItems;
+              CHECK_COND(derimgItem->addSourceImageItems(siVector,
                                                        CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
                                                        srcimgItems));
 
-            CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
+              if(1){
+                // initialize class UID and series instance UID
+                ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
+                OFString instanceUID;
+                CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
+                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
 
-            // check if frame 0 still has what we expect
-            Helper::checkValidityOfFirstSrcImage(segdoc);
-
-            if(1){
-              // initialize class UID and series instance UID
-              ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
-              OFString instanceUID;
-              CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
-              CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
-
-              if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
-                SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
-                CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
-                CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
-                refinstances.push_back(refinstancesItem);
-                instanceUIDs.insert(instanceUID);
-                uidnotfound++;
-              } else {
-                uidfound++;
+                if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
+                  SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+                  CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
+                  CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
+                  refinstances.push_back(refinstancesItem);
+                  instanceUIDs.insert(instanceUID);
+                  uidnotfound++;
+                } else {
+                  uidfound++;
+                }
               }
             }
+
+            CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
+
+            // remove derivation image FG from the per-frame FGs, only if applicable!
+            if(fgder){
+              perFrameFGs.pop_back();
+              delete fgder;
+            }
+
           }
         }
       }
     }
 
     delete fgfc;
-    delete fgder;
-
-    //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
 
     segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
-    CHECK_COND(segdoc->writeDataset(segdocDataset));
+
+    OFString frameOfRefUID;
+    if(!segdoc->getFrameOfReference().getFrameOfReferenceUID(frameOfRefUID).good()){
+      // TODO: add FoR UID to the metadata JSON and check that before generating one!
+      char frameOfRefUIDchar[128];
+      dcmGenerateUniqueIdentifier(frameOfRefUIDchar, QIICR_UID_ROOT);
+      CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
+    }
+
+    if(segdoc->writeDataset(segdocDataset).bad()){
+      cerr << "FATAL ERROR: Writing of the SEG dataset failed! Please report the problem to the developers, ideally accompanied by a de-identified dataset allowing to reproduce the problem!" << endl;
+      return NULL;
+    }
 
     // Set reader/session/timepoint information
     CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
@@ -552,7 +562,7 @@ namespace dcmqi {
         DcmSegment* segment = segdoc->getSegment(segmentId);
         if(segment == NULL){
           cerr << "Failed to get segment for segment ID " << segmentId << endl;
-          throw -1;
+          continue;
         }
 
         // get CIELab color for the segment
