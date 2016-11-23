@@ -382,7 +382,10 @@ namespace dcmqi {
       CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
     }
 
-    CHECK_COND(segdoc->writeDataset(segdocDataset));
+    if(segdoc->writeDataset(segdocDataset).bad()){
+      cerr << "FATAL ERROR: Writing of the SEG dataset failed! Please report the problem to the developers, ideally accompanied by a de-identified dataset allowing to reproduce the problem!" << endl;
+      return NULL;
+    }
 
     // Set reader/session/timepoint information
     CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
