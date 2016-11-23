@@ -372,9 +372,16 @@ namespace dcmqi {
 
     delete fgfc;
 
-    //cout << "found:" << uidfound << " not: " << uidnotfound << endl;
-
     segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+
+    OFString frameOfRefUID;
+    if(!segdoc->getFrameOfReference().getFrameOfReferenceUID(frameOfRefUID).good()){
+      // TODO: add FoR UID to the metadata JSON and check that before generating one!
+      char frameOfRefUIDchar[128];
+      dcmGenerateUniqueIdentifier(frameOfRefUIDchar, QIICR_UID_ROOT);
+      CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
+    }
+
     CHECK_COND(segdoc->writeDataset(segdocDataset));
 
     // Set reader/session/timepoint information
