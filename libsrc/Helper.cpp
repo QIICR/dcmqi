@@ -15,17 +15,23 @@ namespace dcmqi {
     bool isPerFrame = false;
     FGDerivationImage *derimgfg = OFstatic_cast(FGDerivationImage*, fgInterface.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE,
                                                                                     isPerFrame));
-    assert(derimgfg);
+    if(!derimgfg){
+      cout << "Debug: No derivation items present in the segmentation dataset" << endl;
+    }
     assert(isPerFrame);
 
     OFVector<DerivationImageItem *> &deritems = derimgfg->getDerivationImageItems();
 
     OFVector<SourceImageItem *> &srcitems = deritems[0]->getSourceImageItems();
     OFString codeValue;
-    CodeSequenceMacro &code = srcitems[0]->getPurposeOfReferenceCode();
-    if (!code.getCodeValue(codeValue).good()) {
-      cout << "Failed to look up purpose of reference code" << endl;
-      abort();
+    if(srcitems.size()>0){
+      CodeSequenceMacro &code = srcitems[0]->getPurposeOfReferenceCode();
+      if (!code.getCodeValue(codeValue).good()) {
+        cout << "Failed to look up purpose of reference code" << endl;
+        abort();
+      }
+    } else {
+      cout << "Warning: Source images are not initialized!" << endl;
     }
   }
 
