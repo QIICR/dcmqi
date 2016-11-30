@@ -360,7 +360,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             attributes["SegmentDescription"] = value.SegmentDescription;
           if (value.SegmentAlgorithmType.length > 0)
             attributes["SegmentAlgorithmType"] = value.SegmentAlgorithmType;
-          if (value.SegmentAlgorithmName.length > 0)
+          if (value.SegmentAlgorithmName != undefined && value.SegmentAlgorithmName.length > 0)
             attributes["SegmentAlgorithmName"] = value.SegmentAlgorithmName;
           if (value.anatomicRegion)
             attributes["AnatomicRegionSequence"] = getCodeSequenceAttributes(value.anatomicRegion);
@@ -392,9 +392,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   function getCodeSequenceAttributes(codeSequence) {
     if (codeSequence != null && codeSequence != undefined)
-      return {"CodeValue":codeSequence.codeValue,
-              "CodingSchemeDesignator":codeSequence.codingScheme,
-              "CodeMeaning":codeSequence.codeMeaning}
+      return {"CodeValue":codeSequence.CodeValue,
+              "CodingSchemeDesignator":codeSequence.CodingSchemeDesignator,
+              "CodeMeaning":codeSequence.CodeMeaning}
   }
 
   app.controller('CodeSequenceBaseController',
@@ -440,16 +440,16 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         };
       }
 
-      self.codesList2codeMeaning = function(list) {
+      self.codesList2CodeMeaning = function(list) {
         if(Object.prototype.toString.call( list ) != '[object Array]' ) {
           list = [list];
         }
-        list.sort(function(a,b) {return (a.codeMeaning > b.codeMeaning) ? 1 : ((b.codeMeaning > a.codeMeaning) ? -1 : 0);});
+        list.sort(function(a,b) {return (a.CodeMeaning > b.CodeMeaning) ? 1 : ((b.CodeMeaning > a.CodeMeaning) ? -1 : 0);});
         return list.map(function (code) {
           return {
-            value: code.codeMeaning.toLowerCase(),
+            value: code.CodeMeaning.toLowerCase(),
             contextGroupName : code.contextGroupName,
-            display: code.codeMeaning,
+            display: code.CodeMeaning,
             object: code
           };
         })
@@ -489,7 +489,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       if ($scope.selectedAnatomicRegionContext != undefined) {
         $http.get($scope.selectedAnatomicRegionContext.url).success(function (data) {
           $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
-          self.mappedCodes = self.codesList2codeMeaning($scope.anatomicCodes);
+          self.mappedCodes = self.codesList2CodeMeaning($scope.anatomicCodes);
         });
       }
     });
@@ -518,7 +518,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          self.mappedCodes = self.codesList2codeMeaning(data.item.object.Modifier);
+          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Modifier);
         }
       } else {
         self.mappedCodes = [];
@@ -545,7 +545,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
         $http.get($scope.selectedSegmentationCategoryContext.url).success(function (data) {
           $scope.segmentationCodes = data.SegmentationCodes.Category;
-          self.mappedCodes = self.codesList2codeMeaning($scope.segmentationCodes);
+          self.mappedCodes = self.codesList2CodeMeaning($scope.segmentationCodes);
         });
       }
     });
@@ -584,7 +584,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          self.mappedCodes = self.codesList2codeMeaning(data.item.object.Type);
+          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Type);
         }
       } else {
         self.mappedCodes = [];
@@ -617,7 +617,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          self.mappedCodes = self.codesList2codeMeaning(data.item.object.Modifier);
+          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Modifier);
         }
       } else {
         self.mappedCodes = [];
