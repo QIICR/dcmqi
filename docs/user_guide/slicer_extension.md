@@ -16,21 +16,38 @@ Once installed, open 3D Slicer Extension Manager by clicking the icon as shown b
 
 ![](assets/extension_manager.png)
 
-Search for "SliceTracker" and install the extension by clicking the INSTALL button.
+Search for `dcmqi` and install the extension by clicking the INSTALL button.
 
-![](../images/install_slicetracker.png)
+![](assets/install_dcmqi.jpg)
 
-Note that SliceTracker depends on several other extensions. When prompted, accept installation of those.
+Once installation of `dcmqi` is completed successfully, you should have the binaries available on your system.
 
-![](../images/install_dependencies.png)
+## Accessing `dcmqi` binaries
 
-Once installation of SliceTracker and dependencies is completed, you will need to restart Slicer application to access the module.
+Location of the `dcmqi` binaries installed as 3D Slicer extension will be operating system specific.
 
-If installation was successful, you should be able to see SliceTracker module in the Slicer module list.
+### Mac OS X
 
-![](../images/confirm_install.png)
-# Upgrade
-It is currently not possible to upgrade SliceTracker without upgrading the 3D Slicer application.
+`<Slicer.app folder>/Extensions-<number>/DCMQI/lib/Slicer-4.7/cli-modules/`
 
-If you need to upgrade the software, download the latest nightly release of 3D Slicer and install the SliceTracker extension following [installation instructions](docs/user_guide/install.md).
+### Linux
+
+TBD
+
+### Windows
+
+`<your home folder>\AppData\Roaming\NA-MIC\Extensions-<latest number>\DCMQI\lib\Slicer-4.7\cli-modules`
+
+To launch the `dcmqi` command line tools on Windows, you will need to use 3D Slicer launcher, otherwise shared library dependencies will not be resolved. Example invocation:
+
+```
+C:\Program Files\Slicer 4.7.0-2016-12-11\Slicer.exe \ 
+   --launch itkimage2segimage --help
+```
+
+## Upgrade
+
+It is currently not possible to upgrade `dcmqi` without upgrading the 3D Slicer application.
+
+If you need to upgrade the software, download the latest nightly release of 3D Slicer and install `dcmqi` as explained above.
 
