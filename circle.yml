@@ -23,7 +23,7 @@ dependencies:
     - |
       dicom3tools_version=dicom3tools_1.00.snapshot.20160721064406
       if [[ ! -e $dicom3tools_version ]]; then
-        wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/$dicom3tools_version.tar.bz2 -O dicom3tools.tar.bz2 \
+        wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270310/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2 \
           && tar xjf dicom3tools.tar.bz2 \
           && (cd $dicom3tools_version/ \
           && ./Configure \

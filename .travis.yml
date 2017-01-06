@@ -21,7 +21,7 @@ before_script:
 - npm install jsonlint -g
 - npm install ajv-cli -g
 # Install dicom3tools
-- wget --no-check-certificate http://www.dclunie.com/dicom3tools/workinprogress/macexe/dicom3tools_macexe_1.00.snapshot.20160721064406.zip -O dicom3tools.zip
+- wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270308/dicom3tools_macexe_1.00.snapshot.20161218101718.zip -O dicom3tools.zip
 - tar zxf dicom3tools.zip
 - mv dciodvfy /usr/local/bin/
 # Use scikit-ci-addons to streamline installation of CMake
