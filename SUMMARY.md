@@ -2,13 +2,13 @@
 
 * [Introduction](README.md)
 * [User guide](docs/user_guide/opening.md)
-    * [Installation](installation.md)
-      * [3D Slicer extension](slicer_extension.md)
-      * [Build from source](build_dcmqi.md)
-    * [Command line tools usage](cmd_tools.md)    
-      * [DICOM Segmentation objects (SEG) support](seg.md)
+    * [Installation](docs/user_guide/installation.md)
+      * [3D Slicer extension](docs/user_guide/slicer_extension.md)
+      * [Build from source](docs/user_guide/build_dcmqi.md)
+    * [Command line tools usage](docs/user_guide/cmd_tools.md)    
+      * [DICOM Segmentation objects (SEG) support](docs/user_guide/seg.md)
         * [itkimage2segimage](docs/user_guide/itkimage2segimage.md)
-      * [DICOM Structured reports (SR) support](sr.cmd)
+      * [DICOM Structured reports (SR) support](docs/user_guide/sr.cmd)
         * [tid1500writer](docs/user_guide/tid1500writer.md)
 
 
