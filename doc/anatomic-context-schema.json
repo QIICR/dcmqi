@@ -1,0 +1,21 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/anatomic-context-schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "properties": {
+    "@schema": {"type" : "string"},
+    "AnatomicContextName": {"type": "string"},
+    "AnatomicCodes": {
+      "type": "object",
+      "properties": {
+        "AnatomicRegion": {
+          "type": "array",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/segment-context-common-schema.json#AnatomicRegion"
+          }
+        }
+      }
+    }
+  }
+}
