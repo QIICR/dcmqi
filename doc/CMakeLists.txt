@@ -106,7 +106,7 @@ function(createSegmentationContextTest seg_context_name)
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
       # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${SEGMENT_CONTEXT_SCHEMA} -r ${CONTEXT_COMMON_SCHEMA} ${common_schema_references} -d ${json_seg_context_file} ${AJV_OPTIONS})
+      COMMAND ${AJV_EXECUTABLE} -s ${SEGMENT_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_seg_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
@@ -119,7 +119,7 @@ function(createAnatomicContextTest anatomic_context_name)
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
       # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${ANATOMIC_CONTEXT_SCHEMA} -r ${CONTEXT_COMMON_SCHEMA} ${common_schema_references} -d ${json_anatomic_context_file} ${AJV_OPTIONS})
+      COMMAND ${AJV_EXECUTABLE} -s ${ANATOMIC_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_anatomic_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
