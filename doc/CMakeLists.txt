@@ -95,6 +95,37 @@ function(createExampleDataTest example_name schema)
   endif()
 endfunction()
 
+# validate segmentation context files
+set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
+set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
+set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-common-schema.json)
+
+function(createSegmentationContextTest seg_context_name)
+  set(json_seg_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/SegmentationCategoryTypeModifier-${seg_context_name}.json)
+  set(testname ajv_${seg_context_name}-segcontext)
+  if(AJV_EXECUTABLE)
+    add_test(NAME ${testname}
+      # -d stands for data that needs to be validated
+      COMMAND ${AJV_EXECUTABLE} -s ${SEGMENT_CONTEXT_SCHEMA} -r ${CONTEXT_COMMON_SCHEMA} ${common_schema_references} -d ${json_seg_context_file} ${AJV_OPTIONS})
+    set_property(TEST ${testname} PROPERTY LABELS ajv)
+  else()
+    message(STATUS "Skipping '${testname}' test: ajv executable not found")
+  endif()
+endfunction()
+
+function(createAnatomicContextTest anatomic_context_name)
+  set(json_anatomic_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/AnatomicRegionAndModifier-${anatomic_context_name}.json)
+  set(testname ajv_${anatomic_context_name}-anatomiccontext)
+  if(AJV_EXECUTABLE)
+    add_test(NAME ${testname}
+      # -d stands for data that needs to be validated
+      COMMAND ${AJV_EXECUTABLE} -s ${ANATOMIC_CONTEXT_SCHEMA} -r ${CONTEXT_COMMON_SCHEMA} ${common_schema_references} -d ${json_anatomic_context_file} ${AJV_OPTIONS})
+    set_property(TEST ${testname} PROPERTY LABELS ajv)
+  else()
+    message(STATUS "Skipping '${testname}' test: ajv executable not found")
+  endif()
+endfunction()
+
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
 set(SEG_EXAMPLES seg bmmr)
 set(SEG_SCHEMA ${CMAKE_SOURCE_DIR}/doc/seg-schema.json)
@@ -117,15 +148,10 @@ foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
   createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})
 endforeach()
 
-# validate segmentation context files
-set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
-set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
-set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-common-schema.json)
-
-foreach(seg_context_name ${json_seg_context_files})
-  createExampleDataTest(${seg_context_name} ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
+foreach(seg_context_name DICOM-Master SlicerGeneralAnatomy)
+  createSegmentationContextTest(${seg_context_name})
 endforeach()
 
-foreach(anatomic_context_name ${json_anatomic_context_files})
-  createExampleDataTest(${anatomic_context_name} ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
+foreach(anatomic_context_name DICOM-Master)
+  createanatomicContextTest(${anatomic_context_name})
 endforeach()
