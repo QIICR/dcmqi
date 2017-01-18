@@ -2,12 +2,20 @@
 find_program(JSONLINT_EXECUTABLE NAMES jsonlint.cmd jsonlint)
 find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
 
-file(GLOB json_files
+file(GLOB_RECURSIVE json_files
   *.json
   )
 
 file(GLOB json_example_files
   *example.json
+  )
+
+file(GLOB json_seg_context_files
+  segContexts/Segmentation*json
+  )
+
+file(GLOB json_anatomic_context_files
+  segContexts/Anatomic*json
   )
 
 file(GLOB json_common_schema_files
@@ -107,4 +115,17 @@ set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-schema.json)
 
 foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
   createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})
+endforeach()
+
+# validate segmentation context files
+set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
+set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
+set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-common-schema.json)
+
+foreach(seg_context_name ${json_seg_context_files})
+  createExampleDataTest(${seg_context_name} ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
+endforeach()
+
+foreach(anatomic_context_name ${json_anatomic_context_files})
+  createExampleDataTest(${anatomic_context_name} ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
 endforeach()
