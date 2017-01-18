@@ -57,7 +57,7 @@ endforeach()
 
 function(createSchemaValidationTest schema_name)
   get_filename_component(json_name ${schema_name} NAME_WE)
-  set(testname ajv_${json_name}-schema)
+  set(testname ajv_${json_name})
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
       COMMAND ${AJV_EXECUTABLE} compile -s ${schema_name} ${common_schema_references} ${AJV_OPTIONS})
