@@ -12,7 +12,7 @@
         "AnatomicRegion": {
           "type": "array",
           "items": {
-            "$ref": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-common-schema.json#/definitions/AnatomicRegion"
+            "$ref": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-common-schema.json#/definitions/AnatomicRegionDefinition"
           }
         }
       }

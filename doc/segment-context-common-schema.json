@@ -5,7 +5,7 @@
 
   "definitions": {
 
-    "Modifier": {
+    "ModifierDefinition": {
       "type": "object",
       "properties": {
         "CodeValue": {
@@ -28,7 +28,7 @@
     },
 
 
-    "Type": {
+    "TypeDefinition": {
       "type": "object",
       "properties": {
 
@@ -50,12 +50,12 @@
         "UMLConceptUID": {"type": "string"},
         "SNOMEDConceptID": {"type": "string"},
         "Modifier": {
-          "$ref": "#Modifier"
+          "$ref": "#ModifierDefinition"
         }
       }
     },
 
-    "Category": {
+    "CategoryDefinition": {
       "type": "object",
       "properties": {
         "CodeValue": {
@@ -80,12 +80,12 @@
       "Type": {
         "type": "array",
         "items": {
-          "$ref": "#Type"
+          "$ref": "#TypeDefinition"
         }
       }
     },
 
-    "AnatomicRegion": {
+    "AnatomicRegionDefinition": {
       "type": "object",
       "properties": {
         "CodeValue": {
@@ -105,7 +105,7 @@
         "UMLConceptUID": {"type": "string"},
         "SNOMEDConceptID": {"type": "string"},
         "Modifier": {
-          "$ref": "#Modifier"
+          "$ref": "#ModifierDefinition"
         }
       }
     }
