@@ -2,7 +2,7 @@
 find_program(JSONLINT_EXECUTABLE NAMES jsonlint.cmd jsonlint)
 find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
 
-file(GLOB_RECURSIVE json_files
+file(GLOB_RECURSE json_files
   *.json
   )
 
