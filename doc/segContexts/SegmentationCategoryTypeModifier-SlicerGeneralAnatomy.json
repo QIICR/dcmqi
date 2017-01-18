@@ -1,5 +1,6 @@
 {
   "SegmentationCategoryTypeContextName": "Segmentation category and type - 3D Slicer General Anatomy list",
+  "@schema": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-schema.json#",
   "SegmentationCodes": {
     "Category": [
       {
@@ -4272,7 +4273,7 @@
             "cid": "7166",
             "UMLSConceptUID": "C0042036",
             "CodeValue": "T-70060",
-            "contextGroupName": "Common Tissue Segmentation Types", 
+            "contextGroupName": "Common Tissue Segmentation Types",
             "SNOMEDCTConceptID": "78014005"
           }
         ],

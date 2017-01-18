@@ -1,5 +1,6 @@
 {
   "SegmentationCategoryTypeContextName": "Segmentation category and type - DICOM master list",
+  "@schema": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-schema.json#",
   "SegmentationCodes": {
     "Category": [
       {
@@ -14960,7 +14961,7 @@
       },
       {
         "cid": "7051",
-        "CodeMeaning": "Physical object", 
+        "CodeMeaning": "Physical object",
         "CodingSchemeDesignator": "SRT",
         "showAnatomy": true,
         "UMLSConceptUID": "C0085089",
