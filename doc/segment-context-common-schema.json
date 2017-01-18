@@ -4,9 +4,34 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
 
   "definitions": {
+
+    "Modifier": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "recommendedDisplayRGBValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+        },
+        "cid": {"type": "string"},
+        "contextGroupName": {"type": "string"},
+        "UMLConceptUID": {"type": "string"},
+        "SNOMEDConceptID": {"type": "string"}
+      }
+    },
+
+
     "Type": {
       "type": "object",
       "properties": {
+
         "CodeValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
         },
@@ -59,27 +84,7 @@
         }
       }
     },
-    "Modifier": {
-      "type": "object",
-      "properties": {
-        "CodeValue": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
-        },
-        "CodeMeaning": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
-        },
-        "CodingSchemeDesignator": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
-        },
-        "recommendedDisplayRGBValue": {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
-        },
-        "cid": {"type": "string"},
-        "contextGroupName": {"type": "string"},
-        "UMLConceptUID": {"type": "string"},
-        "SNOMEDConceptID": {"type": "string"}
-      }
-    },
+
     "AnatomicRegion": {
       "type": "object",
       "properties": {

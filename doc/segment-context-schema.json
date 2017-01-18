@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-schema.json#",
+  "id": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/sogment-context-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
   "properties": {
