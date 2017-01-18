@@ -50,7 +50,10 @@
         "UMLConceptUID": {"type": "string"},
         "SNOMEDConceptID": {"type": "string"},
         "Modifier": {
-          "$ref": "#ModifierDefinition"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModifierDefinition"
+          }
         }
       }
     },
@@ -80,7 +83,7 @@
       "Type": {
         "type": "array",
         "items": {
-          "$ref": "#TypeDefinition"
+          "$ref": "#/definitions/TypeDefinition"
         }
       }
     },
@@ -105,7 +108,10 @@
         "UMLConceptUID": {"type": "string"},
         "SNOMEDConceptID": {"type": "string"},
         "Modifier": {
-          "$ref": "#ModifierDefinition"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModifierDefinition"
+          }
         }
       }
     }
