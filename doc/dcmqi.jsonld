@@ -16,6 +16,7 @@
     "PN" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_33c3c135-889d-43ab-bd7c-33e8baf2cf4e",
     "SH" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_86e7840f-09d0-4a50-964a-bfa24df6c5c4",
     "FD" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_ecc3ceda-4b8b-4531-9323-af7767dadf23",
+    "UI" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#para_76ccbac7-54a5-4657-bef8-c2356ebb2dd6",
     "DerivedPixelContrast" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.32.2.html#para_9a99a024-eb07-4ce0-ad9a-50dd0514e14d",
     "recommendedDisplayRGBValue" : "TBD - will be converted to CIELab by the converter",
     "RecommendedDisplayCIELabValue" : "http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.20.2.html#para_fea81a93-95f6-4da5-988a-84358398da66"

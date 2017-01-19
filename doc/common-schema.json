@@ -37,6 +37,15 @@
       "minimum" : 0,
       "maximum": 2E+16
     },
+    "UI": {
+      "type": "string",
+      "pattern": "[0-9.]+",
+      "maxLength": 64
+    },
+    "ST": {
+      "type": "string",
+      "maxLength": 1024
+    },
     "RGB": {
       "type": "array",
       "items": {
@@ -69,6 +78,26 @@
       "type" : "array",
       "items" : {
         "type": "string"
+      }
+    },
+    "codingSchemeIdentificationSequenceItem": {
+      "type": "object",
+      "properties": {
+        "CodingSchemeDesignator": {
+          "$ref": "#/definitions/SH"
+        },
+        "CodingSchemeUID": {
+          "$ref": "#/definitions/UI"
+        },
+        "CodingSchemeName": {
+          "$ref": "#/definitions/ST"
+        },
+        "CodingSchemeVersion": {
+          "$ref": "#/definitions/SH"
+        },
+        "CodingSchemeResponsibleOrganization": {
+          "$ref": "#/definitions/LO"
+        }
       }
     }
   }

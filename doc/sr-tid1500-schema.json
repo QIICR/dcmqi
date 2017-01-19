@@ -138,6 +138,12 @@
       "items": {
         "$ref": "#/definitions/MeasurementGroup"
       }
+    },
+    "CodingSchemeIdentificationSequence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codingSchemeIdentificationSequenceItem"
+      }
     }
   }
 }

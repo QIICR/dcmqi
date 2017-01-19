@@ -118,6 +118,12 @@
     "FrameLaterality": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS",
       "default": "U"
+    },
+    "CodingSchemeIdentificationSequence": {
+      "type": "array",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codingSchemeIdentificationSequenceItem"
+      }
     }
   }
 }
