@@ -1,0 +1,119 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id": "https://raw.githubusercontent.com/fedorov/dcmqi/add-seg-context-schema/doc/segment-context-common-schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "definitions": {
+
+    "ModifierDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "recommendedDisplayRGBValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+        },
+        "cid": {"type": "string"},
+        "contextGroupName": {"type": "string"},
+        "UMLConceptUID": {"type": "string"},
+        "SNOMEDConceptID": {"type": "string"}
+      }
+    },
+
+
+    "TypeDefinition": {
+      "type": "object",
+      "properties": {
+
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "recommendedDisplayRGBValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+        },
+        "3dSlicerLabel": {"type": "string"},
+        "cid": {"type": "string"},
+        "contextGroupName": {"type": "string"},
+        "UMLConceptUID": {"type": "string"},
+        "SNOMEDConceptID": {"type": "string"},
+        "Modifier": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModifierDefinition"
+          }
+        }
+      }
+    },
+
+    "CategoryDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "recommendedDisplayRGBValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+        },
+        "3dSlicerLabel": {"type": "string"},
+        "cid": {"type": "string"},
+        "contextGroupName": {"type": "string"},
+        "UMLConceptUID": {"type": "string"},
+        "SNOMEDConceptID": {"type": "string"},
+        "showAnatomy": {"type": "boolean"}
+      },
+      "Type": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/TypeDefinition"
+        }
+      }
+    },
+
+    "AnatomicRegionDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/SH"
+        },
+        "recommendedDisplayRGBValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+        },
+        "cid": {"type": "string"},
+        "contextGroupName": {"type": "string"},
+        "UMLConceptUID": {"type": "string"},
+        "SNOMEDConceptID": {"type": "string"},
+        "Modifier": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModifierDefinition"
+          }
+        }
+      }
+    }
+  }
+}
