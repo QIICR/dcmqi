@@ -6,10 +6,31 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   // var webAssets = 'assets/doc/';
 
   var commonSchemaURL = webAssets + 'common-schema.json';
+  var srCommonSchemaURL = webAssets + 'sr-common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
+  var srSchemaURL = webAssets + 'sr-tid1500-schema.json';
+  var pmSchemaURL = webAssets + 'pm-schema.json';
+
+  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
+  var srSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
+  var pmSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
+
+  var schemata = [];
+
+  function Schema (name, id, url, refs) {
+      this.name = name;
+      this.id = id;
+      this.url = url;
+      this.refs = refs;
+      schemata.push(this)
+  }
+
+  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL]);
+  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL, [commonSchemaURL, srCommonSchemaURL]);
+  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL]);
+
 
   // var segSchemaID = webAssets + 'seg-schema.json';
-  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
   var anatomicRegionContextSources = [webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
 
@@ -41,10 +62,100 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         templateUrl: 'seg.html',
         controller: 'JSONSemanticsCreatorController'
       })
+      .when('/validators', {
+        templateUrl: 'validators.html',
+        controller: 'JSONValidatorController'
+      })
       .otherwise({
         redirectTo: '/home'
       });
   });
+
+  app.controller('JSONValidatorController', ['$scope', '$mdToast', '$http',
+    function($scope, $mdToast, $http) {
+
+      $scope.schemata = schemata;
+      $scope.schema = null;
+      $scope.output = "";
+
+      var ajv = null;
+      var schemaLoaded = false;
+      var validate = undefined;
+
+      $scope.onSchemaSelected = function () {
+        ajv = new Ajv({
+          useDefaults: true,
+          allErrors: true,
+          loadSchema: loadSchema });
+
+        angular.forEach($scope.schema.refs, function(value, key) {
+          loadSchema(value, function(err, body) {
+            if (body != undefined) {
+              console.log("loading reference: " + value)
+              schema = body.data;
+              ajv.addSchema(schema);
+            }
+          });
+        });
+        loadSchema($scope.schema.url, function(err, body){
+          if (body != undefined) {
+            console.log("loading schema: " + $scope.schema.url)
+            schema = body.data;
+            ajv.addSchema(schema);
+            schemaLoaded = true;
+            console.log("Schema successfully loaded ");
+            validate = ajv.compile({$ref: $scope.schema.id});
+            $scope.onOutputChanged();
+          }
+        });
+      };
+
+      function loadSchema(uri, callback) {
+        $http({
+          method: 'GET',
+          url: uri
+        }).then(function successCallback(body) {
+          callback(null, body);
+        }, function errorCallback(response) {
+          callback(response || new Error('Loading error: ' + response.statusCode));
+        });
+      }
+
+      $scope.onOutputChanged = function() {
+        if ($scope.output.length > 0) {
+          try {
+            var parsedJSON = JSON.parse($scope.output);
+            if (!schemaLoaded) {
+              showToast("Schema for validation was not loaded.");
+              return;
+            }
+            $scope.output = JSON.stringify(parsedJSON, null, 2);
+            if (validate(parsedJSON)) {
+              showToast("Schema is valid.");
+            } else {
+              showToast(ajv.errorsText(validate.errors));
+            }
+          } catch(ex) {
+            showToast(ex.message);
+          }
+        }
+      };
+
+      function showToast(content) {
+        $mdToast.show(
+          $mdToast.simple()
+            .content(content)
+            .action('OK')
+            .position('bottom right')
+            .hideDelay(100000)
+        );
+      }
+
+      function hideToast() {
+        $mdToast.hide();
+      }
+
+  }]);
 
   app.controller('JSONSemanticsCreatorMainController', ['$scope',
     function($scope) {
