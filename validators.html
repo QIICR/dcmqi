@@ -1,6 +1,12 @@
 <div layout="row" layout-padding>
-  <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex resize>
+  <div class="md-whiteframe-7dp md-padding" id="jsonInput" flex resize>
     <div layout="row" flex>
+      <md-input-container flex style="overflow: auto">
+        <textarea aria-label="JSON-input" id="jsonInput" ng-model="input" ng-change="onOutputChanged()"
+                   ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
+          {{input}}
+        </textarea>
+      </md-input-container>
       <md-input-container>
         <label>Validation Schema</label>
         <md-select ng-model="schema" ng-change="onSchemaSelected()">
@@ -10,13 +16,15 @@
         </md-select>
       </md-input-container>
     </div>
+  </div>
+  <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex resize>
     <div layout="row" flex>
       <md-input-container flex style="overflow: auto">
-        <textarea  aria-label="JSON-output" id="output" ng-model="output" ng-change="onOutputChanged()"
-                   ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
+        <textarea aria-label="Feedback-output"  ng-model="output">
           {{output}}
         </textarea>
       </md-input-container>
     </div>
   </div>
+
 </div>

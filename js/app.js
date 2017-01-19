@@ -42,15 +42,18 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
                                                     'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
                                                     'ngFileUpload', 'ngProgress']);
 
+
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     });
+
 
   app.config(function($mdThemingProvider) {
     $mdThemingProvider.theme('default')
       .primaryPalette('green')
       .accentPalette('red');
   });
+
 
   app.config(function($routeProvider) {
     $routeProvider
@@ -71,11 +74,20 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       });
   });
 
+
+  app.controller('JSONSemanticsCreatorMainController', ['$scope',
+    function($scope) {
+      $scope.headlineText = "DCMQI Meta Information Generators";
+      $scope.toolTipDelay = 500;
+  }]);
+
+
   app.controller('JSONValidatorController', ['$scope', '$mdToast', '$http',
     function($scope, $mdToast, $http) {
 
       $scope.schemata = schemata;
       $scope.schema = null;
+      $scope.input = "";
       $scope.output = "";
 
       var ajv = null;
@@ -83,6 +95,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var validate = undefined;
 
       $scope.onSchemaSelected = function () {
+        schemaLoaded = false;
+        validate = undefined;
+        $scope.output = "";
         ajv = new Ajv({
           useDefaults: true,
           allErrors: true,
@@ -91,17 +106,15 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         angular.forEach($scope.schema.refs, function(value, key) {
           loadSchema(value, function(err, body) {
             if (body != undefined) {
-              console.log("loading reference: " + value)
-              schema = body.data;
-              ajv.addSchema(schema);
+              console.log("loading reference: " + value);
+              ajv.addSchema( body.data);
             }
           });
         });
         loadSchema($scope.schema.url, function(err, body){
           if (body != undefined) {
-            console.log("loading schema: " + $scope.schema.url)
-            schema = body.data;
-            ajv.addSchema(schema);
+            console.log("loading schema: " + $scope.schema.url);
+            ajv.addSchema(body.data);
             schemaLoaded = true;
             console.log("Schema successfully loaded ");
             validate = ajv.compile({$ref: $scope.schema.id});
@@ -122,46 +135,31 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       }
 
       $scope.onOutputChanged = function() {
-        if ($scope.output.length > 0) {
+        var message = "";
+        if ($scope.input.length > 0) {
           try {
-            var parsedJSON = JSON.parse($scope.output);
+            var parsedJSON = JSON.parse($scope.input);
             if (!schemaLoaded) {
-              showToast("Schema for validation was not loaded.");
-              return;
-            }
-            $scope.output = JSON.stringify(parsedJSON, null, 2);
-            if (validate(parsedJSON)) {
-              showToast("Schema is valid.");
+              $scope.output = "Schema for validation was not loaded.";
             } else {
-              showToast(ajv.errorsText(validate.errors));
+              $scope.input = JSON.stringify(parsedJSON, null, 2);
+              if (validate(parsedJSON)) {
+                message = "Schema is valid.";
+              } else {
+                message = "";
+                angular.forEach(validate.errors, function (value, key) {
+                  message += ajv.errorsText([value]) + "\n";
+                });
+              }
             }
           } catch(ex) {
-            showToast(ex.message);
+            message = ex.message;
           }
         }
+        $scope.output = message;
       };
-
-      function showToast(content) {
-        $mdToast.show(
-          $mdToast.simple()
-            .content(content)
-            .action('OK')
-            .position('bottom right')
-            .hideDelay(100000)
-        );
-      }
-
-      function hideToast() {
-        $mdToast.hide();
-      }
-
   }]);
 
-  app.controller('JSONSemanticsCreatorMainController', ['$scope',
-    function($scope) {
-      $scope.headlineText = "DCMQI Meta Information Generators";
-      $scope.toolTipDelay = 500;
-  }]);
 
   app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
                                                     'Upload', 'ngProgressFactory',
@@ -508,6 +506,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
               "CodeMeaning":codeSequence.CodeMeaning}
   }
 
+
   app.controller('CodeSequenceBaseController',
     function($self, $scope, $rootScope, $http, $log, $timeout, $q) {
       var self = $self;
@@ -567,6 +566,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       };
     }
   );
+
 
   app.controller('AnatomicRegionController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
@@ -638,6 +638,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       }
     });
   });
+
 
   app.controller('SegmentedPropertyCategoryCodeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
@@ -745,6 +746,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     };
   });
 
+
   app.directive("nonExistentLabel", function() {
     return {
       restrict: "A",
@@ -764,6 +766,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       }
     };
   });
+
 
   app.directive('resize', function ($window) {
     return {
