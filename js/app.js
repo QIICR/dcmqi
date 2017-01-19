@@ -8,31 +8,39 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var commonSchemaURL = webAssets + 'common-schema.json';
   var srCommonSchemaURL = webAssets + 'sr-common-schema.json';
   var segContextCommonSchemaURL = webAssets + 'segment-context-common-schema.json';
+
   var segSchemaURL = webAssets + 'seg-schema.json';
   var srSchemaURL = webAssets + 'sr-tid1500-schema.json';
   var pmSchemaURL = webAssets + 'pm-schema.json';
   var acSchemaURL = webAssets + 'anatomic-context-schema.json';
   var scSchemaURL = webAssets + 'segment-context-schema.json';
 
-  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json';
-  var srSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json';
-  var pmSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json';
-  var acSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/anatomic-context-schema.json';
-  var scSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/segment-context-schema.json';
+  var segSchemaExampleURL = webAssets + 'seg-example.json';
+  var srSchemaExampleURL = webAssets + 'sr-tid1500-example.json';
+  var pmSchemaExampleURL = webAssets + 'pm-example.json';
+
+  var idRoot = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/';
+  var segSchemaID = idRoot + 'seg-schema.json';
+  var srSchemaID = idRoot + 'sr-tid1500-schema.json';
+  var pmSchemaID = idRoot + 'pm-schema.json';
+  var acSchemaID = idRoot + 'anatomic-context-schema.json';
+  var scSchemaID = idRoot + 'segment-context-schema.json';
 
   var schemata = [];
 
-  function Schema (name, id, url, refs) {
+  function Schema (name, id, url, refs, example) {
       this.name = name;
       this.id = id;
       this.url = url;
       this.refs = refs;
+      this.example = example;
       schemata.push(this)
   }
 
-  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL]);
-  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL, [commonSchemaURL, srCommonSchemaURL]);
-  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL]);
+  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segSchemaExampleURL);
+  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL,
+    [commonSchemaURL, srCommonSchemaURL], srSchemaExampleURL);
+  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL], pmSchemaExampleURL);
   var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
   var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
@@ -95,6 +103,10 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $scope.schema = null;
       $scope.input = "";
       $scope.output = "";
+      $scope.showExample = false;
+      $scope.showSchema = false;
+      $scope.exampleJson = "";
+      $scope.schemaJson = "";
 
       var ajv = null;
       var schemaLoaded = false;
@@ -125,6 +137,18 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             console.log("Schema successfully loaded ");
             validate = ajv.compile({$ref: $scope.schema.id});
             $scope.onOutputChanged();
+            if($scope.schema.example == undefined) {
+              $scope.showExample = false;
+            } else {
+              loadSchema($scope.schema.example, function(err, body) {
+                if (body != undefined) {
+                  $scope.exampleJson = JSON.stringify(body.data, null, 2);
+                } else {
+                  $scope.exampleJson = "";
+                }
+              });
+            }
+            $scope.schemaJson = JSON.stringify(body.data, null, 2);
           }
         });
       };
@@ -141,7 +165,6 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       }
 
       $scope.onOutputChanged = function(e) {
-        console.log(e)
         var message = "";
         if ($scope.input.length > 0) {
           try {
