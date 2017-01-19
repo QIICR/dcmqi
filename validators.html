@@ -1,5 +1,5 @@
 <div layout="row" layout-padding>
-  <div class="md-whiteframe-7dp md-padding" id="validationInput" flex resize>
+  <div class="md-whiteframe-7dp md-padding" id="validationInput" flex >
     <div layout="row" flex>
       <div ui-ace="{
         showGutter: true,
@@ -8,7 +8,7 @@
       }" ng-model="input" flex resize></div>
     </div>
   </div>
-  <div class="md-whiteframe-7dp md-padding" id="exampleJson" flex resize ng-show="showExample==true">
+  <div class="md-whiteframe-7dp md-padding" id="exampleJson" flex ng-show="showExample==true">
     <div layout="row" flex>
       <div ui-ace="{
         showGutter: true,
@@ -17,7 +17,7 @@
       }" ng-model="exampleJson" readonly flex resize></div>
     </div>
   </div>
-  <div class="md-whiteframe-7dp md-padding" id="schemaJson" flex resize ng-show="showSchema==true">
+  <div class="md-whiteframe-7dp md-padding" id="schemaJson" flex ng-show="showSchema==true">
     <div layout="row" flex>
       <div ui-ace="{
         showGutter: true,
@@ -53,7 +53,7 @@
     </div>
     <div layout="row" flex>
       <md-input-container flex style="overflow: auto">
-        <textarea aria-label="Feedback-output"  ng-model="output">
+        <textarea aria-label="Feedback-output" ng-model="output">
           {{output}}
         </textarea>
       </md-input-container>

@@ -103,7 +103,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $scope.schema = null;
       $scope.input = "";
       $scope.output = "";
-      $scope.showExample = false;
+      $scope.showExample = true;
       $scope.showSchema = false;
       $scope.exampleJson = "";
       $scope.schemaJson = "";
