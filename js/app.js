@@ -7,13 +7,18 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var commonSchemaURL = webAssets + 'common-schema.json';
   var srCommonSchemaURL = webAssets + 'sr-common-schema.json';
+  var segContextCommonSchemaURL = webAssets + 'segment-context-common-schema.json';
   var segSchemaURL = webAssets + 'seg-schema.json';
   var srSchemaURL = webAssets + 'sr-tid1500-schema.json';
   var pmSchemaURL = webAssets + 'pm-schema.json';
+  var acSchemaURL = webAssets + 'anatomic-context-schema.json';
+  var scSchemaURL = webAssets + 'segment-context-schema.json';
 
-  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
-  var srSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
-  var pmSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
+  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json';
+  var srSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-tid1500-schema.json';
+  var pmSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-schema.json';
+  var acSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/anatomic-context-schema.json';
+  var scSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/segment-context-schema.json';
 
   var schemata = [];
 
@@ -28,7 +33,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL]);
   var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL, [commonSchemaURL, srCommonSchemaURL]);
   var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL]);
-
+  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL])
+  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL])
 
   // var segSchemaID = webAssets + 'seg-schema.json';
 
