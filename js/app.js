@@ -33,8 +33,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL]);
   var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL, [commonSchemaURL, srCommonSchemaURL]);
   var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL]);
-  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL])
-  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL])
+  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
+  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
   // var segSchemaID = webAssets + 'seg-schema.json';
 
@@ -46,7 +46,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
                                                     'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
-                                                    'ngFileUpload', 'ngProgress']);
+                                                    'ngFileUpload', 'ngProgress', 'ui.ace']);
 
 
   app.config(function ($httpProvider) {
@@ -140,7 +140,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         });
       }
 
-      $scope.onOutputChanged = function() {
+      $scope.onOutputChanged = function(e) {
+        console.log(e)
         var message = "";
         if ($scope.input.length > 0) {
           try {
