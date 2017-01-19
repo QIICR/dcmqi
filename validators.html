@@ -1,30 +1,27 @@
 <div layout="row" layout-padding>
-  <div class="md-whiteframe-7dp md-padding" id="validationInput" flex >
-    <div layout="row" flex>
+  <div class="md-whiteframe-7dp md-padding" flex >
+    <label>Validation input</label>
       <div ui-ace="{
         showGutter: true,
         mode: 'json',
         onChange: onOutputChanged
-      }" ng-model="input" flex resize></div>
-    </div>
+      }" ng-model="input" flex resize id="validationInput" ></div>
   </div>
-  <div class="md-whiteframe-7dp md-padding" id="exampleJson" flex ng-show="showExample==true">
-    <div layout="row" flex>
-      <div ui-ace="{
-        showGutter: true,
-        mode: 'json',
-        onChange: onOutputChanged
-      }" ng-model="exampleJson" readonly flex resize></div>
-    </div>
+  <div class="md-whiteframe-7dp md-padding" flex ng-show="showExample==true">
+    <label>{{schema.name}} Example</label>
+    <div ui-ace="{
+      showGutter: true,
+      mode: 'json',
+      onChange: onOutputChanged
+    }" ng-model="exampleJson" readonly flex resize id="exampleJson" ></div>
   </div>
-  <div class="md-whiteframe-7dp md-padding" id="schemaJson" flex ng-show="showSchema==true">
-    <div layout="row" flex>
+  <div class="md-whiteframe-7dp md-padding" flex ng-show="showSchema==true">
+    <label>{{schema.name}} Schema</label>
       <div ui-ace="{
         showGutter: true,
         mode: 'json',
         onChange: onOutputChanged
-      }" ng-model="schemaJson" readonly flex resize></div>
-    </div>
+      }" ng-model="schemaJson" readonly flex resize id="schemaJson" ></div>
   </div>
   <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex>
     <div layout="row" flex>

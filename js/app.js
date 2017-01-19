@@ -100,7 +100,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     function($scope, $mdToast, $http) {
 
       $scope.schemata = schemata;
-      $scope.schema = null;
+      $scope.schema = segSchema;
       $scope.input = "";
       $scope.output = "";
       $scope.showExample = true;
@@ -174,7 +174,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             } else {
               $scope.input = JSON.stringify(parsedJSON, null, 2);
               if (validate(parsedJSON)) {
-                message = "Schema is valid.";
+                message = "Json input is valid.";
               } else {
                 message = "";
                 angular.forEach(validate.errors, function (value, key) {
@@ -188,6 +188,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         }
         $scope.output = message;
       };
+
+
+      $scope.onSchemaSelected();
   }]);
 
 
@@ -806,6 +809,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           var toolbar = document.getElementById('toolbar');
           element.windowHeight = $window.innerHeight - toolbar.clientHeight;
           var newHeight = element.windowHeight-$(toolbar).height()/2;
+          var childrenHeight = 0;
+          angular.forEach($(element).parent().children(), function (child, key) {
+            if (child.id != $(element)[0].id)
+              childrenHeight += $(child).height();
+          });
+          newHeight -= childrenHeight;
           $(element).height(newHeight);
         };
 
