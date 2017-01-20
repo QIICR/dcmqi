@@ -6,8 +6,8 @@ file(GLOB_RECURSE json_files
   *.json
   )
 
-file(GLOB json_example_files
-  *example.json
+file(GLOB_RECURSE json_example_files
+  *example*.json
   )
 
 file(GLOB json_seg_context_files
@@ -19,11 +19,11 @@ file(GLOB json_anatomic_context_files
   )
 
 file(GLOB json_common_schema_files
-  *common-schema.json
+  schemas/*common-schema.json
   )
 
 file(GLOB json_schema_files
-  *schema.json
+  schemas/*schema.json
   )
 list(REMOVE_ITEM json_schema_files ${json_common_schema_files})
 
@@ -83,7 +83,7 @@ endforeach()
 
 # function to simplify creation of example validation tests
 function(createExampleDataTest example_name schema)
-  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/${example_name}-example.json)
+  set(json_example_file ${CMAKE_SOURCE_DIR}/doc/examples/${example_name}-example.json)
   set(testname ajv_${example_name}-example)
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
@@ -96,9 +96,9 @@ function(createExampleDataTest example_name schema)
 endfunction()
 
 # validate segmentation context files
-set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-schema.json)
-set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/anatomic-context-schema.json)
-set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/segment-context-common-schema.json)
+set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/segment-context-schema.json)
+set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/anatomic-context-schema.json)
+set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/segment-context-common-schema.json)
 
 function(createSegmentationContextTest seg_context_name)
   set(json_seg_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/SegmentationCategoryTypeModifier-${seg_context_name}.json)
@@ -128,21 +128,21 @@ endfunction()
 
 # validation of each specific (sr, seg, pm) example file including specific schema and referenced common schemata
 set(SEG_EXAMPLES seg bmmr)
-set(SEG_SCHEMA ${CMAKE_SOURCE_DIR}/doc/seg-schema.json)
+set(SEG_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/seg-schema.json)
 
 foreach(seg_example_name ${SEG_EXAMPLES})
   createExampleDataTest(${seg_example_name} ${SEG_SCHEMA})
 endforeach()
 
 set(PM_EXAMPLES pm)
-set(PM_SCHEMA ${CMAKE_SOURCE_DIR}/doc/pm-schema.json)
+set(PM_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/pm-schema.json)
 
 foreach(pm_example_name ${PM_EXAMPLES})
   createExampleDataTest(${pm_example_name} ${PM_SCHEMA})
 endforeach()
 
 set(SRTID1500_EXAMPLES sr-tid1500 sr-tid1500-ct-liver)
-set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-schema.json)
+set(SRTID1500_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/sr-tid1500-schema.json)
 
 foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
   createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})

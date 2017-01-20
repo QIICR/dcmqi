@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/sr-common-schema.json#",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/sr-common-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "TEXT": {
@@ -13,7 +13,7 @@
       "type": "string"
     },
     "CODE": {
-      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitons/codeSequence"
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitons/codeSequence"
     },
     "NUM": {
       "type": "number"

@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json#",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/seg-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "additionalProperties": false,
   "properties": {
@@ -8,7 +8,7 @@
     "ContentCreatorName": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/PN"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/PN"
         }
       ],
       "default": "Reader1"
@@ -16,7 +16,7 @@
     "ClinicalTrialSeriesID": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
       "default": "Session1"
@@ -24,7 +24,7 @@
     "ContentLabel": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CS"
         }
       ],
       "default": "SEGMENTATION"
@@ -32,7 +32,7 @@
     "ContentDescription": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
       "default": "Image segmentation"
@@ -40,7 +40,7 @@
     "ClinicalTrialCoordinatingCenterName": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
       "default": "dcmqi"
@@ -48,7 +48,7 @@
     "ClinicalTrialTimePointID": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
       "default": "1"
@@ -56,7 +56,7 @@
     "SeriesDescription": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
       "default": "Segmentation"
@@ -64,7 +64,7 @@
     "SeriesNumber": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/IS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/IS"
         }
       ],
       "default": "300"
@@ -72,7 +72,7 @@
     "InstanceNumber": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/IS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/IS"
         }
       ],
       "default": "1"
@@ -80,7 +80,7 @@
     "BodyPartExamined": {
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CS"
         }
       ],
       "default": ""
@@ -109,7 +109,7 @@
             "SegmentedPropertyCategoryCodeSequence": {
               "allOf": [
                 {
-                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
                 }
               ],
               "default": {
@@ -121,7 +121,7 @@
             "SegmentedPropertyTypeCodeSequence": {
               "allOf": [
                 {
-                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
                 }
               ],
               "default": {
@@ -131,18 +131,18 @@
               }
             },
             "SegmentedPropertyTypeModifierCodeSequence": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
             },
             "AnatomicRegionSequence": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
             },
             "AnatomicRegionModifierSequence": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/codeSequence"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
             },
             "SegmentAlgorithmType": {
               "allOf": [
                 {
-                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CS"
+                  "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CS"
                 },
                 {
                   "enum": [
@@ -155,13 +155,13 @@
               "default": "SEMIAUTOMATIC"
             },
             "SegmentAlgorithmName": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/LO"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
             },
             "recommendedDisplayRGBValue": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/RGB"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/RGB"
             },
             "RecommendedDisplayCIELabValue": {
-              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#/definitions/CIELab"
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CIELab"
             }
           }
         }

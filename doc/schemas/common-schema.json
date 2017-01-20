@@ -1,6 +1,6 @@
 {
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
-  "id" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/common-schema.json#",
+  "id" : "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
 
   "definitions" : {
