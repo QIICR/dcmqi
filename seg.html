@@ -143,15 +143,15 @@
       </div>
       <div layout="column" ng-show="selectedSegmentationCategoryContext != undefined">
         <md-tabs md-selected="selectedIndex" md-autoselect md-dynamic-height>
-          <md-tab ng-repeat="segment in segments" label="{{segment.LabelID}}">
+          <md-tab ng-repeat="segment in segments" label="{{segment.labelID}}">
             <md-tab-template layout="column">
             <div layout="row">
               <div>
                 <md-input-container>
-                  <label>LabelID</label>
-                  <input required type="number" name="LabelID" ng-model="segment.LabelID" min="1" ng-pattern="/[0-9]$/"
+                  <label>labelID</label>
+                  <input required type="number" name="labelID" ng-model="segment.labelID" min="1" ng-pattern="/[0-9]$/"
                          non-Existent-Label>
-                  <div ng-messages="jsonForm.LabelID.$error" role="alert">
+                  <div ng-messages="jsonForm.labelID.$error" role="alert">
                   <div ng-message="required" class="my-message">You must supply a label id.</div>
                   <div ng-message="nonExistentLabel" class="my-message">Already exists.</div>
                   </div>
@@ -166,7 +166,7 @@
               <div>
                 <md-input-container>
                   <label>SegmentAlgorithmType</label>
-                  <md-select required name="SegmentAlgorithmType_{{segment.LabelID}}"
+                  <md-select required name="SegmentAlgorithmType_{{segment.labelID}}"
                              ng-model="segment.SegmentAlgorithmType">
                     <md-option ng-repeat="segmentAlgorithmType in segmentAlgorithmTypes" ng-value="segmentAlgorithmType">
                       {{segmentAlgorithmType}}
@@ -178,7 +178,7 @@
                 <md-input-container>
                   <label>SegmentAlgorithmName</label>
                   <input ng-required="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"
-                         name="SegmentAlgorithmName_{{segment.LabelID}}" ng-model="segment.SegmentAlgorithmName">
+                         name="SegmentAlgorithmName_{{segment.labelID}}" ng-model="segment.SegmentAlgorithmName">
                 </md-input-container>
               </div>
             </div>
