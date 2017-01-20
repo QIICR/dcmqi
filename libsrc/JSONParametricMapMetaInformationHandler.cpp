@@ -9,7 +9,7 @@ namespace dcmqi {
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL),
-        anatomicRegionCode(NULL) {
+        anatomicRegionSequence(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string jsonInput)
@@ -17,7 +17,7 @@ namespace dcmqi {
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL),
-        anatomicRegionCode(NULL) {
+        anatomicRegionSequence(NULL) {
   }
 
   JSONParametricMapMetaInformationHandler::~JSONParametricMapMetaInformationHandler() {
@@ -27,8 +27,8 @@ namespace dcmqi {
       delete this->measurementMethodCode;
     if (this->quantityValueCode)
       delete this->quantityValueCode;
-    if (this->anatomicRegionCode)
-      delete this->anatomicRegionCode;
+    if (this->anatomicRegionSequence)
+      delete this->anatomicRegionSequence;
   }
 
   void JSONParametricMapMetaInformationHandler::setFrameLaterality(const string& value) {
@@ -74,13 +74,13 @@ namespace dcmqi {
     this->quantityValueCode = new CodeSequenceMacro(codeSequence);
   }
 
-  void JSONParametricMapMetaInformationHandler::setAnatomicRegion(const string& code, const string& designator,
-                                                                  const string& meaning) {
-    this->anatomicRegionCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+  void JSONParametricMapMetaInformationHandler::setAnatomicRegionSequence(const string &code, const string &designator,
+                                                                          const string &meaning) {
+    this->anatomicRegionSequence = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
-  void JSONParametricMapMetaInformationHandler::setAnatomicRegion(const CodeSequenceMacro& codeSequence) {
-    this->anatomicRegionCode = new CodeSequenceMacro(codeSequence);
+  void JSONParametricMapMetaInformationHandler::setAnatomicRegionSequence(const CodeSequenceMacro &codeSequence) {
+    this->anatomicRegionSequence = new CodeSequenceMacro(codeSequence);
   }
 
   void JSONParametricMapMetaInformationHandler::setLastValueMapped(const short &value) {
@@ -125,11 +125,11 @@ namespace dcmqi {
                                        elem.get("CodeMeaning", "").asString());
       }
 
-      elem = this->metaInfoRoot["AnatomicRegionCode"];
+      elem = this->metaInfoRoot["AnatomicRegionSequence"];
       if (!elem.isNull()) {
-        this->setAnatomicRegion(elem.get("CodeValue", "").asString(),
-                                elem.get("CodingSchemeDesignator", "").asString(),
-                                elem.get("CodeMeaning", "").asString());
+          this->setAnatomicRegionSequence(elem.get("CodeValue", "").asString(),
+                                          elem.get("CodingSchemeDesignator", "").asString(),
+                                          elem.get("CodeMeaning", "").asString());
       }
 
     } catch (exception& e) {
@@ -164,8 +164,8 @@ namespace dcmqi {
       data["MeasurementMethodCode"] = codeSequence2Json(this->measurementMethodCode);
     if (this->quantityValueCode)
       data["QuantityValueCode"] = codeSequence2Json(this->quantityValueCode);
-    if (this->anatomicRegionCode)
-      data["AnatomicRegionCode"] = codeSequence2Json(this->anatomicRegionCode);
+    if (this->anatomicRegionSequence)
+      data["AnatomicRegionSequence"] = codeSequence2Json(this->anatomicRegionSequence);
 
     Json::StyledWriter styledWriter;
 

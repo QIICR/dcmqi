@@ -99,11 +99,11 @@ namespace dcmqi {
 
     FGFrameAnatomy frameAnaFG;
     frameAnaFG.setLaterality(FGFrameAnatomy::str2Laterality(metaInfo.getFrameLaterality().c_str()));
-    if(metaInfo.metaInfoRoot.isMember("AnatomicRegionCode")){
+    if(metaInfo.metaInfoRoot.isMember("AnatomicRegionSequence")){
       frameAnaFG.getAnatomy().getAnatomicRegion().set(
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeValue"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodingSchemeDesignator"].asCString(),
-          metaInfo.metaInfoRoot["AnatomicRegionCode"]["CodeMeaning"].asCString());
+          metaInfo.metaInfoRoot["AnatomicRegionSequence"]["CodeValue"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionSequence"]["CodingSchemeDesignator"].asCString(),
+          metaInfo.metaInfoRoot["AnatomicRegionSequence"]["CodeMeaning"].asCString());
     } else {
       frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
     }
@@ -498,7 +498,7 @@ namespace dcmqi {
         }
       }
       FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
-      metaInfo.setAnatomicRegion(fa->getAnatomy().getAnatomicRegion());
+        metaInfo.setAnatomicRegionSequence(fa->getAnatomy().getAnatomicRegion());
       FGFrameAnatomy::LATERALITY frameLaterality;
       fa->getLaterality(frameLaterality);
       metaInfo.setFrameLaterality(fa->laterality2Str(frameLaterality).c_str());
