@@ -1,3 +1,7 @@
+[![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
+[![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
+[![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
+
 # Introduction
 
 dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of quantitative image analysis research data using [DICOM standard](http://dicom.nema.org/standard.html).
@@ -35,6 +39,8 @@ Our goal is to support and encourage adoption of the DICOM standard in both acad
 
 You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
+* post a question to [dcmqi google
+  group](https://groups.google.com/forum/#!forum/dcmqi)
 * send email to [Andrey Fedorov](http://fedorov.github.io)
 * leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/)
 
