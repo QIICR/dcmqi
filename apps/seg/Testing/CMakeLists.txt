@@ -23,7 +23,7 @@ dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --segImageFiles ${BASELINE}/liver_seg.nrrd
     --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
     --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm
@@ -33,7 +33,7 @@ dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/seg-example_multiple_segments.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
     --segImageFiles ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd,${BASELINE}/heart_seg.nrrd
     --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
     --segDICOMFile ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
@@ -104,7 +104,7 @@ dcmqi_add_test(
   NAME seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/seg-example.json
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     ${MODULE_TEMP_DIR}/makeNRRD-meta.json
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD
@@ -114,7 +114,7 @@ dcmqi_add_test(
   NAME multi_seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/seg-example_multiple_segments.json
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
     ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-meta.json
         "['LabelID']"
   TEST_DEPENDS

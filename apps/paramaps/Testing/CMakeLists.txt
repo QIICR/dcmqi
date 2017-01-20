@@ -24,7 +24,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_makeParametricMap
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/pm-example.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
     --inputFileName ${BASELINE}/pm-example.nrrd
     --outputParaMapFileName ${TEMP_DIR}/paramap.dcm
     --dicomImageFileName ${BASELINE}/pm-example-slice.dcm
@@ -34,7 +34,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_makeParametricMapFP
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/pm-example-float.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
     --inputFileName ${BASELINE}/pm-example-float.nrrd
     --outputParaMapFileName ${TEMP_DIR}/paramap-float.dcm
     --dicomImageFileName ${BASELINE}/pm-example-slice.dcm
