@@ -100,7 +100,7 @@ namespace dcmqi {
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt=vIt->begin();mIt!=vIt->end();++mIt){
         Json::Value segment;
         SegmentAttributes* segmentAttributes = mIt->second;
-        segment["LabelID"] = segmentAttributes->getLabelID();
+        segment["labelID"] = segmentAttributes->getLabelID();
         segment["SegmentDescription"] = segmentAttributes->getSegmentDescription();
         segment["SegmentAlgorithmType"] = segmentAttributes->getSegmentAlgorithmType();
         if (segmentAttributes->getSegmentAlgorithmName().length() > 0)
@@ -163,7 +163,7 @@ namespace dcmqi {
       map<unsigned, SegmentAttributes*> labelID2SegmentAttributes;
       for (Json::ValueIterator itr = imageSegmentsAttributes.begin(); itr != imageSegmentsAttributes.end(); itr++) {
         Json::Value segment = (*itr);
-        SegmentAttributes *segmentAttribute = new SegmentAttributes(segment.get("LabelID", "1").asUInt());
+        SegmentAttributes *segmentAttribute = new SegmentAttributes(segment.get("labelID", "1").asUInt());
         labelID2SegmentAttributes[segmentAttribute->getLabelID()] = segmentAttribute;
 
         Json::Value segmentDescription = segment["SegmentDescription"];

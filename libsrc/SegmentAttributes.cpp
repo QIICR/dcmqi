@@ -109,7 +109,7 @@ namespace dcmqi {
   }
 
   void SegmentAttributes::PrintSelf() {
-    cout << "LabelID: " << this->labelID << endl;
+    cout << "labelID: " << this->labelID << endl;
 //    for (map<string, string>::const_iterator mIt = attributesDictionary.begin();
 //       mIt != attributesDictionary.end(); ++mIt) {
 //      cout << (*mIt).first << " : " << (*mIt).second << endl;

@@ -12,7 +12,7 @@
   "segmentAttributes": [
     [
       {
-        "LabelID": 1,
+        "labelID": 1,
         "SegmentAlgorithmType": "SEMIAUTOMATIC",
         "SegmentAlgorithmName": "Pre-contrast manual VOI",
         "SegmentDescription": "Breast segmentation",
