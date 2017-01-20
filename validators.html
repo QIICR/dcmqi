@@ -48,13 +48,11 @@
         </md-switch>
       </div>
     </div>
-    <div layout="row" flex>
-      <md-input-container flex style="overflow: auto">
-        <textarea aria-label="Feedback-output" ng-model="output">
-          {{output}}
-        </textarea>
-      </md-input-container>
-    </div>
+    <div ui-ace="{
+      useWrapMode: true,
+      showGutter: false,
+      mode: 'json',
+      }" ng-model="output" readonly flex resize id="output" ></div>
   </div>
 
 </div>
