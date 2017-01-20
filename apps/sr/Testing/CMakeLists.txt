@@ -18,7 +18,7 @@ dcmqi_add_test(
   NAME ${WRITER_MODULE_NAME}_example
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-example.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-example.json
     --outputFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
     --imageLibraryDataDir ${CMAKE_SOURCE_DIR}/data/ct-3slice
     --compositeContextDataDir ${CMAKE_SOURCE_DIR}/data/sr-example
@@ -28,7 +28,7 @@ dcmqi_add_test(
   NAME ${WRITER_MODULE_NAME}_ct-liver
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-ct-liver-example.json
+    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-ct-liver-example.json
     --outputFileName ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
     --imageLibraryDataDir ${CMAKE_SOURCE_DIR}/data/ct-3slice
     --compositeContextDataDir ${CMAKE_SOURCE_DIR}/data/ct-3slice
@@ -72,7 +72,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_meta_roundtrip
   MODULE_NAME ${READER_MODULE_NAME}
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/sr-tid1500-ct-liver-example.json
+    ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-ct-liver-example.json
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.json
       "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext']"
   TEST_DEPENDS
