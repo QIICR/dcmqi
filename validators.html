@@ -1,0 +1,58 @@
+<div layout="row" layout-padding>
+  <div class="md-whiteframe-7dp md-padding" flex >
+    <label>Validation input</label>
+      <div ui-ace="{
+        showGutter: true,
+        mode: 'json',
+        onChange: onOutputChanged
+      }" ng-model="input" flex resize id="validationInput" ></div>
+  </div>
+  <div class="md-whiteframe-7dp md-padding" flex ng-show="showExample==true">
+    <label>{{schema.name}} Example</label>
+    <div ui-ace="{
+      showGutter: true,
+      mode: 'json',
+      onChange: onOutputChanged
+    }" ng-model="exampleJson" readonly flex resize id="exampleJson" ></div>
+  </div>
+  <div class="md-whiteframe-7dp md-padding" flex ng-show="showSchema==true">
+    <label>{{schema.name}} Schema</label>
+      <div ui-ace="{
+        showGutter: true,
+        mode: 'json',
+        onChange: onOutputChanged
+      }" ng-model="schemaJson" readonly flex resize id="schemaJson" ></div>
+  </div>
+  <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex>
+    <div layout="row" flex>
+      <div layout="column" flex>
+        <md-input-container>
+          <label>Validation Schema</label>
+          <md-select ng-model="schema" ng-change="onSchemaSelected()">
+            <md-option ng-repeat="schema in schemata" ng-value="schema">
+              {{schema.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+      <div layout="column" flex>
+        <md-switch ng-model="showExample" aria-label="showExampleSwitch"
+                   ng-disabled="schema == undefined || schema.example == undefined">
+          Example
+        </md-switch>
+      </div>
+      <div layout="column" flex>
+        <md-switch ng-model="showSchema" aria-label="showSchemaSwitch"
+                   ng-disabled="schema == undefined">
+          Schema
+        </md-switch>
+      </div>
+    </div>
+    <div ui-ace="{
+      useWrapMode: true,
+      showGutter: false,
+      mode: 'json',
+      }" ng-model="output" readonly flex resize id="output" ></div>
+  </div>
+
+</div>

@@ -6,10 +6,45 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   // var webAssets = 'assets/doc/';
 
   var commonSchemaURL = webAssets + 'common-schema.json';
+  var srCommonSchemaURL = webAssets + 'sr-common-schema.json';
+  var segContextCommonSchemaURL = webAssets + 'segment-context-common-schema.json';
+
   var segSchemaURL = webAssets + 'seg-schema.json';
+  var srSchemaURL = webAssets + 'sr-tid1500-schema.json';
+  var pmSchemaURL = webAssets + 'pm-schema.json';
+  var acSchemaURL = webAssets + 'anatomic-context-schema.json';
+  var scSchemaURL = webAssets + 'segment-context-schema.json';
+
+  var segSchemaExampleURL = webAssets + 'seg-example.json';
+  var srSchemaExampleURL = webAssets + 'sr-tid1500-example.json';
+  var pmSchemaExampleURL = webAssets + 'pm-example.json';
+
+  var idRoot = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/';
+  var segSchemaID = idRoot + 'seg-schema.json';
+  var srSchemaID = idRoot + 'sr-tid1500-schema.json';
+  var pmSchemaID = idRoot + 'pm-schema.json';
+  var acSchemaID = idRoot + 'anatomic-context-schema.json';
+  var scSchemaID = idRoot + 'segment-context-schema.json';
+
+  var schemata = [];
+
+  function Schema (name, id, url, refs, example) {
+      this.name = name;
+      this.id = id;
+      this.url = url;
+      this.refs = refs;
+      this.example = example;
+      schemata.push(this)
+  }
+
+  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segSchemaExampleURL);
+  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL,
+    [commonSchemaURL, srCommonSchemaURL], srSchemaExampleURL);
+  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL], pmSchemaExampleURL);
+  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
+  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
   // var segSchemaID = webAssets + 'seg-schema.json';
-  var segSchemaID = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/seg-schema.json'; // VERY IMPORTANT! OTHERWISE resolving fails
 
   var anatomicRegionContextSources = [webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
 
@@ -19,17 +54,20 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
                                                     'ngAnimate', 'xml', 'ngclipboard', 'mdColorPicker', 'download',
-                                                    'ngFileUpload', 'ngProgress']);
+                                                    'ngFileUpload', 'ngProgress', 'ui.ace']);
+
 
   app.config(function ($httpProvider) {
       $httpProvider.interceptors.push('xmlHttpInterceptor');
     });
+
 
   app.config(function($mdThemingProvider) {
     $mdThemingProvider.theme('default')
       .primaryPalette('green')
       .accentPalette('red');
   });
+
 
   app.config(function($routeProvider) {
     $routeProvider
@@ -41,16 +79,120 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         templateUrl: 'seg.html',
         controller: 'JSONSemanticsCreatorController'
       })
+      .when('/validators', {
+        templateUrl: 'validators.html',
+        controller: 'JSONValidatorController'
+      })
       .otherwise({
         redirectTo: '/home'
       });
   });
+
 
   app.controller('JSONSemanticsCreatorMainController', ['$scope',
     function($scope) {
       $scope.headlineText = "DCMQI Meta Information Generators";
       $scope.toolTipDelay = 500;
   }]);
+
+
+  app.controller('JSONValidatorController', ['$scope', '$mdToast', '$http',
+    function($scope, $mdToast, $http) {
+
+      $scope.schemata = schemata;
+      $scope.schema = segSchema;
+      $scope.input = "";
+      $scope.output = "";
+      $scope.showExample = true;
+      $scope.showSchema = false;
+      $scope.exampleJson = "";
+      $scope.schemaJson = "";
+
+      var ajv = null;
+      var schemaLoaded = false;
+      var validate = undefined;
+
+      $scope.onSchemaSelected = function () {
+        schemaLoaded = false;
+        validate = undefined;
+        $scope.output = "";
+        ajv = new Ajv({
+          useDefaults: true,
+          allErrors: true,
+          loadSchema: loadSchema });
+
+        angular.forEach($scope.schema.refs, function(value, key) {
+          loadSchema(value, function(err, body) {
+            if (body != undefined) {
+              console.log("loading reference: " + value);
+              ajv.addSchema( body.data);
+            }
+          });
+        });
+        loadSchema($scope.schema.url, function(err, body){
+          if (body != undefined) {
+            console.log("loading schema: " + $scope.schema.url);
+            ajv.addSchema(body.data);
+            schemaLoaded = true;
+            console.log("Schema successfully loaded ");
+            validate = ajv.compile({$ref: $scope.schema.id});
+            $scope.onOutputChanged();
+            if($scope.schema.example == undefined) {
+              $scope.showExample = false;
+            } else {
+              loadSchema($scope.schema.example, function(err, body) {
+                if (body != undefined) {
+                  $scope.exampleJson = JSON.stringify(body.data, null, 2);
+                } else {
+                  $scope.exampleJson = "";
+                }
+              });
+            }
+            $scope.schemaJson = JSON.stringify(body.data, null, 2);
+          }
+        });
+      };
+
+      function loadSchema(uri, callback) {
+        $http({
+          method: 'GET',
+          url: uri
+        }).then(function successCallback(body) {
+          callback(null, body);
+        }, function errorCallback(response) {
+          callback(response || new Error('Loading error: ' + response.statusCode));
+        });
+      }
+
+      $scope.onOutputChanged = function(e) {
+        var message = "";
+        if ($scope.input.length > 0) {
+          try {
+            var parsedJSON = JSON.parse($scope.input);
+            if (!schemaLoaded) {
+              $scope.output = "Schema for validation was not loaded.";
+            } else {
+              $scope.input = JSON.stringify(parsedJSON, null, 2);
+              if (validate(parsedJSON)) {
+                message = "Json input is valid.";
+              } else {
+                message = "";
+                angular.forEach(validate.errors, function (value, key) {
+                  message += ajv.errorsText([value]) + "\n";
+                });
+              }
+            }
+          } catch(ex) {
+            message = ex.message;
+          }
+        }
+        $scope.output = message;
+      };
+
+
+      $scope.onSchemaSelected();
+  }]);
+
 
   app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
                                                     'Upload', 'ngProgressFactory',
@@ -397,6 +539,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
               "CodeMeaning":codeSequence.CodeMeaning}
   }
 
+
   app.controller('CodeSequenceBaseController',
     function($self, $scope, $rootScope, $http, $log, $timeout, $q) {
       var self = $self;
@@ -456,6 +599,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       };
     }
   );
+
 
   app.controller('AnatomicRegionController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
@@ -527,6 +671,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       }
     });
   });
+
 
   app.controller('SegmentedPropertyCategoryCodeController', function($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
@@ -634,6 +779,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     };
   });
 
+
   app.directive("nonExistentLabel", function() {
     return {
       restrict: "A",
@@ -654,6 +800,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     };
   });
 
+
   app.directive('resize', function ($window) {
     return {
       link: function postLink(scope, elem, attrs) {
@@ -662,6 +809,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           var toolbar = document.getElementById('toolbar');
           element.windowHeight = $window.innerHeight - toolbar.clientHeight;
           var newHeight = element.windowHeight-$(toolbar).height()/2;
+          var childrenHeight = 0;
+          angular.forEach($(element).parent().children(), function (child, key) {
+            if (child.id != $(element)[0].id)
+              childrenHeight += $(child).height();
+          });
+          newHeight -= childrenHeight;
           $(element).height(newHeight);
         };
 
