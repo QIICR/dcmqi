@@ -84,7 +84,7 @@ RUN git clone https://github.com/martine/ninja.git && \
 RUN git clone https://github.com/QIICR/dcmqi.git && \
   mkdir dcmqi-superbuild && \
   cd dcmqi-superbuild && \
-  cmake ../dcmqi && \
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ../dcmqi && \
   make -j$(grep -c processor /proc/cpuinfo)
 
 WORKDIR /usr/src
