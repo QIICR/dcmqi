@@ -4,7 +4,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "required": [
     "DerivedPixelContrast",
-    "AnatomicRegionCode",
+    "AnatomicRegionSequence",
     "FrameLaterality"
   ],
   "additionalProperties": false,
@@ -112,7 +112,7 @@
         "WATER_FRACTION"
       ]
     },
-    "AnatomicRegionCode": {
+    "AnatomicRegionSequence": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
     },
     "FrameLaterality": {

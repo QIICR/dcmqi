@@ -207,8 +207,8 @@ namespace dcmqi {
           }
         }
 
-        CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyType();
-        CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCode();
+        CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyTypeCodeSequence();
+        CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCodeSequence();
         assert(typeCode != NULL && categoryCode!= NULL);
         OFString segmentLabel;
         CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
@@ -217,21 +217,21 @@ namespace dcmqi {
         if(segmentAttributes->getSegmentDescription().length() > 0)
           segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
 
-        CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifier();
+        CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifierCodeSequence();
         if (typeModifierCode != NULL) {
           OFVector<CodeSequenceMacro*>& modifiersVector = segment->getSegmentedPropertyTypeModifierCode();
           modifiersVector.push_back(typeModifierCode);
         }
 
         GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-        if (segmentAttributes->getAnatomicRegion() != NULL){
+        if (segmentAttributes->getAnatomicRegionSequence() != NULL){
           OFVector<CodeSequenceMacro*>& anatomyMacroModifiersVector = anatomyMacro.getAnatomicRegionModifier();
-          CodeSequenceMacro& anatomicRegion = anatomyMacro.getAnatomicRegion();
-          anatomicRegion = *segmentAttributes->getAnatomicRegion();
+          CodeSequenceMacro& anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
+          anatomicRegionSequence = *segmentAttributes->getAnatomicRegionSequence();
 
-          if(segmentAttributes->getAnatomicRegionModifier() != NULL){
-            CodeSequenceMacro* anatomicRegionModifier = segmentAttributes->getAnatomicRegionModifier();
-            anatomyMacroModifiersVector.push_back(anatomicRegionModifier);
+          if(segmentAttributes->getAnatomicRegionModifierSequence() != NULL){
+            CodeSequenceMacro* anatomicRegionModifierSequence = segmentAttributes->getAnatomicRegionModifierSequence();
+            anatomyMacroModifiersVector.push_back(anatomicRegionModifierSequence);
           }
         }
 
@@ -613,21 +613,21 @@ namespace dcmqi {
           segmentAttributes->setSegmentDescription(segmentDescription.c_str());
 
           segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
-          segmentAttributes->setSegmentedPropertyCategoryCode(segment->getSegmentedPropertyCategoryCode());
-          segmentAttributes->setSegmentedPropertyType(segment->getSegmentedPropertyTypeCode());
+          segmentAttributes->setSegmentedPropertyCategoryCodeSequence(segment->getSegmentedPropertyCategoryCode());
+            segmentAttributes->setSegmentedPropertyTypeCodeSequence(segment->getSegmentedPropertyTypeCode());
 
           if (segment->getSegmentedPropertyTypeModifierCode().size() > 0) {
-            segmentAttributes->setSegmentedPropertyTypeModifier(
-                segment->getSegmentedPropertyTypeModifierCode()[0]);
+              segmentAttributes->setSegmentedPropertyTypeModifierCodeSequence(
+                      segment->getSegmentedPropertyTypeModifierCode()[0]);
           }
 
           GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-          CodeSequenceMacro& anatomicRegion = anatomyMacro.getAnatomicRegion();
-          if (anatomicRegion.check(true).good()) {
-            segmentAttributes->setAnatomicRegion(anatomyMacro.getAnatomicRegion());
+          CodeSequenceMacro& anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
+          if (anatomicRegionSequence.check(true).good()) {
+              segmentAttributes->setAnatomicRegionSequence(anatomyMacro.getAnatomicRegion());
           }
           if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
-            segmentAttributes->setAnatomicRegionModifier(anatomyMacro.getAnatomicRegionModifier()[0]);
+              segmentAttributes->setAnatomicRegionModifierSequence(anatomyMacro.getAnatomicRegionModifier()[0]);
           }
         }
       }

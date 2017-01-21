@@ -12,7 +12,7 @@
   "segmentAttributes": [
     [
       {
-        "LabelID": 1,
+        "labelID": 1,
         "SegmentDescription": "Liver Segmentation",
         "SegmentedPropertyCategoryCodeSequence": {
           "CodeValue": "T-D0050",
@@ -35,7 +35,7 @@
     ],
     [
       {
-        "LabelID": 1,
+        "labelID": 1,
         "SegmentDescription": "Anatomical Structure",
         "SegmentedPropertyTypeCodeSequence": {
           "CodeMeaning": "Thoracic spine",
@@ -57,7 +57,7 @@
     ],
     [
       {
-        "LabelID": 1,
+        "labelID": 1,
         "SegmentDescription": "Anatomical Structure",
         "SegmentedPropertyCategoryCodeSequence": {
           "CodeMeaning": "Anatomical Structure",

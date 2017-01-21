@@ -93,13 +93,13 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "LabelID",
+            "labelID",
             "SegmentedPropertyCategoryCodeSequence",
             "SegmentedPropertyTypeCodeSequence",
             "SegmentAlgorithmType"
           ],
           "properties": {
-            "LabelID": {
+            "labelID": {
               "type": "integer",
               "default": 1
             },

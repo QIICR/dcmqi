@@ -116,7 +116,7 @@ dcmqi_add_test(
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
     ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-meta.json
-        "['LabelID']"
+        "['labelID']"
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD_multiple_segment_files
   )
