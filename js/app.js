@@ -1,30 +1,29 @@
 define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
-  var user = 'qiicr';
-  var rev = 'master';
-  var webAssets = 'https://raw.githubusercontent.com/'+user+'/dcmqi/'+rev+'/doc/';
-  // var webAssets = 'assets/doc/';
-
-  var commonSchemaURL = webAssets + 'common-schema.json';
-  var srCommonSchemaURL = webAssets + 'sr-common-schema.json';
-  var segContextCommonSchemaURL = webAssets + 'segment-context-common-schema.json';
-
-  var segSchemaURL = webAssets + 'seg-schema.json';
-  var srSchemaURL = webAssets + 'sr-tid1500-schema.json';
-  var pmSchemaURL = webAssets + 'pm-schema.json';
-  var acSchemaURL = webAssets + 'anatomic-context-schema.json';
-  var scSchemaURL = webAssets + 'segment-context-schema.json';
-
-  var segSchemaExampleURL = webAssets + 'seg-example.json';
-  var srSchemaExampleURL = webAssets + 'sr-tid1500-example.json';
-  var pmSchemaExampleURL = webAssets + 'pm-example.json';
-
   var idRoot = 'https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/';
-  var segSchemaID = idRoot + 'seg-schema.json';
-  var srSchemaID = idRoot + 'sr-tid1500-schema.json';
-  var pmSchemaID = idRoot + 'pm-schema.json';
-  var acSchemaID = idRoot + 'anatomic-context-schema.json';
-  var scSchemaID = idRoot + 'segment-context-schema.json';
+
+  var schemasURL = idRoot + 'schemas/';
+  var examplesURL = idRoot + 'examples/';
+
+  var commonSchemaURL = schemasURL + 'common-schema.json';
+  var srCommonSchemaURL = schemasURL + 'sr-common-schema.json';
+  var segContextCommonSchemaURL = schemasURL + 'segment-context-common-schema.json';
+
+  var segSchemaURL = schemasURL + 'seg-schema.json';
+  var srSchemaURL = schemasURL + 'sr-tid1500-schema.json';
+  var pmSchemaURL = schemasURL + 'pm-schema.json';
+  var acSchemaURL = schemasURL + 'anatomic-context-schema.json';
+  var scSchemaURL = schemasURL + 'segment-context-schema.json';
+
+  var segSchemaExampleURL = examplesURL + 'seg-example.json';
+  var srSchemaExampleURL = examplesURL + 'sr-tid1500-example.json';
+  var pmSchemaExampleURL = examplesURL + 'pm-example.json';
+
+  var segSchemaID = schemasURL + 'seg-schema.json';
+  var srSchemaID = schemasURL + 'sr-tid1500-schema.json';
+  var pmSchemaID = schemasURL + 'pm-schema.json';
+  var acSchemaID = schemasURL + 'anatomic-context-schema.json';
+  var scSchemaID = schemasURL + 'segment-context-schema.json';
 
   var schemata = [];
 
@@ -44,12 +43,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
   var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
-  // var segSchemaID = webAssets + 'seg-schema.json';
+  // var segSchemaID = idRoot + 'seg-schema.json';
 
-  var anatomicRegionContextSources = [webAssets+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
+  var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
 
-  var segCategoryTypeContextSources = [webAssets+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
-                                       webAssets+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
+  var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
+                                       idRoot+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
 
 
   var app = angular.module('JSONSemanticsCreator', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion',
@@ -399,7 +398,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
       function getDefaultSegmentAttributes() {
         return {
-          LabelID: currentLabelID,
+          labelID: currentLabelID,
           SegmentDescription: "",
           AnatomicRegionSequence: {},
           AnatomicRegionModifierSequence: {},
@@ -473,7 +472,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       $scope.segmentAlreadyExists = function(segment) {
         var exists = false;
         angular.forEach($scope.segments, function(value, key) {
-          if(value.LabelID == segment.LabelID && value != segment) {
+          if(value.labelID == segment.labelID && value != segment) {
             exists = true;
           }
         });
@@ -497,7 +496,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         var segmentAttributes = [];
         angular.forEach($scope.segments, function(value, key) {
           var attributes = {};
-          attributes["LabelID"] = value.LabelID;
+          attributes["labelID"] = value.labelID;
           if (value.SegmentDescription.length > 0)
             attributes["SegmentDescription"] = value.SegmentDescription;
           if (value.SegmentAlgorithmType.length > 0)
@@ -790,7 +789,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         ngModel.$validators.nonExistentLabel = function(modelValue) {
           var exists = false;
           angular.forEach(scope.segments, function(value, key) {
-            if(value.LabelID == modelValue && value != scope.segment) {
+            if(value.labelID == modelValue && value != scope.segment) {
               exists = true;
             }
           });
