@@ -74,6 +74,7 @@ RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VER
   cd .. && rm -rf Python-${PYTHON_VERSION}*
 
 # Build and install ninja from source.
+WORKDIR /usr/src
 RUN git clone https://github.com/martine/ninja.git && \
   cd ninja && \
   git checkout v1.6.0 && \
@@ -81,6 +82,8 @@ RUN git clone https://github.com/martine/ninja.git && \
   mv ninja /usr/bin/ && \
   cd .. && rm -rf ninja
 
+# Build and install dcmqi
+WORKDIR /usr/src
 RUN git clone https://github.com/QIICR/dcmqi.git && \
   mkdir dcmqi-superbuild && \
   cd dcmqi-superbuild && \
@@ -88,4 +91,4 @@ RUN git clone https://github.com/QIICR/dcmqi.git && \
   make -j$(grep -c processor /proc/cpuinfo)
 
 WORKDIR /usr/src
-CMD /bin/bash
+ENTRYPOINT ["/bin/bash","/usr/src/dcmqi/docker_entry.sh"]
