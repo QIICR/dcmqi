@@ -72,6 +72,7 @@ $ docker run -v /Users/fedorov/docker_test:/tmp qiicr/dcmqi itkimage2paramap \
    --metaDataFileName /tmp/pm-example-float.json \
    --outputParaMapFileName /tmp/docker_output_paramap.dcm \
    --dicomImageFileName /tmp/pm-example-slice.dcm
+   
 Input image size: [256, 256, 20]
 Directions: 0.999981 -0.00540165 -0.00298377
 0.00480058 0.984755 -0.173879
