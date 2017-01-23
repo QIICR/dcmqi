@@ -9,6 +9,7 @@
     * [Command line tools usage](docs/user_guide/cmd_tools.md)
         * [DICOM Segmentation objects \(SEG\) support](docs/user_guide/seg.md)
             * [itkimage2segimage](docs/user_guide/itkimage2segimage.md)
+            * [segimage2itkimage](docs/user_guide/segimage2itkimage.md)
         * [DICOM Structured reports \(SR\) support](docs/user_guide/sr.cmd)
             * [tid1500writer](docs/user_guide/tid1500writer.md)
         * [DICOM Parametric map support](docs/user_guide/dicom-parametric-map-support.md)
