@@ -56,9 +56,7 @@ These lines correspond to the metadata attributes that will be populated in the 
 }
 ```
 
-`QuantityValueCode`, `MeasurementUnitsCode`, `MeasurementMethodCode`, `AnatomicRegionSequence` are attributes (code tuples) to describe the meaning the pixels stored in this parametric map. `AnatomicRegionSequence` is the only attribute that is required. All others are optional.
-
-`DerivedPixelContrast`, `FrameLaterality` are also required attributes.
+`QuantityValueCode`, `MeasurementUnitsCode`, `MeasurementMethodCode`, `AnatomicRegionSequence` are attributes (code tuples) to describe the meaning the pixels stored in this parametric map. `AnatomicRegionSequence`, `DerivedPixelContrast`, `FrameLaterality` are the only attributes that are required. All others are optional.
 
 Each code tuple consists of the three components:  `CodeValue`, `CodingSchemeDesignator` and `CodeMeaning`. `CodingSchemeDesignator` defines the "authority", or source of the code. Each `CodeValue` should be unique for a given `CodingSchemeDesignator`. `CodeMeaning` is a human-readable meaning of the code. DICOM defines several coding schemes recognized by the standard listed [in PS3.16 Section 8](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_8.html). 
 
