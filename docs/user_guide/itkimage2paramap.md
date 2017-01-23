@@ -56,7 +56,7 @@ These lines correspond to the metadata attributes that will be populated in the 
 }
 ```
 
-`QuantityValueCode`, `MeasurementUnitsCode`, `MeasurementMethodCode`, `SourceImageDiffusionBValues`, `AnatomicRegionSequence` are attributes (code tuples) to describe the meaning the pixels stored in this parametric map. `AnatomicRegionSequence` is the only attribute that is required. All others are optional.
+`QuantityValueCode`, `MeasurementUnitsCode`, `MeasurementMethodCode`, `AnatomicRegionSequence` are attributes (code tuples) to describe the meaning the pixels stored in this parametric map. `AnatomicRegionSequence` is the only attribute that is required. All others are optional.
 
 `DerivedPixelContrast`, `FrameLaterality` are also required attributes.
 
