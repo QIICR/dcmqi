@@ -2,14 +2,12 @@
 <executable>
   <category>Informatics.Converters</category>
   <title>Encode DICOM SEG</title>
-  <description>Create DICOM Segmentation Image object from non-DICOM segmentations</description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <description>Convert the volumetric segmentation(s) stored as labeled pixels using any of the formats supported by ITK, such as NRRD or NIFTI, into a DICOM Segmentation Object (further referred to as SEG).</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
   <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
-  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute,
-    Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research
-    (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
   <parameters>
     <string-vector>

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
   <category>Informatics</category>
-  <title>Convert DICOM SEG into ITK image file format + json</title>
-  <description></description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <title>Convert DICOM SEG into ITK image</title>
+  <description>Convert a DICOM Segmentation Object into volumetric segmentation(s) stored as labeled pixels as NRRD file format + meta information stored in the JSON file format.</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
   <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
-  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute,
-    Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research
-    (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
   <parameters>
     <file>
