@@ -8,7 +8,7 @@ The converter accepts just 4 parameters defined by the following flags:
 * `--imageLibraryDataDir`: directory containing the image files on which the measurements were performed. These will be the files corresponding to the CT, MR or other image series that was segmented.
 * `--outputFileName`: the filename of the resulting DICOM object.
 
-Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/sr-tid1500-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/sr-tid1500-ct-liver-example.json).
+Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/sr-tid1500-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/examples/sr-tid1500-ct-liver-example.json).
 
 In the following, we will guide you through the contents of this file - line by line.
 
