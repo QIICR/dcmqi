@@ -42,6 +42,8 @@ Docker containers cannot directly access the filesystem of the host. In order to
 
 The argument above will make the `HOST_DIR` path available within the container at `CONTAINER_DIR` location. The files that will be read or written by the converter run from the docker container should be referred to via the `CONTAINER_DIR` path.
 
+Dockerfile for qiicr/dcmqi is available in the main repository of dcmqi [here](https://github.com/QIICR/dcmqi/blob/master/Dockerfile). It does not rely on any proprietary or non-open-source components. 
+
 ## Example
 
 Assuming the docker image is installed, create an empty directory `docker_test`.
