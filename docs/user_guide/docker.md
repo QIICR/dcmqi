@@ -50,13 +50,18 @@ Assuming the docker image is installed, create an empty directory `docker_test`.
 $ mkdir docker_test
 ```
 
-Put the test files from dcmqi source code repository into the `docker_test` directory: [the input parametric map in NRRD format](https://github.com/QIICR/dcmqi/raw/master/data/paramaps/pm-example-float.nrrd), [the DICOM file containing the metadata to be propagated into the output](https://github.com/QIICR/dcmqi/blob/master/data/paramaps/pm-example-slice.dcm) and [the metadata JSON describing the parametric map](https://github.com/QIICR/dcmqi/blob/master/doc/examples/pm-example-float.json).
+Put the following test files from dcmqi source code repository into the `docker_test` directory: 
+* [the input parametric map in NRRD format](https://github.com/QIICR/dcmqi/raw/master/data/paramaps/pm-example-float.nrrd)
+* [the DICOM file containing the metadata to be propagated into the output](https://github.com/QIICR/dcmqi/blob/master/data/paramaps/pm-example-slice.dcm)
+* [the metadata JSON describing the parametric map](https://github.com/QIICR/dcmqi/blob/master/doc/examples/pm-example-float.json)
 
 ```
 $ pwd
 /Users/fedorov/docker_test
 $ ls
-docker_output_paramap.dcm pm-example-float.json     pm-example-float.nrrd     pm-example-slice.dcm
+pm-example-float.json     
+pm-example-float.nrrd     
+pm-example-slice.dcm
 ```
 
 Run the `itkimage2paramap` converter
