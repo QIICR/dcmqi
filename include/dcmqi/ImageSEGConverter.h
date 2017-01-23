@@ -42,7 +42,7 @@ namespace dcmqi {
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                 vector<ImageType::Pointer> segmentations,
                                                 const string &metaData,
-												bool skipEmptySlices=true);
+                                                bool skipEmptySlices=true);
 
 
     static pair <map<unsigned,ImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
