@@ -3,6 +3,7 @@
 * [Introduction](README.md)
 * [User guide](docs/user_guide/opening.md)
     * [Installation](docs/user_guide/installation.md)
+      * [Docker](docs/user_guide/docker.md)
       * [3D Slicer extension](docs/user_guide/slicer_extension.md)
       * [Build from source](docs/user_guide/build_dcmqi.md)
     * [Command line tools usage](docs/user_guide/cmd_tools.md)    

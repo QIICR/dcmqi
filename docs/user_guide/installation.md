@@ -2,6 +2,7 @@
 
 `dcmqi` is a collection of libraries and command line tools. It is currently possible to install `dcmqi` using one of the following approaches:
 
+1. Using [docker](docker.md)
 1. [As 3D Slicer extension](slicer_extension.md)
 2. [Build from source](build_dcmqi.md)
 
