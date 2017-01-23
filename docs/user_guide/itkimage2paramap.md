@@ -53,6 +53,7 @@ These lines correspond to the metadata attributes that will be populated in the 
   "FrameLaterality": "U",
   "RealWorldValueSlope": 1,
   "DerivedPixelContrast": "ADC"
+}
 ```
 
 `QuantityValueCode`, `MeasurementUnitsCode`, `MeasurementMethodCode`, `SourceImageDiffusionBValues`, `AnatomicRegionSequence` are attributes (code tuples) to describe the meaning the pixels stored in this parametric map. `AnatomicRegionSequence` is the only attribute that is required. All others are optional.
