@@ -1,6 +1,6 @@
 # tid1500writer
 
-dcmqi provides a tool, `tid1500writer`, that can be used to save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows [template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500).
+`tid1500writer` can be used to save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows [template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500).
 
 The converter accepts just 4 parameters defined by the following flags:
 * `--metaDataFileName`: JSON file containing the meta-information that describes the measurements to be encoded. The content of this file will be discussed in detail further.
