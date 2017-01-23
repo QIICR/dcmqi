@@ -7,7 +7,7 @@
 * `--metaDataFileName`: JSON file containing the meta-information that describes the measurements to be encoded. The content of this file will be discussed in detail further.
 * `--outputSEGFileName`: file name of the SEG object that will keep the result.
 
-Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/seg-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/seg-example.json).
+Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/seg-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/examples/seg-example.json).
 
 In the following, we will guide you through the contents of this file - line by line.
 
