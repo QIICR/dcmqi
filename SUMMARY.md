@@ -12,6 +12,7 @@
             * [segimage2itkimage](docs/user_guide/segimage2itkimage.md)
         * [DICOM Structured reports \(SR\) support](docs/user_guide/sr.cmd)
             * [tid1500writer](docs/user_guide/tid1500writer.md)
+            * [tid1500reader](docs/user_guide/tid1500reader.md)
         * [DICOM Parametric map support](docs/user_guide/dicom-parametric-map-support.md)
             * [itkimage2paramap](docs/user_guide/itkimage2paramap.md)
             * [paramap2itkimage](docs/user_guide/paramap2itkimage.md)
