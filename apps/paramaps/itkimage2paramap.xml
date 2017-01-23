@@ -7,9 +7,9 @@
   <documentation-url></documentation-url>
   <license></license>
   <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
-<acknowledgements></acknowledgements>
+  <acknowledgements></acknowledgements>
 
-<parameters>
+  <parameters>
     <file>
       <name>inputFileName</name>
       <label>Parametric Map file name</label>
@@ -19,12 +19,12 @@
     </file>
 
     <file>
-        <name>dicomImageFileName</name>
-        <label>DICOM images file name</label>
-        <channel>input</channel>
-        <longflag>dicomImageFileName</longflag>
-        <default></default>
-        <description>File name of the DICOM image file which has been used </description>
+      <name>dicomImageFileName</name>
+      <label>DICOM images file name</label>
+      <channel>input</channel>
+      <longflag>dicomImageFileName</longflag>
+      <default></default>
+      <description>File name of the DICOM image file which has been used </description>
     </file>
 
     <file>

@@ -26,6 +26,8 @@ namespace dcmqi {
 
   public:
 
+    static string getFileExtensionFromType(const string& type);
+
     static string floatToStrScientific(float f);
     static void tokenizeString(string str, vector<string> &tokens, string delimiter);
     static void splitString(string str, string &head, string &tail, string delimiter);

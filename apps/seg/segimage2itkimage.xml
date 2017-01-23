@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
   <category>Informatics</category>
-  <title>Convert DICOM SEG into NRRD</title>
+  <title>Convert DICOM SEG into ITK image file format + json</title>
   <description></description>
   <version></version>
   <documentation-url></documentation-url>
   <license></license>
-  <contributor>Andrey Fedorov, BWH</contributor>
-<acknowledgements></acknowledgements>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+  <acknowledgements></acknowledgements>
 
-<parameters>
+  <parameters>
     <file>
       <name>inputSEGFileName</name>
       <label>SEG file name</label>
@@ -21,38 +21,34 @@
     <string>
       <name>prefix</name>
       <label>Output prefix</label>
-      <flag>-n</flag>
+      <flag>-p</flag>
       <longflag>--prefix</longflag>
       <description>Prefix for output files</description>
       <default></default>
     </string>
-
-    <!--<boolean>-->
-      <!--<name>combineSegments</name>-->
-      <!--<flag>c</flag>-->
-      <!--<longflag>combine</longflag>-->
-      <!--<label>Combine segments</label>-->
-      <!--<channel>input</channel>-->
-      <!--<default>0</default>-->
-      <!--<description>Combine segments into one output file. This option will cause warnings to be printed on the console in case segments overlap and are overwritten. For now, always split into separate files.</description>-->
-    <!--</boolean>-->
 
     <file>
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>input</channel>
       <index>1</index>
-      <description>Directory to store individual segments as NRRD files. File names will correspond to the segment numbers.</description>
+      <description>Directory to store individual segments as itk files. File names will correspond to the segment numbers.</description>
     </file>
 
-    <boolean>
-      <name>niftiOutput</name>
-      <longflag>nii</longflag>
-      <label>Output a nifti file (.nii.gz) instead of a .nrrd file</label>
-      <channel>input</channel>
-      <default>0</default>
-      <description>Output a nifti file (.nii.gz) instead of a .nrrd file</description>
-    </boolean>
+    <string-enumeration>
+      <name>outputType</name>
+      <flag>-t</flag>
+      <longflag>--outputType</longflag>
+      <description>Output type of the resulting image data.</description>
+      <label>Output type</label>
+      <default>nrrd</default>
+      <element>mhd</element>
+      <element>mha</element>
+      <element>nii</element>
+      <element>nifti</element>
+      <element>hdr</element>
+      <element>img</element>
+    </string-enumeration>
 
   </parameters>
 

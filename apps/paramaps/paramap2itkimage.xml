@@ -7,9 +7,9 @@
   <documentation-url></documentation-url>
   <license></license>
   <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
-<acknowledgements></acknowledgements>
+  <acknowledgements></acknowledgements>
 
-<parameters>
+  <parameters>
     <file>
       <name>inputFileName</name>
       <label>Parametric Map DICOM file name</label>
@@ -19,12 +19,28 @@
     </file>
 
     <directory>
-        <name>outputDirName</name>
-        <label>Output directory name</label>
-        <channel>output</channel>
-        <longflag>outputDirName</longflag>
-        <description>Directory to store parametric map as NRRD file.</description>
+      <name>outputDirName</name>
+      <label>Output directory name</label>
+      <channel>output</channel>
+      <longflag>outputDirName</longflag>
+      <description>Directory to store parametric map as NRRD file.</description>
     </directory>
+
+    <string-enumeration>
+      <name>outputType</name>
+      <label>Output type</label>
+      <flag>-t</flag>
+      <longflag>--outputType</longflag>
+      <description>Output type of the resulting image data.</description>
+      <default>nrrd</default>
+      <element>mhd</element>
+      <element>mha</element>
+      <element>nii</element>
+      <element>nifti</element>
+      <element>hdr</element>
+      <element>img</element>
+    </string-enumeration>
+
   </parameters>
 
 </executable>

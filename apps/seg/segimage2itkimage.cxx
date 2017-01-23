@@ -5,6 +5,7 @@
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
+
 int main(int argc, char *argv[])
 {
   PARSE_ARGS;
@@ -17,15 +18,13 @@ int main(int argc, char *argv[])
 
   string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
+  string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
+
   for(map<unsigned,ImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
     typedef itk::ImageFileWriter<ImageType> WriterType;
     stringstream imageFileNameSStream;
 
-    if (niftiOutput) {
-      imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << ".nii.gz";
-    } else {
-      imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << ".nrrd";
-    }
+    imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
 
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName(imageFileNameSStream.str().c_str());
