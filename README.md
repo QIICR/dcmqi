@@ -1,6 +1,7 @@
 [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
 [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
 [![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
+[![Docker](https://img.shields.io/docker/automated/qiicr/dcmqi.svg)](https://hub.docker.com/r/qiicr/dcmqi/)
 
 # Introduction
 
