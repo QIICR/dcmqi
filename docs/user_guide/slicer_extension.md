@@ -1,6 +1,8 @@
-# Install `dcmqi` as a 3D Slicer extension
+# Use `dcmqi` from the `QuantitativeReporting` 3D Slicer extension
 
-`dcmqi` should be available as an extension in the nightly version of [3D Slicer](http://slicer.org), starting November 2016. We always suggest that you use the latest (nightly) version of the software when you try it for the first time.
+You can access the functionality provided by `dcmqi` in 3D Slicer using `QuantitativeReporting` extension. Specifically, you can use `QuantitativeReporting` to prepare segmentations of DICOM imaging series, define semantics of the segmentation, calculate measurements and export the result as DICOM. You can also load DICOM segmentations, measurement structured reports and parametric maps with `QuantitativeReporting`, which is using `dcmqi` to support data conversion. See user guide of `QuantitativeReporting` for further details.
+
+[`QuantitativeReporting`](http://slicer.org) should be available as an extension in the nightly version of [3D Slicer](http://slicer.org), starting November 2016. We always suggest that you use the latest (nightly) version of the software when you try it for the first time.
 
 Download the latest **nightly release** for your platform from http://download.slicer.org. 
 
@@ -16,38 +18,13 @@ Once installed, open 3D Slicer Extension Manager by clicking the icon as shown b
 
 ![](assets/extension_manager.png)
 
-Search for `dcmqi` and install the extension by clicking the INSTALL button.
+Search for `QuantitativeReporting` and install the extension by clicking the INSTALL button.
 
-![](assets/install_dcmqi.jpg)
-
-Once installation of `dcmqi` is completed successfully, you should have the binaries available on your system.
-
-## Accessing `dcmqi` binaries
-
-Location of the `dcmqi` binaries installed as 3D Slicer extension will be operating system specific.
-
-### Mac OS X
-
-`<Slicer.app folder>/Extensions-<number>/DCMQI/lib/Slicer-4.7/cli-modules/`
-
-### Linux
-
-TBD
-
-### Windows
-
-`<your home folder>\AppData\Roaming\NA-MIC\Extensions-<latest number>\DCMQI\lib\Slicer-4.7\cli-modules`
-
-To launch the `dcmqi` command line tools on Windows, you will need to use 3D Slicer launcher, otherwise shared library dependencies will not be resolved. Example invocation:
-
-```
-C:\Program Files\Slicer 4.7.0-2016-12-11\Slicer.exe \ 
-   --launch itkimage2segimage --help
-```
+![](assets/install_QuantitativeReporting.jpg)
 
 ## Upgrade
 
-It is currently not possible to upgrade `dcmqi` without upgrading the 3D Slicer application.
+It is currently not possible to upgrade an extension without upgrading the 3D Slicer application.
 
-If you need to upgrade the software, download the latest nightly release of 3D Slicer and install `dcmqi` as explained above.
+If you need to upgrade the software, download the latest nightly release of 3D Slicer and install `QuantitativeReporting` as explained above.
 
