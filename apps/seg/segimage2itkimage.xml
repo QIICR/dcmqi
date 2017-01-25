@@ -42,6 +42,7 @@
       <description>Output type of the resulting image data.</description>
       <label>Output type</label>
       <default>nrrd</default>
+      <element>nrrd</element>
       <element>mhd</element>
       <element>mha</element>
       <element>nii</element>
