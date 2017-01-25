@@ -80,6 +80,7 @@ dcmqi_add_test(
     ${dcm2itk}Test
     ${MODULE_TEMP_DIR}/liver.dcm
     ${MODULE_TEMP_DIR}
+    --outputType nrrd
     --prefix makeNRRD
   TEST_DEPENDS
     ${itk2dcm}_makeSEG
