@@ -2,45 +2,45 @@
 <executable>
   <category>Informatics</category>
   <title>DICOM Measurements reporting</title>
-  <description></description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <description>convert a DICOM Structured Report (template TID1500) into a human readable representation by means of the JSON file format.</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
-  <contributor>Andrey Fedorov, BWH</contributor>
-<acknowledgements></acknowledgements>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
-<parameters>
+  <parameters>
 
-  <file>
-    <name>metaDataFileName</name>
-    <label>JSON metadata file</label>
-    <channel>input</channel>
-    <longflag>metaDataFileName</longflag>
-  </file>
+    <file>
+      <name>metaDataFileName</name>
+      <label>JSON metadata file</label>
+      <channel>input</channel>
+      <longflag>metaDataFileName</longflag>
+    </file>
 
-  <file>
-    <name>compositeContextDataDir</name>
-    <label>Composite context DICOM data dir</label>
-    <channel>input</channel>
-    <longflag>compositeContextDataDir</longflag>
-    <description>Location of input DICOM Data to be used for populating composite context</description>
-  </file>
+    <file>
+      <name>compositeContextDataDir</name>
+      <label>Composite context DICOM data dir</label>
+      <channel>input</channel>
+      <longflag>compositeContextDataDir</longflag>
+      <description>Location of input DICOM Data to be used for populating composite context</description>
+    </file>
 
-  <file>
-    <name>imageLibraryDataDir</name>
-    <label>Image library DICOM data dir</label>
-    <channel>input</channel>
-    <longflag>imageLibraryDataDir</longflag>
-    <description>Location of input DICOM Data to be used for populating image library</description>
-  </file>
+    <file>
+      <name>imageLibraryDataDir</name>
+      <label>Image library DICOM data dir</label>
+      <channel>input</channel>
+      <longflag>imageLibraryDataDir</longflag>
+      <description>Location of input DICOM Data to be used for populating image library</description>
+    </file>
 
-  <file>
-    <name>outputFileName</name>
-    <label>Output DICOM SR file name</label>
-    <channel>output</channel>
-    <longflag>outputFileName</longflag>
-  </file>
+    <file>
+      <name>outputFileName</name>
+      <label>Output DICOM SR file name</label>
+      <channel>output</channel>
+      <longflag>outputFileName</longflag>
+    </file>
 
-</parameters>
+  </parameters>
 
 </executable>

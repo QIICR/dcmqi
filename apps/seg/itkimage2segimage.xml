@@ -2,14 +2,14 @@
 <executable>
   <category>Informatics.Converters</category>
   <title>Encode DICOM SEG</title>
-  <description>Create DICOM Segmentation Image object from non-DICOM segmentations</description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <description>Convert the volumetric segmentation(s) stored as labeled pixels using any of the formats supported by ITK, such as NRRD or NIFTI, into a DICOM Segmentation Object (further referred to as SEG).</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
-  <contributor>Andrey Fedorov, BWH</contributor>
-<acknowledgements></acknowledgements>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
-<parameters>
+  <parameters>
     <string-vector>
       <name>dicomImageFiles</name>
       <label>DICOM images file names</label>
@@ -42,13 +42,13 @@
       <description>File name of the SEG object that will keep the result.</description>
     </file>
 
-    <!--<boolean>-->
-      <!--<name>skipEmptySlices</name>-->
-      <!--<label>Skip empty slices</label>-->
-      <!--<channel>input</channel>-->
-      <!--<longflag>skip</longflag>-->
-      <!--<description>Skip empty slices while encoding segmentation image.</description>-->
-    <!--</boolean>-->
+    <boolean>
+      <name>noSkipEmptySlices</name>
+      <label>Skip empty slices</label>
+      <channel>input</channel>
+      <longflag>noskip</longflag>
+      <description>Don't skip empty slices while encoding segmentation image.</description>-->
+    </boolean>
 
     <!--<boolean>-->
       <!--<name>compress</name>-->

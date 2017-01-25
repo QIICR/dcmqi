@@ -2,31 +2,31 @@
 <executable>
   <category>Informatics</category>
   <title>DICOM Measurements reporting</title>
-  <description></description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <description>Save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows template TID1500.</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
-  <contributor>Andrey Fedorov, BWH</contributor>
-<acknowledgements></acknowledgements>
+  <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
-<parameters>
+  <parameters>
 
     <file>
-        <name>inputSRFileName</name>
-        <label>SR file name</label>
-        <channel>input</channel>
-        <longflag>inputSRFileName</longflag>
-        <description>File name of the SR object.</description>
+      <name>inputSRFileName</name>
+      <label>SR file name</label>
+      <channel>input</channel>
+      <longflag>inputSRFileName</longflag>
+      <description>File name of the SR object.</description>
     </file>
 
     <file>
-        <name>metaDataFileName</name>
-        <label>JSON file name</label>
-        <channel>output</channel>
-        <longflag>metaDataFileName</longflag>
-        <description>JSON file name that will keep the metadata and measurements information.</description>
+      <name>metaDataFileName</name>
+      <label>JSON file name</label>
+      <channel>output</channel>
+      <longflag>metaDataFileName</longflag>
+      <description>JSON file name that will keep the metadata and measurements information.</description>
     </file>
 
-</parameters>
+  </parameters>
 
 </executable>

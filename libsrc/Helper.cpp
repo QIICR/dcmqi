@@ -4,6 +4,23 @@
 
 namespace dcmqi {
 
+  string Helper::getFileExtensionFromType(const string& type) {
+    string extension = ".nrrd";
+    if (type == "nii" || type == "nifti")
+      extension = ".nii.gz";
+    else if (type == "mhd")
+      extension = ".mhd";
+    else if (type == "mha")
+      extension = ".mha";
+    else if (type == "img")
+      extension = ".img";
+    else if (type == "hdr")
+      extension = ".hdr";
+    else if (type == "nrrd")
+      extension = ".nrrd";
+    return extension;
+  }
+
   string Helper::floatToStrScientific(float f) {
     ostringstream sstream;
     sstream << scientific << f;

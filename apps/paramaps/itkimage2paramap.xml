@@ -2,14 +2,14 @@
 <executable>
   <category>Informatics.Converters</category>
   <title>Encode DICOM Parametric Map</title>
-  <description>Create DICOM Parametric Map Image object from non-DICOM images</description>
-  <version></version>
-  <documentation-url></documentation-url>
+  <description>Convert a parametric map provided in any of the formats supported by ITK, such as NRRD or NIFTI, as a DICOM Parametric Map image object.</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
   <contributor>Andrey Fedorov(BWH), Christian Herz(BWH)</contributor>
-<acknowledgements></acknowledgements>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
-<parameters>
+  <parameters>
     <file>
       <name>inputFileName</name>
       <label>Parametric Map file name</label>
@@ -19,12 +19,12 @@
     </file>
 
     <file>
-        <name>dicomImageFileName</name>
-        <label>DICOM images file name</label>
-        <channel>input</channel>
-        <longflag>dicomImageFileName</longflag>
-        <default></default>
-        <description>File name of the DICOM image file which has been used </description>
+      <name>dicomImageFileName</name>
+      <label>DICOM images file name</label>
+      <channel>input</channel>
+      <longflag>dicomImageFileName</longflag>
+      <default></default>
+      <description>File name of the DICOM image file which has been used </description>
     </file>
 
     <file>
