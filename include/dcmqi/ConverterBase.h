@@ -216,10 +216,6 @@ namespace dcmqi {
         for(size_t i=1;i<originDistances.size(); i++){
           float dist1 = fabs(originDistances[i-1]-originDistances[i]);
           float delta = sliceSpacing-dist1;
-          if(delta > 0.001){
-            cerr << "WARNING: Inter-slice distance " << originDistances[i] <<
-            " difference exceeded threshold: " << delta << endl;
-          }
         }
 
         sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
