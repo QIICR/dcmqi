@@ -15,7 +15,7 @@
       <name>metaDataFileName</name>
       <label>JSON metadata file</label>
       <channel>input</channel>
-      <index>0</index>
+      <longflag>inputMetadata</longflag>
       <description>JSON file that contains the list of mesurements and other meta data items that can be specified by the user. See documentation for details.</description>
     </file>
 
@@ -23,7 +23,7 @@
       <name>outputFileName</name>
       <label>Output DICOM SR file name</label>
       <channel>output</channel>
-      <index>1</index>
+      <longflag>outputDICOM</longflag>
       <description>File name of the DICOM SR object that will store the result of the conversion.</description>
     </file>
 
@@ -31,7 +31,7 @@
       <name>compositeContextDataDir</name>
       <label>Composite context DICOM data dir</label>
       <channel>input</channel>
-      <longflag>compositeContextDataDir</longflag>
+      <longflag>compositeContextDirectory</longflag>
       <description>Location of input DICOM Data to be used for populating composite context. See documentation.</description>
     </file>
 
@@ -39,7 +39,7 @@
       <name>imageLibraryDataDir</name>
       <label>Image library DICOM data dir</label>
       <channel>input</channel>
-      <longflag>imageLibraryDataDir</longflag>
+      <longflag>imageLibraryDirectory</longflag>
       <description>Location of input DICOM Data to be used for populating image library. See documentation.</description>
     </file>
 

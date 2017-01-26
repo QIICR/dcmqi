@@ -24,20 +24,20 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_makeParametricMap
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
-    --inputFileName ${BASELINE}/pm-example.nrrd
-    --outputParaMapFileName ${TEMP_DIR}/paramap.dcm
-    --dicomImageFileName ${BASELINE}/pm-example-slice.dcm
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    --inputImage ${BASELINE}/pm-example.nrrd
+    --outputDICOM ${TEMP_DIR}/paramap.dcm
+    --inputDICOM ${BASELINE}/pm-example-slice.dcm
   )
 
 dcmqi_add_test(
   NAME ${MODULE_NAME}_makeParametricMapFP
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
-    --inputFileName ${BASELINE}/pm-example-float.nrrd
-    --outputParaMapFileName ${TEMP_DIR}/paramap-float.dcm
-    --dicomImageFileName ${BASELINE}/pm-example-slice.dcm
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
+    --inputImage ${BASELINE}/pm-example-float.nrrd
+    --outputDICOM ${TEMP_DIR}/paramap-float.dcm
+    --inputDICOM ${BASELINE}/pm-example-slice.dcm
   )
 
 #-----------------------------------------------------------------------------
@@ -61,8 +61,8 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
-      --inputFileName ${TEMP_DIR}/paramap.dcm
-      --outputDirName ${TEMP_DIR}
+      --inputDICOM ${TEMP_DIR}/paramap.dcm
+      --outputDirectory ${TEMP_DIR}
   TEST_DEPENDS
     itkimage2paramap_makeParametricMap
   )
@@ -74,8 +74,8 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
     --compare ${BASELINE}/pm-example-float.nrrd ${TEMP_DIR}/pmap.nrrd
     ${MODULE_NAME}Test
-      --inputFileName ${TEMP_DIR}/paramap-float.dcm
-      --outputDirName ${TEMP_DIR}
+      --inputDICOM ${TEMP_DIR}/paramap-float.dcm
+      --outputDirectory ${TEMP_DIR}
   TEST_DEPENDS
     itkimage2paramap_makeParametricMapFP
   )

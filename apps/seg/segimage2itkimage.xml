@@ -14,7 +14,7 @@
       <name>inputSEGFileName</name>
       <label>SEG file name</label>
       <channel>input</channel>
-      <index>0</index>
+      <longflag>inputDICOM</longflag>
       <description>File name of the input DICOM Segmentation image object.</description>
     </file>
 
@@ -22,23 +22,23 @@
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>input</channel>
-      <index>1</index>
+      <longflag>outputDirectory</longflag>
       <description>Directory to store individual segments saved using the output format specified files. When specified, file names will contain prefix, followed by the segment number.</description>
     </file>
 
     <string>
       <name>prefix</name>
       <label>Output prefix</label>
-      <flag>-p</flag>
-      <longflag>--prefix</longflag>
+      <flag>p</flag>
+      <longflag>prefix</longflag>
       <description>Prefix for output file.</description>
       <default></default>
     </string>
 
     <string-enumeration>
       <name>outputType</name>
-      <flag>-t</flag>
-      <longflag>--outputType</longflag>
+      <flag>t</flag>
+      <longflag>outputType</longflag>
       <description>Output file format for the resulting image data.</description>
       <label>Output type</label>
       <default>nrrd</default>

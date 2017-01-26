@@ -23,20 +23,20 @@ dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
-    --segImageFiles ${BASELINE}/liver_seg.nrrd
-    --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
-    --segDICOMFile ${MODULE_TEMP_DIR}/liver.dcm
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd
+    --inputDICOMList ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
 dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
-    --metaDataFileName ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
-    --segImageFiles ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd,${BASELINE}/heart_seg.nrrd
-    --dicomImageFiles ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
-    --segDICOMFile ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd,${BASELINE}/heart_seg.nrrd
+    --inputDICOMList ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
   )
 
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
@@ -78,8 +78,8 @@ dcmqi_add_test(
     --compare ${BASELINE}/liver_seg.nrrd
     ${MODULE_TEMP_DIR}/makeNRRD-1.nrrd
     ${dcm2itk}Test
-    ${MODULE_TEMP_DIR}/liver.dcm
-    ${MODULE_TEMP_DIR}
+    --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
     --outputType nrrd
     --prefix makeNRRD
   TEST_DEPENDS
@@ -94,8 +94,8 @@ dcmqi_add_test(
     --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
     --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
     ${dcm2itk}Test
-    ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
-    ${MODULE_TEMP_DIR}
+    --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
     --prefix makeNRRD_multiple_segments
   TEST_DEPENDS
     ${itk2dcm}_makeSEG_multiple_segment_files

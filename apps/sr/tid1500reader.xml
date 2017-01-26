@@ -15,7 +15,7 @@
       <name>inputSRFileName</name>
       <label>SR file name</label>
       <channel>input</channel>
-      <index>0</index>
+      <longflag>inputDICOM</longflag>
       <description>File name of the DICOM SR TID1500 object.</description>
     </file>
 
@@ -23,7 +23,7 @@
       <name>metaDataFileName</name>
       <label>JSON file name</label>
       <channel>output</channel>
-      <index>1</index>
+      <longflag>outputMetadata</longflag>
       <description>File name of the JSON file that will keep the metadata and measurements information.</description>
     </file>
 

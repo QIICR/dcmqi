@@ -12,26 +12,26 @@
   <parameters>
 
     <file>
-      <name>metaDataFileName</name>
-      <label>JSON metadata file</label>
-      <channel>input</channel>
-      <index>0</index>
-      <description>File name of the JSON files containing metadata attributes.</description>
-    </file>
-
-    <file>
       <name>inputFileName</name>
       <label>Parametric Map file name</label>
       <channel>input</channel>
-      <index>1</index>
+      <longflag>inputImage</longflag>
       <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
+    </file>
+
+    <file>
+      <name>metaDataFileName</name>
+      <label>JSON metadata file</label>
+      <channel>input</channel>
+      <longflag>inputMetadata</longflag>
+      <description>File name of the JSON files containing metadata attributes.</description>
     </file>
 
     <file>
       <name>outputParaMapFileName</name>
       <label>Parametric map file name</label>
       <channel>output</channel>
-      <index>2</index>
+      <longflag>outputDICOM</longflag>
       <description>File name of the DICOM Parametric map object with the result of the conversion.</description>
     </file>
 
@@ -39,7 +39,7 @@
       <name>dicomImageFileName</name>
       <label>DICOM images file name</label>
       <channel>input</channel>
-      <longflag>dicomImageFileName</longflag>
+      <longflag>inputDICOM</longflag>
       <default></default>
       <description>File name of the DICOM image file that should be used to populate the composite context (attributes related to the patient and imaging study).</description>
     </file>

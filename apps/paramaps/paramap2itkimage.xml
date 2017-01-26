@@ -14,7 +14,7 @@
       <name>inputFileName</name>
       <label>Parametric Map DICOM file name</label>
       <channel>input</channel>
-      <index>0</index>
+      <longflag>inputDICOM</longflag>
       <description>File name of the DICOM Parametric map image.</description>
     </file>
 
@@ -22,7 +22,7 @@
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>output</channel>
-      <index>1</index>
+      <longflag>outputDirectory</longflag>
       <description>Directory to store parametric map in an ITK format, and the JSON metadata file.</description>
     </directory>
 
