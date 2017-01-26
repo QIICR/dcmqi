@@ -1,12 +1,62 @@
-# tid1500writer
+# `tid1500writer`
 
-`tid1500writer` can be used to save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows [template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500).
+This tool can be used to save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows [template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500).
 
-The converter accepts just 4 parameters defined by the following flags:
-* `--metaDataFileName`: JSON file containing the meta-information that describes the measurements to be encoded. The content of this file will be discussed in detail further.
-* `--compositeContextDataDir`: directory containing the files that should be used to populate composite context of the resulting SR object (metadata about patient, DICOM study, etc.).
-* `--imageLibraryDataDir`: directory containing the image files on which the measurements were performed. These will be the files corresponding to the CT, MR or other image series that was segmented.
-* `--outputFileName`: the filename of the resulting DICOM object.
+## Usage
+
+```
+   ./bin/tid1500writer  [--returnparameterfile <std::string>]
+                        [--processinformationaddress <std::string>] [--xml]
+                        [--echo] [--imageLibraryDataDir <std::string>]
+                        [--compositeContextDataDir <std::string>] [--]
+                        [--version] [-h] <std::string> <std::string>
+
+
+Where:
+
+   --returnparameterfile <std::string>
+     Filename in which to write simple return parameters (int, float,
+     int-vector, etc.) as opposed to bulk return parameters (image,
+     geometry, transform, measurement, table).
+
+   --processinformationaddress <std::string>
+     Address of a structure to store process information (progress, abort,
+     etc.). (default: 0)
+
+   --xml
+     Produce xml description of command line arguments (default: 0)
+
+   --echo
+     Echo the command line arguments (default: 0)
+
+   --imageLibraryDataDir <std::string>
+     Location of input DICOM Data to be used for populating image library.
+     See documentation.
+
+   --compositeContextDataDir <std::string>
+     Location of input DICOM Data to be used for populating composite
+     context. See documentation.
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   <std::string>
+     (required)  JSON file that contains the list of mesurements and other
+     meta data items that can be specified by the user. See documentation
+     for details.
+
+   <std::string>
+     (required)  File name of the DICOM SR object that will store the
+     result of the conversion.
+```
+
+## Usage details
 
 Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/sr-tid1500-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/examples/sr-tid1500-ct-liver-example.json).
 
@@ -134,3 +184,9 @@ or (more colorful!) [dsrdump](http://support.dcmtk.org/docs/dsrdump.html) from [
 ![image](https://cloud.githubusercontent.com/assets/313942/18153147/9f6ee6a8-6fc9-11e6-99bd-0bbd72be556b.png)
 
 You can also use [dicom-dump plugin](https://atom.io/packages/dicom-dump) in the [Atom editor](http://atom.io) to conveniently view the content without having to use the terminal.
+
+## Examples
+
+### Encoding measurements over segmentation of liver in CT
+
+* 

@@ -1,7 +1,28 @@
 # `segimage2itkimage`
 
 This tool can be used to convert DICOM Segmentation into volumetric segmentations stored as labeled pixels using research format, such as NRRD or NIfTI, and meta information stored in the JSON file format.
+
+## Usage
+
 ```
+   ./bin/segimage2itkimage  [--returnparameterfile <std::string>]
+                            [--processinformationaddress <std::string>]
+                            [--xml] [--echo] [-t <nrrd|mhd|mha|nii|nifti
+                            |hdr|img>] [-p <std::string>] [--] [--version]
+                            [-h] <std::string> <std::string>
+
+
+Where:
+
+   --returnparameterfile <std::string>
+     Filename in which to write simple return parameters (int, float,
+     int-vector, etc.) as opposed to bulk return parameters (image,
+     geometry, transform, measurement, table).
+
+   --processinformationaddress <std::string>
+     Address of a structure to store process information (progress, abort,
+     etc.). (default: 0)
+
    --xml
      Produce xml description of command line arguments (default: 0)
 

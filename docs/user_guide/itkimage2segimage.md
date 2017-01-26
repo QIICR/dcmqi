@@ -1,11 +1,72 @@
-# itkimage2segimage
+# `itkimage2segimage`
 
 `itkimage2segimage` tool can be used to save the volumetric segmentation(s) stored as labeled pixels using any of the formats supported by ITK, such as NRRD or NIFTI, as a DICOM Segmentation Object (further referred to as SEG).
 
-* `--dicomImageFiles`: comma-separated list of DICOM images that correspond to the original image that was segmented. This means you must have access to the original data in DICOM in order to use the converter (at least for now).
-* `--segImageFiles`: comma-separated list of  file names of the segmentation images in a format readable by ITK (NRRD, NIfTI, MHD, etc.). Each of the individual files can contain one or more labels (segments). Segments from different files are allowed to overlap. 
-* `--metaDataFileName`: JSON file containing the meta-information that describes the measurements to be encoded. The content of this file will be discussed in detail further.
-* `--outputSEGFileName`: file name of the SEG object that will keep the result.
+## Usage
+
+```
+   ./bin/itkimage2segimage  [--returnparameterfile <std::string>]
+                            [--processinformationaddress <std::string>]
+                            [--xml] [--echo] [--noskip] [--segImageFiles
+                            <std::vector<std::string>>] [--dicomImageFiles
+                            <std::vector<std::string>>] [--] [--version]
+                            [-h] <std::string> <std::string>
+
+
+Where:
+
+   --returnparameterfile <std::string>
+     Filename in which to write simple return parameters (int, float,
+     int-vector, etc.) as opposed to bulk return parameters (image,
+     geometry, transform, measurement, table).
+
+   --processinformationaddress <std::string>
+     Address of a structure to store process information (progress, abort,
+     etc.). (default: 0)
+
+   --xml
+     Produce xml description of command line arguments (default: 0)
+
+   --echo
+     Echo the command line arguments (default: 0)
+
+   --noskip
+     Don't skip empty slices while encoding segmentation image. By default,
+     empty slices will not be encoded, resulting in a smaller output file
+     size. (default: 0)
+
+   --segImageFiles <std::vector<std::string>>
+     Comma-separated list of file names of the segmentation images in a
+     format readable by ITK (NRRD, NIfTI, MHD, etc.). Each of the
+     individual files can contain one or more labels (segments). Segments
+     from different files are allowed to overlap. See documentation for
+     details.
+
+   --dicomImageFiles <std::vector<std::string>>
+     Comma-separated list of DICOM images that correspond to the original
+     image that was segmented. This means you must have access to the
+     original data in DICOM in order to use the converter (at least for
+     now).
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   <std::string>
+     (required)  JSON file containing the meta-information that describes
+     the measurements to be encoded. See documentation for details.
+
+   <std::string>
+     (required)  File name of the DICOM SEG object that will store the
+     result of conversion.
+```
+
+## Detailed usage
 
 Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/seg-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/examples/seg-example.json).
 

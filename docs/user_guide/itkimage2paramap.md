@@ -1,11 +1,68 @@
-# itkimage2paramap
+# `itkimage2paramap`
 
 `itkimage2paramap` can be used to convert a parametric map provided in any of the formats supported by ITK, such as NRRD or NIFTI, as a DICOM Parametric Map image object.
+
+## Usage
+
+```
+   ./bin/itkimage2paramap  [--returnparameterfile <std::string>]
+                           [--processinformationaddress <std::string>]
+                           [--xml] [--echo] [--outputParaMapFileName
+                           <std::string>] [--metaDataFileName
+                           <std::string>] [--dicomImageFileName
+                           <std::string>] [--] [--version] [-h]
+                           <std::string>
+
+
+Where:
+
+   --returnparameterfile <std::string>
+     Filename in which to write simple return parameters (int, float,
+     int-vector, etc.) as opposed to bulk return parameters (image,
+     geometry, transform, measurement, table).
+
+   --processinformationaddress <std::string>
+     Address of a structure to store process information (progress, abort,
+     etc.). (default: 0)
+
+   --xml
+     Produce xml description of command line arguments (default: 0)
+
+   --echo
+     Echo the command line arguments (default: 0)
+
+   --outputParaMapFileName <std::string>
+     File name of the DICOM Parametric map object with the result of the
+     conversion.
+
+   --metaDataFileName <std::string>
+     File name of the JSON files containing metadata attributes.
+
+   --dicomImageFileName <std::string>
+     File name of the DICOM image file that should be used to populate the
+     composite context (attributes related to the patient and imaging
+     study).
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   <std::string>
+     (required)  File name of the parametric map image in a format readable
+     by ITK (NRRD, NIfTI, MHD, etc.).
+```
 
 * `--inputFileName`: file name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).
 * `--dicomImageFileName`: file name of the DICOM image file which has been used as a reference image while creating this parametric map
 * `--metaDataFileName`: file names of the text files containing metadata attributes.
 * `--outputParaMapFileName`: file name of the parametric map object that will keep the result.
+
+## Detailed usage
 
 Most of the effort will be required to populate the content of the meta-information JSON file. Its structure is defined by [this](https://github.com/QIICR/dcmqi/blob/master/doc/schemas/pm-schema.json) JSON-Schema file. Interpretation of JSON-Schema may require some effort, especially considering that this particular file uses externally defined items. It may be easier to start with an example JSON file that "instantiates" this schema, such as [this one](https://github.com/QIICR/dcmqi/blob/master/doc/examples/pm-example.json).
 
