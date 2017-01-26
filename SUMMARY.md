@@ -10,7 +10,7 @@
     * [Segmentations](docs/user_guide/seg.md)
       * [itkimage2segimage](docs/user_guide/itkimage2segimage.md)
       * [segimage2itkimage](docs/user_guide/segimage2itkimage.md)
-    * [Segmentation-based measurements](docs/user_guide/sr.md)
+    * [Measurements](docs/user_guide/sr.md)
       * [tid1500writer](docs/user_guide/tid1500writer.md)
       * [tid1500reader](docs/user_guide/tid1500reader.md)
     * [Parametric maps](docs/user_guide/dicom-parametric-map-support.md)
