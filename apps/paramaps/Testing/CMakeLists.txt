@@ -26,8 +26,8 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
     --inputImage ${BASELINE}/pm-example.nrrd
-    --outputDICOM ${TEMP_DIR}/paramap.dcm
     --inputDICOM ${BASELINE}/pm-example-slice.dcm
+    --outputDICOM ${TEMP_DIR}/paramap.dcm
   )
 
 dcmqi_add_test(
@@ -36,8 +36,8 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${MODULE_NAME}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
     --inputImage ${BASELINE}/pm-example-float.nrrd
-    --outputDICOM ${TEMP_DIR}/paramap-float.dcm
     --inputDICOM ${BASELINE}/pm-example-slice.dcm
+    --outputDICOM ${TEMP_DIR}/paramap-float.dcm
   )
 
 #-----------------------------------------------------------------------------

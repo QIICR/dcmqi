@@ -19,9 +19,9 @@ dcmqi_add_test(
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-example.json
-    --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
     --imageLibraryDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
     --compositeContextDirectory ${CMAKE_SOURCE_DIR}/data/sr-example
+    --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
   )
 
 dcmqi_add_test(
@@ -29,9 +29,9 @@ dcmqi_add_test(
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-ct-liver-example.json
-    --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
     --imageLibraryDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
     --compositeContextDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
+    --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
   )
 
 
