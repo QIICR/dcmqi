@@ -31,7 +31,7 @@
       <name>compositeContextDataDir</name>
       <label>Composite context DICOM data dir</label>
       <channel>input</channel>
-      <longflag>compositeContextDirectory</longflag>
+      <longflag>inputCompositeContextDirectory</longflag>
       <description>Location of input DICOM Data to be used for populating composite context. See documentation.</description>
     </file>
 
@@ -39,7 +39,7 @@
       <name>imageLibraryDataDir</name>
       <label>Image library DICOM data dir</label>
       <channel>input</channel>
-      <longflag>imageLibraryDirectory</longflag>
+      <longflag>inputImageLibraryDirectory</longflag>
       <description>Location of input DICOM Data to be used for populating image library. See documentation.</description>
     </file>
 
