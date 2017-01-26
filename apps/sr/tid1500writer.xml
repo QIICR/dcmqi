@@ -2,7 +2,7 @@
 <executable>
   <category>Informatics</category>
   <title>DICOM Measurements reporting</title>
-  <description>convert a DICOM Structured Report (template TID1500) into a human readable representation by means of the JSON file format.</description>
+  <description>This tool can be used to save measurements calculated from the image over a volume defined by image segmentation into a DICOM Structured Report that follows [template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500).</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
@@ -15,7 +15,16 @@
       <name>metaDataFileName</name>
       <label>JSON metadata file</label>
       <channel>input</channel>
-      <longflag>metaDataFileName</longflag>
+      <index>0</index>
+      <description>JSON file that contains the list of mesurements and other meta data items that can be specified by the user. See documentation for details.</description>
+    </file>
+
+    <file>
+      <name>outputFileName</name>
+      <label>Output DICOM SR file name</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description>File name of the DICOM SR object that will store the result of the conversion.</description>
     </file>
 
     <file>
@@ -23,7 +32,7 @@
       <label>Composite context DICOM data dir</label>
       <channel>input</channel>
       <longflag>compositeContextDataDir</longflag>
-      <description>Location of input DICOM Data to be used for populating composite context</description>
+      <description>Location of input DICOM Data to be used for populating composite context. See documentation.</description>
     </file>
 
     <file>
@@ -31,14 +40,7 @@
       <label>Image library DICOM data dir</label>
       <channel>input</channel>
       <longflag>imageLibraryDataDir</longflag>
-      <description>Location of input DICOM Data to be used for populating image library</description>
-    </file>
-
-    <file>
-      <name>outputFileName</name>
-      <label>Output DICOM SR file name</label>
-      <channel>output</channel>
-      <longflag>outputFileName</longflag>
+      <description>Location of input DICOM Data to be used for populating image library. See documentation.</description>
     </file>
 
   </parameters>
