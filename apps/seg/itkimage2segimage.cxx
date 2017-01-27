@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                        (std::istreambuf_iterator<char>()));
-  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, !noSkipEmptySlices);
+  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
   if (result == NULL){
     return EXIT_FAILURE;

@@ -2,7 +2,7 @@
 <executable>
   <category>Informatics</category>
   <title>Convert DICOM SEG into ITK image</title>
-  <description>Convert a DICOM Segmentation Object into volumetric segmentation(s) stored as labeled pixels as NRRD file format + meta information stored in the JSON file format.</description>
+  <description>This tool can be used to convert DICOM Segmentation into volumetric segmentations stored as labeled pixels using research format, such as NRRD or NIfTI, and meta information stored in the JSON file format.</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
@@ -14,32 +14,32 @@
       <name>inputSEGFileName</name>
       <label>SEG file name</label>
       <channel>input</channel>
-      <index>0</index>
-      <description>File name of the SEG object.</description>
+      <longflag>inputDICOM</longflag>
+      <description>File name of the input DICOM Segmentation image object.</description>
     </file>
-
-    <string>
-      <name>prefix</name>
-      <label>Output prefix</label>
-      <flag>-p</flag>
-      <longflag>--prefix</longflag>
-      <description>Prefix for output files</description>
-      <default></default>
-    </string>
 
     <file>
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>input</channel>
-      <index>1</index>
-      <description>Directory to store individual segments as itk files. File names will correspond to the segment numbers.</description>
+      <longflag>outputDirectory</longflag>
+      <description>Directory to store individual segments saved using the output format specified files. When specified, file names will contain prefix, followed by the segment number.</description>
     </file>
+
+    <string>
+      <name>prefix</name>
+      <label>Output prefix</label>
+      <flag>p</flag>
+      <longflag>prefix</longflag>
+      <description>Prefix for output file.</description>
+      <default></default>
+    </string>
 
     <string-enumeration>
       <name>outputType</name>
-      <flag>-t</flag>
-      <longflag>--outputType</longflag>
-      <description>Output type of the resulting image data.</description>
+      <flag>t</flag>
+      <longflag>outputType</longflag>
+      <description>Output file format for the resulting image data.</description>
       <label>Output type</label>
       <default>nrrd</default>
       <element>nrrd</element>

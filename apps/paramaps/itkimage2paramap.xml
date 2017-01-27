@@ -2,7 +2,7 @@
 <executable>
   <category>Informatics.Converters</category>
   <title>Encode DICOM Parametric Map</title>
-  <description>Convert a parametric map provided in any of the formats supported by ITK, such as NRRD or NIFTI, as a DICOM Parametric Map image object.</description>
+  <description>Convert a parametric map provided in any of the formats supported by ITK, such as NRRD or NIFTI, into a DICOM Parametric Map image object.</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
@@ -10,38 +10,40 @@
   <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
   <parameters>
+
     <file>
       <name>inputFileName</name>
       <label>Parametric Map file name</label>
       <channel>input</channel>
-      <longflag>inputFileName</longflag>
+      <longflag>inputImage</longflag>
       <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
-    </file>
-
-    <file>
-      <name>dicomImageFileName</name>
-      <label>DICOM images file name</label>
-      <channel>input</channel>
-      <longflag>dicomImageFileName</longflag>
-      <default></default>
-      <description>File name of the DICOM image file which has been used </description>
     </file>
 
     <file>
       <name>metaDataFileName</name>
       <label>JSON metadata file</label>
       <channel>input</channel>
-      <longflag>metaDataFileName</longflag>
-      <description>File names of the text files containing metadata attributes.</description>
+      <longflag>inputMetadata</longflag>
+      <description>File name of the JSON files containing metadata attributes.</description>
     </file>
 
     <file>
       <name>outputParaMapFileName</name>
       <label>Parametric map file name</label>
       <channel>output</channel>
-      <longflag>outputParaMapFileName</longflag>
-      <description>File name of the parametric map object that will keep the result.</description>
+      <longflag>outputDICOM</longflag>
+      <description>File name of the DICOM Parametric map object with the result of the conversion.</description>
     </file>
+
+    <file>
+      <name>dicomImageFileName</name>
+      <label>DICOM images file name</label>
+      <channel>input</channel>
+      <longflag>inputDICOM</longflag>
+      <default></default>
+      <description>File name of the DICOM image file that should be used to populate the composite context (attributes related to the patient and imaging study).</description>
+    </file>
+
   </parameters>
 
 </executable>

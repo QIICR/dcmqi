@@ -2,7 +2,7 @@
 <executable>
   <category>Informatics.Converters</category>
   <title>Convert DICOM Parametric Map into ITK image</title>
-  <description>Convert a DICOM Parametric Map Image object into ITK image format including the generation of a json file holding meta information.</description>
+  <description>This tool can be used to convert a DICOM Parametric Map Image object into ITK image format, and generate a JSON file holding meta information.</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
   <license></license>
@@ -14,16 +14,16 @@
       <name>inputFileName</name>
       <label>Parametric Map DICOM file name</label>
       <channel>input</channel>
-      <longflag>inputFileName</longflag>
-      <description>File name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).</description>
+      <longflag>inputDICOM</longflag>
+      <description>File name of the DICOM Parametric map image.</description>
     </file>
 
     <directory>
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>output</channel>
-      <longflag>outputDirName</longflag>
-      <description>Directory to store parametric map as NRRD file.</description>
+      <longflag>outputDirectory</longflag>
+      <description>Directory to store parametric map in an ITK format, and the JSON metadata file.</description>
     </directory>
 
     <string-enumeration>
@@ -31,7 +31,7 @@
       <label>Output type</label>
       <flag>-t</flag>
       <longflag>--outputType</longflag>
-      <description>Output type of the resulting image data.</description>
+      <description>Output ITK format for the output image.</description>
       <default>nrrd</default>
       <element>nrrd</element>
       <element>mhd</element>
