@@ -11,4 +11,4 @@ We provide the following tools that can help you use dcmqi more effectively.
 * [dicom-dump](https://atom.io/packages/dicom-dump) is an extension for [Atom](http://atom.io) text editor that can be used to explore the content of DICOM data
 * [dcmqi validators](http://qiicr.org/dcmqi/#/validators) web app can be used to see examples of metadata JSON for specific object types, to explore the schema, and to validate your own metadata JSON against the schema
 
-You can check out our [Learning resources](docs/user_guide/resources.md) section for some reference material on the subject that we found helpful.
+You can check out our [Learning resources](resources.md) section for some reference material on the subject that we found helpful.
