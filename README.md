@@ -41,10 +41,7 @@ Note that dcmqi is under active development; command line arguments, schemas, ex
 
 # Acknowledgments
 
-This work is supported in part the National Institutes of Health, National  
-Cancer Institute, Informatics Technology for Cancer Research \(ITCR\) program,  
-grant Quantitative Image Informatics for Cancer Research \(QIICR\) \(U24  
-CA180918, PIs Kikinis and Fedorov\).
+This work is supported in part the National Institutes of Health, National   Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,   grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).
 
 # References
 
