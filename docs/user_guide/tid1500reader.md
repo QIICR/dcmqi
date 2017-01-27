@@ -5,27 +5,12 @@ This tool can be used to convert a DICOM Structured Report object that follows [
 ## Usage
 
 ```
-   --xml
-     Produce xml description of command line arguments (default: 0)
-
-   --echo
-     Echo the command line arguments (default: 0)
-
-   --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
-
-   --version
-     Displays version information and exits.
-
-   -h,  --help
-     Displays usage information and exits.
-
-   <std::string>
-     (required)  File name of the DICOM SR TID1500 object.
-
-   <std::string>
-     (required)  File name of the JSON file that will keep the metadata and
+   --outputMetadata <std::string>
+     File name of the JSON file that will keep the metadata and
      measurements information.
+
+   --inputDICOM <std::string>
+     File name of the DICOM SR TID1500 object.
 ```
 
 ## Example objects

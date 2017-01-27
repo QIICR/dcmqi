@@ -5,65 +5,32 @@
 ## Usage
 
 ```
-   ./bin/itkimage2segimage  [--returnparameterfile <std::string>]
-                            [--processinformationaddress <std::string>]
-                            [--xml] [--echo] [--noskip] [--segImageFiles
-                            <std::vector<std::string>>] [--dicomImageFiles
-                            <std::vector<std::string>>] [--] [--version]
-                            [-h] <std::string> <std::string>
 
+   --skip
+     Skip empty slices while encoding segmentation image. By default, empty
+     slices will not be encoded, resulting in a smaller output file size.
+     (default: 0)
 
-Where:
-
-   --returnparameterfile <std::string>
-     Filename in which to write simple return parameters (int, float,
-     int-vector, etc.) as opposed to bulk return parameters (image,
-     geometry, transform, measurement, table).
-
-   --processinformationaddress <std::string>
-     Address of a structure to store process information (progress, abort,
-     etc.). (default: 0)
-
-   --xml
-     Produce xml description of command line arguments (default: 0)
-
-   --echo
-     Echo the command line arguments (default: 0)
-
-   --noskip
-     Don't skip empty slices while encoding segmentation image. By default,
-     empty slices will not be encoded, resulting in a smaller output file
-     size. (default: 0)
-
-   --segImageFiles <std::vector<std::string>>
+   --inputImageList <std::vector<std::string>>
      Comma-separated list of file names of the segmentation images in a
      format readable by ITK (NRRD, NIfTI, MHD, etc.). Each of the
      individual files can contain one or more labels (segments). Segments
      from different files are allowed to overlap. See documentation for
      details.
 
-   --dicomImageFiles <std::vector<std::string>>
+   --inputDICOMList <std::vector<std::string>>
      Comma-separated list of DICOM images that correspond to the original
      image that was segmented. This means you must have access to the
      original data in DICOM in order to use the converter (at least for
      now).
 
-   --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+   --outputDICOM <std::string>
+     File name of the DICOM SEG object that will store the result of
+     conversion.
 
-   --version
-     Displays version information and exits.
-
-   -h,  --help
-     Displays usage information and exits.
-
-   <std::string>
-     (required)  JSON file containing the meta-information that describes
-     the measurements to be encoded. See documentation for details.
-
-   <std::string>
-     (required)  File name of the DICOM SEG object that will store the
-     result of conversion.
+   --inputMetadata <std::string>
+     JSON file containing the meta-information that describes the
+     measurements to be encoded. See documentation for details.
 ```
 
 ## Detailed usage

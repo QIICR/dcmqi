@@ -5,55 +5,22 @@ This tool can be used to save measurements calculated from the image over a volu
 ## Usage
 
 ```
-   ./bin/tid1500writer  [--returnparameterfile <std::string>]
-                        [--processinformationaddress <std::string>] [--xml]
-                        [--echo] [--imageLibraryDataDir <std::string>]
-                        [--compositeContextDataDir <std::string>] [--]
-                        [--version] [-h] <std::string> <std::string>
-
-
-Where:
-
-   --returnparameterfile <std::string>
-     Filename in which to write simple return parameters (int, float,
-     int-vector, etc.) as opposed to bulk return parameters (image,
-     geometry, transform, measurement, table).
-
-   --processinformationaddress <std::string>
-     Address of a structure to store process information (progress, abort,
-     etc.). (default: 0)
-
-   --xml
-     Produce xml description of command line arguments (default: 0)
-
-   --echo
-     Echo the command line arguments (default: 0)
-
-   --imageLibraryDataDir <std::string>
+   --inputImageLibraryDirectory <std::string>
      Location of input DICOM Data to be used for populating image library.
      See documentation.
 
-   --compositeContextDataDir <std::string>
+   --inputCompositeContextDirectory <std::string>
      Location of input DICOM Data to be used for populating composite
      context. See documentation.
 
-   --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+   --outputDICOM <std::string>
+     File name of the DICOM SR object that will store the result of the
+     conversion.
 
-   --version
-     Displays version information and exits.
-
-   -h,  --help
-     Displays usage information and exits.
-
-   <std::string>
-     (required)  JSON file that contains the list of mesurements and other
-     meta data items that can be specified by the user. See documentation
-     for details.
-
-   <std::string>
-     (required)  File name of the DICOM SR object that will store the
-     result of the conversion.
+   --inputMetadata <std::string>
+     JSON file that contains the list of mesurements and other meta data
+     items that can be specified by the user. See documentation for
+     details.
 ```
 
 ## Usage details

@@ -5,62 +5,22 @@
 ## Usage
 
 ```
-   ./bin/itkimage2paramap  [--returnparameterfile <std::string>]
-                           [--processinformationaddress <std::string>]
-                           [--xml] [--echo] [--outputParaMapFileName
-                           <std::string>] [--metaDataFileName
-                           <std::string>] [--dicomImageFileName
-                           <std::string>] [--] [--version] [-h]
-                           <std::string>
-
-
-Where:
-
-   --returnparameterfile <std::string>
-     Filename in which to write simple return parameters (int, float,
-     int-vector, etc.) as opposed to bulk return parameters (image,
-     geometry, transform, measurement, table).
-
-   --processinformationaddress <std::string>
-     Address of a structure to store process information (progress, abort,
-     etc.). (default: 0)
-
-   --xml
-     Produce xml description of command line arguments (default: 0)
-
-   --echo
-     Echo the command line arguments (default: 0)
-
-   --outputParaMapFileName <std::string>
-     File name of the DICOM Parametric map object with the result of the
-     conversion.
-
-   --metaDataFileName <std::string>
-     File name of the JSON files containing metadata attributes.
-
-   --dicomImageFileName <std::string>
+   --inputDICOM <std::string>
      File name of the DICOM image file that should be used to populate the
      composite context (attributes related to the patient and imaging
      study).
 
-   --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+   --outputDICOM <std::string>
+     File name of the DICOM Parametric map object with the result of the
+     conversion.
 
-   --version
-     Displays version information and exits.
+   --inputMetadata <std::string>
+     File name of the JSON files containing metadata attributes.
 
-   -h,  --help
-     Displays usage information and exits.
-
-   <std::string>
-     (required)  File name of the parametric map image in a format readable
-     by ITK (NRRD, NIfTI, MHD, etc.).
+   --inputImage <std::string>
+     File name of the parametric map image in a format readable by ITK
+     (NRRD, NIfTI, MHD, etc.).
 ```
-
-* `--inputFileName`: file name of the parametric map image in a format readable by ITK (NRRD, NIfTI, MHD, etc.).
-* `--dicomImageFileName`: file name of the DICOM image file which has been used as a reference image while creating this parametric map
-* `--metaDataFileName`: file names of the text files containing metadata attributes.
-* `--outputParaMapFileName`: file name of the parametric map object that will keep the result.
 
 ## Detailed usage
 
