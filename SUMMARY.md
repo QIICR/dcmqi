@@ -16,6 +16,7 @@
     * [Parametric maps](docs/user_guide/dicom-parametric-map-support.md)
       * [itkimage2paramap](docs/user_guide/itkimage2paramap.md)
       * [paramap2itkimage](docs/user_guide/paramap2itkimage.md)
+* [Open source credits](docs/opensource.md)
 
 
 
