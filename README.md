@@ -1,3 +1,8 @@
+[![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
+[![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
+[![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
+[![Docker](https://img.shields.io/docker/automated/qiicr/dcmqi.svg)](https://hub.docker.com/r/qiicr/dcmqi/)
+
 # Introduction
 
 dcmqi \(DICOM \(**dcm**\) for Quantitative Imaging \(**qi**\)\) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of quantitative image analysis research data using [DICOM standard](http://dicom.nema.org/standard.html).
@@ -10,14 +15,21 @@ Specifically, the current focus of development for dcmqi is to support conversio
 
 As an introduction to the motivation, capabilities and advantages of using the DICOM standard, and the objects mentioned above, you might want to read this open access paper:
 
+<<<<<<< HEAD
+> Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+=======
 Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. \(2016\) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. _PeerJ_ 4:e2057 [https://doi.org/10.7717/peerj.2057](https://doi.org/10.7717/peerj.2057)
 
 dcmqi is under active development. The functionality available is being refined, may \(and most likely, will\) change in the future, and may not work as expected. The organization of the documentation will also change in the future.
+>>>>>>> cf47e11d46d58df61f31c6a9f6db0b72f81a0f2d
 
 dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.  
 
 # Getting started
 
+<<<<<<< HEAD
+Installation and usage instructions are available in [dcmqi manual](https://qiicr.gitbooks.io/dcmqi).
+=======
 At the moment, we do not provide pre-built packages for dcmqi. If you want to give it a try, you will need to check out the source code and build it yourself.
 
 dcmqi is not platform specific. Our goal is to support its use on Windows, Mac and Linux.
@@ -25,6 +37,7 @@ dcmqi is not platform specific. Our goal is to support its use on Windows, Mac a
 In the future \(pending resolution of issues on the gitbooks platform\), instructions on how to build dcmqi and how to use it will be provided in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/).
 
 For now, please check out [dcmqi faq](https://github.com/QIICR/dcmqi-faq/issues) to find instructions on how to build dcmqi, and how to use certain components.
+>>>>>>> cf47e11d46d58df61f31c6a9f6db0b72f81a0f2d
 
 # License
 
@@ -37,7 +50,12 @@ Our goal is to support and encourage adoption of the DICOM standard in both acad
 We are most interested in the feedback of early testers and adopters. You can communicate you feedback, feature requests, comments or problem reports using any of the methods below:
 
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
+* post a question to [dcmqi google
+  group](https://groups.google.com/forum/#!forum/dcmqi)
 * send email to [Andrey Fedorov](http://fedorov.github.io)
+<<<<<<< HEAD
+* leave comments in the [dcmqi manual](https://qiicr.gitbooks.io/dcmqi)
+=======
 * leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/)
 
 Note that dcmqi is under active development; command line arguments, schemas, examples can \(and most likely, will\) change as we refined the software.
@@ -49,6 +67,7 @@ Indicators below can be used to check whether current version of dcmqi source co
 * Linux: [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi)
 * Windows: [![Build status](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi)
 * Mac OS X: [![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi)
+>>>>>>> cf47e11d46d58df61f31c6a9f6db0b72f81a0f2d
 
 # Acknowledgments
 
@@ -59,7 +78,11 @@ CA180918, PIs Kikinis and Fedorov\).
 
 # References
 
+<<<<<<< HEAD
+1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+=======
 1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. \(2016\) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. _PeerJ_ 4:e2057 [https://doi.org/10.7717/peerj.2057](https://doi.org/10.7717/peerj.2057)
 
 
 
+>>>>>>> cf47e11d46d58df61f31c6a9f6db0b72f81a0f2d
