@@ -37,7 +37,7 @@ We are most interested in the feedback of early testers and adopters. You can co
 * post a question to [dcmqi google group](https://groups.google.com/forum/\#!forum/dcmqi)
 * leave comments in the [dcmqi manual](https://qiicr.gitbooks.io/dcmqi)
 
-Note that dcmqi is under active development; command line arguments, schemas, examples can (and most likely, will) change as we refined the software.
+Note that dcmqi is under active development: command line arguments, schemas, examples can (and most likely, will) change as we refine the software.
 
 # Acknowledgments
 
