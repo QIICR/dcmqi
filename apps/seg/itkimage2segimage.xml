@@ -35,6 +35,14 @@
       <description>Comma-separated list of DICOM images that correspond to the original image that was segmented. This means you must have access to the original data in DICOM in order to use the converter (at least for now).</description>
     </string-vector>
 
+    <directory>
+      <name>dicomDirectory</name>
+      <label>DICOM images directory</label>
+      <channel>input</channel>
+      <longflag>inputDICOMDirectory</longflag>
+      <description>Directory with the DICOM files corresponding to the original image that was segmented.</description>
+    </directory>
+
     <string-vector>
       <name>segImageFiles</name>
       <label>Segmentation file names</label>
