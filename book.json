@@ -1,9 +1,8 @@
 { "plugins": ["anchorjs"],
   "pluginsConfig": {
     "anchorjs": {
-      "icon": "#",
       "placement": "left",
-      "visible": "always",
+      "visible": "hover",
       "class": "custom-class another-one"
     }
   }
