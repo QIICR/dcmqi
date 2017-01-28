@@ -2,8 +2,7 @@
   "pluginsConfig": {
     "anchorjs": {
       "placement": "left",
-      "visible": "hover",
-      "class": "custom-class another-one"
+      "visible": "hover"
     }
   }
 }
