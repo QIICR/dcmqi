@@ -21,7 +21,7 @@ dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
 
 # Getting started
 
-Installation and usage instructions are available in [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/).
+Installation and usage instructions are available in [dcmqi gitbook manual](https://qiicr.gitbooks.io/dcmqi-guide).
 
 # License
 
@@ -36,7 +36,7 @@ You can communicate you feedback, feature requests, comments or problem reports 
 * post a question to [dcmqi google
   group](https://groups.google.com/forum/#!forum/dcmqi)
 * send email to [Andrey Fedorov](http://fedorov.github.io)
-* leave comments in the [dcmqi gitbook manual](https://fedorov.gitbooks.io/dcmqi/content/v/gitbook/)
+* leave comments in the [dcmqi gitbook manual](https://qiicr.gitbooks.io/dcmqi-guide)
 
 # Acknowledgments
 
