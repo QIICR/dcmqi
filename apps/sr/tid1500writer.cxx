@@ -266,6 +266,11 @@ int main(int argc, char** argv){
     DcmDate::getCurrentDate(contentDate);
     DcmTime::getCurrentTime(contentTime);
 
+    CHECK_COND(doc.setManufacturer(QIICR_MANUFACTURER));
+    CHECK_COND(doc.setDeviceSerialNumber(QIICR_DEVICE_SERIAL_NUMBER));
+    CHECK_COND(doc.setManufacturerModelName(QIICR_MANUFACTURER_MODEL_NAME));
+    CHECK_COND(doc.setSoftwareVersions(QIICR_SOFTWARE_VERSIONS));
+
     CHECK_COND(doc.setSeriesDate(contentDate.c_str()));
     CHECK_COND(doc.setSeriesTime(contentTime.c_str()));
 
