@@ -21,9 +21,9 @@ before_build:
   - ps: |
         $client = new-object System.Net.WebClient;
         $client.DownloadFile("http://slicer.kitware.com/midas3/download/item/270309/dicom3tools_winexe_1.00.snapshot.20161218101718.zip",          "C:\dicom3tools.zip")
-        $client.DownloadFile("https://github.com/fedorov/zlib/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release/zlib-dcmqi.zip",                  "C:\zlib-dcmqi.zip")
-        $client.DownloadFile("https://github.com/QIICR/dcmtk/releases/download/DCMTK-dcmqi-3.6.1_20161102-VS12-Win64-Release-v0.0.8/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
-        $client.DownloadFile("https://github.com/fedorov/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.23/ITK-dcmqi.zip",             "C:\ITK-dcmqi.zip")
+        $client.DownloadFile("https://github.com/qiicr/zlib-dcmqi/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release-static/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
+        $client.DownloadFile("https://github.com/qiicr/dcmtk-dcmqi/releases/download/DCMTK-dcmqi-3.6.1_20161102-VS12-Win64-Release-v0.0.11-static/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
+        $client.DownloadFile("https://github.com/qiicr/ITK-dcmqi/releases/download/ITK-dcmqi-VS12-Win64-Release-v0.0.25-static/ITK-dcmqi.zip",             "C:\ITK-dcmqi.zip")
   # Extract
   - |
     7z x C:\dicom3tools.zip -oC:\dicom3tools
