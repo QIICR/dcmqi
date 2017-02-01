@@ -35,7 +35,7 @@ namespace dcmqi {
   class ParaMapConverter : public ConverterBase {
 
   public:
-    static DcmDataset* itkimage2paramap(const ImageType::Pointer &parametricMapImage, DcmDataset* dcmDataset,
+    static DcmDataset* itkimage2paramap(const ImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                         const string &metaData);
 
     static pair <ImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);

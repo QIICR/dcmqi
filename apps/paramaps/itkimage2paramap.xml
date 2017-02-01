@@ -35,13 +35,22 @@
       <description>File name of the DICOM Parametric map object with the result of the conversion.</description>
     </file>
 
-    <file>
-      <name>dicomImageFileName</name>
+    <string-vector>
+      <name>dicomImageFileList</name>
       <label>DICOM images file name</label>
       <channel>input</channel>
-      <longflag>inputDICOM</longflag>
+      <longflag>inputDICOMList</longflag>
       <default></default>
       <description>File name of the DICOM image file that should be used to populate the composite context (attributes related to the patient and imaging study).</description>
+    </string-vector>
+
+    <file>
+      <name>dicomDirectory</name>
+      <label>Source DICOM directory</label>
+      <channel>input</channel>
+      <longflag>inputDICOMDirectory</longflag>
+      <default></default>
+      <description>Directory with the source DICOM images that were used to generate the parametric map.</description>
     </file>
 
   </parameters>

@@ -10,7 +10,7 @@ using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ParaMapConverter::itkimage2paramap(const ImageType::Pointer &parametricMapImage, DcmDataset* dcmDataset,
+  DcmDataset* ParaMapConverter::itkimage2paramap(const ImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                          const string &metaData) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
@@ -50,8 +50,12 @@ namespace dcmqi {
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    if (dcmDataset != NULL)
-      CHECK_COND(pMapDoc->import(*dcmDataset, OFTrue, OFTrue, OFFalse, OFTrue));
+    DcmDataset* srcDataset = NULL;
+    if(dcmDatasets.size()){
+      srcDataset = dcmDatasets[0];
+    }
+    if (srcDataset)
+      CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -232,9 +236,9 @@ namespace dcmqi {
 
   {
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
-    if(dcmDataset != NULL && bodyPartAssigned.empty()) {
+    if(srcDataset != NULL && bodyPartAssigned.empty()) {
       OFString bodyPartStr;
-      if(dcmDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
+      if(srcDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
         if (!bodyPartStr.empty())
           bodyPartAssigned = bodyPartStr.c_str();
       }
