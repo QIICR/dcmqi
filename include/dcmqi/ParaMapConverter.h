@@ -40,7 +40,7 @@ namespace dcmqi {
     static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
   protected:
     static OFCondition addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
-                                const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
+                                const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo, OFVector<FGBase*> perFrameGroups);
 
     static void populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
                                                  JSONParametricMapMetaInformationHandler &metaInfo);

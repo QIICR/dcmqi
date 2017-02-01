@@ -7,6 +7,8 @@
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/ImageSEGConverter.h"
 
+#define MAKE_REFS 0
+#define ADD_DERIMG 0
 
 using namespace std;
 
@@ -58,26 +60,6 @@ namespace dcmqi {
     }
     if (srcDataset)
       CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
-
-    /* Map referenced instances to the ITK parametric map slices */
-    // this is a hack - the function below needs to be factored out
-    vector<vector<int> > sliceMapping;
-    {
-
-      typedef itk::CastImageFilter<FloatImageType,ShortImageType> CastFilterType;
-      CastFilterType::Pointer cast = CastFilterType::New();
-      cast->SetInput(parametricMapImage);
-      cast->Update();
-      sliceMapping = ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
-      cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
-      for(int i=0;i<sliceMapping.size();i++){
-        cout << "  Slice " << i << ": ";
-        for(int j=0;j<sliceMapping[i].size();j++){
-          cout << sliceMapping[i][j] << " ";
-        }
-        cout << endl;
-      }
-    }
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -252,11 +234,163 @@ namespace dcmqi {
     rwvmFG.getRealWorldValueMapping().push_back(realWorldValueMappingItem);
     CHECK_COND(pMapDoc->addForAllFrames(rwvmFG));
 
-    for (unsigned long f = 0; result.good() && (f < inputSize[2]); f++) {
-      result = addFrame(*pMapDoc, parametricMapImage, metaInfo, f);
+    /* Map referenced instances to the ITK parametric map slices */
+    // this is a hack - the function below needs to be factored out
+    vector<vector<int> > slice2derimg;
+    {
+
+      typedef itk::CastImageFilter<FloatImageType,ShortImageType> CastFilterType;
+      CastFilterType::Pointer cast = CastFilterType::New();
+      cast->SetInput(parametricMapImage);
+      cast->Update();
+      slice2derimg = ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
+      cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
+      for(int i=0;i<slice2derimg.size();i++){
+        cout << "  Slice " << i << ": ";
+        for(int j=0;j<slice2derimg[i].size();j++){
+          cout << slice2derimg[i][j] << " ";
+        }
+        cout << endl;
+      }
     }
 
-  {
+#if MAKE_REFS
+    IODCommonInstanceReferenceModule &commref = pMapDoc->getCommonInstanceReference();
+    OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
+
+    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem refseriesItem;
+    refseries.push_back(&refseriesItem);
+
+    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
+
+    OFString seriesInstanceUID, classUID;
+
+    CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
+    CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
+#endif
+
+    FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
+    FGFrameContent* fgfc = new FGFrameContent();
+    OFVector<FGBase*> perFrameFGs;
+
+    perFrameFGs.push_back(fgppp);
+    perFrameFGs.push_back(fgfc);
+
+    for (unsigned long sliceNumber = 0; result.good() && (sliceNumber < inputSize[2]); sliceNumber++) {
+
+      OFVector<DcmDataset*> siVector;
+      for(size_t derImageInstanceNum=0;
+          derImageInstanceNum<slice2derimg[sliceNumber].size();
+          derImageInstanceNum++){
+        siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
+      }
+
+      int uidfound = 0, uidnotfound = 0;
+      FGDerivationImage* fgder = NULL;
+
+      if(siVector.size()>0){
+
+        set<OFString> instanceUIDs;
+
+        fgder = new FGDerivationImage();
+        perFrameFGs.push_back(fgder);
+
+        DerivationImageItem *derimgItem;
+
+        // TODO: I know David will not like this ...
+        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"",derimgItem));
+
+        cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+
+        OFVector<SourceImageItem*> srcimgItems;
+        CHECK_COND(derimgItem->addSourceImageItems(siVector,
+                                                 CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                 srcimgItems));
+
+#if MAKE_REFS
+        {
+          // initialize class UID and series instance UID
+          ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
+          OFString instanceUID;
+
+          CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
+          CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
+
+          if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
+            SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+            CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
+            CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
+            refinstances.push_back(refinstancesItem);
+            instanceUIDs.insert(instanceUID);
+            uidnotfound++;
+          } else {
+            uidfound++;
+          }
+        }
+#endif
+
+      }
+
+
+      //result = addFrame(*pMapDoc, parametricMapImage, metaInfo, sliceNumber, perFrameFGs);
+
+      // addFrame
+      {
+        FloatImageType::RegionType sliceRegion;
+        FloatImageType::IndexType sliceIndex;
+        FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
+
+        sliceIndex[0] = 0;
+        sliceIndex[1] = 0;
+        sliceIndex[2] = sliceNumber;
+
+        inputSize[2] = 1;
+
+        sliceRegion.SetIndex(sliceIndex);
+        sliceRegion.SetSize(inputSize);
+
+        const unsigned frameSize = inputSize[0] * inputSize[1];
+
+        OFVector<IODFloatingPointImagePixelModule::value_type> data(frameSize);
+
+        itk::ImageRegionConstIteratorWithIndex<FloatImageType> sliceIterator(parametricMapImage, sliceRegion);
+
+        unsigned framePixelCnt = 0;
+        for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd(); ++sliceIterator, ++framePixelCnt){
+          data[framePixelCnt] = sliceIterator.Get();
+          FloatImageType::IndexType idx = sliceIterator.GetIndex();
+          //      cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
+        }
+
+        // Plane Position
+        FloatImageType::PointType sliceOriginPoint;
+        parametricMapImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
+        fgppp->setImagePositionPatient(
+            Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
+            Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
+            Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+
+        // Frame Content
+        OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
+
+#if ADD_DERIMG
+        if(fgder)
+          perFrameFGs.push_back(fgder);
+#endif
+
+        DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
+        result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
+
+        cout << "Frame " << sliceNumber << " added" << endl;
+      }
+
+      // remove derivation image FG from the per-frame FGs, only if applicable!
+      if(fgder){
+        perFrameFGs.pop_back();
+        delete fgder;
+      }
+    }
+
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
     if(srcDataset != NULL && bodyPartAssigned.empty()) {
       OFString bodyPartStr;
@@ -267,25 +401,26 @@ namespace dcmqi {
     }
     if(!bodyPartAssigned.empty())
       pMapDoc->getIODGeneralSeriesModule().setBodyPartExamined(bodyPartAssigned.c_str());
-  }
 
-  // SeriesDate/Time should be of when parametric map was taken; initialize to when it was saved
-  {
-    OFString contentDate, contentTime;
-    DcmDate::getCurrentDate(contentDate);
-    DcmTime::getCurrentTime(contentTime);
 
-    pMapDoc->getSeries().setSeriesDate(contentDate.c_str());
-    pMapDoc->getSeries().setSeriesTime(contentTime.c_str());
-    pMapDoc->getGeneralImage().setContentDate(contentDate.c_str());
-    pMapDoc->getGeneralImage().setContentTime(contentTime.c_str());
-  }
-  pMapDoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
-  pMapDoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+    // SeriesDate/Time should be of when parametric map was taken; initialize to when it was saved
+    {
+      OFString contentDate, contentTime;
+      DcmDate::getCurrentDate(contentDate);
+      DcmTime::getCurrentTime(contentTime);
 
-  DcmDataset* output = new DcmDataset();
-  CHECK_COND(pMapDoc->writeDataset(*output));
-  return output;
+      pMapDoc->getSeries().setSeriesDate(contentDate.c_str());
+      pMapDoc->getSeries().setSeriesTime(contentTime.c_str());
+      pMapDoc->getGeneralImage().setContentDate(contentDate.c_str());
+      pMapDoc->getGeneralImage().setContentTime(contentTime.c_str());
+    }
+
+    pMapDoc->getSeries().setSeriesDescription(metaInfo.getSeriesDescription().c_str());
+    pMapDoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
+
+    DcmDataset* output = new DcmDataset();
+    CHECK_COND(pMapDoc->writeDataset(*output));
+    return output;
   }
 
   pair <FloatImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
@@ -406,7 +541,7 @@ namespace dcmqi {
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                          const JSONParametricMapMetaInformationHandler &metaInfo,
-                                         const unsigned long frameNo)
+                                         const unsigned long frameNo, OFVector<FGBase*> groups)
   {
     FloatImageType::RegionType sliceRegion;
     FloatImageType::IndexType sliceIndex;
@@ -434,7 +569,6 @@ namespace dcmqi {
 //      cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
     }
 
-    OFVector<FGBase*> groups;
     OFunique_ptr<FGPlanePosPatient> fgPlanePos(new FGPlanePosPatient);
     OFunique_ptr<FGFrameContent > fgFracon(new FGFrameContent);
     if (!fgPlanePos  || !fgFracon)
