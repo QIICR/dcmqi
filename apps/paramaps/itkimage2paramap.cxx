@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  ReaderType::Pointer reader = ReaderType::New();
+  FloatReaderType::Pointer reader = FloatReaderType::New();
   reader->SetFileName(inputFileName.c_str());
   reader->Update();
-  ImageType::Pointer parametricMapImage = reader->GetOutput();
+  FloatImageType::Pointer parametricMapImage = reader->GetOutput();
 
   vector<DcmDataset*> dcmDatasets;
 

@@ -14,14 +14,14 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <map<unsigned,ImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
+  pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
 
   string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
   string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
 
-  for(map<unsigned,ImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
-    typedef itk::ImageFileWriter<ImageType> WriterType;
+  for(map<unsigned,ShortImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
+    typedef itk::ImageFileWriter<ShortImageType> WriterType;
     stringstream imageFileNameSStream;
 
     imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;

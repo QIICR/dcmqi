@@ -6,11 +6,11 @@
 namespace dcmqi {
 
   DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                                                          vector<ImageType::Pointer> segmentations,
+                                                          vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices) {
 
-    ImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
+    ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
@@ -50,7 +50,7 @@ namespace dcmqi {
 
     // Shared FGs: PlaneOrientationPatientSequence
     {
-      ImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
+      ShortImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
       cout << "Directions: " << labelDirMatrix << endl;
 
@@ -70,7 +70,7 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
+      ShortImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
       ostringstream spacingSStream;
       spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -119,7 +119,7 @@ namespace dcmqi {
       l2lm->Update();
 
       typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
-      typedef itk::LabelStatisticsImageFilter<ImageType,ImageType> LabelStatisticsType;
+      typedef itk::LabelStatisticsImageFilter<ShortImageType,ShortImageType> LabelStatisticsType;
 
       LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
 
@@ -131,7 +131,7 @@ namespace dcmqi {
       bool cropSegmentsBBox = false;
       if(cropSegmentsBBox){
         cout << "WARNING: Crop operation enabled - WIP" << endl;
-        typedef itk::BinaryThresholdImageFilter<ImageType,ImageType> ThresholdType;
+        typedef itk::BinaryThresholdImageFilter<ShortImageType,ShortImageType> ThresholdType;
         ThresholdType::Pointer thresh = ThresholdType::New();
         thresh->SetInput(segmentations[segFileNumber]);
         thresh->SetLowerThreshold(1);
@@ -263,15 +263,15 @@ namespace dcmqi {
 
           // PerFrame FG: PlanePositionSequence
           {
-            ImageType::PointType sliceOriginPoint;
-            ImageType::IndexType sliceOriginIndex;
+            ShortImageType::PointType sliceOriginPoint;
+            ShortImageType::IndexType sliceOriginIndex;
             sliceOriginIndex.Fill(0);
             sliceOriginIndex[2] = sliceNumber;
             segmentations[segFileNumber]->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
             ostringstream pppSStream;
             if(sliceNumber>0){
-              ImageType::PointType prevOrigin;
-              ImageType::IndexType prevIndex;
+              ShortImageType::PointType prevOrigin;
+              ShortImageType::IndexType prevIndex;
               prevIndex.Fill(0);
               prevIndex[2] = sliceNumber-1;
               segmentations[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
@@ -284,9 +284,9 @@ namespace dcmqi {
 
           /* Add frame that references this segment */
           {
-            ImageType::RegionType sliceRegion;
-            ImageType::IndexType sliceIndex;
-            ImageType::SizeType sliceSize;
+            ShortImageType::RegionType sliceRegion;
+            ShortImageType::IndexType sliceIndex;
+            ShortImageType::SizeType sliceSize;
 
             sliceIndex[0] = 0;
             sliceIndex[1] = 0;
@@ -300,11 +300,11 @@ namespace dcmqi {
             sliceRegion.SetSize(sliceSize);
 
             unsigned framePixelCnt = 0;
-            itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(segmentations[segFileNumber], sliceRegion);
+            itk::ImageRegionConstIteratorWithIndex<ShortImageType> sliceIterator(segmentations[segFileNumber], sliceRegion);
             for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
               if(sliceIterator.Get() == label){
                 frameData[framePixelCnt] = 1;
-                ImageType::IndexType idx = sliceIterator.GetIndex();
+                ShortImageType::IndexType idx = sliceIterator.GetIndex();
                 //cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
               } else
                 frameData[framePixelCnt] = 0;
@@ -429,10 +429,11 @@ namespace dcmqi {
   }
 
 
-  pair <map<unsigned,ImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
+  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
+    OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
     DcmSegmentation *segdoc = NULL;
@@ -444,7 +445,7 @@ namespace dcmqi {
 
     // Directions
     FGInterface &fgInterface = segdoc->getFunctionalGroups();
-    ImageType::DirectionType direction;
+    ShortImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
       cerr << "Failed to get image directions" << endl;
       throw -1;
@@ -457,13 +458,13 @@ namespace dcmqi {
     sliceDirection[1] = direction[1][2];
     sliceDirection[2] = direction[2][2];
 
-    ImageType::PointType imageOrigin;
+    ShortImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
       cerr << "Failed to compute origin and/or slice spacing!" << endl;
       throw -1;
     }
 
-    ImageType::SpacingType imageSpacing;
+    ShortImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
       cerr << "Failed to get image spacing from DICOM!" << endl;
@@ -476,7 +477,7 @@ namespace dcmqi {
     }
 
     // Region size
-    ImageType::SizeType imageSize;
+    ShortImageType::SizeType imageSize;
     {
       OFString str;
       if(segDataset->findAndGetOFString(DCM_Rows, str).good()){
@@ -490,9 +491,9 @@ namespace dcmqi {
     imageSize[2] = ceil(computedVolumeExtent/imageSpacing[2])+1;
 
     // Initialize the image
-    ImageType::RegionType imageRegion;
+    ShortImageType::RegionType imageRegion;
     imageRegion.SetSize(imageSize);
-    ImageType::Pointer segImage = ImageType::New();
+    ShortImageType::Pointer segImage = ShortImageType::New();
     segImage->SetRegions(imageRegion);
     segImage->SetOrigin(imageOrigin);
     segImage->SetSpacing(imageSpacing);
@@ -501,7 +502,7 @@ namespace dcmqi {
     segImage->FillBuffer(0);
 
     // ITK images corresponding to the individual segments
-    map<unsigned,ImageType::Pointer> segment2image;
+    map<unsigned,ShortImageType::Pointer> segment2image;
 
     // Iterate over frames, find the matching slice for each of the frames based on
     // ImagePositionPatient, set non-zero pixels to the segment number. Notify
@@ -545,11 +546,11 @@ namespace dcmqi {
       }
 
       if(segment2image.find(segmentId) == segment2image.end()){
-        typedef itk::ImageDuplicator<ImageType> DuplicatorType;
+        typedef itk::ImageDuplicator<ShortImageType> DuplicatorType;
         DuplicatorType::Pointer dup = DuplicatorType::New();
         dup->SetInputImage(segImage);
         dup->Update();
-        ImageType::Pointer newSegmentImage = dup->GetOutput();
+        ShortImageType::Pointer newSegmentImage = dup->GetOutput();
         newSegmentImage->FillBuffer(0);
         segment2image[segmentId] = newSegmentImage;
       }
@@ -635,8 +636,8 @@ namespace dcmqi {
       }
 
       // get string representation of the frame origin
-      ImageType::PointType frameOriginPoint;
-      ImageType::IndexType frameOriginIndex;
+      ShortImageType::PointType frameOriginPoint;
+      ShortImageType::IndexType frameOriginIndex;
       for(int j=0;j<3;j++){
         OFString planposStr;
         if(planposfg->getImagePositionPatient(planposStr, j).good()){
@@ -663,12 +664,12 @@ namespace dcmqi {
       // initialize slice with the frame content
       for(unsigned row=0;row<imageSize[1];row++){
         for(unsigned col=0;col<imageSize[0];col++){
-          ImageType::PixelType pixel;
+          ShortImageType::PixelType pixel;
           unsigned bitCnt = row*imageSize[0]+col;
           pixel = unpackedFrame->pixData[bitCnt];
 
           if(pixel!=0){
-            ImageType::IndexType index;
+            ShortImageType::IndexType index;
             index[0] = col;
             index[1] = row;
             index[2] = slice;
@@ -681,7 +682,7 @@ namespace dcmqi {
         delete unpackedFrame;
     }
 
-    return pair <map<unsigned,ImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
+    return pair <map<unsigned,ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
   }
 
   vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
@@ -692,8 +693,8 @@ namespace dcmqi {
     vector<vector<int> > slice2derimg(numLabelSlices);
     for(size_t i=0;i<dcmDatasets.size();i++){
       OFString ippStr;
-      ImageType::PointType ippPoint;
-      ImageType::IndexType ippIndex;
+      ShortImageType::PointType ippPoint;
+      ShortImageType::IndexType ippIndex;
       for(int j=0;j<3;j++){
         CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
         ippPoint[j] = atof(ippStr.c_str());

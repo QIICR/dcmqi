@@ -1,16 +1,18 @@
 
 // ITK includes
 #include <itkImageDuplicator.h>
+#include <itkCastImageFilter.h>
 
 // DCMQI includes
 #include "dcmqi/ParaMapConverter.h"
+#include "dcmqi/ImageSEGConverter.h"
 
 
 using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ParaMapConverter::itkimage2paramap(const ImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+  DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                          const string &metaData) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
@@ -37,7 +39,7 @@ namespace dcmqi {
     // TODO: initialize modality from the source / add to schema?
     OFString modality = "MR";
 
-    ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
+    FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
     OFvariant<OFCondition,DPMParametricMapIOD> obj =
@@ -57,6 +59,26 @@ namespace dcmqi {
     if (srcDataset)
       CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
 
+    /* Map referenced instances to the ITK parametric map slices */
+    // this is a hack - the function below needs to be factored out
+    vector<vector<int> > sliceMapping;
+    {
+
+      typedef itk::CastImageFilter<FloatImageType,ShortImageType> CastFilterType;
+      CastFilterType::Pointer cast = CastFilterType::New();
+      cast->SetInput(parametricMapImage);
+      cast->Update();
+      sliceMapping = ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
+      cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
+      for(int i=0;i<sliceMapping.size();i++){
+        cout << "  Slice " << i << ": ";
+        for(int j=0;j<sliceMapping[i].size();j++){
+          cout << sliceMapping[i][j] << " ";
+        }
+        cout << endl;
+      }
+    }
+
     /* Initialize dimension module */
     char dimUID[128];
     dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
@@ -68,7 +90,7 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ImageType::SpacingType labelSpacing = parametricMapImage->GetSpacing();
+      FloatImageType::SpacingType labelSpacing = parametricMapImage->GetSpacing();
       ostringstream spacingSStream;
       spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -84,7 +106,7 @@ namespace dcmqi {
     {
       OFString imageOrientationPatientStr;
 
-      ImageType::DirectionType labelDirMatrix = parametricMapImage->GetDirection();
+      FloatImageType::DirectionType labelDirMatrix = parametricMapImage->GetDirection();
 
       cout << "Directions: " << labelDirMatrix << endl;
 
@@ -266,10 +288,11 @@ namespace dcmqi {
   return output;
   }
 
-  pair <ImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
+  pair <FloatImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
+    OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
@@ -281,7 +304,7 @@ namespace dcmqi {
 
     // Directions
     FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
-    ImageType::DirectionType direction;
+    FloatImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
       cerr << "Failed to get image directions" << endl;
       throw -1;
@@ -294,13 +317,13 @@ namespace dcmqi {
     sliceDirection[1] = direction[1][2];
     sliceDirection[2] = direction[2][2];
 
-    ImageType::PointType imageOrigin;
+    FloatImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
       cerr << "Failed to compute origin and/or slice spacing!" << endl;
       throw -1;
     }
 
-    ImageType::SpacingType imageSpacing;
+    FloatImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
       cerr << "Failed to get image spacing from DICOM!" << endl;
@@ -316,7 +339,7 @@ namespace dcmqi {
     }
 
     // Region size
-    ImageType::SizeType imageSize;
+    FloatImageType::SizeType imageSize;
     {
       OFString str;
 
@@ -327,9 +350,9 @@ namespace dcmqi {
     }
     imageSize[2] = fgInterface.getNumberOfFrames();
 
-    ImageType::RegionType imageRegion;
+    FloatImageType::RegionType imageRegion;
     imageRegion.SetSize(imageSize);
-    ImageType::Pointer pmImage = ImageType::New();
+    FloatImageType::Pointer pmImage = FloatImageType::New();
     pmImage->SetRegions(imageRegion);
     pmImage->SetOrigin(imageOrigin);
     pmImage->SetSpacing(imageSpacing);
@@ -345,11 +368,11 @@ namespace dcmqi {
       throw -1;
     }
 
-    DPMParametricMapIOD::Frames<PixelType> frames = *OFget<DPMParametricMapIOD::Frames<PixelType> >(&obj);
+    DPMParametricMapIOD::Frames<FloatPixelType> frames = *OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&obj);
 
     for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
 
-      PixelType *frame = frames.getFrame(frameId);
+      FloatPixelType *frame = frames.getFrame(frameId);
 
       bool isPerFrame;
 
@@ -365,7 +388,7 @@ namespace dcmqi {
       {
       }
 
-      ImageType::IndexType index;
+      FloatImageType::IndexType index;
       // initialize slice with the frame content
       for(int row=0;row<imageSize[1];row++){
         index[1] = row;
@@ -378,16 +401,16 @@ namespace dcmqi {
       }
     }
 
-    return pair <ImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
+    return pair <FloatImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
-  OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
+  OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                          const JSONParametricMapMetaInformationHandler &metaInfo,
                                          const unsigned long frameNo)
   {
-    ImageType::RegionType sliceRegion;
-    ImageType::IndexType sliceIndex;
-    ImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
+    FloatImageType::RegionType sliceRegion;
+    FloatImageType::IndexType sliceIndex;
+    FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
 
     sliceIndex[0] = 0;
     sliceIndex[1] = 0;
@@ -402,12 +425,12 @@ namespace dcmqi {
 
     OFVector<IODFloatingPointImagePixelModule::value_type> data(frameSize);
 
-    itk::ImageRegionConstIteratorWithIndex<ImageType> sliceIterator(parametricMapImage, sliceRegion);
+    itk::ImageRegionConstIteratorWithIndex<FloatImageType> sliceIterator(parametricMapImage, sliceRegion);
 
     unsigned framePixelCnt = 0;
     for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd(); ++sliceIterator, ++framePixelCnt){
       data[framePixelCnt] = sliceIterator.Get();
-      ImageType::IndexType idx = sliceIterator.GetIndex();
+      FloatImageType::IndexType idx = sliceIterator.GetIndex();
 //      cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
     }
 
@@ -420,7 +443,7 @@ namespace dcmqi {
     }
 
     // Plane Position
-    ImageType::PointType sliceOriginPoint;
+    FloatImageType::PointType sliceOriginPoint;
     parametricMapImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
     fgPlanePos->setImagePositionPatient(
         Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
@@ -437,7 +460,7 @@ namespace dcmqi {
       groups.push_back(fgFracon.get());
       groups.push_back(fgPlanePos.get());
       DPMParametricMapIOD::FramesType frames = map.getFrames();
-      result = OFget<DPMParametricMapIOD::Frames<PixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
+      result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
     }
     return result;
   }

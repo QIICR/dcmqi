@@ -27,12 +27,10 @@
 
 using namespace std;
 
-typedef short PixelType;
-typedef itk::Image<PixelType, 3> ImageType;
-typedef itk::ImageFileReader<ImageType> ReaderType;
-typedef itk::LabelImageToLabelMapFilter<ImageType> LabelToLabelMapFilterType;
-
-static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
+typedef short ShortPixelType;
+typedef itk::Image<ShortPixelType, 3> ShortImageType;
+typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
+typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterType;
 
 namespace dcmqi {
 
@@ -40,16 +38,17 @@ namespace dcmqi {
 
   public:
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                                                vector<ImageType::Pointer> segmentations,
+                                                vector<ShortImageType::Pointer> segmentations,
                                                 const string &metaData,
                                                 bool skipEmptySlices=true);
 
 
-    static pair <map<unsigned,ImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
+    static pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
 
-  private:
     static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                           const itk::Image<short, 3>::Pointer &labelImage);
+                                                                           const ShortImageType::Pointer &labelImage);
+
+ private:
 
     static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                                  JSONSegmentationMetaInformationHandler &metaInfo);

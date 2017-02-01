@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <ImageType::Pointer, string> result =  dcmqi::ParaMapConverter::paramap2itkimage(dataset);
+  pair <FloatImageType::Pointer, string> result =  dcmqi::ParaMapConverter::paramap2itkimage(dataset);
 
   string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
 
-  typedef itk::ImageFileWriter<ImageType> WriterType;
+  typedef itk::ImageFileWriter<FloatImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   stringstream imageFileNameSStream;
   imageFileNameSStream << outputDirName << "/" << "pmap" << fileExtension;

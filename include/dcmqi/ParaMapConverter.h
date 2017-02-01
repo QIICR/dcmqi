@@ -21,26 +21,25 @@
 #include "dcmqi/ConverterBase.h"
 #include "dcmqi/JSONParametricMapMetaInformationHandler.h"
 
-typedef IODFloatingPointImagePixelModule::value_type PixelType;
-typedef itk::Image<PixelType, 3> ImageType;
-typedef itk::ImageFileReader<ImageType> ReaderType;
-typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType;
+typedef IODFloatingPointImagePixelModule::value_type FloatPixelType;
+typedef itk::Image<FloatPixelType, 3> FloatImageType;
+typedef itk::ImageFileReader<FloatImageType> FloatReaderType;
+typedef itk::MinimumMaximumImageCalculator<FloatImageType> MinMaxCalculatorType;
 
 using namespace std;
 
-static OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
 
 namespace dcmqi {
 
   class ParaMapConverter : public ConverterBase {
 
   public:
-    static DcmDataset* itkimage2paramap(const ImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+    static DcmDataset* itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                         const string &metaData);
 
-    static pair <ImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
+    static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
   protected:
-    static OFCondition addFrame(DPMParametricMapIOD &map, const ImageType::Pointer &parametricMapImage,
+    static OFCondition addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                 const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo);
 
     static void populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
