@@ -5,6 +5,8 @@
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
+#include <algorithm>
+
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +44,11 @@ int main(int argc, char *argv[])
 
   if(dicomDirectory.size()){
     OFList<OFString> fileList;
+    cout << "Searching recursively " << dicomDirectory << " for DICOM files" << endl;
+#if _WIN32
+    replace(dicomDirectory.begin(), dicomDirectory.end(), '/', '\\');
+#endif
+    cout << "Searching recursively " << dicomDirectory << " for DICOM files" << endl;
     if(OFStandard::searchDirectoryRecursively(dicomDirectory.c_str(), fileList)) {
       for(OFIterator<OFString> fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
         dicomImageFiles.push_back((*fileListIterator).c_str());

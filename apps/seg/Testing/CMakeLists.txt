@@ -6,7 +6,7 @@ include(dcmqiTest)
 set(MODULE_NAME segmentation)
 
 #-----------------------------------------------------------------------------
-set(BASELINE ${CMAKE_SOURCE_DIR}/data/segmentations/)
+set(BASELINE ${CMAKE_SOURCE_DIR}/data/segmentations)
 set(DICOM_DIR ${BASELINE}/ct-3slice)
 set(MODULE_TEMP_DIR ${TEMP_DIR}/seg)
 make_directory(${MODULE_TEMP_DIR})
@@ -91,9 +91,9 @@ dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
-    --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
-    --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
+    --compare ${BASELINE}/liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
+    --compare ${BASELINE}/spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
+    --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
     ${dcm2itk}Test
     --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
     --outputDirectory ${MODULE_TEMP_DIR}
