@@ -6,7 +6,7 @@ include(dcmqiTest)
 set(MODULE_NAME segmentation)
 
 #-----------------------------------------------------------------------------
-set(BASELINE ${CMAKE_SOURCE_DIR}/data/segmentations/)
+set(BASELINE ${CMAKE_SOURCE_DIR}/data/segmentations)
 set(DICOM_DIR ${BASELINE}/ct-3slice)
 set(MODULE_TEMP_DIR ${TEMP_DIR}/seg)
 make_directory(${MODULE_TEMP_DIR})
@@ -26,7 +26,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --inputImageList ${BASELINE}/liver_seg.nrrd
-    --inputDICOMDirectory ${DICOM_DIR}
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
