@@ -5,11 +5,6 @@
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
-#ifdef _WIN32
-#include "dirent_win.h"
-#else
-#include <dirent.h>
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -54,35 +49,15 @@ int main(int argc, char *argv[])
     }
   }
 
-  /*
-  from: https://github.com/cxong/tinydir
-  did not work for me on mac!
   if(dicomDirectory.size()){
-    cout << dicomDirectory << endl;
-
-    tinydir_dir dir;
-    tinydir_open(&dir, dicomDirectory.c_str());
-    while(dir.has_next){
-      tinydir_file file;
-      tinydir_readfile(&dir, &file);
-      cout << file.name << endl;
-    }
-  }*/
-
-  // solution from
-  //  http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-  if(dicomDirectory.size()){
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (dicomDirectory.c_str())) != NULL) {
-      while ((ent = readdir (dir)) != NULL) {
-        if(sliceFF->loadFile((dicomDirectory+"/"+ent->d_name).c_str()).good()){
+    OFList<OFString> fileList;
+    if(OFStandard::searchDirectoryRecursively(dicomDirectory.c_str(), fileList)) {
+      OFIterator<OFString> fileListIterator;
+      for(fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
+        if(sliceFF->loadFile(*fileListIterator).good()){
           dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
         }
       }
-      closedir (dir);
-    } else {
-      cerr << "Cannot open input DICOM directory!" << endl;
     }
   }
 
