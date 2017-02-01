@@ -61,6 +61,11 @@ int main(int argc, char *argv[])
     }
   }
 
+  if(dcmDatasets.empty()){
+    cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;
+    return EXIT_FAILURE;
+  }
+
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                        (std::istreambuf_iterator<char>()));
