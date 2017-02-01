@@ -26,7 +26,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --inputImageList ${BASELINE}/liver_seg.nrrd
-    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --inputDICOMDirectory ${DICOM_DIR}
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
@@ -91,9 +91,9 @@ dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
-    --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
-    --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
+    --compare ${BASELINE}/liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
+    --compare ${BASELINE}/spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
+    --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
     ${dcm2itk}Test
     --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
     --outputDirectory ${MODULE_TEMP_DIR}
