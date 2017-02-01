@@ -6,7 +6,7 @@
 
 # Introduction
 
-dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of quantitative image analysis research data using [DICOM standard](http://dicom.nema.org/standard.html).
+dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of [quantitative image analysis](http://journals.sagepub.com/doi/pdf/10.1177/0962280214537333) research data using [DICOM standard](https://en.wikipedia.org/wiki/DICOM).
 
 Specifically, the current focus of development for dcmqi is to support conversion of the following data types to and from DICOM:
 * voxel-based segmentations using [DICOM Segmentation IOD](http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_A.51.html)
@@ -21,7 +21,8 @@ dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
 
 # Getting started
 
-Installation and usage instructions are available in [dcmqi gitbook manual](https://qiicr.gitbooks.io/dcmqi-guide).
+* installation and usage instructions are available in [dcmqi manual](https://qiicr.gitbooks.io/dcmqi-guide).
+* check out our [introductory tutorial](http://qiicr.org/dcmqi-guide/tutorials/intro.html)
 
 # License
 
@@ -36,11 +37,11 @@ You can communicate you feedback, feature requests, comments or problem reports 
 * post a question to [dcmqi google
   group](https://groups.google.com/forum/#!forum/dcmqi)
 * send email to [Andrey Fedorov](http://fedorov.github.io)
-* leave comments in the [dcmqi gitbook manual](https://qiicr.gitbooks.io/dcmqi-guide)
+* leave comments in the [dcmqi user guide](https://qiicr.gitbooks.io/dcmqi-guide)
 
 # Acknowledgments
 
-This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).
+This work is supported in part the National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov).
 
 # References
 
