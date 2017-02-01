@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 
   if(dicomDirectory.size()){
     OFList<OFString> fileList;
+    cout << "Searching recursively " << dicomDirectory << " for DICOM files" << endl;
     if(OFStandard::searchDirectoryRecursively(dicomDirectory.c_str(), fileList)) {
       for(OFIterator<OFString> fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
         dicomImageFiles.push_back((*fileListIterator).c_str());
