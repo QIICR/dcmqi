@@ -9,44 +9,50 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var srCommonSchemaURL = schemasURL + 'sr-common-schema.json';
   var segContextCommonSchemaURL = schemasURL + 'segment-context-common-schema.json';
 
-  var segSchemaURL = schemasURL + 'seg-schema.json';
-  var srSchemaURL = schemasURL + 'sr-tid1500-schema.json';
-  var pmSchemaURL = schemasURL + 'pm-schema.json';
-  var acSchemaURL = schemasURL + 'anatomic-context-schema.json';
-  var scSchemaURL = schemasURL + 'segment-context-schema.json';
+  var segSchemaURL = 'seg-schema.json';
+  var srSchemaURL = 'sr-tid1500-schema.json';
+  var pmSchemaURL = 'pm-schema.json';
+  var acSchemaURL = 'anatomic-context-schema.json';
+  var scSchemaURL = 'segment-context-schema.json';
 
-  var segSchemaExampleURL = examplesURL + 'seg-example.json';
-  var srSchemaExampleURL = examplesURL + 'sr-tid1500-example.json';
-  var pmSchemaExampleURL = examplesURL + 'pm-example.json';
-
-  var segSchemaID = schemasURL + 'seg-schema.json';
-  var srSchemaID = schemasURL + 'sr-tid1500-schema.json';
-  var pmSchemaID = schemasURL + 'pm-schema.json';
-  var acSchemaID = schemasURL + 'anatomic-context-schema.json';
-  var scSchemaID = schemasURL + 'segment-context-schema.json';
+  var segSchemaID = 'seg-schema.json';
+  var srSchemaID = 'sr-tid1500-schema.json';
+  var pmSchemaID = 'pm-schema.json';
+  var acSchemaID = 'anatomic-context-schema.json';
+  var scSchemaID = 'segment-context-schema.json';
 
   var schemata = [];
 
-  function Schema (name, id, url, refs, example) {
-      this.name = name;
-      this.id = id;
-      this.url = url;
-      this.refs = refs;
-      this.example = example;
-      schemata.push(this)
+  function Schema (name, id, url, refs, examples) {
+    this.name = name;
+    this.id = schemasURL + id;
+    this.url = schemasURL + url;
+    this.refs = refs;
+    this.examples = examples;
+    schemata.push(this)
   }
 
-  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segSchemaExampleURL);
+  function Example (name, filename) {
+    this.name = name;
+    this.url = examplesURL + filename;
+  }
+
+  var segExamples = [new Example("Single segment", 'seg-example.json'),
+                     new Example("Multiple segments", 'seg-example_multiple_segments.json'),
+                     new Example("Breast MRI Metrics of Response", 'bmmr-example.json')];
+  var srSchemaExampleURL = [new Example("Single measurement", 'sr-tid1500-example.json'),
+                            new Example("Multiple measurements", 'sr-tid1500-ct-liver-example.json')];
+  var pmSchemaExampleURL = [new Example("ADC prostate", 'pm-example.json'),
+                            new Example("ADC prostate floating point", 'pm-example-float.json')];
+
+  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segExamples);
   var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL,
     [commonSchemaURL, srCommonSchemaURL], srSchemaExampleURL);
   var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL], pmSchemaExampleURL);
   var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
   var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
-  // var segSchemaID = idRoot + 'seg-schema.json';
-
   var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
-
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
                                        idRoot+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
 
@@ -100,6 +106,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
       $scope.schemata = schemata;
       $scope.schema = segSchema;
+      $scope.example = "";
+      $scope.examples = [];
       $scope.input = "";
       $scope.output = "";
       $scope.showExample = true;
@@ -133,21 +141,27 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             console.log("loading schema: " + $scope.schema.url);
             ajv.addSchema(body.data);
             schemaLoaded = true;
-            console.log("Schema successfully loaded ");
             validate = ajv.compile({$ref: $scope.schema.id});
             $scope.onOutputChanged();
-            if($scope.schema.example == undefined) {
-              $scope.showExample = false;
+            $scope.examples = $scope.schema.examples;
+            if($scope.examples != undefined) {
+              $scope.example = $scope.examples[0];
+              $scope.onExampleSelected();
             } else {
-              loadSchema($scope.schema.example, function(err, body) {
-                if (body != undefined) {
-                  $scope.exampleJson = JSON.stringify(body.data, null, 2);
-                } else {
-                  $scope.exampleJson = "";
-                }
-              });
+              $scope.example = undefined;
+              $scope.exampleJson = "";
             }
             $scope.schemaJson = JSON.stringify(body.data, null, 2);
+          }
+        });
+      };
+
+      $scope.onExampleSelected = function () {
+        loadSchema($scope.example.url, function(err, body) {
+          if (body != undefined) {
+            $scope.exampleJson = JSON.stringify(body.data, null, 2);
+          } else {
+            $scope.exampleJson = "";
           }
         });
       };
@@ -187,7 +201,6 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         }
         $scope.output = message;
       };
-
 
       $scope.onSchemaSelected();
   }]);
