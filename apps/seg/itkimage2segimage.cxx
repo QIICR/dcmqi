@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
         dicomImageFiles.push_back((*fileListIterator).c_str());
       }
     }
+    cout << "number of files found in the directory: " << fileList.size() << endl;
   }
 
   vector<DcmDataset*> dcmDatasets;
