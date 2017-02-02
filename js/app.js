@@ -150,6 +150,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             } else {
               $scope.example = undefined;
               $scope.exampleJson = "";
+              $scope.showExample = false;
             }
             $scope.schemaJson = JSON.stringify(body.data, null, 2);
           }
