@@ -36,8 +36,19 @@
         </md-input-container>
       </div>
       <div layout="column" flex>
+        <md-input-container>
+          <label>Example</label>
+          <md-select ng-model="example" ng-change="onExampleSelected()"
+                     ng-disabled="showExample==false || examples == undefined">
+            <md-option ng-repeat="example in examples" ng-value="example">
+              {{example.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+      <div layout="column" flex>
         <md-switch ng-model="showExample" aria-label="showExampleSwitch"
-                   ng-disabled="schema == undefined || schema.example == undefined">
+                   ng-disabled="schema == undefined || schema.examples == undefined">
           Example
         </md-switch>
       </div>
