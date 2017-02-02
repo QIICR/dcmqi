@@ -57,6 +57,4 @@ artifacts:
   - path: dcmqi-build
     name: dcmqi
     type: zip
-cache:
-  - C:\ProgramData\chocolatey\bin
-  - C:\ProgramData\chocolatey\lib
+
