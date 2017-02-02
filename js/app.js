@@ -54,9 +54,27 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
                                                     'ngFileUpload', 'ngProgress', 'ui.ace']);
 
 
+  app.service('ResourceLoader', ['$http', function($http) {
+
+    this.loadedReferences = {};
+
+    this.loadSchema = function(uri, callback) {
+      $http({
+        method: 'GET',
+        url: uri
+      }).then(function successCallback(body) {
+        callback(null, body);
+      }, function errorCallback(response) {
+        callback(response || new Error('Loading error: ' + response.statusCode));
+      });
+    };
+
+  }]);
+
+
   app.config(function ($httpProvider) {
-      $httpProvider.interceptors.push('xmlHttpInterceptor');
-    });
+    $httpProvider.interceptors.push('xmlHttpInterceptor');
+  });
 
 
   app.config(function($mdThemingProvider) {
@@ -93,8 +111,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   }]);
 
 
-  app.controller('JSONValidatorController', ['$scope', '$mdToast', '$http',
-    function($scope, $mdToast, $http) {
+  app.controller('JSONValidatorController', function($scope, $mdToast, $http, ResourceLoader) {
 
       $scope.schemata = schemata;
       $scope.schema = segSchema;
@@ -110,6 +127,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var ajv = null;
       var schemaLoaded = false;
       var validate = undefined;
+      var loadSchema = ResourceLoader.loadSchema;
 
       $scope.onSchemaSelected = function () {
         schemaLoaded = false;
@@ -208,17 +226,6 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         return references;
       }
 
-      function loadSchema(uri, callback) {
-        $http({
-          method: 'GET',
-          url: uri
-        }).then(function successCallback(body) {
-          callback(null, body);
-        }, function errorCallback(response) {
-          callback(response || new Error('Loading error: ' + response.statusCode));
-        });
-      }
-
       $scope.onOutputChanged = function(e) {
         var message = "";
         if ($scope.input.length > 0) {
@@ -245,14 +252,14 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       };
 
       $scope.onSchemaSelected();
-  }]);
+  });
 
 
-  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
-                                                    'Upload', 'ngProgressFactory',
-    function($scope, $rootScope, $http, $log, $mdToast, download, Upload, ngProgressFactory) {
+  app.controller('JSONSemanticsCreatorController', function($scope, $rootScope, $http, $log, $mdToast, download,
+                                                            Upload, ngProgressFactory, ResourceLoader) {
 
       var self = this;
+      var loadSchema = ResourceLoader.loadSchema;
       self.segmentedPropertyCategory = null;
       self.segmentedPropertyType = null;
       self.segmentedPropertyTypeModifier = null;
@@ -360,17 +367,6 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
         return doc.segmentAttributes[0][0];
-      }
-
-      function loadSchema(uri, callback) {
-        $http({
-          method: 'GET',
-          url: uri
-        }).then(function successCallback(body) {
-          callback(null, body);
-        }, function errorCallback(response) {
-          callback(response || new Error('Loading error: ' + response.statusCode));
-        });
       }
 
       $scope.resetForm = function() {
@@ -582,7 +578,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
       }
 
-  }]);
+  });
 
   function getCodeSequenceAttributes(codeSequence) {
     if (codeSequence != null && codeSequence != undefined)
