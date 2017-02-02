@@ -9,24 +9,18 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var srCommonSchemaURL = schemasURL + 'sr-common-schema.json';
   var segContextCommonSchemaURL = schemasURL + 'segment-context-common-schema.json';
 
-  var segSchemaURL = 'seg-schema.json';
-  var srSchemaURL = 'sr-tid1500-schema.json';
-  var pmSchemaURL = 'pm-schema.json';
-  var acSchemaURL = 'anatomic-context-schema.json';
-  var scSchemaURL = 'segment-context-schema.json';
-
-  var segSchemaID = 'seg-schema.json';
-  var srSchemaID = 'sr-tid1500-schema.json';
-  var pmSchemaID = 'pm-schema.json';
-  var acSchemaID = 'anatomic-context-schema.json';
-  var scSchemaID = 'segment-context-schema.json';
+  var segSchemaFilename = 'seg-schema.json';
+  var srSchemaFilename = 'sr-tid1500-schema.json';
+  var pmSchemaFilename = 'pm-schema.json';
+  var acSchemaFilename = 'anatomic-context-schema.json';
+  var scSchemaFilename = 'segment-context-schema.json';
 
   var schemata = [];
 
-  function Schema (name, id, url, refs, examples) {
+  function Schema (name, filename, refs, examples) {
     this.name = name;
-    this.id = schemasURL + id;
-    this.url = schemasURL + url;
+    this.id = schemasURL + filename;
+    this.url = schemasURL + filename;
     this.refs = refs;
     this.examples = examples;
     schemata.push(this)
@@ -45,12 +39,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var pmSchemaExampleURL = [new Example("ADC prostate", 'pm-example.json'),
                             new Example("ADC prostate floating point", 'pm-example-float.json')];
 
-  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segExamples);
-  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL,
-    [commonSchemaURL, srCommonSchemaURL], srSchemaExampleURL);
-  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL], pmSchemaExampleURL);
-  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
-  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
+  var segSchema = new Schema("Segmentation", segSchemaFilename, [commonSchemaURL], segExamples);
+  var srSchema = new Schema("Structured Report TID 1500", srSchemaFilename, [commonSchemaURL, srCommonSchemaURL],
+                            srSchemaExampleURL);
+  var pmSchema = new Schema("Parametric Map", pmSchemaFilename, [commonSchemaURL], pmSchemaExampleURL);
+  var acSchema = new Schema("Anatomic Context", acSchemaFilename, [commonSchemaURL, segContextCommonSchemaURL]);
+  var scSchema = new Schema("Segment Context", scSchemaFilename, [commonSchemaURL, segContextCommonSchemaURL]);
 
   var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
@@ -297,7 +291,6 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var schemaLoaded = false;
       var validate = undefined;
       var commonSchema = undefined;
-      var segSchema = undefined;
       var segment = undefined;
 
       loadSchema(commonSchemaURL, function(err, body) {
@@ -305,10 +298,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           commonSchema = body.data;
           ajv.addSchema(commonSchema);
         }
-        loadSchema(segSchemaURL, function(err, body){
+        loadSchema(segSchema.url, function(err, body){
           if (body != undefined) {
-            segSchema = body.data;
-            ajv.addSchema(segSchema);
+            ajv.addSchema(body.data);
             schemaLoaded = true;
           }
           $scope.resetForm();
@@ -318,7 +310,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       function loadDefaultSeriesAttributes() {
         var doc = {};
         if (schemaLoaded) {
-          validate = ajv.compile({$ref: segSchemaID});
+          validate = ajv.compile({$ref: segSchema.id});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
@@ -330,7 +322,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           "segmentAttributes": [[getDefaultSegmentAttributes()]]
         };
         if (schemaLoaded) {
-          validate = ajv.compile({$ref: segSchemaID});
+          validate = ajv.compile({$ref: segSchema.id});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
