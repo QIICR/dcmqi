@@ -232,12 +232,11 @@
   </div>
   <div class="md-whiteframe-7dp md-padding" id="jsonOutput" flex>
     <div layout="row" flex resize>
-      <md-input-container flex style="overflow: auto">
-        <textarea  aria-label="JSON-output" id="output" ng-model="output" ng-change="onOutputChanged()"
-                   ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }">
-          {{output}}
-        </textarea>
-      </md-input-container>
+      <div ui-ace="{
+        showGutter: true,
+        mode: 'json',
+        onChange: onOutputChanged
+      }" ng-model="output" flex id="validationInput" ></div>
       <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" ngclipboard
                  data-clipboard-text="{{ output }}">
         <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
