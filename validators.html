@@ -32,7 +32,6 @@
             <md-option ng-repeat="schema in schemata" ng-value="schema">
               {{schema.name}}
             </md-option>
-            <md-tooltip>{{schema.name}}</md-tooltip>
           </md-select>
         </md-input-container>
       </div>
@@ -44,7 +43,6 @@
             <md-option ng-repeat="example in examples" ng-value="example">
               {{example.name}}
             </md-option>
-            <md-tooltip ng-if="example && showExample==true">{{example.name}}</md-tooltip>
           </md-select>
         </md-input-container>
       </div>
