@@ -28,7 +28,7 @@ test:
 
 deployment:
   release: # just a label
-    branch: master
+    branch: [master, standalone-packaging]
     commands:
       - |
         [ "$DOCKER_EMAIL" != "" ] \
