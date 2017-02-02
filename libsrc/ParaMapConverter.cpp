@@ -7,8 +7,8 @@
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/ImageSEGConverter.h"
 
-#define MAKE_REFS 0
-#define ADD_DERIMG 0
+#define MAKE_REFS 1
+#define ADD_DERIMG 1
 
 using namespace std;
 
@@ -258,19 +258,20 @@ namespace dcmqi {
     IODCommonInstanceReferenceModule &commref = pMapDoc->getCommonInstanceReference();
     OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
 
-    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem refseriesItem;
-    refseries.push_back(&refseriesItem);
+    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem;
+    refseries.push_back(refseriesItem);
 
-    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
+    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem->getReferencedInstanceItems();
 
     OFString seriesInstanceUID, classUID;
 
     CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
-    CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
+    CHECK_COND(refseriesItem->setSeriesInstanceUID(seriesInstanceUID));
 #endif
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();
+    FGDerivationImage* fgder = new FGDerivationImage();
     OFVector<FGBase*> perFrameFGs;
 
     perFrameFGs.push_back(fgppp);
@@ -286,19 +287,16 @@ namespace dcmqi {
       }
 
       int uidfound = 0, uidnotfound = 0;
-      FGDerivationImage* fgder = NULL;
 
       if(siVector.size()>0){
 
         set<OFString> instanceUIDs;
-
-        fgder = new FGDerivationImage();
         perFrameFGs.push_back(fgder);
 
         DerivationImageItem *derimgItem;
 
         // TODO: I know David will not like this ...
-        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"",derimgItem));
+        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"Example description",derimgItem));
 
         cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
@@ -374,8 +372,9 @@ namespace dcmqi {
         OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
 
 #if ADD_DERIMG
-        if(fgder)
-          perFrameFGs.push_back(fgder);
+        // Already pushed above if siVector.size > 0
+        // if(fgder)
+          // perFrameFGs.push_back(fgder);
 #endif
 
         DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
@@ -385,9 +384,10 @@ namespace dcmqi {
       }
 
       // remove derivation image FG from the per-frame FGs, only if applicable!
-      if(fgder){
+      if(!siVector.empty()){
         perFrameFGs.pop_back();
-        delete fgder;
+        // clean up for next frame
+        fgder->clearData();
       }
     }
 
