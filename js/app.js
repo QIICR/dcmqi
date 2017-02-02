@@ -17,11 +17,10 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
   var schemata = [];
 
-  function Schema (name, filename, refs, examples) {
+  function Schema (name, filename, examples) {
     this.name = name;
     this.id = schemasURL + filename;
     this.url = schemasURL + filename;
-    this.refs = refs;
     this.examples = examples;
     schemata.push(this)
   }
@@ -39,12 +38,11 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var pmSchemaExampleURL = [new Example("ADC prostate", 'pm-example.json'),
                             new Example("ADC prostate floating point", 'pm-example-float.json')];
 
-  var segSchema = new Schema("Segmentation", segSchemaFilename, [commonSchemaURL], segExamples);
-  var srSchema = new Schema("Structured Report TID 1500", srSchemaFilename, [commonSchemaURL, srCommonSchemaURL],
-                            srSchemaExampleURL);
-  var pmSchema = new Schema("Parametric Map", pmSchemaFilename, [commonSchemaURL], pmSchemaExampleURL);
-  var acSchema = new Schema("Anatomic Context", acSchemaFilename, [commonSchemaURL, segContextCommonSchemaURL]);
-  var scSchema = new Schema("Segment Context", scSchemaFilename, [commonSchemaURL, segContextCommonSchemaURL]);
+  var segSchema = new Schema("Segmentation", segSchemaFilename, segExamples);
+  var srSchema = new Schema("Structured Report TID 1500", srSchemaFilename, srSchemaExampleURL);
+  var pmSchema = new Schema("Parametric Map", pmSchemaFilename, pmSchemaExampleURL);
+  var acSchema = new Schema("Anatomic Context", acSchemaFilename);
+  var scSchema = new Schema("Segment Context", scSchemaFilename);
 
   var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
@@ -122,7 +120,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           allErrors: true,
           loadSchema: loadSchema });
 
-        loadReferences(loadMainSchema);
+        loadMainSchema();
       };
 
       $scope.onExampleSelected = function () {
@@ -140,39 +138,74 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           if (body != undefined) {
             console.log("loading schema: " + $scope.schema.url);
             ajv.addSchema(body.data);
-            schemaLoaded = true;
-            validate = ajv.compile({$ref: $scope.schema.id});
-            $scope.onOutputChanged();
-            $scope.examples = $scope.schema.examples;
-            if($scope.examples != undefined) {
-              $scope.example = $scope.examples[0];
-              $scope.onExampleSelected();
-            } else {
-              $scope.example = undefined;
-              $scope.exampleJson = "";
-              $scope.showExample = false;
-            }
+
+            // console.log(body.data)
+            var references = findReferences(body.data).filter(function (x, i, a) {
+              return a.indexOf(x) == i;
+            });
+            console.log("found references for selected schema: " + references);
+
+            loadReferences(references, onFinishedLoadingReferences);
             $scope.schemaJson = JSON.stringify(body.data, null, 2);
           }
         });
       }
 
-      function loadReferences(callback) {
+      function onFinishedLoadingReferences() {
+        console.log("all references are loaded");
+        schemaLoaded = true;
+        validate = ajv.compile({$ref: $scope.schema.id});
+        $scope.onOutputChanged();
+        $scope.examples = $scope.schema.examples;
+        if($scope.examples != undefined) {
+          $scope.example = $scope.examples[0];
+          $scope.onExampleSelected();
+        } else {
+          $scope.example = undefined;
+          $scope.exampleJson = "";
+          $scope.showExample = false;
+        }
+      }
+
+      function loadReferences(references, callback) {
         var numLoadedReferences = 0;
-        angular.forEach($scope.schema.refs, function(value, key) {
+        var loadedReferences = [];
+        angular.forEach(references, function(value, key) {
           loadSchema(value, function(err, body) {
             if (body != undefined) {
               console.log("loading reference: " + value);
               ajv.addSchema(body.data);
+
+              loadedReferences.push(value);
+              var subReferences = findReferences(body);
+
               numLoadedReferences += 1;
               console.log("number of references: " + numLoadedReferences);
-              if (numLoadedReferences == $scope.schema.refs.length) {
-                console.log("all references are loaded");
+              if (numLoadedReferences == references.length) {
                 callback();
               }
             }
           });
         });
+      }
+
+      function findReferences(jsonObject) {
+        // http://stackoverflow.com/questions/921789/how-to-loop-through-plain-javascript-object-with-objects-as-members
+        var references = [];
+        for (var key in jsonObject) {
+          if (!jsonObject.hasOwnProperty(key)) continue;
+          var obj = jsonObject[key];
+          if (key == "$ref") {
+            var reference = obj.substring(0, obj.indexOf('#'));
+            if(reference.length > 0)
+              references.push(reference);
+            continue;
+          }
+          if (typeof obj== 'object' && obj!= null) {
+            references = references.concat(findReferences(obj));
+          }
+        }
+        return references;
       }
 
       function loadSchema(uri, callback) {
