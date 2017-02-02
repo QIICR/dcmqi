@@ -128,14 +128,20 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           allErrors: true,
           loadSchema: loadSchema });
 
-        angular.forEach($scope.schema.refs, function(value, key) {
-          loadSchema(value, function(err, body) {
-            if (body != undefined) {
-              console.log("loading reference: " + value);
-              ajv.addSchema( body.data);
-            }
-          });
+        loadReferences(loadMainSchema);
+      };
+
+      $scope.onExampleSelected = function () {
+        loadSchema($scope.example.url, function(err, body) {
+          if (body != undefined) {
+            $scope.exampleJson = JSON.stringify(body.data, null, 2);
+          } else {
+            $scope.exampleJson = "";
+          }
         });
+      };
+
+      function loadMainSchema() {
         loadSchema($scope.schema.url, function(err, body){
           if (body != undefined) {
             console.log("loading schema: " + $scope.schema.url);
@@ -155,17 +161,25 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             $scope.schemaJson = JSON.stringify(body.data, null, 2);
           }
         });
-      };
+      }
 
-      $scope.onExampleSelected = function () {
-        loadSchema($scope.example.url, function(err, body) {
-          if (body != undefined) {
-            $scope.exampleJson = JSON.stringify(body.data, null, 2);
-          } else {
-            $scope.exampleJson = "";
-          }
+      function loadReferences(callback) {
+        var numLoadedReferences = 0;
+        angular.forEach($scope.schema.refs, function(value, key) {
+          loadSchema(value, function(err, body) {
+            if (body != undefined) {
+              console.log("loading reference: " + value);
+              ajv.addSchema(body.data);
+              numLoadedReferences += 1;
+              console.log("number of references: " + numLoadedReferences);
+              if (numLoadedReferences == $scope.schema.refs.length) {
+                console.log("all references are loaded");
+                callback();
+              }
+            }
+          });
         });
-      };
+      }
 
       function loadSchema(uri, callback) {
         $http({
