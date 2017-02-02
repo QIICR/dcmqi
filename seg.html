@@ -237,15 +237,21 @@
         mode: 'json',
         onChange: onOutputChanged
       }" ng-model="output" flex id="validationInput" ></div>
-      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" ngclipboard
-                 data-clipboard-text="{{ output }}">
-        <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
-        <ng-md-icon icon="content_copy" style="fill:white"/>
-      </md-button>
-      <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="downloadButton" ng-click="downloadFile()">
-        <md-tooltip md-direction="bottom">Download into file</md-tooltip>
-        <ng-md-icon icon="file_download" style="fill:white"/>
-      </md-button>
+      <div id="jsonButtons">
+        <div layout="row">
+          <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="copyButton" ngclipboard
+                     data-clipboard-text="{{ output }}">
+            <md-tooltip md-direction="bottom">Copy to clipboard</md-tooltip>
+            <ng-md-icon icon="content_copy" style="fill:white"/>
+          </md-button>
+        </div>
+        <div layout="row">
+          <md-button class="md-fab md-mini md-primary" ng-disabled="!validJSON" id="downloadButton" ng-click="downloadFile()">
+            <md-tooltip md-direction="bottom">Download as JSON</md-tooltip>
+            <ng-md-icon icon="file_download" style="fill:white"/>
+          </md-button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

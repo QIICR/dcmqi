@@ -1,42 +1,47 @@
 #jsonForm, #jsonOutput, #validationInput {
-    overflow: auto;
+  overflow: auto;
 }
 
 #jsonForm {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 #jsonOutput {
-    margin-left: 5px;
+  margin-left: 5px;
+}
+
+#jsonButtons {
+  position: absolute;
+  right: 10px;
 }
 
 .autocomplete-custom-template li {
-    border-bottom: 1px solid #ccc;
-    height: auto;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    white-space: normal;
+  border-bottom: 1px solid #ccc;
+  height: auto;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  white-space: normal;
 }
 .autocomplete-custom-template li:last-child {
-    border-bottom-width: 0;
+  border-bottom-width: 0;
 }
 .autocomplete-custom-template .item-title,
 .autocomplete-custom-template .item-metadata {
-    display: block;
-    line-height: 2;
+  display: block;
+  line-height: 2;
 }
 
 .item-metadata {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 .item-title {
-    height: 18px;
+  height: 18px;
 }
 
 .md-button.smaller {
-    margin: 0;
-    min-height: 5px;
+  margin: 0;
+  min-height: 5px;
 }
 
 md-input-container textarea.md-input {
