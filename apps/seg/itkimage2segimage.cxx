@@ -46,28 +46,7 @@ int main(int argc, char *argv[])
     dicomImageFiles.insert(dicomImageFiles.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  vector<DcmDataset*> dcmDatasets;
-  OFString tmp, sopInstanceUID;
-  DcmFileFormat* sliceFF = new DcmFileFormat();
-  for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
-    if(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()).good()){
-      DcmDataset* currentDataset = sliceFF->getAndRemoveDataset();
-      currentDataset->findAndGetOFString(DCM_SOPInstanceUID, sopInstanceUID);
-      bool exists = false;
-      for(size_t i=0;i<dcmDatasets.size();i++) {
-        dcmDatasets[i]->findAndGetOFString(DCM_SOPInstanceUID, tmp);
-        if (tmp == sopInstanceUID) {
-          cout << dicomImageFiles[dcmFileNumber].c_str() << " with SOPInstanceUID: " << sopInstanceUID
-               << " already exists" << endl;
-          exists = true;
-          break;
-        }
-      }
-      if (!exists) {
-        dcmDatasets.push_back(currentDataset);
-      }
-    }
-  }
+  vector<DcmDataset*> dcmDatasets = dcmqi::Helper::loadDatasets(dicomImageFiles);
 
   if(dcmDatasets.empty()){
     cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;
@@ -93,7 +72,6 @@ int main(int argc, char *argv[])
     COUT << "Saved segmentation as " << outputSEGFileName << endl;
   }
 
-  delete sliceFF;
   for(size_t i=0;i<dcmDatasets.size();i++) {
     delete dcmDatasets[i];
   }
