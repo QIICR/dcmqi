@@ -27,9 +27,7 @@
 
 using namespace std;
 
-typedef short ShortPixelType;
-typedef itk::Image<ShortPixelType, 3> ShortImageType;
-typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
+
 typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterType;
 
 namespace dcmqi {
@@ -44,9 +42,6 @@ namespace dcmqi {
 
 
     static pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
-
-    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                           const ShortImageType::Pointer &labelImage);
 
  private:
 

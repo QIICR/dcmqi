@@ -244,7 +244,7 @@ namespace dcmqi {
       CastFilterType::Pointer cast = CastFilterType::New();
       cast->SetInput(parametricMapImage);
       cast->Update();
-      slice2derimg = ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
+      slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
       cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
       for(int i=0;i<slice2derimg.size();i++){
         cout << "  Slice " << i << ": ";

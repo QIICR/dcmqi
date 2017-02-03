@@ -695,31 +695,6 @@ namespace dcmqi {
     return pair <map<unsigned,ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
   }
 
-  vector<vector<int> > ImageSEGConverter::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                                     const itk::Image<short, 3>::Pointer &labelImage) {
-    // Find mapping from the segmentation slice number to the derivation image
-    // Assume that orientation of the segmentation is the same as the source series
-    unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
-    vector<vector<int> > slice2derimg(numLabelSlices);
-    for(size_t i=0;i<dcmDatasets.size();i++){
-      OFString ippStr;
-      ShortImageType::PointType ippPoint;
-      ShortImageType::IndexType ippIndex;
-      for(int j=0;j<3;j++){
-        CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
-        ippPoint[j] = atof(ippStr.c_str());
-      }
-      if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
-        //cout << "image position: " << ippPoint << endl;
-        //cerr << "ippIndex: " << ippIndex << endl;
-        // if certain DICOM instance does not map to a label slice, just skip it
-        continue;
-      }
-      slice2derimg[ippIndex[2]].push_back(i);
-    }
-    return slice2derimg;
-  }
-
   void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                JSONSegmentationMetaInformationHandler &metaInfo) {
     OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined, coordinatingCenter;
