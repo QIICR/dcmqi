@@ -77,6 +77,10 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       });
     };
 
+    this.loadExample = function (uri, callback) {
+      this.loadSchema(uri, callback);
+    };
+
     this.loadSchemaWithReferences = function(url, callback) {
       self.loadSchema(url, function(err, uri, body){
         if (body != undefined) {
@@ -90,10 +94,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     };
 
     this.loadReferences = function(references, loadedReferenceURLs, callback) {
-      console.log("called loadReferences")
       var numLoadedReferences = 0;
       var subReferences = [];
-      console.log(references);
       angular.forEach(references, function(reference, key) {
         self.loadSchema(reference, function(err, uri, body) {
           if (body != undefined) {
@@ -111,13 +113,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
             if (subReferences.length)
               console.log("sub references:" + subReferences);
             if (numLoadedReferences == references.length) {
-              // loadedReferenceURLs = loadedReferenceURLs.filter(function(x, i, a) {
-              //   return a.indexOf(x) == i;
-              // });
               if (subReferences.length > 0) {
                 self.loadReferences(subReferences, loadedReferenceURLs, callback)
               } else {
-                // console.log(loadedReferenceURLs);
                 callback(loadedReferenceURLs);
               }
             }
@@ -214,7 +212,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       };
 
       $scope.onExampleSelected = function () {
-        loadSchema($scope.example.url, function(err, uri, body) {
+        ResourceLoaderService.loadExample($scope.example.url, function(err, uri, body) {
           if (body != undefined) {
             $scope.exampleJson = JSON.stringify(body.data, null, 2);
           } else {
