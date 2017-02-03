@@ -28,7 +28,7 @@ namespace dcmqi {
   public:
 
     static string getFileExtensionFromType(const string& type);
-    static vector<string> getFileListRecursively(const string &directory);
+    static vector<string> getFileListRecursively(string directory);
 
     static string floatToStrScientific(float f);
     static void tokenizeString(string str, vector<string> &tokens, string delimiter);

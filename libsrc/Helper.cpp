@@ -21,7 +21,7 @@ namespace dcmqi {
     return extension;
   }
 
-  vector<string> Helper::getFileListRecursively(const string &directory) {
+  vector<string> Helper::getFileListRecursively(string directory) {
     OFList<OFString> fileList;
     vector<string> dicomImageFiles;
 #if _WIN32
