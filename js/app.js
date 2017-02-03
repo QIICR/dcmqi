@@ -54,19 +54,94 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
                                                     'ngFileUpload', 'ngProgress', 'ui.ace']);
 
 
-  app.service('ResourceLoader', ['$http', function($http) {
+  app.service('ResourceLoaderService', ['$http', function($http) {
 
+    var self = this;
     this.loadedReferences = {};
 
     this.loadSchema = function(uri, callback) {
+      for (var key in self.loadedReferences) {
+        if (key == uri) {
+          callback(null, self.loadedReferences[key]);
+        }
+      }
       $http({
         method: 'GET',
         url: uri
       }).then(function successCallback(body) {
-        callback(null, body);
+        self.loadedReferences[uri] = body;
+        callback(null, uri, body);
       }, function errorCallback(response) {
         callback(response || new Error('Loading error: ' + response.statusCode));
       });
+    };
+
+    this.loadSchemaWithReferences = function(url, callback) {
+      self.loadSchema(url, function(err, uri, body){
+        if (body != undefined) {
+          console.log("loading schema: " + url);
+
+          var references = self.findReferences(body.data);
+          console.log(references);
+          self.loadReferences(references, [url], callback);
+        }
+      });
+    };
+
+    this.loadReferences = function(references, loadedReferenceURLs, callback) {
+      console.log("called loadReferences")
+      var numLoadedReferences = 0;
+      var subReferences = [];
+      console.log(references);
+      angular.forEach(references, function(reference, key) {
+        self.loadSchema(reference, function(err, uri, body) {
+          if (body != undefined) {
+            console.log("loading reference: " + reference);
+
+            loadedReferenceURLs.push(uri);
+            numLoadedReferences += 1;
+
+            subReferences = subReferences.concat(self.findReferences(body)).filter(function(x, i, a) {
+              return a.indexOf(x) == i;
+            }).filter(function(x) {
+              return loadedReferenceURLs.indexOf(x) < 0;
+            });
+
+            if (subReferences.length)
+              console.log("sub references:" + subReferences);
+            if (numLoadedReferences == references.length) {
+              // loadedReferenceURLs = loadedReferenceURLs.filter(function(x, i, a) {
+              //   return a.indexOf(x) == i;
+              // });
+              if (subReferences.length > 0) {
+                self.loadReferences(subReferences, loadedReferenceURLs, callback)
+              } else {
+                // console.log(loadedReferenceURLs);
+                callback(loadedReferenceURLs);
+              }
+            }
+          }
+        });
+      });
+    };
+
+    this.findReferences = function(jsonObject) {
+      // http://stackoverflow.com/questions/921789/how-to-loop-through-plain-javascript-object-with-objects-as-members
+      var references = [];
+      for (var key in jsonObject) {
+        if (!jsonObject.hasOwnProperty(key)) continue;
+        var obj = jsonObject[key];
+        if (key == "$ref") {
+          var reference = obj.substring(0, obj.indexOf('#'));
+          if(reference.length > 0)
+            references.push(reference);
+          continue;
+        }
+        if (typeof obj== 'object' && obj!= null) {
+          references = references.concat(self.findReferences(obj));
+        }
+      }
+      return references.filter(function(x, i, a) {return a.indexOf(x) == i;});
     };
 
   }]);
@@ -111,7 +186,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   }]);
 
 
-  app.controller('JSONValidatorController', function($scope, $mdToast, $http, ResourceLoader) {
+  app.controller('JSONValidatorController', function($scope, $mdToast, $http, ResourceLoaderService) {
 
       $scope.schemata = schemata;
       $scope.schema = segSchema;
@@ -127,22 +202,18 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var ajv = null;
       var schemaLoaded = false;
       var validate = undefined;
-      var loadSchema = ResourceLoader.loadSchema;
+      var loadSchema = ResourceLoaderService.loadSchema;
 
       $scope.onSchemaSelected = function () {
         schemaLoaded = false;
         validate = undefined;
         $scope.output = "";
-        ajv = new Ajv({
-          useDefaults: true,
-          allErrors: true,
-          loadSchema: loadSchema });
 
-        loadMainSchema();
+        ResourceLoaderService.loadSchemaWithReferences($scope.schema.url, onFinishedLoadingReferences);
       };
 
       $scope.onExampleSelected = function () {
-        loadSchema($scope.example.url, function(err, body) {
+        loadSchema($scope.example.url, function(err, uri, body) {
           if (body != undefined) {
             $scope.exampleJson = JSON.stringify(body.data, null, 2);
           } else {
@@ -151,26 +222,19 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         });
       };
 
-      function loadMainSchema() {
-        loadSchema($scope.schema.url, function(err, body){
-          if (body != undefined) {
-            console.log("loading schema: " + $scope.schema.url);
-            ajv.addSchema(body.data);
-
-            // console.log(body.data)
-            var references = findReferences(body.data).filter(function (x, i, a) {
-              return a.indexOf(x) == i;
-            });
-            console.log("found references for selected schema: " + references);
-
-            loadReferences(references, onFinishedLoadingReferences);
-            $scope.schemaJson = JSON.stringify(body.data, null, 2);
-          }
+      function onFinishedLoadingReferences(loadedURLs) {
+        ajv = new Ajv({
+          useDefaults: true,
+          allErrors: true,
+          loadSchema: loadSchema
         });
-      }
 
-      function onFinishedLoadingReferences() {
-        console.log("all references are loaded");
+        angular.forEach(loadedURLs, function(value, key) {
+          console.log("adding schema from url: " + value);
+          var body = ResourceLoaderService.loadedReferences[value];
+          ajv.addSchema(body.data);
+        });
+
         schemaLoaded = true;
         validate = ajv.compile({$ref: $scope.schema.id});
         $scope.onOutputChanged();
@@ -183,47 +247,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           $scope.exampleJson = "";
           $scope.showExample = false;
         }
-      }
-
-      function loadReferences(references, callback) {
-        var numLoadedReferences = 0;
-        var loadedReferences = [];
-        angular.forEach(references, function(value, key) {
-          loadSchema(value, function(err, body) {
-            if (body != undefined) {
-              console.log("loading reference: " + value);
-              ajv.addSchema(body.data);
-
-              loadedReferences.push(value);
-              var subReferences = findReferences(body);
-
-              numLoadedReferences += 1;
-              console.log("number of references: " + numLoadedReferences);
-              if (numLoadedReferences == references.length) {
-                callback();
-              }
-            }
-          });
-        });
-      }
-
-      function findReferences(jsonObject) {
-        // http://stackoverflow.com/questions/921789/how-to-loop-through-plain-javascript-object-with-objects-as-members
-        var references = [];
-        for (var key in jsonObject) {
-          if (!jsonObject.hasOwnProperty(key)) continue;
-          var obj = jsonObject[key];
-          if (key == "$ref") {
-            var reference = obj.substring(0, obj.indexOf('#'));
-            if(reference.length > 0)
-              references.push(reference);
-            continue;
-          }
-          if (typeof obj== 'object' && obj!= null) {
-            references = references.concat(findReferences(obj));
-          }
-        }
-        return references;
+        var body = ResourceLoaderService.loadedReferences[$scope.schema.url];
+        $scope.schemaJson = JSON.stringify(body.data, null, 2);
       }
 
       $scope.onOutputChanged = function(e) {
@@ -256,10 +281,10 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
 
 
   app.controller('JSONSemanticsCreatorController', function($scope, $rootScope, $http, $log, $mdToast, download,
-                                                            Upload, ngProgressFactory, ResourceLoader) {
+                                                            Upload, ngProgressFactory, ResourceLoaderService) {
 
       var self = this;
-      var loadSchema = ResourceLoader.loadSchema;
+      var loadSchema = ResourceLoaderService.loadSchema;
       self.segmentedPropertyCategory = null;
       self.segmentedPropertyType = null;
       self.segmentedPropertyTypeModifier = null;
@@ -333,12 +358,12 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var commonSchema = undefined;
       var segment = undefined;
 
-      loadSchema(commonSchemaURL, function(err, body) {
+      loadSchema(commonSchemaURL, function(err, uri, body) {
         if (body != undefined) {
           commonSchema = body.data;
           ajv.addSchema(commonSchema);
         }
-        loadSchema(segSchema.url, function(err, body){
+        loadSchema(segSchema.url, function(err, uri, body){
           if (body != undefined) {
             ajv.addSchema(body.data);
             schemaLoaded = true;
