@@ -5,7 +5,10 @@
   "required": [
     "DerivedPixelContrast",
     "AnatomicRegionSequence",
-    "FrameLaterality"
+    "FrameLaterality",
+    "QuantityValueCode",
+    "MeasurementUnitsCode",
+    "DerivationCode"
   ],
   "additionalProperties": false,
   "properties": {
@@ -53,6 +56,13 @@
     },
     "ModelFittingMethodCode": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+    },
+    "DerivationCode": {
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+    },
+    "DerivationDescription": {
+      "type": "string",
+      "default": ""
     },
     "SourceImageDiffusionBValues": {
       "type": "array",

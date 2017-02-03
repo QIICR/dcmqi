@@ -7,9 +7,6 @@
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/ImageSEGConverter.h"
 
-#define MAKE_REFS 1
-#define ADD_DERIMG 1
-
 using namespace std;
 
 namespace dcmqi {
@@ -256,7 +253,7 @@ namespace dcmqi {
       }
     }
 
-#if MAKE_REFS
+    // TODO: factor initialization of the referenced instances out into Common class
     IODCommonInstanceReferenceModule &commref = pMapDoc->getCommonInstanceReference();
     OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
 
@@ -269,7 +266,6 @@ namespace dcmqi {
 
     CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
     CHECK_COND(refseriesItem->setSeriesInstanceUID(seriesInstanceUID));
-#endif
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();
@@ -299,7 +295,24 @@ namespace dcmqi {
         DerivationImageItem *derimgItem;
 
         // TODO: I know David will not like this ...
-        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"Image Processing",derimgItem));
+        CodeSequenceMacro derivationCode = CodeSequenceMacro("110001","DCM","Image Processing");
+
+        // Mandatory, defined in CID 7203
+        // http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_7203.html
+        if(metaInfo.metaInfoRoot.isMember("DerivationCode")){
+          CodeSequenceMacro derivationCode = CodeSequenceMacro(
+            metaInfo.metaInfoRoot["DerivationCode"]["CodeValue"].asCString(),
+            metaInfo.metaInfoRoot["DerivationCode"]["CodingSchemeDesignator"].asCString(),
+            metaInfo.metaInfoRoot["DerivationCode"]["CodeMeaning"].asCString());
+            string derivationDescription = "";
+            if(metaInfo.metaInfoRoot.isMember("DerivationDescription"))
+              derivationDescription = metaInfo.metaInfoRoot["DerivationDescription"].asCString();
+
+            CHECK_COND(fgder->addDerivationImageItem(derivationCode,derivationDescription.c_str(),derimgItem));
+        } else {
+          cerr << "DerivationCode must be specified in the input metadata!" << endl;
+          return NULL;
+        }
 
         cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
@@ -308,7 +321,6 @@ namespace dcmqi {
                                                  CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
                                                  srcimgItems));
 
-#if MAKE_REFS
         {
           // initialize class UID and series instance UID
           ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
@@ -328,7 +340,6 @@ namespace dcmqi {
             uidfound++;
           }
         }
-#endif
 
       }
 
