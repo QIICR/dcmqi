@@ -62,7 +62,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     this.loadSchema = function(uri, callback) {
       for (var key in self.loadedReferences) {
         if (key == uri) {
-          callback(null, self.loadedReferences[key]);
+          callback(null, uri, self.loadedReferences[key]);
+          return;
         }
       }
       $http({
