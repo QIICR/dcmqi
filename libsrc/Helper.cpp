@@ -21,6 +21,21 @@ namespace dcmqi {
     return extension;
   }
 
+  vector<string> Helper::getFileListRecursively(const string &directory) {
+    OFList<OFString> fileList;
+    vector<string> dicomImageFiles;
+#if _WIN32
+    replace(directory.begin(), directory.end(), '/', PATH_SEPARATOR);
+#endif
+    cout << "Searching recursively " << directory << " for DICOM files" << endl;
+    if(OFStandard::searchDirectoryRecursively(directory.c_str(), fileList)) {
+      for(OFIterator<OFString> fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
+        dicomImageFiles.push_back((*fileListIterator).c_str());
+      }
+    }
+    return dicomImageFiles;
+  }
+
   string Helper::floatToStrScientific(float f) {
     ostringstream sstream;
     sstream << scientific << f;
