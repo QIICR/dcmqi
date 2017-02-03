@@ -44,8 +44,6 @@ namespace dcmqi {
                        DcmTag(DCM_ImagePositionPatient).getTagName()));
 
     /* Initialize shared functional groups */
-    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
-
     const unsigned frameSize = inputSize[0] * inputSize[1];
 
     // Shared FGs: PlaneOrientationPatientSequence
@@ -83,12 +81,6 @@ namespace dcmqi {
       delete pixmsr;
     }
 
-    FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
-    FGFrameContent* fgfc = new FGFrameContent();
-    OFVector<FGBase*> perFrameFGs;
-
-    perFrameFGs.push_back(fgppp);
-    perFrameFGs.push_back(fgfc);
 
     // Iterate over the files and labels available in each file, create a segment for each label,
     //  initialize segment frames and add to the document
@@ -99,17 +91,37 @@ namespace dcmqi {
     IODCommonInstanceReferenceModule &commref = segdoc->getCommonInstanceReference();
     OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
 
-    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem refseriesItem;
-    refseries.push_back(&refseriesItem);
+    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem;
+    refseries.push_back(refseriesItem);
 
-    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem.getReferencedInstanceItems();
+    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem->getReferencedInstanceItems();
 
     CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
-    CHECK_COND(refseriesItem.setSeriesInstanceUID(seriesInstanceUID));
+    CHECK_COND(refseriesItem->setSeriesInstanceUID(seriesInstanceUID));
 
     int uidfound = 0, uidnotfound = 0;
-
     Uint8 *frameData = new Uint8[frameSize];
+
+    // NB this assumes all segmentation files have the same dimensions; alternatively, need to
+    //   do this operation for each segmentation file
+    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
+
+    bool hasDerivationImages = false;
+    for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
+      if((*vI).size()>0)
+        hasDerivationImages = true;
+
+
+    FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
+    FGFrameContent* fgfc = new FGFrameContent();
+    FGDerivationImage* fgder = new FGDerivationImage();
+    OFVector<FGBase*> perFrameFGs;
+
+    perFrameFGs.push_back(fgppp);
+    perFrameFGs.push_back(fgfc);
+    if(hasDerivationImages)
+      perFrameFGs.push_back(fgder);
+
     for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
       cout << "Processing input label " << segmentations[segFileNumber] << endl;
@@ -323,11 +335,7 @@ namespace dcmqi {
               siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
             }
 
-            FGDerivationImage* fgder = NULL;
             if(siVector.size()>0){
-
-              fgder = new FGDerivationImage();
-              perFrameFGs.push_back(fgder);
 
               DerivationImageItem *derimgItem;
               CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
@@ -362,9 +370,9 @@ namespace dcmqi {
             CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
 
             // remove derivation image FG from the per-frame FGs, only if applicable!
-            if(fgder){
-              perFrameFGs.pop_back();
-              delete fgder;
+            if(siVector.size()>0){
+              // clean up for the next frame
+              fgder->clearData();
             }
 
           }
@@ -373,6 +381,8 @@ namespace dcmqi {
     }
 
     delete fgfc;
+    delete fgppp;
+    delete fgder;
 
     segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
 

@@ -237,6 +237,7 @@ namespace dcmqi {
     /* Map referenced instances to the ITK parametric map slices */
     // this is a hack - the function below needs to be factored out
     vector<vector<int> > slice2derimg;
+    bool hasDerivationImages = false;
     {
 
       typedef itk::CastImageFilter<FloatImageType,ShortImageType> CastFilterType;
@@ -249,6 +250,7 @@ namespace dcmqi {
         cout << "  Slice " << i << ": ";
         for(int j=0;j<slice2derimg[i].size();j++){
           cout << slice2derimg[i][j] << " ";
+          hasDerivationImages = true;
         }
         cout << endl;
       }
@@ -276,6 +278,8 @@ namespace dcmqi {
 
     perFrameFGs.push_back(fgppp);
     perFrameFGs.push_back(fgfc);
+    if(hasDerivationImages)
+      perFrameFGs.push_back(fgder);
 
     for (unsigned long sliceNumber = 0; result.good() && (sliceNumber < inputSize[2]); sliceNumber++) {
 
@@ -291,12 +295,11 @@ namespace dcmqi {
       if(siVector.size()>0){
 
         set<OFString> instanceUIDs;
-        perFrameFGs.push_back(fgder);
 
         DerivationImageItem *derimgItem;
 
         // TODO: I know David will not like this ...
-        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"Example description",derimgItem));
+        CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("110001","DCM","Image Processing"),"Image Processing",derimgItem));
 
         cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
@@ -385,11 +388,14 @@ namespace dcmqi {
 
       // remove derivation image FG from the per-frame FGs, only if applicable!
       if(!siVector.empty()){
-        perFrameFGs.pop_back();
         // clean up for next frame
         fgder->clearData();
       }
     }
+
+    delete fgppp;
+    delete fgfc;
+    delete fgder;
 
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
     if(srcDataset != NULL && bodyPartAssigned.empty()) {
