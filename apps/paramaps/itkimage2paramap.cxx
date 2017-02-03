@@ -5,12 +5,6 @@
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ParaMapConverter.h"
 
-#ifdef _WIN32
-#include "dirent_win.h"
-#else
-#include <dirent.h>
-#endif
-
 
 int main(int argc, char *argv[])
 {
@@ -26,30 +20,16 @@ int main(int argc, char *argv[])
   reader->Update();
   FloatImageType::Pointer parametricMapImage = reader->GetOutput();
 
-  vector<DcmDataset*> dcmDatasets;
-
-  DcmFileFormat* sliceFF = new DcmFileFormat();
-  for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFileList.size(); dcmFileNumber++){
-    if(sliceFF->loadFile(dicomImageFileList[dcmFileNumber].c_str()).good()){
-      dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
-    }
+  if(dicomDirectory.size()){
+    vector<string> dicomFileList = dcmqi::Helper::getFileListRecursively(dicomDirectory.c_str());
+    dicomImageFileList.insert(dicomImageFileList.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  // solution from
-  //  http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-  if(dicomDirectory.size()){
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (dicomDirectory.c_str())) != NULL) {
-      while ((ent = readdir (dir)) != NULL) {
-        if(sliceFF->loadFile((dicomDirectory+"/"+ent->d_name).c_str()).good()){
-          dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
-        }
-      }
-      closedir (dir);
-    } else {
-      cerr << "Cannot open input DICOM directory!" << endl;
-    }
+  vector<DcmDataset*> dcmDatasets = dcmqi::Helper::loadDatasets(dicomImageFileList);
+
+  if(dcmDatasets.empty()){
+    cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;
+    return EXIT_FAILURE;
   }
 
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
