@@ -35,13 +35,13 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  vector<ImageType::Pointer> segmentations;
+  vector<ShortImageType::Pointer> segmentations;
 
   for(size_t segFileNumber=0; segFileNumber<segImageFiles.size(); segFileNumber++){
-    ReaderType::Pointer reader = ReaderType::New();
+    ShortReaderType::Pointer reader = ShortReaderType::New();
     reader->SetFileName(segImageFiles[segFileNumber]);
     reader->Update();
-    ImageType::Pointer labelImage = reader->GetOutput();
+    ShortImageType::Pointer labelImage = reader->GetOutput();
     segmentations.push_back(labelImage);
   }
 

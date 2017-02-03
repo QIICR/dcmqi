@@ -11,6 +11,11 @@
     "CodingSchemeDesignator": "DCM",
     "CodeMeaning": "Apparent Diffusion Coefficient"
   },
+  "DerivationCode": {
+    "CodeValue": "113041",
+    "CodingSchemeDesignator": "DCM",
+    "CodeMeaning": "Apparent Diffusion Coefficient"
+  },
   "MeasurementUnitsCode": {
     "CodeValue": "m2/s",
     "CodingSchemeDesignator": "UCUM",
