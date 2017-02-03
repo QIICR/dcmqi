@@ -25,7 +25,7 @@ namespace dcmqi {
     OFList<OFString> fileList;
     vector<string> dicomImageFiles;
 #if _WIN32
-    replace(dicomDirectory.begin(), dicomDirectory.end(), '/', PATH_SEPARATOR);
+    replace(directory.begin(), directory.end(), '/', PATH_SEPARATOR);
 #endif
     cout << "Searching recursively " << directory << " for DICOM files" << endl;
     if(OFStandard::searchDirectoryRecursively(directory.c_str(), fileList)) {
