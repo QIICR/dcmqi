@@ -6,6 +6,11 @@ include(dcmqiTest)
 set(MODULE_NAME tid1500)
 
 #-----------------------------------------------------------------------------
+set(EXAMPLES ${CMAKE_SOURCE_DIR}/doc/examples)
+set(SEGMENTATIONS_DIR ${CMAKE_SOURCE_DIR}/data/segmentations)
+set(DICOM_DIR ${SEGMENTATIONS_DIR}/ct-3slice)
+
+#-----------------------------------------------------------------------------
 set(WRITER_MODULE_NAME tid1500writer)
 
 dcmqi_add_test(
@@ -18,8 +23,8 @@ dcmqi_add_test(
   NAME ${WRITER_MODULE_NAME}_example
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
-    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-example.json
-    --inputImageLibraryDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
+    --inputMetadata ${EXAMPLES}/sr-tid1500-example.json
+    --inputImageLibraryDirectory ${DICOM_DIR}
     --inputCompositeContextDirectory ${CMAKE_SOURCE_DIR}/data/sr-example
     --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-example.dcm
   )
@@ -28,9 +33,9 @@ dcmqi_add_test(
   NAME ${WRITER_MODULE_NAME}_ct-liver
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
-    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-ct-liver-example.json
-    --inputImageLibraryDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
-    --inputCompositeContextDirectory ${CMAKE_SOURCE_DIR}/data/ct-3slice
+    --inputMetadata ${EXAMPLES}/sr-tid1500-ct-liver-example.json
+    --inputImageLibraryDirectory ${DICOM_DIR}
+    --inputCompositeContextDirectory ${SEGMENTATIONS_DIR}
     --outputDICOM ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.dcm
   )
 
@@ -72,7 +77,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_meta_roundtrip
   MODULE_NAME ${READER_MODULE_NAME}
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/examples/sr-tid1500-ct-liver-example.json
+    ${EXAMPLES}/sr-tid1500-ct-liver-example.json
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sr-tid1500-ct-liver-example.json
       "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext']"
   TEST_DEPENDS

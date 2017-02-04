@@ -5,11 +5,7 @@
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
 
-#ifdef _WIN32
-#include "dirent_win.h"
-#else
-#include <dirent.h>
-#endif
+
 
 int main(int argc, char *argv[])
 {
@@ -45,45 +41,16 @@ int main(int argc, char *argv[])
     segmentations.push_back(labelImage);
   }
 
-  vector<DcmDataset*> dcmDatasets;
-
-  DcmFileFormat* sliceFF = new DcmFileFormat();
-  for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
-    if(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()).good()){
-      dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
-    }
+  if(dicomDirectory.size()){
+    vector<string> dicomFileList = dcmqi::Helper::getFileListRecursively(dicomDirectory.c_str());
+    dicomImageFiles.insert(dicomImageFiles.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  /*
-  from: https://github.com/cxong/tinydir
-  did not work for me on mac!
-  if(dicomDirectory.size()){
-    cout << dicomDirectory << endl;
+  vector<DcmDataset*> dcmDatasets = dcmqi::Helper::loadDatasets(dicomImageFiles);
 
-    tinydir_dir dir;
-    tinydir_open(&dir, dicomDirectory.c_str());
-    while(dir.has_next){
-      tinydir_file file;
-      tinydir_readfile(&dir, &file);
-      cout << file.name << endl;
-    }
-  }*/
-
-  // solution from
-  //  http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-  if(dicomDirectory.size()){
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (dicomDirectory.c_str())) != NULL) {
-      while ((ent = readdir (dir)) != NULL) {
-        if(sliceFF->loadFile((dicomDirectory+"/"+ent->d_name).c_str()).good()){
-          dcmDatasets.push_back(sliceFF->getAndRemoveDataset());
-        }
-      }
-      closedir (dir);
-    } else {
-      cerr << "Cannot open input DICOM directory!" << endl;
-    }
+  if(dcmDatasets.empty()){
+    cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;
+    return EXIT_FAILURE;
   }
 
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
@@ -105,7 +72,6 @@ int main(int argc, char *argv[])
     COUT << "Saved segmentation as " << outputSEGFileName << endl;
   }
 
-  delete sliceFF;
   for(size_t i=0;i<dcmDatasets.size();i++) {
     delete dcmDatasets[i];
   }

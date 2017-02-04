@@ -6,7 +6,8 @@ include(dcmqiTest)
 set(MODULE_NAME segmentation)
 
 #-----------------------------------------------------------------------------
-set(BASELINE ${CMAKE_SOURCE_DIR}/data/ct-3slice/)
+set(BASELINE ${CMAKE_SOURCE_DIR}/data/segmentations)
+set(DICOM_DIR ${BASELINE}/ct-3slice)
 set(MODULE_TEMP_DIR ${TEMP_DIR}/seg)
 make_directory(${MODULE_TEMP_DIR})
 
@@ -25,7 +26,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --inputImageList ${BASELINE}/liver_seg.nrrd
-    --inputDICOMList ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
+    --inputDICOMDirectory ${DICOM_DIR}
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
@@ -35,7 +36,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
     --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd,${BASELINE}/heart_seg.nrrd
-    --inputDICOMList ${BASELINE}/01.dcm,${BASELINE}/02.dcm,${BASELINE}/03.dcm
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
   )
 
@@ -90,9 +91,9 @@ dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
-    --compare ${BASELINE}spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
-    --compare ${BASELINE}heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
+    --compare ${BASELINE}/liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
+    --compare ${BASELINE}/spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
+    --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
     ${dcm2itk}Test
     --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
     --outputDirectory ${MODULE_TEMP_DIR}

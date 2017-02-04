@@ -21,6 +21,49 @@ namespace dcmqi {
     return extension;
   }
 
+  vector<string> Helper::getFileListRecursively(string directory) {
+    OFList<OFString> fileList;
+    vector<string> dicomImageFiles;
+#if _WIN32
+    replace(directory.begin(), directory.end(), '/', PATH_SEPARATOR);
+#endif
+    cout << "Searching recursively " << directory << " for DICOM files" << endl;
+    if(OFStandard::searchDirectoryRecursively(directory.c_str(), fileList)) {
+      for(OFIterator<OFString> fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
+        dicomImageFiles.push_back((*fileListIterator).c_str());
+      }
+    }
+    return dicomImageFiles;
+  }
+
+  vector<DcmDataset*> Helper::loadDatasets(const vector<string>& dicomImageFiles) {
+    vector<DcmDataset*> dcmDatasets;
+    OFString tmp, sopInstanceUID;
+    DcmFileFormat* sliceFF = new DcmFileFormat();
+    for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
+      if(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()).good()){
+        DcmDataset* currentDataset = sliceFF->getAndRemoveDataset();
+        currentDataset->findAndGetOFString(DCM_SOPInstanceUID, sopInstanceUID);
+        bool exists = false;
+        for(size_t i=0;i<dcmDatasets.size();i++) {
+          dcmDatasets[i]->findAndGetOFString(DCM_SOPInstanceUID, tmp);
+          if (tmp == sopInstanceUID) {
+            cout << dicomImageFiles[dcmFileNumber].c_str() << " with SOPInstanceUID: " << sopInstanceUID
+                 << " already exists" << endl;
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          dcmDatasets.push_back(currentDataset);
+        }
+      }
+    }
+    delete sliceFF;
+    return dcmDatasets;
+  }
+
+
   string Helper::floatToStrScientific(float f) {
     ostringstream sstream;
     sstream << scientific << f;
