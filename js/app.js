@@ -200,10 +200,9 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
     });
 
     $scope.example = "";
-    $scope.examples = [];
     $scope.input = "";
     $scope.output = "";
-    $scope.showExample = true;
+    $scope.showExample = false;
     $scope.showSchema = false;
     $scope.exampleJson = "";
     $scope.schemaJson = "";
@@ -251,9 +250,8 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       schemaLoaded = true;
       validate = ajv.compile({$ref: $scope.schema.id});
       $scope.onOutputChanged();
-      $scope.examples = $scope.schema.examples;
-      if($scope.examples != undefined) {
-        $scope.example = $scope.examples[0];
+      if($scope.schema && $scope.schema.examples.length > 0) {
+        $scope.example = $scope.schema.examples[0];
         $scope.onExampleSelected();
       } else {
         $scope.example = undefined;
