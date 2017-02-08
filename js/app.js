@@ -5,52 +5,21 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   var schemasURL = idRoot + 'schemas/';
   var examplesURL = idRoot + 'examples/';
 
-  var commonSchemaURL = schemasURL + 'common-schema.json';
-  var srCommonSchemaURL = schemasURL + 'sr-common-schema.json';
-  var segContextCommonSchemaURL = schemasURL + 'segment-context-common-schema.json';
+  var apiPrefix = 'https://api.github.com/repos/QIICR/dcmqi/contents/doc/';
+  var apiSchemasRoot = apiPrefix + 'schemas';
+  var apiExamplesRoot = apiPrefix + 'examples';
 
-  var segSchemaURL = 'seg-schema.json';
-  var srSchemaURL = 'sr-tid1500-schema.json';
-  var pmSchemaURL = 'pm-schema.json';
-  var acSchemaURL = 'anatomic-context-schema.json';
-  var scSchemaURL = 'segment-context-schema.json';
-
-  var segSchemaID = 'seg-schema.json';
-  var srSchemaID = 'sr-tid1500-schema.json';
-  var pmSchemaID = 'pm-schema.json';
-  var acSchemaID = 'anatomic-context-schema.json';
-  var scSchemaID = 'segment-context-schema.json';
-
-  var schemata = [];
-
-  function Schema (name, id, url, refs, examples) {
+  function Schema (name, filename, examples) {
     this.name = name;
-    this.id = schemasURL + id;
-    this.url = schemasURL + url;
-    this.refs = refs;
+    this.id = schemasURL + filename;
+    this.url = schemasURL + filename;
     this.examples = examples;
-    schemata.push(this)
   }
 
   function Example (name, filename) {
     this.name = name;
     this.url = examplesURL + filename;
   }
-
-  var segExamples = [new Example("Single segment", 'seg-example.json'),
-                     new Example("Multiple segments", 'seg-example_multiple_segments.json'),
-                     new Example("Breast MRI Metrics of Response", 'bmmr-example.json')];
-  var srSchemaExampleURL = [new Example("Single measurement", 'sr-tid1500-example.json'),
-                            new Example("Multiple measurements", 'sr-tid1500-ct-liver-example.json')];
-  var pmSchemaExampleURL = [new Example("ADC prostate", 'pm-example.json'),
-                            new Example("ADC prostate floating point", 'pm-example-float.json')];
-
-  var segSchema = new Schema("Segmentation", segSchemaID, segSchemaURL, [commonSchemaURL], segExamples);
-  var srSchema = new Schema("Structured Report TID 1500", srSchemaID, srSchemaURL,
-    [commonSchemaURL, srCommonSchemaURL], srSchemaExampleURL);
-  var pmSchema = new Schema("Parametric Map", pmSchemaID, pmSchemaURL, [commonSchemaURL], pmSchemaExampleURL);
-  var acSchema = new Schema("Anatomic Context", acSchemaID, acSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
-  var scSchema = new Schema("Segment Context", scSchemaID, scSchemaURL, [commonSchemaURL, segContextCommonSchemaURL]);
 
   var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
@@ -62,9 +31,112 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
                                                     'ngFileUpload', 'ngProgress', 'ui.ace']);
 
 
+  app.service('ResourceLoaderService', ['$http', function($http) {
+
+    var self = this;
+    this.loadedReferences = {};
+
+    this.loadSchema = function(uri, callback) {
+      for (var key in self.loadedReferences) {
+        if (key == uri) {
+          callback(null, uri, self.loadedReferences[key]);
+          return;
+        }
+      }
+      $http({
+        method: 'GET',
+        url: uri
+      }).then(function successCallback(body) {
+        self.loadedReferences[uri] = body;
+        callback(null, uri, body);
+      }, function errorCallback(response) {
+        callback(response || new Error('Loading error: ' + response.statusCode));
+      });
+    };
+
+    this.loadResource = function(uri, callback) {
+      $http({
+        method: 'GET',
+        url: uri
+      }).then(function successCallback(body) {
+        callback(null, uri, body);
+      }, function errorCallback(response) {
+        callback(response || new Error('Loading error: ' + response.statusCode));
+      });
+    };
+
+    this.loadExample = function (uri, callback) {
+      this.loadSchema(uri, callback);
+    };
+
+    this.loadSchemaWithReferences = function(url, callback) {
+      self.loadSchema(url, function(err, uri, body){
+        if (body != undefined) {
+          console.log("loading schema: " + url);
+
+          var references = self.findReferences(body.data);
+          console.log(references);
+          self.loadReferences(references, [url], callback);
+        }
+      });
+    };
+
+    this.loadReferences = function(references, loadedReferenceURLs, callback) {
+      var numLoadedReferences = 0;
+      var subReferences = [];
+      angular.forEach(references, function(reference, key) {
+        self.loadSchema(reference, function(err, uri, body) {
+          if (body != undefined) {
+            console.log("loading reference: " + reference);
+
+            loadedReferenceURLs.push(uri);
+            numLoadedReferences += 1;
+
+            subReferences = subReferences.concat(self.findReferences(body)).filter(function(x, i, a) {
+              return a.indexOf(x) == i;
+            }).filter(function(x) {
+              return loadedReferenceURLs.indexOf(x) < 0;
+            });
+
+            if (subReferences.length)
+              console.log("sub references:" + subReferences);
+            if (numLoadedReferences == references.length) {
+              if (subReferences.length > 0) {
+                self.loadReferences(subReferences, loadedReferenceURLs, callback)
+              } else {
+                callback(loadedReferenceURLs);
+              }
+            }
+          }
+        });
+      });
+    };
+
+    this.findReferences = function(jsonObject) {
+      // http://stackoverflow.com/questions/921789/how-to-loop-through-plain-javascript-object-with-objects-as-members
+      var references = [];
+      for (var key in jsonObject) {
+        if (!jsonObject.hasOwnProperty(key)) continue;
+        var obj = jsonObject[key];
+        if (key == "$ref") {
+          var reference = obj.substring(0, obj.indexOf('#'));
+          if(reference.length > 0)
+            references.push(reference);
+          continue;
+        }
+        if (typeof obj== 'object' && obj!= null) {
+          references = references.concat(self.findReferences(obj));
+        }
+      }
+      return references.filter(function(x, i, a) {return a.indexOf(x) == i;});
+    };
+
+  }]);
+
+
   app.config(function ($httpProvider) {
-      $httpProvider.interceptors.push('xmlHttpInterceptor');
-    });
+    $httpProvider.interceptors.push('xmlHttpInterceptor');
+  });
 
 
   app.config(function($mdThemingProvider) {
@@ -101,117 +173,129 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
   }]);
 
 
-  app.controller('JSONValidatorController', ['$scope', '$mdToast', '$http',
-    function($scope, $mdToast, $http) {
+  app.controller('JSONValidatorController', function($scope, $mdToast, $http, ResourceLoaderService) {
 
-      $scope.schemata = schemata;
-      $scope.schema = segSchema;
-      $scope.example = "";
-      $scope.examples = [];
-      $scope.input = "";
-      $scope.output = "";
-      $scope.showExample = true;
-      $scope.showSchema = false;
-      $scope.exampleJson = "";
-      $scope.schemaJson = "";
+    $scope.schemata = [];
+    $scope.schema = undefined;
 
-      var ajv = null;
-      var schemaLoaded = false;
-      var validate = undefined;
 
-      $scope.onSchemaSelected = function () {
-        schemaLoaded = false;
-        validate = undefined;
-        $scope.output = "";
-        ajv = new Ajv({
-          useDefaults: true,
-          allErrors: true,
-          loadSchema: loadSchema });
-
-        angular.forEach($scope.schema.refs, function(value, key) {
-          loadSchema(value, function(err, body) {
-            if (body != undefined) {
-              console.log("loading reference: " + value);
-              ajv.addSchema( body.data);
-            }
+    ResourceLoaderService.loadResource(apiSchemasRoot, function(err, uri, body) {
+      angular.forEach(body.data, function(value, key) {
+        if(value.name.search("common") == -1) {
+          $scope.schemata.push(new Schema(value.name.replace(".json", ""), value.name, []))
+        }
+      });
+      ResourceLoaderService.loadResource(apiExamplesRoot, function(err1, uri1, body1) {
+        angular.forEach(body1.data, function(example, key) {
+          ResourceLoaderService.loadResource(examplesURL+example.name, function(err2, uri2, body2) {
+            var schemaUrl = body2.data["@schema"].replace("#","");
+            angular.forEach($scope.schemata, function(schema, key) {
+              if(schemaUrl == schema.url) {
+                schema.examples.push(new Example(example.name.replace(".json", ""), example.name));
+              }
+            });
           });
         });
-        loadSchema($scope.schema.url, function(err, body){
-          if (body != undefined) {
-            console.log("loading schema: " + $scope.schema.url);
-            ajv.addSchema(body.data);
-            schemaLoaded = true;
-            validate = ajv.compile({$ref: $scope.schema.id});
-            $scope.onOutputChanged();
-            $scope.examples = $scope.schema.examples;
-            if($scope.examples != undefined) {
-              $scope.example = $scope.examples[0];
-              $scope.onExampleSelected();
-            } else {
-              $scope.example = undefined;
-              $scope.exampleJson = "";
-              $scope.showExample = false;
-            }
-            $scope.schemaJson = JSON.stringify(body.data, null, 2);
-          }
-        });
-      };
+      });
+    });
 
-      $scope.onExampleSelected = function () {
-        loadSchema($scope.example.url, function(err, body) {
-          if (body != undefined) {
-            $scope.exampleJson = JSON.stringify(body.data, null, 2);
-          } else {
-            $scope.exampleJson = "";
-          }
-        });
-      };
+    $scope.example = "";
+    $scope.input = "";
+    $scope.output = "";
+    $scope.showExample = false;
+    $scope.showSchema = false;
+    $scope.exampleJson = "";
+    $scope.schemaJson = "";
 
-      function loadSchema(uri, callback) {
-        $http({
-          method: 'GET',
-          url: uri
-        }).then(function successCallback(body) {
-          callback(null, body);
-        }, function errorCallback(response) {
-          callback(response || new Error('Loading error: ' + response.statusCode));
-        });
-      }
+    var ajv = null;
+    var schemaLoaded = false;
+    var validate = undefined;
+    var loadSchema = ResourceLoaderService.loadSchema;
 
-      $scope.onOutputChanged = function(e) {
-        var message = "";
-        if ($scope.input.length > 0) {
-          try {
-            var parsedJSON = JSON.parse($scope.input);
-            if (!schemaLoaded) {
-              $scope.output = "Schema for validation was not loaded.";
-            } else {
-              $scope.input = JSON.stringify(parsedJSON, null, 2);
-              if (validate(parsedJSON)) {
-                message = "Json input is valid.";
-              } else {
-                message = "";
-                angular.forEach(validate.errors, function (value, key) {
-                  message += ajv.errorsText([value]) + "\n";
-                });
-              }
-            }
-          } catch(ex) {
-            message = ex.message;
-          }
+    $scope.onSchemaSelected = function () {
+      if($scope.schema == undefined)
+        return;
+      schemaLoaded = false;
+      validate = undefined;
+      $scope.output = "";
+
+      ResourceLoaderService.loadSchemaWithReferences($scope.schema.url, onFinishedLoadingReferences);
+    };
+
+    $scope.onExampleSelected = function () {
+      if ($scope.example == undefined)
+        return;
+      ResourceLoaderService.loadExample($scope.example.url, function(err, uri, body) {
+        if (body != undefined) {
+          $scope.exampleJson = JSON.stringify(body.data, null, 2);
+        } else {
+          $scope.exampleJson = "";
         }
-        $scope.output = message;
-      };
+      });
+    };
 
-      $scope.onSchemaSelected();
-  }]);
+    function onFinishedLoadingReferences(loadedURLs) {
+      ajv = new Ajv({
+        useDefaults: true,
+        allErrors: true,
+        loadSchema: loadSchema
+      });
+
+      angular.forEach(loadedURLs, function(value, key) {
+        console.log("adding schema from url: " + value);
+        var body = ResourceLoaderService.loadedReferences[value];
+        ajv.addSchema(body.data);
+      });
+
+      schemaLoaded = true;
+      validate = ajv.compile({$ref: $scope.schema.id});
+      $scope.onOutputChanged();
+      if($scope.schema && $scope.schema.examples.length > 0) {
+        $scope.example = $scope.schema.examples[0];
+        $scope.onExampleSelected();
+      } else {
+        $scope.example = undefined;
+        $scope.exampleJson = "";
+        $scope.showExample = false;
+      }
+      var body = ResourceLoaderService.loadedReferences[$scope.schema.url];
+      $scope.schemaJson = JSON.stringify(body.data, null, 2);
+    }
+
+    $scope.onOutputChanged = function(e) {
+      var message = "";
+      if ($scope.input.length > 0) {
+        try {
+          var parsedJSON = JSON.parse($scope.input);
+          if (!schemaLoaded) {
+            $scope.output = "Schema for validation was not loaded.";
+          } else {
+            $scope.input = JSON.stringify(parsedJSON, null, 2);
+            if (validate(parsedJSON)) {
+              message = "Json input is valid.";
+            } else {
+              message = "";
+              angular.forEach(validate.errors, function (value, key) {
+                message += ajv.errorsText([value]) + "\n";
+              });
+            }
+          }
+        } catch(ex) {
+          message = ex.message;
+        }
+      }
+      $scope.output = message;
+    };
+  });
 
 
-  app.controller('JSONSemanticsCreatorController', ['$scope', '$rootScope', '$http', '$log', '$mdToast', 'download',
-                                                    'Upload', 'ngProgressFactory',
-    function($scope, $rootScope, $http, $log, $mdToast, download, Upload, ngProgressFactory) {
+  app.controller('JSONSemanticsCreatorController', function($scope, $rootScope, $http, $log, $mdToast, download,
+                                                            Upload, ngProgressFactory, ResourceLoaderService) {
 
       var self = this;
+      var commonSchemaURL = schemasURL + 'common-schema.json';
+      var segSchema = new Schema('Segmentation', 'seg-schema.json', []);
+      var loadSchema = ResourceLoaderService.loadSchema;
       self.segmentedPropertyCategory = null;
       self.segmentedPropertyType = null;
       self.segmentedPropertyTypeModifier = null;
@@ -283,18 +367,16 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       var schemaLoaded = false;
       var validate = undefined;
       var commonSchema = undefined;
-      var segSchema = undefined;
       var segment = undefined;
 
-      loadSchema(commonSchemaURL, function(err, body) {
+      loadSchema(commonSchemaURL, function(err, uri, body) {
         if (body != undefined) {
           commonSchema = body.data;
           ajv.addSchema(commonSchema);
         }
-        loadSchema(segSchemaURL, function(err, body){
+        loadSchema(segSchema.url, function(err, uri, body){
           if (body != undefined) {
-            segSchema = body.data;
-            ajv.addSchema(segSchema);
+            ajv.addSchema(body.data);
             schemaLoaded = true;
           }
           $scope.resetForm();
@@ -304,7 +386,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
       function loadDefaultSeriesAttributes() {
         var doc = {};
         if (schemaLoaded) {
-          validate = ajv.compile({$ref: segSchemaID});
+          validate = ajv.compile({$ref: segSchema.id});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
@@ -316,22 +398,11 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
           "segmentAttributes": [[getDefaultSegmentAttributes()]]
         };
         if (schemaLoaded) {
-          validate = ajv.compile({$ref: segSchemaID});
+          validate = ajv.compile({$ref: segSchema.id});
           var valid = validate(doc);
           if (!valid) console.log(ajv.errorsText(validate.errors));
         }
         return doc.segmentAttributes[0][0];
-      }
-
-      function loadSchema(uri, callback) {
-        $http({
-          method: 'GET',
-          url: uri
-        }).then(function successCallback(body) {
-          callback(null, body);
-        }, function errorCallback(response) {
-          callback(response || new Error('Loading error: ' + response.statusCode));
-        });
       }
 
       $scope.resetForm = function() {
@@ -543,7 +614,7 @@ define(['ajv', 'dicomParser'], function (Ajv, dicomParser) {
         return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
       }
 
-  }]);
+  });
 
   function getCodeSequenceAttributes(codeSequence) {
     if (codeSequence != null && codeSequence != undefined)
