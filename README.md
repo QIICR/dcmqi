@@ -41,7 +41,7 @@ You can communicate you feedback, feature requests, comments or problem reports 
 
 # Acknowledgments
 
-This work is supported in part the National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov).
+This work is supported primarily by the National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov). We also acknowledge support of the following grants: [Neuroimage Analysis Center (NAC)](http://nac.spl.harvard.edu/) (P41 EB015902, PI Kikinis) and [National Center for Image Guided Therapy (NCIGT)](http://ncigt.org) (P41 EB015898, PI Tempany).
 
 # References
 
