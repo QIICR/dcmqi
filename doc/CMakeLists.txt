@@ -161,12 +161,11 @@ set(PM_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/pm-context-schema.json)
 
 function(createPMContextTest pm_context_name)
   set(json_pm_context_file ${CMAKE_SOURCE_DIR}/doc/pmContexts/pm-${pm_context_name}-context.json)
-  set(testname ajv_${pm_context_name}-segcontext)
+  set(testname ajv_${pm_context_name}-pmcontext)
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
       # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${PM_CONTEXT_SCHEMA}
-    -d ${json_pm_context_file} ${AJV_OPTIONS})
+      COMMAND ${AJV_EXECUTABLE} -s ${PM_CONTEXT_SCHEMA} ${common_schema_reference} -d ${json_pm_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
