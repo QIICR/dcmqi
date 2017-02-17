@@ -1,0 +1,118 @@
+{
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/pm-context-schema.json#",
+  "name": "Diffusion MRI analysis context",
+  "description": "Combinations of codes to support the task of converting results of Diffusion Weighted MRI analysis into DICOM parametric map object. Quantity and units definitions are based on CP-1665, which is also used as the placeholder coding scheme designator pending integration into the standard and assignment of the standard codes.",
+  "QuantityDefinitions": [
+    {
+      "CodeValue": "113041",
+      "CodeMeaning": "Apparent Diffusion Coefficient",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn2",
+      "UMLConceptUID": "3890194",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx101",
+      "CodeMeaning": "Slow Diffusion Coefficient",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx102",
+      "CodeMeaning": "Fast Diffusion Coefficient",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx103",
+      "CodeMeaning": "Fast Diffusion Coefficient Fraction",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx104",
+      "CodeMeaning": "Kurtosis Diffusion Coefficient",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx105",
+      "CodeMeaning": "Gamma Distribution Scale Parameter",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "1",
+        "CodeMeaning": "no units",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx106",
+      "CodeMeaning": "Gamma Distribution Shape Parameter",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "1",
+        "CodeMeaning": "no units",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx107",
+      "CodeMeaning": "Gamma Distribution Mode",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "1",
+        "CodeMeaning": "no units",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx108",
+      "CodeMeaning": "Distributed Diffusion Coefficient",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "mm2/s",
+        "CodeMeaning": "mm2/s",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    },
+    {
+      "CodeValue": "xxx109",
+      "CodeMeaning": "Anomalous Exponent Parameter",
+      "CodingSchemeDesignator": "99CP1964",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": {
+        "CodeValue": "1",
+        "CodeMeaning": "no units",
+        "CodingSchemeDesignator": "UCUM"
+      }
+    }
+  ]
+}

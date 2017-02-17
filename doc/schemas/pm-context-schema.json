@@ -1,0 +1,149 @@
+{
+  "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
+  "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/pm-context-schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "QuantityDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "cid": {
+          "type": "string"
+        },
+        "contextGroupName": {
+          "type": "string"
+        },
+        "UMLConceptUID": {
+          "type": "string"
+        },
+        "SNOMEDConceptID": {
+          "type": "string"
+        },
+        "MeasurementUnitsCodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/MeasurementUnitsDefinition"
+          }
+        },
+        "DerivationCodes": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/definitions/DerivationDefinition"
+          }
+        },
+        "MeasurementMethodCodes": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/definitions/MeasurementMethodDefinition"
+          }
+        }
+      }
+    },
+    "DerivationDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "cid": {
+          "type": "string"
+        },
+        "contextGroupName": {
+          "type": "string"
+        },
+        "UMLConceptUID": {
+          "type": "string"
+        },
+        "SNOMEDConceptID": {
+          "type": "string"
+        }
+      }
+    },
+    "MeasurementUnitsDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "cid": {
+          "type": "string"
+        },
+        "contextGroupName": {
+          "type": "string"
+        },
+        "UMLConceptUID": {
+          "type": "string"
+        },
+        "SNOMEDConceptID": {
+          "type": "string"
+        }
+      }
+    },
+    "MeasurementMethodDefinition": {
+      "type": "object",
+      "properties": {
+        "CodeValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "CodeMeaning": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
+        },
+        "CodingSchemeDesignator": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
+        },
+        "cid": {
+          "type": "string"
+        },
+        "contextGroupName": {
+          "type": "string"
+        },
+        "UMLConceptUID": {
+          "type": "string"
+        },
+        "SNOMEDConceptID": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "properties": {
+    "@schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "QuantityDefinitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/QuantityValueDefinition"
+      }
+    }
+  }
+}
