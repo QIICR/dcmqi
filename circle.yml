@@ -1,57 +1,37 @@
 machine:
+  # XXX: btrfs circleCI fix, see: https://github.com/docker/docker/issues/9939 and https://github.com/Sabayon/docker-stage3-base-amd64/commit/8c1bf737113a278dd2f
+  pre:
+    - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci'
+    - sudo chmod 0755 /usr/bin/docker
+  services:
+    - docker
   python:
     version: 2.7.11
 dependencies:
   cache_directories:
-    - "~/dcmqi-build/zlib"
-    - "~/dcmqi-build/zlib-build"
-    - "~/dcmqi-build/ITK"
-    - "~/dcmqi-build/ITK-build"
-    - "~/dcmqi-build/DCMTK"
-    - "~/dcmqi-build/DCMTK-build"
-    - "~/dcmqi-build/SlicerExecutionModel"
-    - "~/dcmqi-build/SlicerExecutionModel-build"
-    - dicom3tools_1.00.snapshot.20160721064406
-  pre:
-    # Install tools required to run DCMQI "doc" tests
-    - npm install jsonlint -g
-    - npm install ajv-cli -g
-    # Install xutils-dev package providing "imake"
-    - sudo apt-get update
-    - sudo apt-get install xutils-dev
-    # If needed, download and build dicom3tools
-    - |
-      dicom3tools_version=dicom3tools_1.00.snapshot.20160721064406
-      if [[ ! -e $dicom3tools_version ]]; then
-        wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270310/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2 \
-          && tar xjf dicom3tools.tar.bz2 \
-          && (cd $dicom3tools_version/ \
-          && ./Configure \
-          && imake -I./config -DUseQIICRID \
-          && make -j$(grep -c processor /proc/cpuinfo) World > /dev/null 2>&1)
-      else
-        echo "Reusing "
-      fi
-      cd $dicom3tools_version && sudo make install
-    # Install Ninja
-    - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip
-    - unzip ninja-linux.zip && sudo cp ninja /usr/local/bin/ && sudo chmod 755 /usr/local/bin/ninja
-    # Use scikit-ci-addons to streamline installation of CMake
-    - pip install scikit-ci-addons==0.11.0
-    - ci_addons circle/install_cmake 3.6.2
+    - "~/dcmqi/build"
 
   post:
-    - mkdir -p ~/dcmqi-build && cd ~/dcmqi-build && cmake -G Ninja ../dcmqi && ninja
+    - cd docker && make dcmqi
     # Install package required by convert.py
     - pip install lxml==3.6.4
     - |
-      cd ~/dcmqi-build/dcmqi-build && \
-      ctest -j4 -D ExperimentalTest -VV --no-compress-output && \
-      python ../../dcmqi/util/junit/convert.py \
-        ~/dcmqi-build/dcmqi-build/ \
-        ../../dcmqi/util/junit/conv.xsl > ~/dcmqi-build/BaseTest.xml
+      cd docker && make dcmqi.test && \
+      python ../util/junit/convert.py \
+        ../build/dcmqi-build/ \
+        ../util/junit/conv.xsl > ../build/BaseTest.xml
 
 test:
   post:
     - mkdir -p ${CIRCLE_TEST_REPORTS}/junit
-    - cp ~/dcmqi-build/BaseTest.xml ${CIRCLE_TEST_REPORTS}/junit
+    - cp ~/dcmqi/build/BaseTest.xml ${CIRCLE_TEST_REPORTS}/junit
+
+deployment:
+  release: # just a label
+    branch: [master, standalone-packaging]
+    commands:
+      - |
+        [ "$DOCKER_EMAIL" != "" ] \
+        && docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS \
+        && docker push qiicr/dcmqi:`git describe --exact-match 2> /dev/null || echo "latest"` \
+        || echo "skipping docker push"
