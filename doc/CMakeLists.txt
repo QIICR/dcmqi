@@ -165,7 +165,7 @@ function(createPMContextTest pm_context_name)
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
       # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${PM_CONTEXT_SCHEMA} ${common_schema_reference} -d ${json_pm_context_file} ${AJV_OPTIONS})
+      COMMAND ${AJV_EXECUTABLE} -s ${PM_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_pm_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
