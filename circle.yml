@@ -29,6 +29,7 @@ test:
 deployment:
   nightly: # just a label
     branch: master
+    owner: qiicr
     commands:
       - |
         [ "$DOCKER_EMAIL" != "" ] \
