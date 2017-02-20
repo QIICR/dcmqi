@@ -1,5 +1,7 @@
-[![Docker](https://img.shields.io/docker/automated/qiicr/dcmqi.svg)](https://hub.docker.com/r/qiicr/dcmqi/)
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi)
+
+| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.0.0.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.0.0) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 
 |              | Linux                                                                                                  | MacOSX                                                                                                | Windows                                                                                                                             |
 |--------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
