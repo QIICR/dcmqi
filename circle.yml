@@ -27,8 +27,17 @@ test:
     - cp ~/dcmqi/build/BaseTest.xml ${CIRCLE_TEST_REPORTS}/junit
 
 deployment:
-  release: # just a label
+  nightly: # just a label
     branch: master
+    commands:
+      - |
+        [ "$DOCKER_EMAIL" != "" ] \
+        && docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS \
+        && docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+        || echo "skipping docker push"
+  release: # just a label
+    tag: /v[0-9]+\.[0-9]+\.[0-9]+/
+    owner: qiicr
     commands:
       - |
         [ "$DOCKER_EMAIL" != "" ] \
