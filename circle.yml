@@ -29,7 +29,7 @@ test:
 deployment:
   nightly: # just a label
     branch: master
-    owner: qiicr
+    owner: QIICR
     commands:
       - |
         [ "$DOCKER_EMAIL" != "" ] \
@@ -38,7 +38,7 @@ deployment:
         || echo "skipping docker push"
   release: # just a label
     tag: /v[0-9]+\.[0-9]+\.[0-9]+/
-    owner: qiicr
+    owner: QIICR
     commands:
       - |
         [ "$DOCKER_EMAIL" != "" ] \
