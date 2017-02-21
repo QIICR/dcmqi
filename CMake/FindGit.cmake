@@ -99,6 +99,15 @@ if(GIT_EXECUTABLE)
           OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif(NOT ${GIT_error} EQUAL 0)
 
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tag
+       WORKING_DIRECTORY ${dir}
+       OUTPUT_VARIABLE ${prefix}_WC_TAG
+       OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(NOT ${GIT_error} EQUAL 0)
+      set(${prefix}_WC_TAG "not available")
+    endif(NOT ${GIT_error} EQUAL 0)
+
     execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
        WORKING_DIRECTORY ${dir}
        OUTPUT_VARIABLE ${prefix}_WC_URL

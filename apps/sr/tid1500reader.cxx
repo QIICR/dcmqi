@@ -25,6 +25,7 @@
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/QIICRConstants.h"
 #include "dcmqi/QIICRUIDs.h"
+#include "dcmqi/internal/VersionConfigure.h"
 
 using namespace std;
 
@@ -130,6 +131,8 @@ Json::Value getMeasurements(DSRDocument &doc) {
 }
 
 int main(int argc, char** argv){
+  std::cout << dcmqi_INFO << std::endl;
+
   PARSE_ARGS;
 
   Json::Value metaRoot;

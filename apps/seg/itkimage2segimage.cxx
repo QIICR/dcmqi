@@ -4,11 +4,12 @@
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ImageSEGConverter.h"
-
-
+#include "dcmqi/internal/VersionConfigure.h"
 
 int main(int argc, char *argv[])
 {
+  std::cout << dcmqi_INFO << std::endl;
+  
   PARSE_ARGS;
 
   if (segImageFiles.empty()){
