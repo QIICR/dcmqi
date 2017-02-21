@@ -15,5 +15,8 @@
 
 #define dcmqi_WC_REVISION "@dcmqi_WC_REVISION@"
 #define dcmqi_WC_URL "@dcmqi_WC_URL@"
+#define dcmqi_WC_TAG "@dcmqi_WC_TAG@"
+
+#define dcmqi_INFO "dcmqi repository URL: @dcmqi_WC_URL@ revision: @dcmqi_WC_REVISION@ tag: @dcmqi_WC_TAG@"
 
 #endif // __dcmqiVersionConfigure_h

@@ -4,10 +4,13 @@
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
 #include "dcmqi/ParaMapConverter.h"
+#include "dcmqi/internal/VersionConfigure.h"
 
 
 int main(int argc, char *argv[])
 {
+  std::cout << dcmqi_INFO << std::endl;
+
   PARSE_ARGS;
 
   DcmFileFormat sliceFF;

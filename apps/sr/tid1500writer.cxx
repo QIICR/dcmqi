@@ -25,6 +25,7 @@
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/QIICRConstants.h"
 #include "dcmqi/QIICRUIDs.h"
+#include "dcmqi/internal/VersionConfigure.h"
 
 using namespace std;
 
@@ -60,6 +61,9 @@ DcmFileFormat addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr)
 }
 
 int main(int argc, char** argv){
+
+  std::cout << dcmqi_INFO << std::endl;
+
   PARSE_ARGS;
 
   Json::Value metaRoot;
