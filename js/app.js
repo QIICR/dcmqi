@@ -38,6 +38,7 @@ define(['ajv'], function (Ajv) {
     .controller('SegmentationMetaCreatorController', SegmentationMetaCreatorController)
     .controller('ParametricMapMetaCreatorController', ParametricMapMetaCreatorController)
     .controller('CodeSequenceBaseController', CodeSequenceBaseController)
+    .controller('ParametricMapQuantityCodeController', ParametricMapQuantityCodeController)
     .controller('AnatomicRegionController', AnatomicRegionController)
     .controller('AnatomicRegionModifierController', AnatomicRegionModifierController)
     .controller('SegmentedPropertyCategoryCodeController', SegmentedPropertyCategoryCodeController)
@@ -651,7 +652,7 @@ define(['ajv'], function (Ajv) {
 
     function loadParametricMapContexts() {
       $scope.pmapContexts = [];
-      $scope.selectedPmapContext = undefined;
+      $scope.selectedParametricMapContext = undefined;
       angular.forEach(pmContextSources, function (value, key) {
         $http.get(value).success(function (data) {
           $scope.pmapContexts.push({
@@ -660,7 +661,7 @@ define(['ajv'], function (Ajv) {
           });
         });
         if ($scope.pmapContexts.length == 1)
-          $scope.selectedPmapContext = $scope.pmapContexts[0];
+          $scope.selectedParametricMapContext = $scope.pmapContexts[0];
       });
     }
 
@@ -675,12 +676,15 @@ define(['ajv'], function (Ajv) {
       if ($scope.seriesAttributes.BodyPartExamined.length > 0)
         doc["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
 
-
       if ($scope.segment.anatomicRegion)
         doc["AnatomicRegionSequence"] = vm.getCodeSequenceAttributes($scope.segment.anatomicRegion);
       if ($scope.segment.anatomicRegionModifier)
         doc["AnatomicRegionModifierSequence"] = vm.getCodeSequenceAttributes($scope.segment.anatomicRegionModifier);
 
+      if ($scope.segment.quantity) {
+        doc["QuantityValueCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity);
+        doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity.MeasurementUnitsCode);
+      }
       $scope.output = JSON.stringify(doc, null, 2);
       $scope.onOutputChanged();
     };
@@ -743,12 +747,52 @@ define(['ajv'], function (Ajv) {
       list.sort(function(a,b) {return (a.CodeMeaning > b.CodeMeaning) ? 1 : ((b.CodeMeaning > a.CodeMeaning) ? -1 : 0);});
       return list.map(function (code) {
         return {
-          value: code.CodeMeaning.toLowerCase(),
-          contextGroupName : code.contextGroupName,
-          display: code.CodeMeaning,
+          value: self.getValueInformation(code),
+          additionalInformation : self.getAdditionalInformation(code),
+          display: self.getDisplayInformation(code),
           object: code
-        };
+        }
       })
+    };
+
+    self.getAdditionalInformation = function(code) {
+      return code.contextGroupName;
+    };
+
+    self.getDisplayInformation = function(code) {
+      return code.CodeMeaning;
+    };
+
+    self.getValueInformation = function(code) {
+      return code.CodeMeaning.toLowerCase();
+    };
+  }
+
+
+  function ParametricMapQuantityCodeController($scope, $rootScope, $http, $controller) {
+    $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
+    var self = this;
+    self.required = true;
+    self.floatingLabel = "Quantity Code";
+    self.selectionChangedEvent = "QuantityCodeSelectionChanged";
+
+    self.selectedItemChange = function(item) {
+      $scope.segment.quantity = item ? item.object : item;
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+    };
+
+    $scope.$watch('selectedParametricMapContext', function () {
+      if ($scope.selectedParametricMapContext != undefined) {
+
+        $http.get($scope.selectedParametricMapContext.url).success(function (data) {
+          $scope.quantityDefinitions = data.QuantityDefinitions;
+          self.mappedCodes = self.codesList2CodeMeaning($scope.quantityDefinitions);
+        });
+      }
+    });
+
+    self.getAdditionalInformation = function(code) {
+      return "unit: " + code.MeasurementUnitsCode.CodeMeaning;
     };
   }
 

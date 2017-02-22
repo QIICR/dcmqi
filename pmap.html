@@ -39,7 +39,7 @@
           <div>
             <md-input-container>
               <label>Parametric Map Context Name</label>
-              <md-select ng-model="selectedPmapContext">
+              <md-select ng-model="selectedParametricMapContext">
                 <md-option ng-repeat="context in pmapContexts" ng-value="context">
                   {{context.name}}
                 </md-option>
@@ -58,22 +58,25 @@
         </div>
         </div>
         <!--context Attributes-->
-        <div layout="row" ng-show="selectedPmapContext != undefined">
-          <div layout="row" ng-show="selectedAnatomicRegionContext != undefined" >
-            <div ng-controller="AnatomicRegionController as ctrl" flex>
-              <custom-Autocomplete></custom-Autocomplete>
-            </div>
-            <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
-              <custom-Autocomplete></custom-Autocomplete>
-            </div>
+        <div layout="row" ng-show="selectedParametricMapContext != undefined">
+          <div ng-controller="AnatomicRegionController as ctrl" flex>
+            <custom-Autocomplete></custom-Autocomplete>
+          </div>
+          <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
+            <custom-Autocomplete></custom-Autocomplete>
           </div>
         </div>
-        <div layout="row" ng-show="selectedPmapContext != undefined">
+        <div layout="row" ng-show="selectedParametricMapContext != undefined">
+          <div ng-controller="ParametricMapQuantityCodeController as ctrl" class="ng-scope" flex>
+            <custom-Autocomplete></custom-Autocomplete>
+          </div>
+        </div>
+        <div layout="row" ng-show="selectedParametricMapContext != undefined">
           <div>
-          <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
+            <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
           </div>
           <div>
-          <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
+            <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
           </div>
         </div>
       </form>
