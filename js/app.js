@@ -24,6 +24,8 @@ define(['ajv'], function (Ajv) {
   var anatomicRegionContextSources = [idRoot+'segContexts/AnatomicRegionAndModifier-DICOM-Master.json'];
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
                                        idRoot+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
+  var pmContextSources = [idRoot+'pmContexts/pm-dce-context.json',
+                          idRoot+'pmContexts/pm-dwi-context.json']
 
 
   var dependencies = ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion', 'ngAnimate', 'xml',
@@ -34,6 +36,7 @@ define(['ajv'], function (Ajv) {
     .controller('JSONValidatorController', JSONValidatorController)
     .controller('MetaCreatorBaseController', MetaCreatorBaseController)
     .controller('SegmentationMetaCreatorController', SegmentationMetaCreatorController)
+    .controller('ParametricMapMetaCreatorController', ParametricMapMetaCreatorController)
     .controller('CodeSequenceBaseController', CodeSequenceBaseController)
     .controller('AnatomicRegionController', AnatomicRegionController)
     .controller('AnatomicRegionModifierController', AnatomicRegionModifierController)
@@ -167,8 +170,8 @@ define(['ajv'], function (Ajv) {
         templateUrl: 'seg.html',
         controller: 'SegmentationMetaCreatorController'
       })
-      .when('/pm', {
-        templateUrl: 'pm.html',
+      .when('/pmap', {
+        templateUrl: 'pmap.html',
         controller: 'ParametricMapMetaCreatorController'
       })
       .when('/validators', {
@@ -308,10 +311,11 @@ define(['ajv'], function (Ajv) {
   NotImplementedError.prototype = Error.prototype;
 
 
-  function MetaCreatorBaseController(vm, $scope, $rootScope, $mdToast, download, ResourceLoaderService) {
+  function MetaCreatorBaseController(vm, $scope, $rootScope, $mdToast, $http, download, ResourceLoaderService) {
 
     $scope.init = function() {
       console.log("MetaCreatorBaseController: called base init");
+      $scope.segment = {};
       vm.loadSchema = ResourceLoaderService.loadSchema;
       vm.ajv = new Ajv({
         useDefaults: true,
@@ -322,12 +326,37 @@ define(['ajv'], function (Ajv) {
       vm.schemaLoaded = false;
       vm.validate = undefined;
 
-      if (vm.initializeValidationSchema === undefined)
-        throw new NotImplementedError("Method initializeValidationSchema needs to be implemented by all child classes!");
-      else
-        vm.initializeValidationSchema();
+      vm.initializeValidationSchema();
+      vm.loadAnatomicRegionContexts();
 
       $scope.validJSON = false;
+    };
+
+    vm.initializeValidationSchema = function() {
+      ResourceLoaderService.loadSchemaWithReferences(vm.schema.url, function(loadedURLs){
+        angular.forEach(loadedURLs, function(value, key) {
+          console.log("adding schema from url: " + value);
+          var body = ResourceLoaderService.loadedReferences[value];
+          vm.ajv.addSchema(body.data);
+        });
+        vm.schemaLoaded = true;
+        $scope.resetForm();
+      });
+    };
+
+    vm.loadAnatomicRegionContexts = function() {
+      $scope.anatomicRegionContexts = [];
+      $scope.selectedAnatomicRegionContext = undefined;
+      angular.forEach(anatomicRegionContextSources, function (value, key) {
+        $http.get(value).success(function (data) {
+          $scope.anatomicRegionContexts.push({
+            url: value,
+            name: data.AnatomicContextName
+          });
+          if (anatomicRegionContextSources.length == 1)
+            $scope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
+        });
+      });
     };
 
     $scope.submitForm = function(isValid) {
@@ -418,19 +447,6 @@ define(['ajv'], function (Ajv) {
       $controller('MetaCreatorBaseController', {vm: vm, $scope: $scope, $rootScope: $rootScope});
 
       loadSegmentationContexts();
-      loadAnatomicRegionContexts();
-    };
-
-    vm.initializeValidationSchema = function() {
-      ResourceLoaderService.loadSchemaWithReferences(vm.schema.url, function(loadedURLs){
-        angular.forEach(loadedURLs, function(value, key) {
-          console.log("adding schema from url: " + value);
-          var body = ResourceLoaderService.loadedReferences[value];
-          vm.ajv.addSchema(body.data);
-        });
-        vm.schemaLoaded = true;
-        $scope.resetForm();
-      });
     };
 
     function loadDefaultSeriesAttributes() {
@@ -515,21 +531,6 @@ define(['ajv'], function (Ajv) {
         });
         if ($scope.segmentationContexts.length == 1)
           $scope.selectedSegmentationCategoryContext = $scope.segmentationContexts[0];
-      });
-    }
-
-    function loadAnatomicRegionContexts() {
-      $scope.anatomicRegionContexts = [];
-      $scope.selectedAnatomicRegionContext = undefined;
-      angular.forEach(anatomicRegionContextSources, function (value, key) {
-        $http.get(value).success(function (data) {
-          $scope.anatomicRegionContexts.push({
-            url: value,
-            name: data.AnatomicContextName
-          });
-          if (anatomicRegionContextSources.length == 1)
-            $scope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
-        });
       });
     }
 
@@ -622,6 +623,77 @@ define(['ajv'], function (Ajv) {
   }
 
 
+  function ParametricMapMetaCreatorController($scope, $rootScope, $controller, $http, ResourceLoaderService) {
+    var vm = this;
+
+    var init = function() {
+      vm.schema = new Schema('Parametric Map', 'pm-schema.json', []);
+      $controller('MetaCreatorBaseController', {vm: vm, $scope: $scope, $rootScope: $rootScope});
+
+      loadParametricMapContexts();
+    };
+
+    $scope.resetForm = function() {
+      $scope.validJSON = false;
+      loadDefaultSeriesAttributes();
+      $scope.output = "";
+    };
+
+    function loadDefaultSeriesAttributes() {
+      var doc = {};
+      if (vm.schemaLoaded) {
+        vm.validate = vm.ajv.compile({$ref: vm.schema.id});
+        var valid = vm.validate(doc);
+        if (!valid) console.log(vm.ajv.errorsText(vm.validate.errors));
+      }
+      $scope.seriesAttributes = angular.extend({}, doc);
+    }
+
+    function loadParametricMapContexts() {
+      $scope.pmapContexts = [];
+      $scope.selectedPmapContext = undefined;
+      angular.forEach(pmContextSources, function (value, key) {
+        $http.get(value).success(function (data) {
+          $scope.pmapContexts.push({
+            url: value,
+            name: data.name
+          });
+        });
+        if ($scope.pmapContexts.length == 1)
+          $scope.selectedPmapContext = $scope.pmapContexts[0];
+      });
+    }
+
+    vm.createJSONOutput = function() {
+
+      var doc = {
+        "SeriesDescription" : $scope.seriesAttributes.SeriesDescription,
+        "SeriesNumber" : $scope.seriesAttributes.SeriesNumber,
+        "InstanceNumber" : $scope.seriesAttributes.InstanceNumber
+      };
+
+      if ($scope.seriesAttributes.BodyPartExamined.length > 0)
+        doc["BodyPartExamined"] = $scope.seriesAttributes.BodyPartExamined;
+
+
+      if ($scope.segment.anatomicRegion)
+        doc["AnatomicRegionSequence"] = vm.getCodeSequenceAttributes($scope.segment.anatomicRegion);
+      if ($scope.segment.anatomicRegionModifier)
+        doc["AnatomicRegionModifierSequence"] = vm.getCodeSequenceAttributes($scope.segment.anatomicRegionModifier);
+
+      $scope.output = JSON.stringify(doc, null, 2);
+      $scope.onOutputChanged();
+    };
+
+    vm.rgbToArray = function(str) {
+      var rgb = str.replace("rgb(", "").replace(")", "").split(", ");
+      return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
+    };
+
+    init();
+  }
+
+
   function CodeSequenceBaseController($self, $scope, $rootScope, $timeout, $q) {
     var self = $self;
 
@@ -685,7 +757,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Anatomic Region";
-    self.isDisabled = true;
+    self.isDisabled = false;
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
     self.selectedItemChange = function(item) {
@@ -698,7 +770,7 @@ define(['ajv'], function (Ajv) {
         return;
       }
       if (data.item) {
-        if(data.item.object.showAnatomy == "false") {
+        if(data.item.object.showAnatomy == false) {
           self.isDisabled = true;
           self.searchText = undefined;
         } else {
