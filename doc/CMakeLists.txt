@@ -78,7 +78,7 @@ foreach(json_schema_file ${json_schema_files})
 endforeach()
 
 #-----------------------------------------------------------------------------
-# Example of validation tests
+# Example validation tests
 #-----------------------------------------------------------------------------
 
 # function to simplify creation of example validation tests
@@ -89,37 +89,6 @@ function(createExampleDataTest example_name schema)
     add_test(NAME ${testname}
       # -d stands for data that needs to be validated
       COMMAND ${AJV_EXECUTABLE} -s ${schema} ${common_schema_references} -d ${json_example_file} ${AJV_OPTIONS})
-    set_property(TEST ${testname} PROPERTY LABELS ajv)
-  else()
-    message(STATUS "Skipping '${testname}' test: ajv executable not found")
-  endif()
-endfunction()
-
-# validate segmentation context files
-set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/segment-context-schema.json)
-set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/anatomic-context-schema.json)
-set(CONTEXT_COMMON_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/segment-context-common-schema.json)
-
-function(createSegmentationContextTest seg_context_name)
-  set(json_seg_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/SegmentationCategoryTypeModifier-${seg_context_name}.json)
-  set(testname ajv_${seg_context_name}-segcontext)
-  if(AJV_EXECUTABLE)
-    add_test(NAME ${testname}
-      # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${SEGMENT_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_seg_context_file} ${AJV_OPTIONS})
-    set_property(TEST ${testname} PROPERTY LABELS ajv)
-  else()
-    message(STATUS "Skipping '${testname}' test: ajv executable not found")
-  endif()
-endfunction()
-
-function(createAnatomicContextTest anatomic_context_name)
-  set(json_anatomic_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/AnatomicRegionAndModifier-${anatomic_context_name}.json)
-  set(testname ajv_${anatomic_context_name}-anatomiccontext)
-  if(AJV_EXECUTABLE)
-    add_test(NAME ${testname}
-      # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${ANATOMIC_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_anatomic_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
@@ -148,30 +117,37 @@ foreach(srtid1500_example_name ${SRTID1500_EXAMPLES})
   createExampleDataTest(${srtid1500_example_name} ${SRTID1500_SCHEMA})
 endforeach()
 
-foreach(seg_context_name DICOM-Master SlicerGeneralAnatomy)
-  createSegmentationContextTest(${seg_context_name})
-endforeach()
+#-----------------------------------------------------------------------------
+# Context validation tests
+#-----------------------------------------------------------------------------
 
-foreach(anatomic_context_name DICOM-Master)
-  createanatomicContextTest(${anatomic_context_name})
-endforeach()
-
-# validate parametric map schemas
-set(PM_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/pm-context-schema.json)
-
-function(createPMContextTest pm_context_name)
-  set(json_pm_context_file ${CMAKE_SOURCE_DIR}/doc/pmContexts/pm-${pm_context_name}-context.json)
-  set(testname ajv_${pm_context_name}-pmcontext)
+# function for # function to simplify creation of context tests
+function(createContextTest context_name json_context_file schema_file suffix)
+  set(testname ajv_${context_name}-${suffix})
   if(AJV_EXECUTABLE)
     add_test(NAME ${testname}
-      # -d stands for data that needs to be validated
-      COMMAND ${AJV_EXECUTABLE} -s ${PM_CONTEXT_SCHEMA} ${common_schema_references} -d ${json_pm_context_file} ${AJV_OPTIONS})
+            # -d stands for data that needs to be validated
+            COMMAND ${AJV_EXECUTABLE} -s ${schema_file} ${common_schema_references} -d ${json_context_file} ${AJV_OPTIONS})
     set_property(TEST ${testname} PROPERTY LABELS ajv)
   else()
     message(STATUS "Skipping '${testname}' test: ajv executable not found")
   endif()
 endfunction()
 
+set(SEGMENT_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/segment-context-schema.json)
+foreach(seg_context_name DICOM-Master SlicerGeneralAnatomy)
+  set(json_seg_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/SegmentationCategoryTypeModifier-${seg_context_name}.json)
+  createContextTest(${seg_context_name} ${json_seg_context_file} ${SEGMENT_CONTEXT_SCHEMA} segcontext)
+endforeach()
+
+set(ANATOMIC_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/anatomic-context-schema.json)
+foreach(anatomic_context_name DICOM-Master)
+  set(json_anatomic_context_file ${CMAKE_SOURCE_DIR}/doc/segContexts/AnatomicRegionAndModifier-${anatomic_context_name}.json)
+  createContextTest(${anatomic_context_name} ${json_anatomic_context_file} ${ANATOMIC_CONTEXT_SCHEMA} anatomiccontext)
+endforeach()
+
+set(PM_CONTEXT_SCHEMA ${CMAKE_SOURCE_DIR}/doc/schemas/pm-context-schema.json)
 foreach(pm_context_name dwi dce)
-  createPMContextTest(${pm_context_name})
+  set(json_pm_context_file ${CMAKE_SOURCE_DIR}/doc/pmContexts/pm-${pm_context_name}-context.json)
+  createContextTest(${pm_context_name} ${json_pm_context_file} ${PM_CONTEXT_SCHEMA} pmcontext)
 endforeach()
