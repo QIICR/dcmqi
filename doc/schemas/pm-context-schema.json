@@ -5,6 +5,7 @@
   "definitions": {
     "QuantityDefinition": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "CodeValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
@@ -21,6 +22,9 @@
         "contextGroupName": {
           "type": "string"
         },
+        "comment": {
+          "type": "string"
+        },
         "UMLConceptUID": {
           "type": "string"
         },
@@ -30,7 +34,7 @@
         "DerivedPixelContrast": {
           "type": "string"
         },
-        "MeasurementUnitsCodes": {
+        "MeasurementUnitsCode": {
           "type": "array",
           "minItems": 1,
           "items": {
@@ -55,6 +59,7 @@
     },
     "DerivationDefinition": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "CodeValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
@@ -132,7 +137,6 @@
       }
     }
   },
-
   "properties": {
     "@schema": {
       "type": "string"

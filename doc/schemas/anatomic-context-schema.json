@@ -2,7 +2,7 @@
   "@context": "http://qiicr.org/dcmqi/contexts/dcmqi.jsonld",
   "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/anatomic-context-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
-
+  "additionalProperties": false,
   "properties": {
     "@schema": {"type" : "string"},
     "AnatomicContextName": {"type": "string"},
