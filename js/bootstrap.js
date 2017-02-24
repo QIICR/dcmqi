@@ -79,6 +79,6 @@ require(["tinycolor"], function(tinycolor) {
 
 require(["JSONSemanticsCreator"],
   function () {
-    angular.bootstrap(document, ["JSONSemanticsCreator"]);
+    angular.bootstrap(document, ["app"]);
   }
 );
