@@ -664,6 +664,7 @@ define(['ajv'], function (Ajv) {
     };
 
     $scope.resetForm = function() {
+      $scope.segment = {};
       $scope.validJSON = false;
       loadDefaultSeriesAttributes();
       $scope.output = "";
