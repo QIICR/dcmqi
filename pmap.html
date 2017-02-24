@@ -39,7 +39,7 @@
           <div>
             <md-input-container>
               <label>Parametric Map Context Name</label>
-              <md-select ng-model="selectedParametricMapContext">
+              <md-select ng-model="$root.selectedParametricMapContext">
                 <md-option ng-repeat="context in pmapContexts" ng-value="context">
                   {{context.name}}
                 </md-option>
@@ -49,7 +49,7 @@
           <div>
           <md-input-container>
             <label>Anatomic Region Context Name</label>
-            <md-select ng-model="selectedAnatomicRegionContext">
+            <md-select ng-model="$root.selectedAnatomicRegionContext">
               <md-option ng-repeat="context in anatomicRegionContexts" ng-value="context">
                 {{context.name}}
               </md-option>
@@ -58,25 +58,21 @@
         </div>
         </div>
         <!--context Attributes-->
-        <div layout="row" ng-show="selectedParametricMapContext != undefined">
-          <div ng-controller="AnatomicRegionController as ctrl" flex>
-            <custom-Autocomplete></custom-Autocomplete>
+        <div layout="column" ng-show="$root.selectedParametricMapContext != undefined">
+          <div layout="row">
+            <parametric-map-quantity-selector required="true" flex></parametric-map-quantity-selector>
           </div>
-          <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
-            <custom-Autocomplete></custom-Autocomplete>
+          <div layout="row">
+            <anatomic-region-selector required="true" flex></anatomic-region-selector>
+            <anatomic-region-modifier-selector required="false" flex></anatomic-region-modifier-selector>
           </div>
-        </div>
-        <div layout="row" ng-show="selectedParametricMapContext != undefined">
-          <div ng-controller="ParametricMapQuantityCodeController as ctrl" class="ng-scope" flex>
-            <custom-Autocomplete></custom-Autocomplete>
-          </div>
-        </div>
-        <div layout="row" ng-show="selectedParametricMapContext != undefined">
-          <div>
-            <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
-          </div>
-          <div>
-            <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
+          <div layout="row">
+            <div>
+              <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
+            </div>
+            <div>
+              <md-button class="md-raised" ng-click="resetForm()">Reset</md-button>
+            </div>
           </div>
         </div>
       </form>

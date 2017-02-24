@@ -315,7 +315,6 @@ define(['ajv'], function (Ajv) {
   function MetaCreatorBaseController(vm, $scope, $rootScope, $mdToast, $http, download, ResourceLoaderService) {
 
     $scope.init = function() {
-      console.log("MetaCreatorBaseController: called base init");
       $scope.segment = {};
       vm.loadSchema = ResourceLoaderService.loadSchema;
       vm.ajv = new Ajv({
@@ -336,7 +335,7 @@ define(['ajv'], function (Ajv) {
     vm.initializeValidationSchema = function() {
       ResourceLoaderService.loadSchemaWithReferences(vm.schema.url, function(loadedURLs){
         angular.forEach(loadedURLs, function(value, key) {
-          console.log("adding schema from url: " + value);
+          // console.log("adding schema from url: " + value);
           var body = ResourceLoaderService.loadedReferences[value];
           vm.ajv.addSchema(body.data);
         });
@@ -355,7 +354,7 @@ define(['ajv'], function (Ajv) {
             name: data.AnatomicContextName
           });
           if (anatomicRegionContextSources.length == 1)
-            $scope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
+            $rootScope.selectedAnatomicRegionContext = $scope.anatomicRegionContexts[0];
         });
       });
     };
@@ -391,7 +390,7 @@ define(['ajv'], function (Ajv) {
       var firstError = $scope.jsonForm.$error.required[0];
       var elements = firstError.$name.split("_");
       var message = "[MISSING]: " + elements[0];
-      if (elements[1] != undefined)
+      if (elements[1] != undefined && elements[1] != "")
         message += " for segment with label id " + elements[1];
       vm.showToast(message);
     };
@@ -431,10 +430,18 @@ define(['ajv'], function (Ajv) {
                 "CodeMeaning":codeSequence.CodeMeaning}
     };
 
+    $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
+      $scope.segment.anatomicRegion = data.value;
+    });
+
+    $rootScope.$on("AnatomicRegionModifierSelectionChanged", function(event, data) {
+      $scope.segment.anatomicRegionModifier = data.value;
+    });
+
     $scope.init();
   }
 
-  function SegmentationMetaCreatorController($scope, $rootScope, $controller, $http, ResourceLoaderService) {
+  function SegmentationMetaCreatorController($scope, $rootScope, $controller, $http, download, ResourceLoaderService) {
     var vm = this;
 
     var init = function() {
@@ -478,6 +485,7 @@ define(['ajv'], function (Ajv) {
       loadDefaultSeriesAttributes();
       $scope.segments = [loadAndValidateDefaultSegmentAttributes()];
       $scope.segments[0].recommendedDisplayRGBValue = angular.extend({}, defaultRecommendedDisplayValue);
+      $scope.segment = $scope.segments[0];
       $scope.output = "";
     };
 
@@ -522,7 +530,7 @@ define(['ajv'], function (Ajv) {
 
     function loadSegmentationContexts() {
       $scope.segmentationContexts = [];
-      $scope.selectedSegmentationCategoryContext = undefined;
+      $rootScope.selectedSegmentationCategoryContext = undefined;
       angular.forEach(segCategoryTypeContextSources, function (value, key) {
         $http.get(value).success(function (data) {
           $scope.segmentationContexts.push({
@@ -531,7 +539,7 @@ define(['ajv'], function (Ajv) {
           });
         });
         if ($scope.segmentationContexts.length == 1)
-          $scope.selectedSegmentationCategoryContext = $scope.segmentationContexts[0];
+          $rootScope.selectedSegmentationCategoryContext = $scope.segmentationContexts[0];
       });
     }
 
@@ -559,6 +567,12 @@ define(['ajv'], function (Ajv) {
     $scope.nextSegment = function() {
       $scope.selectedIndex += 1;
     };
+
+    $scope.$watch('selectedIndex', function () {
+      if($scope.segments != undefined) {
+        $scope.segment = $scope.segments[$scope.selectedIndex];
+      }
+    });
 
     $scope.segmentAlreadyExists = function(segment) {
       var exists = false;
@@ -620,6 +634,20 @@ define(['ajv'], function (Ajv) {
       return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
     };
 
+    $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+      $scope.segment.segmentedPropertyCategory = data.value;
+    });
+
+    $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
+      $scope.segment.segmentedPropertyType = data.segmentedPropertyType;
+      $scope.segment.recommendedDisplayRGBValue.color = data.color;
+      $scope.segment.hasRecommendedColor = data.hasRecommendedColor;
+    });
+
+    $rootScope.$on("SegmentedPropertyTypeModifierSelectionChanged", function(event, data) {
+      $scope.segment.segmentedPropertyTypeModifier = data.value;
+    });
+
     init();
   }
 
@@ -652,7 +680,7 @@ define(['ajv'], function (Ajv) {
 
     function loadParametricMapContexts() {
       $scope.pmapContexts = [];
-      $scope.selectedParametricMapContext = undefined;
+      $rootScope.selectedParametricMapContext = undefined;
       angular.forEach(pmContextSources, function (value, key) {
         $http.get(value).success(function (data) {
           $scope.pmapContexts.push({
@@ -661,7 +689,7 @@ define(['ajv'], function (Ajv) {
           });
         });
         if ($scope.pmapContexts.length == 1)
-          $scope.selectedParametricMapContext = $scope.pmapContexts[0];
+          $rootScope.selectedParametricMapContext = $scope.pmapContexts[0];
       });
     }
 
@@ -683,16 +711,15 @@ define(['ajv'], function (Ajv) {
 
       if ($scope.segment.quantity) {
         doc["QuantityValueCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity);
-        doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity.MeasurementUnitsCode);
+        doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity.MeasurementUnitsCode[0]);
       }
       $scope.output = JSON.stringify(doc, null, 2);
       $scope.onOutputChanged();
     };
 
-    vm.rgbToArray = function(str) {
-      var rgb = str.replace("rgb(", "").replace(")", "").split(", ");
-      return [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])];
-    };
+    $rootScope.$on("QuantityCodeSelectionChanged", function(event, data) {
+      $scope.segment.quantity = data.value;
+    });
 
     init();
   }
@@ -701,16 +728,18 @@ define(['ajv'], function (Ajv) {
   function CodeSequenceBaseController($self, $scope, $rootScope, $timeout, $q) {
     var self = $self;
 
+    $scope.ctrl = self;
     self.simulateQuery = false;
     self.isDisabled    = false;
+    self.required = $scope.required;
+    self.segmentNumber = $scope.segmentNumber;
 
     self.querySearch   = querySearch;
     self.selectedItemChange = selectedItemChange;
-    self.searchTextChange   = searchTextChange;
     self.selectionChangedEvent = "";
 
-    self.getName = function() {
-      return self.floatingLabel.replace(" ", "");
+    self.selectedItemChange = function(item) {
+      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, value:item ? item.object : item});
     };
 
     function querySearch (query) {
@@ -725,12 +754,8 @@ define(['ajv'], function (Ajv) {
       }
     }
 
-    function searchTextChange(text) {
-      // $log.info('Text changed to ' + text);
-    }
-
     function selectedItemChange(item) {
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
+      $rootScope.$emit(self.selectionChangedEvent, {item:item, segment:$scope.segment});
     }
 
     function createFilterFor(query) {
@@ -772,19 +797,12 @@ define(['ajv'], function (Ajv) {
   function ParametricMapQuantityCodeController($scope, $rootScope, $http, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
-    self.required = true;
     self.floatingLabel = "Quantity Code";
     self.selectionChangedEvent = "QuantityCodeSelectionChanged";
 
-    self.selectedItemChange = function(item) {
-      $scope.segment.quantity = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
-    };
-
-    $scope.$watch('selectedParametricMapContext', function () {
-      if ($scope.selectedParametricMapContext != undefined) {
-
-        $http.get($scope.selectedParametricMapContext.url).success(function (data) {
+    $rootScope.$watch('selectedParametricMapContext', function () {
+      if ($rootScope.selectedParametricMapContext != undefined) {
+        $http.get($rootScope.selectedParametricMapContext.url).success(function (data) {
           $scope.quantityDefinitions = data.QuantityDefinitions;
           self.mappedCodes = self.codesList2CodeMeaning($scope.quantityDefinitions);
         });
@@ -792,7 +810,7 @@ define(['ajv'], function (Ajv) {
     });
 
     self.getAdditionalInformation = function(code) {
-      return "unit: " + code.MeasurementUnitsCode.CodeMeaning;
+      return "unit: " + code.MeasurementUnitsCode[0].CodeMeaning;
     };
   }
 
@@ -804,30 +822,16 @@ define(['ajv'], function (Ajv) {
     self.isDisabled = false;
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
-    self.selectedItemChange = function(item) {
-      $scope.segment.anatomicRegion = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
-    };
-
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
-      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
-        return;
-      }
-      if (data.item) {
-        if(data.item.object.showAnatomy == false) {
-          self.isDisabled = true;
-          self.searchText = undefined;
-        } else {
-          self.isDisabled = false;
-        }
-      } else {
-        self.searchText = undefined;
+      if (data.value) {
+        self.isDisabled = !data.value.showAnatomy;
+        self.searchText = !data.value.showAnatomy ? undefined : self.searchText;
       }
     });
 
-    $scope.$watch('selectedAnatomicRegionContext', function () {
-      if ($scope.selectedAnatomicRegionContext != undefined) {
-        $http.get($scope.selectedAnatomicRegionContext.url).success(function (data) {
+    $rootScope.$watch('selectedAnatomicRegionContext', function () {
+      if ($rootScope.selectedAnatomicRegionContext != undefined) {
+        $http.get($rootScope.selectedAnatomicRegionContext.url).success(function (data) {
           $scope.anatomicCodes = data.AnatomicCodes.AnatomicRegion;
           self.mappedCodes = self.codesList2CodeMeaning($scope.anatomicCodes);
         });
@@ -843,22 +847,14 @@ define(['ajv'], function (Ajv) {
     self.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
-    self.selectedItemChange = function(item) {
-      $scope.segment.anatomicRegionModifier = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
-    };
-
     $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
-      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
-        return;
-      }
-      if (data.item) {
-        self.isDisabled = data.item.object.Modifier === undefined;
-        if (data.item.object.Modifier === undefined) {
+      if (data.value) {
+        self.isDisabled = data.value.Modifier === undefined;
+        if (data.value.Modifier === undefined) {
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Modifier);
+          self.mappedCodes = self.codesList2CodeMeaning(data.value.Modifier);
         }
       } else {
         self.mappedCodes = [];
@@ -872,19 +868,12 @@ define(['ajv'], function (Ajv) {
   function SegmentedPropertyCategoryCodeController($scope, $rootScope, $http, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
-    self.required = true;
     self.floatingLabel = "Segmented Category";
     self.selectionChangedEvent = "SegmentedPropertyCategorySelectionChanged";
 
-    self.selectedItemChange = function(item) {
-      $scope.segment.segmentedPropertyCategory = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
-    };
-
-    $scope.$watch('selectedSegmentationCategoryContext', function () {
-      if ($scope.selectedSegmentationCategoryContext != undefined) {
-
-        $http.get($scope.selectedSegmentationCategoryContext.url).success(function (data) {
+    $rootScope.$watch('selectedSegmentationCategoryContext', function () {
+      if ($rootScope.selectedSegmentationCategoryContext != undefined) {
+        $http.get($rootScope.selectedSegmentationCategoryContext.url).success(function (data) {
           $scope.segmentationCodes = data.SegmentationCodes.Category;
           self.mappedCodes = self.codesList2CodeMeaning($scope.segmentationCodes);
         });
@@ -896,36 +885,35 @@ define(['ajv'], function (Ajv) {
   function SegmentedPropertyTypeController($scope, $rootScope, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
-    self.required = true;
     self.floatingLabel = "Segmented Property Type";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
 
     self.selectedItemChange = function(item) {
-      $scope.segment.segmentedPropertyType = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
       if (self.selectedItem === null) {
-        $scope.segment.recommendedDisplayRGBValue.color = "";
-        $scope.segment.hasRecommendedColor = false;
-      }
-      else if (self.selectedItem.object.recommendedDisplayRGBValue != undefined) {
-        $scope.segment.hasRecommendedColor = true;
+        var color = "";
+        var hasRecommendedColor = false;
+      } else if (self.selectedItem.object.recommendedDisplayRGBValue != undefined) {
+        hasRecommendedColor = true;
         var rgb = self.selectedItem.object.recommendedDisplayRGBValue;
-        $scope.segment.recommendedDisplayRGBValue.color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')';
+        color = 'rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+')';
       }
+      $rootScope.$emit(self.selectionChangedEvent, {
+        item:self.selectedItem,
+        segmentedPropertyType:item ? item.object : item,
+        hasRecommendedColor:hasRecommendedColor,
+        color:color
+      });
     };
 
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
-      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
-        return;
-      }
-      if (data.item) {
-        self.isDisabled = data.item.object.Type === undefined;
-        if (data.item.object.Type === undefined) {
+      if (data.value) {
+        self.isDisabled = data.value.Type === undefined;
+        if (data.value.Type === undefined) {
           self.searchText = undefined;
           self.mappedCodes = [];
         } else {
-          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Type);
+          self.mappedCodes = self.codesList2CodeMeaning(data.value.Type);
         }
       } else {
         self.mappedCodes = [];
@@ -936,22 +924,14 @@ define(['ajv'], function (Ajv) {
   }
 
 
-  function SegmentedPropertyTypeModifierController($scope, $rootScope, $http, $log, $timeout, $q, $controller) {
+  function SegmentedPropertyTypeModifierController($scope, $rootScope, $controller) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Segmented Property Type Modifier";
     self.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
-    self.selectedItemChange = function(item) {
-      $scope.segment.segmentedPropertyTypeModifier = item ? item.object : item;
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, segment:$scope.segment});
-    };
-
     $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
-      if ($scope.segment.$$hashKey != data.segment.$$hashKey) {
-        return;
-      }
       if (data.item) {
         self.isDisabled = data.item.object.Modifier === undefined;
         if (data.item.object.Modifier === undefined) {
@@ -968,13 +948,41 @@ define(['ajv'], function (Ajv) {
     });
   }
 
-
-  app.directive('customAutocomplete', function() {
+  function createNewAutoCompleteSelector(controller){
     return {
-      templateUrl: 'custom-autocomplete.html'
+      templateUrl: 'custom-autocomplete.html',
+      restrict: 'EA',
+      scope: {
+        required: "=",
+        segmentNumber: "@"
+      },
+      controller: controller
     };
+  }
+
+  app.directive('anatomicRegionSelector', function() {
+    return createNewAutoCompleteSelector(AnatomicRegionController);
   });
 
+  app.directive('anatomicRegionModifierSelector', function() {
+    return createNewAutoCompleteSelector(AnatomicRegionModifierController);
+  });
+
+  app.directive('parametricMapQuantitySelector', function() {
+    return createNewAutoCompleteSelector(ParametricMapQuantityCodeController);
+  });
+
+  app.directive('segmentedPropertyCategorySelector', function() {
+    return createNewAutoCompleteSelector(SegmentedPropertyCategoryCodeController);
+  });
+
+  app.directive('segmentedPropertyTypeSelector', function() {
+    return createNewAutoCompleteSelector(SegmentedPropertyTypeController);
+  });
+
+  app.directive('segmentedPropertyTypeModifierSelector', function() {
+    return createNewAutoCompleteSelector(SegmentedPropertyTypeModifierController);
+  });
 
   app.directive("nonExistentLabel", function() {
     return {
