@@ -25,7 +25,7 @@ define(['ajv'], function (Ajv) {
   var segCategoryTypeContextSources = [idRoot+'segContexts/SegmentationCategoryTypeModifier-DICOM-Master.json',
                                        idRoot+'segContexts/SegmentationCategoryTypeModifier-SlicerGeneralAnatomy.json'];
   var pmContextSources = [idRoot+'pmContexts/pm-dce-context.json',
-                          idRoot+'pmContexts/pm-dwi-context.json']
+                          idRoot+'pmContexts/pm-dwi-context.json'];
 
 
   var dependencies = ['ngRoute', 'ngMaterial', 'ngMessages', 'ngMdIcons', 'vAccordion', 'ngAnimate', 'xml',
@@ -39,6 +39,7 @@ define(['ajv'], function (Ajv) {
     .controller('ParametricMapMetaCreatorController', ParametricMapMetaCreatorController)
     .controller('CodeSequenceBaseController', CodeSequenceBaseController)
     .controller('ParametricMapQuantityCodeController', ParametricMapQuantityCodeController)
+    .controller('ParametricMapMeasurementUnitsCodeController', ParametricMapMeasurementUnitsCodeController)
     .controller('AnatomicRegionController', AnatomicRegionController)
     .controller('AnatomicRegionModifierController', AnatomicRegionModifierController)
     .controller('SegmentedPropertyCategoryCodeController', SegmentedPropertyCategoryCodeController)
@@ -652,7 +653,7 @@ define(['ajv'], function (Ajv) {
   }
 
 
-  function ParametricMapMetaCreatorController($scope, $rootScope, $controller, $http, ResourceLoaderService) {
+  function ParametricMapMetaCreatorController($scope, $rootScope, $controller, $http) {
     var vm = this;
 
     var init = function() {
@@ -711,7 +712,7 @@ define(['ajv'], function (Ajv) {
 
       if ($scope.segment.quantity) {
         doc["QuantityValueCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity);
-        doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity.MeasurementUnitsCode[0]);
+        doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.unit);
       }
       $scope.output = JSON.stringify(doc, null, 2);
       $scope.onOutputChanged();
@@ -719,6 +720,10 @@ define(['ajv'], function (Ajv) {
 
     $rootScope.$on("QuantityCodeSelectionChanged", function(event, data) {
       $scope.segment.quantity = data.value;
+    });
+
+    $rootScope.$on("MeasurementUnitSelectionChanged", function(event, data) {
+      $scope.segment.unit = data.value;
     });
 
     init();
@@ -737,6 +742,12 @@ define(['ajv'], function (Ajv) {
     self.querySearch   = querySearch;
     self.selectedItemChange = selectedItemChange;
     self.selectionChangedEvent = "";
+
+    self.reset = function(disabled){
+      self.mappedCodes = [];
+      self.searchText = undefined;
+      self.isDisabled = disabled;
+    };
 
     self.selectedItemChange = function(item) {
       $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, value:item ? item.object : item});
@@ -780,6 +791,22 @@ define(['ajv'], function (Ajv) {
       })
     };
 
+    self.setMappedCodes = function(data, key){
+      if (data.value) {
+        self.isDisabled = data.value[key] === undefined;
+        if (data.value[key] === undefined) {
+          self.searchText = undefined;
+          self.mappedCodes = [];
+        } else {
+          self.mappedCodes = self.codesList2CodeMeaning(data.value[key]);
+        }
+        if(self.mappedCodes.length == 1)
+          self.selectedItem = self.mappedCodes[0];
+      } else {
+        self.reset(true);
+      }
+    };
+
     self.getAdditionalInformation = function(code) {
       return code.contextGroupName;
     };
@@ -812,6 +839,19 @@ define(['ajv'], function (Ajv) {
     self.getAdditionalInformation = function(code) {
       return "unit: " + code.MeasurementUnitsCode[0].CodeMeaning;
     };
+  }
+
+
+  function ParametricMapMeasurementUnitsCodeController($scope, $rootScope, $controller) {
+    $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
+    var self = this;
+    self.floatingLabel = "Measurement Unit";
+    self.isDisabled = true;
+    self.selectionChangedEvent = "MeasurementUnitSelectionChanged";
+
+    $rootScope.$on("QuantityCodeSelectionChanged", function(event, data) {
+      self.setMappedCodes(data, "MeasurementUnitsCode");
+    });
   }
 
 
@@ -848,19 +888,7 @@ define(['ajv'], function (Ajv) {
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
     $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
-      if (data.value) {
-        self.isDisabled = data.value.Modifier === undefined;
-        if (data.value.Modifier === undefined) {
-          self.searchText = undefined;
-          self.mappedCodes = [];
-        } else {
-          self.mappedCodes = self.codesList2CodeMeaning(data.value.Modifier);
-        }
-      } else {
-        self.mappedCodes = [];
-        self.searchText = undefined;
-        self.isDisabled = true;
-      }
+      self.setMappedCodes(data, "Modifier");
     });
   }
 
@@ -900,6 +928,7 @@ define(['ajv'], function (Ajv) {
       }
       $rootScope.$emit(self.selectionChangedEvent, {
         item:self.selectedItem,
+        value:item ? item.object : item,
         segmentedPropertyType:item ? item.object : item,
         hasRecommendedColor:hasRecommendedColor,
         color:color
@@ -907,19 +936,7 @@ define(['ajv'], function (Ajv) {
     };
 
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
-      if (data.value) {
-        self.isDisabled = data.value.Type === undefined;
-        if (data.value.Type === undefined) {
-          self.searchText = undefined;
-          self.mappedCodes = [];
-        } else {
-          self.mappedCodes = self.codesList2CodeMeaning(data.value.Type);
-        }
-      } else {
-        self.mappedCodes = [];
-        self.searchText = undefined;
-        self.isDisabled = true;
-      }
+      self.setMappedCodes(data, "Type");
     });
   }
 
@@ -932,19 +949,7 @@ define(['ajv'], function (Ajv) {
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
     $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
-      if (data.item) {
-        self.isDisabled = data.item.object.Modifier === undefined;
-        if (data.item.object.Modifier === undefined) {
-          self.searchText = undefined;
-          self.mappedCodes = [];
-        } else {
-          self.mappedCodes = self.codesList2CodeMeaning(data.item.object.Modifier);
-        }
-      } else {
-        self.mappedCodes = [];
-        self.searchText = undefined;
-        self.isDisabled = true;
-      }
+      self.setMappedCodes(data, "Modifier");
     });
   }
 
@@ -970,6 +975,10 @@ define(['ajv'], function (Ajv) {
 
   app.directive('parametricMapQuantitySelector', function() {
     return createNewAutoCompleteSelector(ParametricMapQuantityCodeController);
+  });
+
+  app.directive('parametricMapMeasurementUnitSelector', function() {
+    return createNewAutoCompleteSelector(ParametricMapMeasurementUnitsCodeController);
   });
 
   app.directive('segmentedPropertyCategorySelector', function() {
