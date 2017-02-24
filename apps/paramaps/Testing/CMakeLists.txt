@@ -3,79 +3,84 @@
 include(dcmqiTest)
 
 #-----------------------------------------------------------------------------
-set(BASELINE ${CMAKE_SOURCE_DIR}/data/paramaps/)
-include_directories(${ITK_INCLUDE_DIRS})
+set(MODULE_NAME paramap)
 
 #-----------------------------------------------------------------------------
-set(MODULE_NAME itkimage2paramap)
+set(BASELINE ${CMAKE_SOURCE_DIR}/data/paramaps/)
+include_directories(${ITK_INCLUDE_DIRS})
+set(MODULE_TEMP_DIR ${TEMP_DIR}/pmap)
+make_directory(${MODULE_TEMP_DIR})
+
+#-----------------------------------------------------------------------------
+set(itk2dcm itkimage2paramap)
 
 dcmqi_add_test_executable(
-  MODULE_NAME ${MODULE_NAME}
-  EXECUTABLE_NAME ${MODULE_NAME}Test
+  MODULE_NAME ${itk2dcm}
+  EXECUTABLE_NAME ${itk2dcm}Test
   )
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_hello
+  NAME ${itk2dcm}_hello
   MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${MODULE_NAME}> --help
+  COMMAND $<TARGET_FILE:${itk2dcm}> --help
   )
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_makeParametricMap
+  NAME ${itk2dcm}_makeParametricMap
   MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${MODULE_NAME}>
+  COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
     --inputImage ${BASELINE}/pm-example.nrrd
     --inputDICOMList ${BASELINE}/pm-example-slice.dcm
-    --outputDICOM ${TEMP_DIR}/paramap.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/paramap.dcm
   )
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_makeParametricMapFP
+  NAME ${itk2dcm}_makeParametricMapFP
   MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${MODULE_NAME}>
+  COMMAND $<TARGET_FILE:${itk2dcm}>
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
     --inputImage ${BASELINE}/pm-example-float.nrrd
     --inputDICOMList ${BASELINE}/pm-example-slice.dcm
-    --outputDICOM ${TEMP_DIR}/paramap-float.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
   )
 
 #-----------------------------------------------------------------------------
-set(MODULE_NAME paramap2itkimage)
+set(dcm2itk paramap2itkimage)
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_hello
+  NAME ${dcm2itk}_hello
   MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${MODULE_NAME}> --help
+  COMMAND $<TARGET_FILE:${dcm2itk}> --help
   )
 
 dcmqi_add_test_executable(
-  MODULE_NAME ${MODULE_NAME}
-  EXECUTABLE_NAME ${MODULE_NAME}Test
+  MODULE_NAME ${dcm2itk}
+  EXECUTABLE_NAME ${dcm2itk}Test
   )
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_makeNRRDParametricMap
+  NAME ${dcm2itk}_makeNRRDParametricMap
   MODULE_NAME ${MODULE_NAME}
-  RESOURCE_LOCK ${TEMP_DIR}/pmap.nrrd
-  COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
-    --compare ${BASELINE}/pm-example.nrrd ${TEMP_DIR}/pmap.nrrd
-    ${MODULE_NAME}Test
-      --inputDICOM ${TEMP_DIR}/paramap.dcm
-      --outputDirectory ${TEMP_DIR}
+  RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/pm-example.nrrd ${MODULE_TEMP_DIR}/pmap.nrrd
+    ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/paramap.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
   TEST_DEPENDS
-    itkimage2paramap_makeParametricMap
+    ${itk2dcm}_makeParametricMap
   )
 
 dcmqi_add_test(
-  NAME ${MODULE_NAME}_makeNRRDParametricMapFP
+  NAME ${dcm2itk}_makeNRRDParametricMapFP
   MODULE_NAME ${MODULE_NAME}
-  RESOURCE_LOCK ${TEMP_DIR}/pmap.nrrd
-  COMMAND $<TARGET_FILE:${MODULE_NAME}Test>
-    --compare ${BASELINE}/pm-example-float.nrrd ${TEMP_DIR}/pmap.nrrd
-    ${MODULE_NAME}Test
-      --inputDICOM ${TEMP_DIR}/paramap-float.dcm
-      --outputDirectory ${TEMP_DIR}
+  RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/pm-example-float.nrrd ${MODULE_TEMP_DIR}/pmap.nrrd
+    ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
   TEST_DEPENDS
-    itkimage2paramap_makeParametricMapFP
+    ${itk2dcm}_makeParametricMapFP
   )
