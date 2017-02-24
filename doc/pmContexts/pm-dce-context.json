@@ -4,15 +4,90 @@
   "description": "Combinations of codes to support the task of converting results of Dynamic Contrast Enhanced (DCE) MRI analysis into DICOM parametric map object. Quantity and units definitions were introduced in CP-1391, which has been integrated into the standard.",
   "QuantityDefinitions": [
     {
+      "CodeValue": "113052",
+      "CodeMeaning": "Mean Transit Time",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "113055",
+      "CodeMeaning": "Regional Cerebral Blood Flow",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)/min",
+          "CodeMeaning": "ml/(100.ml)/min"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)/min",
+          "CodeMeaning": "ml/(100.g)/min"
+        }
+      ]
+    },
+    {
+      "CodeValue": "113056",
+      "CodeMeaning": "Regional Cerebral Blood Volume",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)",
+          "CodeMeaning": "ml/(100.g)"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)",
+          "CodeMeaning": "ml/(100.ml)"
+        }
+      ]
+    },
+    {
+      "CodeValue": "113069",
+      "CodeMeaning": "Time To Peak",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108,4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "113084",
+      "CodeMeaning": "Tmax",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
       "CodeValue": "126312",
       "CodeMeaning": "Ktrans",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "/min",
-          "CodeMeaning": "/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "/min"
         }
       ]
     },
@@ -23,9 +98,9 @@
       "cid": "4107",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "/min",
-          "CodeMeaning": "/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "/min"
         }
       ]
     },
@@ -36,89 +111,9 @@
       "cid": "4107",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126330",
-      "CodeMeaning": "tau_m",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126331",
-      "CodeMeaning": "vp",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "113055",
-      "CodeMeaning": "Regional Cerebral Blood Flow",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4108",
-      "comment": "Not clear why for tracer kinetic shorthand abbrevioations are used, and for perfusion we have disambiguated code meaning and not just rCBF; also, it seems that r stands for relative, not regional",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "113056",
-      "CodeMeaning": "Regional Cerebral Blood Volume",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4108",
-      "comment": "Not clear why for tracer kinetic shorthand abbrevioations are used, and for perfusion we have disambiguated code meaning and not just rCBF; also, it seems that r stands for relative, not regional. See https://radiopaedia.org/articles/cerebral-blood-volume-cbv",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "cccc",
-      "CodeMeaning": "Cerebral Blood Flow",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "ccccc",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "dddd",
-      "CodeMeaning": "Cerebral Blood Volume",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "ddddd",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{ratio}",
+          "CodeMeaning": "ratio"
         }
       ]
     },
@@ -129,9 +124,9 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
         }
       ]
     },
@@ -142,9 +137,9 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
         }
       ]
     },
@@ -155,9 +150,100 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126323",
+      "CodeMeaning": "IAUC180",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126324",
+      "CodeMeaning": "IAUCBN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126325",
+      "CodeMeaning": "IAUC60BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126326",
+      "CodeMeaning": "IAUC90BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126327",
+      "CodeMeaning": "IAUC180BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126330",
+      "CodeMeaning": "tau_m",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126331",
+      "CodeMeaning": "vp",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{ratio}",
+          "CodeMeaning": "ratio"
         }
       ]
     },
@@ -168,22 +254,9 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126372",
-      "CodeMeaning": "Time of Leading Half-Peak Concentration",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4109",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
         }
       ]
     },
@@ -194,22 +267,35 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
         }
       ]
     },
     {
-      "CodeValue": "113069",
-      "CodeMeaning": "Time To Peak",
+      "CodeValue": "126372",
+      "CodeMeaning": "Time of Leading Half-Peak Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126374",
+      "CodeMeaning": "Temporal Derivative Threshold",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     },
@@ -220,9 +306,22 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126376",
+      "CodeMeaning": "Maximum Difference",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     },
@@ -233,9 +332,58 @@
       "cid": "4109",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L",
-          "CodeMeaning": "mmol/L",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l",
+          "CodeMeaning": "mmol/l"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126390",
+      "CodeMeaning": "Regional Blood Flow",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)/min",
+          "CodeMeaning": "ml/(100.ml)/min"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)/min",
+          "CodeMeaning": "ml/(100.g)/min"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126391",
+      "CodeMeaning": "Regional Blood Volume",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)",
+          "CodeMeaning": "ml/(100.g)"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)",
+          "CodeMeaning": "ml/(100.ml)"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126392",
+      "CodeMeaning": "Oxygen Extraction Fraction",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     }

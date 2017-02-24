@@ -4,133 +4,393 @@
   "description": "Combinations of codes to support the task of converting results of Diffusion Weighted MRI analysis into DICOM parametric map object. Quantity and units definitions are based on CP-1665, which is also used as the placeholder coding scheme designator pending integration into the standard and assignment of the standard codes.",
   "QuantityDefinitions": [
     {
+      "CodeValue": "110808",
+      "CodeMeaning": "Fractional Anisotropy",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{0:1}",
+          "CodeMeaning": "range 0:1"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110809",
+      "CodeMeaning": "Relative Anisotropy",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn2",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{ratio}",
+          "CodeMeaning": "ratio"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110810",
+      "CodeMeaning": "Volumetric Diffusion Dxx Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110811",
+      "CodeMeaning": "Volumetric Diffusion Dxy Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110812",
+      "CodeMeaning": "Volumetric Diffusion Dxz Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110813",
+      "CodeMeaning": "Volumetric Diffusion Dyy Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110814",
+      "CodeMeaning": "Volumetric Diffusion Dyz Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "110815",
+      "CodeMeaning": "Volumetric Diffusion Dzz Component",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
       "CodeValue": "113041",
       "CodeMeaning": "Apparent Diffusion Coefficient",
       "CodingSchemeDesignator": "DCM",
-      "cid": "nnn2",
-      "UMLConceptUID": "3890194",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "113043",
+      "CodeMeaning": "Diffusion weighted",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn1",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "xxx099",
+      "CodeMeaning": "Diffusion Coefficient",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mm2/s",
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "xxx100",
+      "CodeMeaning": "Mono-exponential Apparent Diffusion Coefficient",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mm2/s",
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
         }
       ]
     },
     {
       "CodeValue": "xxx101",
       "CodeMeaning": "Slow Diffusion Coefficient",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
         }
       ]
     },
     {
       "CodeValue": "xxx102",
       "CodeMeaning": "Fast Diffusion Coefficient",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
         }
       ]
     },
     {
       "CodeValue": "xxx103",
       "CodeMeaning": "Fast Diffusion Coefficient Fraction",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{0:1}",
+          "CodeMeaning": "range 0:1"
         }
       ]
     },
     {
       "CodeValue": "xxx104",
       "CodeMeaning": "Kurtosis Diffusion Coefficient",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
         }
       ]
     },
     {
       "CodeValue": "xxx105",
       "CodeMeaning": "Gamma Distribution Scale Parameter",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "no units"
         }
       ]
     },
     {
       "CodeValue": "xxx106",
       "CodeMeaning": "Gamma Distribution Shape Parameter",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "no units"
         }
       ]
     },
     {
       "CodeValue": "xxx107",
       "CodeMeaning": "Gamma Distribution Mode",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "no units"
         }
       ]
     },
     {
       "CodeValue": "xxx108",
       "CodeMeaning": "Distributed Diffusion Coefficient",
-      "CodingSchemeDesignator": "99CP1964",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "mm2/s",
-          "CodeMeaning": "mm2/s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/ms",
+          "CodeMeaning": "um2/ms"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "10-6.mm2/s",
+          "CodeMeaning": "10-6.mm2/s"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "um2/s",
+          "CodeMeaning": "um2/s"
         }
       ]
     },
     {
       "CodeValue": "xxx109",
       "CodeMeaning": "Anomalous Exponent Parameter",
-      "CodingSchemeDesignator": "99CP1964",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "nnn3",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{0:1}",
+          "CodeMeaning": "range 0:1"
+        }
+      ]
+    },
+    {
+      "CodeValue": "xxx110",
+      "CodeMeaning": "Volume Ratio",
+      "CodingSchemeDesignator": "DCM",
       "cid": "nnn2",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{0:1}",
+          "CodeMeaning": "range 0:1"
         }
       ]
     }
