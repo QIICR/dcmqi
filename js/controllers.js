@@ -40,7 +40,7 @@ define(['ajv'], function (Ajv) {
     .controller('AnatomicRegionModifierController', AnatomicRegionModifierController)
     .controller('SegmentedPropertyCategoryCodeController', SegmentedPropertyCategoryCodeController)
     .controller('SegmentedPropertyTypeController', SegmentedPropertyTypeController)
-    .controller('SegmentedPropertyTypeModifierController', SegmentedPropertyTypeModifierController)
+    .controller('SegmentedPropertyTypeModifierController', SegmentedPropertyTypeModifierController);
 
   function MainController($scope) {
     $scope.headlineText = "DCMQI Meta Information Generators";
@@ -298,7 +298,7 @@ define(['ajv'], function (Ajv) {
     $scope.init();
   }
 
-  function SegmentationMetaCreatorController($scope, $rootScope, $controller, $http, download, ResourceLoaderService) {
+  function SegmentationMetaCreatorController($scope, $rootScope, $controller, $http) {
     var vm = this;
 
     var init = function() {
@@ -525,6 +525,14 @@ define(['ajv'], function (Ajv) {
       loadDefaultSeriesAttributes();
       $scope.output = "";
     };
+
+    $scope.$watch('selectedAnatomicRegionContext', function () {
+      $scope.segment = {};
+    });
+
+    $scope.$watch('selectedParametricMapContext', function () {
+      $scope.segment = {};
+    });
 
     function loadDefaultSeriesAttributes() {
       var doc = {};
