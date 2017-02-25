@@ -694,7 +694,11 @@ define(['ajv'], function (Ajv) {
     });
 
     self.getAdditionalInformation = function(code) {
-      return "unit: " + code.MeasurementUnitsCode[0].CodeMeaning;
+      var units = [];
+      angular.forEach(code.MeasurementUnitsCode, function(code, key) {
+        units.push(code.CodeMeaning);
+      });
+      return "available units: " + units.toString();
     };
   }
 
