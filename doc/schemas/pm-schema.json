@@ -19,7 +19,7 @@
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
         }
       ],
-      "default": "Segmentation"
+      "default": "Parametric map"
     },
     "SeriesNumber": {
       "allOf": [
@@ -72,7 +72,7 @@
     },
     "RealWorldValueSlope": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/FD",
-      "default": "1.0"
+      "default": 1.0
     },
     "DerivedPixelContrast": {
       "enum": [
