@@ -151,7 +151,7 @@
     {
       "CodeValue": "xxx099",
       "CodeMeaning": "Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -179,7 +179,7 @@
     {
       "CodeValue": "xxx100",
       "CodeMeaning": "Mono-exponential Apparent Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -207,7 +207,7 @@
     {
       "CodeValue": "xxx101",
       "CodeMeaning": "Slow Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -235,7 +235,7 @@
     {
       "CodeValue": "xxx102",
       "CodeMeaning": "Fast Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -263,7 +263,7 @@
     {
       "CodeValue": "xxx103",
       "CodeMeaning": "Fast Diffusion Coefficient Fraction",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -276,7 +276,7 @@
     {
       "CodeValue": "xxx104",
       "CodeMeaning": "Kurtosis Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -304,7 +304,7 @@
     {
       "CodeValue": "xxx105",
       "CodeMeaning": "Gamma Distribution Scale Parameter",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -317,7 +317,7 @@
     {
       "CodeValue": "xxx106",
       "CodeMeaning": "Gamma Distribution Shape Parameter",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -330,7 +330,7 @@
     {
       "CodeValue": "xxx107",
       "CodeMeaning": "Gamma Distribution Mode",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -343,7 +343,7 @@
     {
       "CodeValue": "xxx108",
       "CodeMeaning": "Distributed Diffusion Coefficient",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -371,7 +371,7 @@
     {
       "CodeValue": "xxx109",
       "CodeMeaning": "Anomalous Exponent Parameter",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
       "MeasurementUnitsCode": [
         {
@@ -384,7 +384,7 @@
     {
       "CodeValue": "xxx110",
       "CodeMeaning": "Volume Ratio",
-      "CodingSchemeDesignator": "DCM",
+      "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn2",
       "MeasurementUnitsCode": [
         {
