@@ -600,7 +600,6 @@ define(['ajv'], function (Ajv) {
 
     $scope.ctrl = self;
     self.simulateQuery = false;
-    self.isDisabled    = false;
     self.required = $scope.required;
     self.segmentNumber = $scope.segmentNumber;
 
@@ -608,14 +607,17 @@ define(['ajv'], function (Ajv) {
     self.selectedItemChange = selectedItemChange;
     self.selectionChangedEvent = "";
 
-    self.reset = function(disabled){
+    self.reset = function(){
       self.mappedCodes = [];
       self.searchText = undefined;
-      self.isDisabled = disabled;
+      $scope.isDisabled = true;
     };
 
     self.selectedItemChange = function(item) {
-      $rootScope.$emit(self.selectionChangedEvent, {item:self.selectedItem, value:item ? item.object : item});
+      $rootScope.$emit(self.selectionChangedEvent, {
+        segmentNumber: $scope.segmentNumber,
+        item:self.selectedItem,
+        value:item ? item.object : item});
     };
 
     function querySearch (query) {
@@ -657,8 +659,10 @@ define(['ajv'], function (Ajv) {
     };
 
     self.setMappedCodes = function(data, key){
+      if (data.segmentNumber != $scope.segmentNumber)
+        return;
       if (data.value) {
-        self.isDisabled = data.value[key] === undefined;
+        $scope.isDisabled = data.value[key] === undefined;
         if (data.value[key] === undefined) {
           self.searchText = undefined;
           self.mappedCodes = [];
@@ -668,7 +672,7 @@ define(['ajv'], function (Ajv) {
         if(self.mappedCodes.length == 1)
           self.selectedItem = self.mappedCodes[0];
       } else {
-        self.reset(true);
+        self.reset();
       }
     };
 
@@ -715,7 +719,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Measurement Unit";
-    self.isDisabled = true;
+    $scope.isDisabled = true;
     self.selectionChangedEvent = "MeasurementUnitSelectionChanged";
 
     $rootScope.$on("QuantityCodeSelectionChanged", function(event, data) {
@@ -728,13 +732,16 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Anatomic Region";
-    self.isDisabled = false;
     self.selectionChangedEvent = "AnatomicRegionSelectionChanged";
 
     $rootScope.$on("SegmentedPropertyCategorySelectionChanged", function(event, data) {
+      if (data.segmentNumber != $scope.segmentNumber)
+        return;
       if (data.value) {
-        self.isDisabled = !data.value.showAnatomy;
+        $scope.isDisabled = !data.value.showAnatomy;
         self.searchText = !data.value.showAnatomy ? undefined : self.searchText;
+      } else {
+        $scope.isDisabled = false;
       }
     });
 
@@ -753,7 +760,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Anatomic Region Modifier";
-    self.isDisabled = true;
+    $scope.isDisabled = true;
     self.selectionChangedEvent = "AnatomicRegionModifierSelectionChanged";
 
     $rootScope.$on("AnatomicRegionSelectionChanged", function(event, data) {
@@ -783,7 +790,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Segmented Property Type";
-    self.isDisabled = true;
+    $scope.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeSelectionChanged";
 
     self.selectedItemChange = function(item) {
@@ -814,7 +821,7 @@ define(['ajv'], function (Ajv) {
     $controller('CodeSequenceBaseController', {$self:this, $scope: $scope, $rootScope: $rootScope});
     var self = this;
     self.floatingLabel = "Segmented Property Type Modifier";
-    self.isDisabled = true;
+    $scope.isDisabled = true;
     self.selectionChangedEvent = "SegmentedPropertyTypeModifierSelectionChanged";
 
     $rootScope.$on("SegmentedPropertyTypeSelectionChanged", function(event, data) {
