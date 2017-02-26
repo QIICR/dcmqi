@@ -7,7 +7,7 @@
         "CodeMeaning": "Tissue",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Tissue",
+        "CodeValue": "T-D0050",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -49,8 +49,7 @@
             "UMLSConceptUID": "C1123023",
             "CodeValue": "T-01000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "39937001",
-            "paired": "U"
+            "SNOMEDCTConceptID": "39937001"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -66,8 +65,7 @@
             "UMLSConceptUID": "C0026845",
             "CodeValue": "T-13001",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "71616004",
-            "paired": "U"
+            "SNOMEDCTConceptID": "71616004"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -83,8 +81,7 @@
             "UMLSConceptUID": "C0224498",
             "CodeValue": "T-15009",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "74135004",
-            "paired": "U"
+            "SNOMEDCTConceptID": "74135004"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -100,37 +97,7 @@
             "UMLSConceptUID": "C0039508",
             "CodeValue": "T-17010",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "13024002",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "13024002"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -146,8 +113,7 @@
             "UMLSConceptUID": "C0023685",
             "CodeValue": "T-18010",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "52082005",
-            "paired": "U"
+            "SNOMEDCTConceptID": "52082005"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -163,37 +129,7 @@
             "UMLSConceptUID": "C0009780",
             "CodeValue": "T-1A200",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "21793004",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "21793004"
           },
           {
             "CodeMeaning": "Blood vessel",
@@ -202,37 +138,7 @@
             "UMLSConceptUID": "C0005847",
             "CodeValue": "T-40000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "59820001",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "59820001"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -264,37 +170,7 @@
             "UMLSConceptUID": "C0003842",
             "CodeValue": "T-41000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "51114001",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "51114001"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -310,37 +186,7 @@
             "UMLSConceptUID": "C0042449",
             "CodeValue": "T-48000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "29092000",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "29092000"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -356,37 +202,7 @@
             "UMLSConceptUID": "C0005767",
             "CodeValue": "T-C2000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "87612001",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "87612001"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -402,37 +218,7 @@
             "UMLSConceptUID": "C0024204",
             "CodeValue": "T-C4000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "59441001",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "59441001"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -448,8 +234,7 @@
             "UMLSConceptUID": "C0024235",
             "CodeValue": "T-C6000",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "89890002",
-            "paired": "U"
+            "SNOMEDCTConceptID": "89890002"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -465,37 +250,7 @@
             "UMLSConceptUID": "C0229889",
             "CodeValue": "T-C6010",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "83555006",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "83555006"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -511,37 +266,7 @@
             "UMLSConceptUID": "C0040300",
             "CodeValue": "T-D0050",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "85756007",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "85756007"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -557,37 +282,7 @@
             "UMLSConceptUID": "C0229983",
             "CodeValue": "T-D0060",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "113343008",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "113343008"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -603,8 +298,7 @@
             "UMLSConceptUID": "C0262950",
             "CodeValue": "T-D016E",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "272673000",
-            "paired": "U"
+            "SNOMEDCTConceptID": "272673000"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -620,37 +314,7 @@
             "UMLSConceptUID": "C0007301",
             "CodeValue": "T-D021B",
             "contextGroupName": "CommonTissueSegmentationTypes",
-            "SNOMEDCTConceptID": "309312004",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "309312004"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -674,7 +338,7 @@
         "CodeMeaning": "Morphologically Altered Structure",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Morphologically Altered Structure",
+        "CodeValue": "M-01000",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -849,7 +513,7 @@
         "CodeMeaning": "Body Substance",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Body Substance",
+        "CodeValue": "T-D0080",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -882,8 +546,7 @@
             "UMLSConceptUID": "C0015733",
             "CodeValue": "T-59666",
             "contextGroupName": "BodySubstanceSegmentationPropertyTypes",
-            "SNOMEDCTConceptID": "39477002",
-            "paired": "U"
+            "SNOMEDCTConceptID": "39477002"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -899,8 +562,7 @@
             "UMLSConceptUID": "C0005388",
             "CodeValue": "T-60650",
             "contextGroupName": "BodySubstanceSegmentationPropertyTypes",
-            "SNOMEDCTConceptID": "70150004",
-            "paired": "U"
+            "SNOMEDCTConceptID": "70150004"
           },
           {
             "recommendedDisplayRGBValue": [
@@ -932,37 +594,7 @@
             "UMLSConceptUID": "C0005889",
             "CodeValue": "T-D0070",
             "contextGroupName": "BodySubstanceSegmentationPropertyTypes",
-            "SNOMEDCTConceptID": "32457005",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "32457005"
           }
         ]
       },
@@ -970,7 +602,7 @@
         "CodeMeaning": "Physical object",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Physical object",
+        "CodeValue": "A-00004",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -1495,7 +1127,7 @@
         "CodeMeaning": "Anatomical Structure",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Anatomical Structure",
+        "CodeValue": "T-D000A",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -15262,7 +14894,7 @@
         "CodeMeaning": "Function",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Function",
+        "CodeValue": "R-42019",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -15280,7 +14912,7 @@
         "CodeMeaning": "Substance",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Substance",
+        "CodeValue": "F-61002",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -15298,7 +14930,7 @@
         "CodeMeaning": "Spatial and Relational Concept",
         "CodingSchemeDesignator": "SRT",
         "cid": "7150",
-        "CodeValue": "Spatial and Relational Concept",
+        "CodeValue": "R-42018",
         "contextGroupName": "SegmentationPropertyCategories",
         "Type": [
           {
@@ -15388,37 +15020,7 @@
             "UMLSConceptUID": "C0040300",
             "CodeValue": "T-D0050",
             "contextGroupName": "AbstractSegmentationTypes",
-            "SNOMEDCTConceptID": "85756007",
-            "paired": "Y",
-            "Modifier": [
-              {
-                "CodeMeaning": "Right",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205090",
-                "CodeValue": "G-A100",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              },
-              {
-                "CodeMeaning": "Left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0205091",
-                "CodeValue": "G-A101",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "7771000"
-              },
-              {
-                "CodeMeaning": "Right and left",
-                "CodingSchemeDesignator": "SRT",
-                "cid": "244",
-                "UMLSConceptUID": "C0238767",
-                "CodeValue": "G-A102",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "51440002"
-              }
-            ]
+            "SNOMEDCTConceptID": "85756007"
           }
         ]
       }
