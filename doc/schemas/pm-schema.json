@@ -3,7 +3,6 @@
   "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/pm-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "required": [
-    "DerivedPixelContrast",
     "AnatomicRegionSequence",
     "FrameLaterality",
     "QuantityValueCode",
@@ -75,10 +74,6 @@
     "RealWorldValueSlope": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/FD",
       "default": 1.0
-    },
-    "DerivedPixelContrast": {
-      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CS",
-      "default": "NONE"
     },
     "AnatomicRegionSequence": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"

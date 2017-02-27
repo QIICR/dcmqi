@@ -27,9 +27,6 @@
         "SNOMEDConceptID": {
           "type": "string"
         },
-        "DerivedPixelContrast": {
-          "type": "string"
-        },
         "MeasurementUnitsCodes": {
           "type": "array",
           "minItems": 1,
