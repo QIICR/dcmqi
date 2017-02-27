@@ -4,67 +4,16 @@
   "description": "Combinations of codes to support the task of converting results of Dynamic Contrast Enhanced (DCE) MRI analysis into DICOM parametric map object. Quantity and units definitions were introduced in CP-1391, which has been integrated into the standard.",
   "QuantityDefinitions": [
     {
-      "CodeValue": "126312",
-      "CodeMeaning": "Ktrans",
+      "CodeValue": "113052",
+      "CodeMeaning": "Mean Transit Time",
       "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
+      "cid": "4108",
+      "DerivedPixelContrast": "MTT",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "/min",
-          "CodeMeaning": "/min",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126313",
-      "CodeMeaning": "kep",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "/min",
-          "CodeMeaning": "/min",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126314",
-      "CodeMeaning": "ve",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126330",
-      "CodeMeaning": "tau_m",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126331",
-      "CodeMeaning": "vp",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4107",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
         }
       ]
     },
@@ -73,12 +22,17 @@
       "CodeMeaning": "Regional Cerebral Blood Flow",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "comment": "Not clear why for tracer kinetic shorthand abbrevioations are used, and for perfusion we have disambiguated code meaning and not just rCBF; also, it seems that r stands for relative, not regional",
+      "DerivedPixelContrast": "RCBF",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)/min",
+          "CodeMeaning": "ml/(100.ml)/min"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)/min",
+          "CodeMeaning": "ml/(100.g)/min"
         }
       ]
     },
@@ -87,38 +41,87 @@
       "CodeMeaning": "Regional Cerebral Blood Volume",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "comment": "Not clear why for tracer kinetic shorthand abbrevioations are used, and for perfusion we have disambiguated code meaning and not just rCBF; also, it seems that r stands for relative, not regional. See https://radiopaedia.org/articles/cerebral-blood-volume-cbv",
+      "DerivedPixelContrast": "RCBV",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)",
+          "CodeMeaning": "ml/(100.g)"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)",
+          "CodeMeaning": "ml/(100.ml)"
         }
       ]
     },
     {
-      "CodeValue": "cccc",
-      "CodeMeaning": "Cerebral Blood Flow",
+      "CodeValue": "113069",
+      "CodeMeaning": "Time To Peak",
       "CodingSchemeDesignator": "DCM",
-      "cid": "ccccc",
+      "cid": "4108,4109",
+      "DerivedPixelContrast": "TTP",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
         }
       ]
     },
     {
-      "CodeValue": "dddd",
-      "CodeMeaning": "Cerebral Blood Volume",
+      "CodeValue": "113084",
+      "CodeMeaning": "Tmax",
       "CodingSchemeDesignator": "DCM",
-      "cid": "ddddd",
+      "cid": "4108",
+      "DerivedPixelContrast": "TMAX",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "ml/[100]g/min",
-          "CodeMeaning": "ml/[100]g/min",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126312",
+      "CodeMeaning": "Ktrans",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "DerivedPixelContrast": "KTRANS",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "/min",
+          "CodeMeaning": "/min"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126313",
+      "CodeMeaning": "kep",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "DerivedPixelContrast": "KEP",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "/min",
+          "CodeMeaning": "/min"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126314",
+      "CodeMeaning": "ve",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "DerivedPixelContrast": "VE",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{ratio}",
+          "CodeMeaning": "ratio"
         }
       ]
     },
@@ -127,11 +130,12 @@
       "CodeMeaning": "IAUC",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
         }
       ]
     },
@@ -140,11 +144,12 @@
       "CodeMeaning": "IAUC60",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
         }
       ]
     },
@@ -153,11 +158,110 @@
       "CodeMeaning": "IAUC90",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L*s",
-          "CodeMeaning": "mmol/L*s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126323",
+      "CodeMeaning": "IAUC180",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l.s",
+          "CodeMeaning": "mmol/l.s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126324",
+      "CodeMeaning": "IAUCBN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126325",
+      "CodeMeaning": "IAUC60BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126326",
+      "CodeMeaning": "IAUC90BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126327",
+      "CodeMeaning": "IAUC180BN",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "",
+          "CodeMeaning": "normalized"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126330",
+      "CodeMeaning": "tau_m",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "DerivedPixelContrast": "IAUC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "s",
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126331",
+      "CodeMeaning": "vp",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4107",
+      "DerivedPixelContrast": "VP",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "{ratio}",
+          "CodeMeaning": "ratio"
         }
       ]
     },
@@ -166,24 +270,12 @@
       "CodeMeaning": "Time of Peak Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "T_OF_PEAK",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
-        }
-      ]
-    },
-    {
-      "CodeValue": "126372",
-      "CodeMeaning": "Time of Leading Half-Peak Concentration",
-      "CodingSchemeDesignator": "DCM",
-      "cid": "4109",
-      "MeasurementUnitsCode": [
-        {
-          "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
         }
       ]
     },
@@ -192,24 +284,40 @@
       "CodeMeaning": "Bolus Arrival Time",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "BAT",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
         }
       ]
     },
     {
-      "CodeValue": "113069",
-      "CodeMeaning": "Time To Peak",
+      "CodeValue": "126372",
+      "CodeMeaning": "Time of Leading Half-Peak Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "T_OF_PEAK",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "s",
-          "CodeMeaning": "s",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "s"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126374",
+      "CodeMeaning": "Temporal Derivative Threshold",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "TDT",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     },
@@ -218,11 +326,26 @@
       "CodeMeaning": "Maximum Slope",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "MAX_SLOPE",
       "MeasurementUnitsCode": [
         {
+          "CodingSchemeDesignator": "UCUM",
           "CodeValue": "1",
-          "CodeMeaning": "no units",
-          "CodingSchemeDesignator": "UCUM"
+          "CodeMeaning": "no units"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126376",
+      "CodeMeaning": "Maximum Difference",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4109",
+      "DerivedPixelContrast": "MAX_DIFF",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     },
@@ -231,11 +354,64 @@
       "CodeMeaning": "Tracer Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
+      "DerivedPixelContrast": "TRACER_CONC",
       "MeasurementUnitsCode": [
         {
-          "CodeValue": "mmol/L",
-          "CodeMeaning": "mmol/L",
-          "CodingSchemeDesignator": "UCUM"
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "mmol/l",
+          "CodeMeaning": "mmol/l"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126390",
+      "CodeMeaning": "Regional Blood Flow",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "DerivedPixelContrast": "RBF",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)/min",
+          "CodeMeaning": "ml/(100.ml)/min"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)/min",
+          "CodeMeaning": "ml/(100.g)/min"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126391",
+      "CodeMeaning": "Regional Blood Volume",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "DerivedPixelContrast": "RBV",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.g)",
+          "CodeMeaning": "ml/(100.g)"
+        },
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "ml/(100.ml)",
+          "CodeMeaning": "ml/(100.ml)"
+        }
+      ]
+    },
+    {
+      "CodeValue": "126392",
+      "CodeMeaning": "Oxygen Extraction Fraction",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "4108",
+      "DerivedPixelContrast": "OXY_FRAC",
+      "MeasurementUnitsCode": [
+        {
+          "CodingSchemeDesignator": "UCUM",
+          "CodeValue": "1",
+          "CodeMeaning": "no units"
         }
       ]
     }
