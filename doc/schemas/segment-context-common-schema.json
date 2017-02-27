@@ -21,6 +21,8 @@
         "recommendedDisplayRGBValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/RGB"
         },
+        "3dSlicerLabel": {"type": "string"},
+        "3dSlicerIntegerLabel": {"type": "integer"},
         "cid": {"type": "string"},
         "contextGroupName": {"type": "string"},
         "UMLSConceptUID": {"type": "string"},
@@ -28,12 +30,10 @@
       }
     },
 
-
     "TypeDefinition": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-
         "CodeValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/SH"
         },
@@ -46,7 +46,11 @@
         "recommendedDisplayRGBValue": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/RGB"
         },
+        "paired": {
+          "enum": ["Y", "N", "U"]
+        },
         "3dSlicerLabel": {"type": "string"},
+        "3dSlicerIntegerLabel": {"type": "integer"},
         "cid": {"type": "string"},
         "contextGroupName": {"type": "string"},
         "UMLSConceptUID": {"type": "string"},
