@@ -8,7 +8,6 @@
       "CodeMeaning": "Fractional Anisotropy",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn2",
-      "DerivedPixelContrast": "DIFFUSION_ANISO",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -22,7 +21,6 @@
       "CodeMeaning": "Relative Anisotropy",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn2",
-      "DerivedPixelContrast": "DIFFUSION_ANISO",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -36,7 +34,6 @@
       "CodeMeaning": "Volumetric Diffusion Dxx Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -50,7 +47,6 @@
       "CodeMeaning": "Volumetric Diffusion Dxy Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -64,7 +60,6 @@
       "CodeMeaning": "Volumetric Diffusion Dxz Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -78,7 +73,6 @@
       "CodeMeaning": "Volumetric Diffusion Dyy Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -92,7 +86,6 @@
       "CodeMeaning": "Volumetric Diffusion Dyz Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -106,7 +99,6 @@
       "CodeMeaning": "Volumetric Diffusion Dzz Component",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -120,7 +112,6 @@
       "CodeMeaning": "Apparent Diffusion Coefficient",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -149,7 +140,6 @@
       "CodeMeaning": "Diffusion weighted",
       "CodingSchemeDesignator": "DCM",
       "cid": "nnn1",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -163,7 +153,6 @@
       "CodeMeaning": "Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "DIFFUSION",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -192,7 +181,6 @@
       "CodeMeaning": "Mono-exponential Apparent Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -221,7 +209,6 @@
       "CodeMeaning": "Slow Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -250,7 +237,6 @@
       "CodeMeaning": "Fast Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -279,7 +265,6 @@
       "CodeMeaning": "Fast Diffusion Coefficient Fraction",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -293,7 +278,6 @@
       "CodeMeaning": "Kurtosis Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -322,7 +306,6 @@
       "CodeMeaning": "Gamma Distribution Scale Parameter",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -336,7 +319,6 @@
       "CodeMeaning": "Gamma Distribution Shape Parameter",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -350,7 +332,6 @@
       "CodeMeaning": "Gamma Distribution Mode",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -364,7 +345,6 @@
       "CodeMeaning": "Distributed Diffusion Coefficient",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -393,7 +373,6 @@
       "CodeMeaning": "Anomalous Exponent Parameter",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn3",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -407,7 +386,6 @@
       "CodeMeaning": "Volume Ratio",
       "CodingSchemeDesignator": "99DCMCP1665",
       "cid": "nnn2",
-      "DerivedPixelContrast": "ADC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",

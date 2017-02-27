@@ -119,12 +119,7 @@ namespace dcmqi {
     CHECK_COND(pMapDoc->addForAllFrames(idTransFG));
 
     FGParametricMapFrameType frameTypeFG;
-    std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\";
-    if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
-      frameTypeStr = frameTypeStr + metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
-    } else {
-      frameTypeStr = frameTypeStr + "NONE";
-    }
+    std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\QUANTITY";
     frameTypeFG.setFrameType(frameTypeStr.c_str());
     CHECK_COND(pMapDoc->addForAllFrames(frameTypeFG));
 

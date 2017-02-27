@@ -33,6 +33,5 @@
     "CodeMeaning": "Prostate"
   },
   "FrameLaterality" : "U",
-  "RealWorldValueSlope" : 1,
-  "DerivedPixelContrast" : "ADC"
+  "RealWorldValueSlope" : 1
 }
