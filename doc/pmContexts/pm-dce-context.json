@@ -8,7 +8,6 @@
       "CodeMeaning": "Mean Transit Time",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "MTT",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -22,7 +21,6 @@
       "CodeMeaning": "Regional Cerebral Blood Flow",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "RCBF",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -41,7 +39,6 @@
       "CodeMeaning": "Regional Cerebral Blood Volume",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "RCBV",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -60,7 +57,6 @@
       "CodeMeaning": "Time To Peak",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108,4109",
-      "DerivedPixelContrast": "TTP",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -74,7 +70,6 @@
       "CodeMeaning": "Tmax",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "TMAX",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -88,7 +83,6 @@
       "CodeMeaning": "Ktrans",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
-      "DerivedPixelContrast": "KTRANS",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -102,7 +96,6 @@
       "CodeMeaning": "kep",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
-      "DerivedPixelContrast": "KEP",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -116,7 +109,6 @@
       "CodeMeaning": "ve",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
-      "DerivedPixelContrast": "VE",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -130,7 +122,6 @@
       "CodeMeaning": "IAUC",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -144,7 +135,6 @@
       "CodeMeaning": "IAUC60",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -158,7 +148,6 @@
       "CodeMeaning": "IAUC90",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -172,7 +161,6 @@
       "CodeMeaning": "IAUC180",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -186,7 +174,6 @@
       "CodeMeaning": "IAUCBN",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -200,7 +187,6 @@
       "CodeMeaning": "IAUC60BN",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -214,7 +200,6 @@
       "CodeMeaning": "IAUC90BN",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -228,7 +213,6 @@
       "CodeMeaning": "IAUC180BN",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -242,7 +226,6 @@
       "CodeMeaning": "tau_m",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
-      "DerivedPixelContrast": "IAUC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -256,7 +239,6 @@
       "CodeMeaning": "vp",
       "CodingSchemeDesignator": "DCM",
       "cid": "4107",
-      "DerivedPixelContrast": "VP",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -270,7 +252,6 @@
       "CodeMeaning": "Time of Peak Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "T_OF_PEAK",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -284,7 +265,6 @@
       "CodeMeaning": "Bolus Arrival Time",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "BAT",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -298,7 +278,6 @@
       "CodeMeaning": "Time of Leading Half-Peak Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "T_OF_PEAK",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -312,7 +291,6 @@
       "CodeMeaning": "Temporal Derivative Threshold",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "TDT",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -326,7 +304,6 @@
       "CodeMeaning": "Maximum Slope",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "MAX_SLOPE",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -340,7 +317,6 @@
       "CodeMeaning": "Maximum Difference",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "MAX_DIFF",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -354,7 +330,6 @@
       "CodeMeaning": "Tracer Concentration",
       "CodingSchemeDesignator": "DCM",
       "cid": "4109",
-      "DerivedPixelContrast": "TRACER_CONC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -368,7 +343,6 @@
       "CodeMeaning": "Regional Blood Flow",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "RBF",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -387,7 +361,6 @@
       "CodeMeaning": "Regional Blood Volume",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "RBV",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -406,7 +379,6 @@
       "CodeMeaning": "Oxygen Extraction Fraction",
       "CodingSchemeDesignator": "DCM",
       "cid": "4108",
-      "DerivedPixelContrast": "OXY_FRAC",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
