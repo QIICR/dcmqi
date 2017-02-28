@@ -57,6 +57,8 @@ namespace dcmqi {
         if (!exists) {
           dcmDatasets.push_back(currentDataset);
         }
+      } else {
+        cerr << "Failed to read " << dicomImageFiles[dcmFileNumber] << ". Skipping it." << endl;
       }
     }
     delete sliceFF;
