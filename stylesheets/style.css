@@ -16,9 +16,6 @@
 }
 
 .autocomplete-custom-template li {
-  border-bottom: 1px solid #ccc;
-  height: auto;
-  padding-top: 4px;
   padding-bottom: 4px;
   white-space: normal;
 }
@@ -28,7 +25,6 @@
 .autocomplete-custom-template .item-title,
 .autocomplete-custom-template .item-metadata {
   display: block;
-  line-height: 2;
 }
 
 .item-metadata {
@@ -46,13 +42,4 @@
 
 md-input-container textarea.md-input {
   border: 0;
-}
-
-.drop-box {
-  background: #F8F8F8;
-  border: 5px dashed #DDD;
-  vertical-align: middle;
-  text-align: center;
-  padding: 15px;
-  cursor: pointer;
 }

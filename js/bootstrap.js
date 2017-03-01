@@ -16,9 +16,6 @@ require.config({
     "angular-xml": "../bower_components/angular-xml/angular-xml",
     "clipboard": "../bower_components/clipboard/dist/clipboard.min",
     "ngclipboard": "../bower_components/ngclipboard/dist/ngclipboard.min",
-    "dicomParser": "../bower_components/dicomParser/dist/dicomParser",
-    "ng-file-upload": "../bower_components/ng-file-upload/ng-file-upload",
-    "ngProgress": "../bower_components/ngprogress/build/ngprogress",
     "ace": "../bower_components/ace-builds/src-min-noconflict/ace",
     "angular-ui-ace": "../bower_components/angular-ui-ace/ui-ace",
     "ajv": "../node_modules/ajv/dist/ajv.min",
@@ -36,8 +33,7 @@ require.config({
     },
     "JSONSemanticsCreator": {
       deps: ["angular", "angular-route", "angular-material", "angular-messages", "angular-material-icons", "v-accordion",
-             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard", "ajv", "download", "ng-file-upload",
-             "ngProgress", "angular-ui-ace"]
+             "angular-animate", "angular-xml", "md-color-picker", "ngclipboard", "ajv", "download", "angular-ui-ace"]
     },
     "angular-messages": {
       deps: ["angular"],
@@ -67,12 +63,6 @@ require.config({
     "ngclipboard": {
       deps: ["angular", "clipboard"]
     },
-    "ng-file-upload": {
-      deps: ["angular"]
-    },
-    "ngProgress": {
-      deps: ["angular"]
-    },
     "angular-ui-ace": {
       deps: ["angular", "ace"]
     }
@@ -89,6 +79,6 @@ require(["tinycolor"], function(tinycolor) {
 
 require(["JSONSemanticsCreator"],
   function () {
-    angular.bootstrap(document, ["JSONSemanticsCreator"]);
+    angular.bootstrap(document, ["app"]);
   }
 );

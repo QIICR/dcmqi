@@ -3,15 +3,6 @@
     <div layout="column" flex resize>
       <form name="jsonForm" ng-submit="submitForm(jsonForm.$valid)" class="container-fluid" novalidate
             class="customAutoComplete">
-      <!--Series Attributes -->
-      <!--<div layout="row">-->
-        <!--<div flex ngf-drop ngf-select ng-model="file" class="drop-box"-->
-             <!--ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-allow-dir="false"-->
-             <!--accept="application/dicom"-->
-             <!--ngf-pattern="'application/dicom'">-->
-          <!--{{dropZoneText}}-->
-        <!--</div>-->
-      <!--</div>-->
       <div layout="row">
         <div>
         <md-input-container>
@@ -81,7 +72,7 @@
           <md-input-container>
             <label>Segmentation Category Type Context Name</label>
             <md-select ng-disabled="segments[0].segmentedPropertyCategory || segments.length > 1"
-                       ng-model="selectedSegmentationCategoryContext">
+                       ng-model="$root.selectedSegmentationCategoryContext">
               <md-option ng-repeat="context in segmentationContexts" ng-value="context">
                 {{context.name}}
               </md-option>
@@ -92,7 +83,7 @@
           <md-input-container>
             <label>Anatomic Region Context Name</label>
             <md-select ng-disabled="segments[0].anatomicRegion || segments.length > 1"
-                       ng-model="selectedAnatomicRegionContext">
+                       ng-model="$root.selectedAnatomicRegionContext">
               <md-option ng-repeat="context in anatomicRegionContexts" ng-value="context">
                 {{context.name}}
               </md-option>
@@ -101,7 +92,7 @@
         </div>
       </div>
       <!--Segment Attributes-->
-      <div layout="row" ng-show="selectedSegmentationCategoryContext != undefined">
+      <div layout="row" ng-show="$root.selectedSegmentationCategoryContext != undefined">
         <div>
           <span class="md-title" style="padding-right: 10px;">Segment Attributes</span>
         </div>
@@ -141,7 +132,7 @@
           </md-button>
         </div>
       </div>
-      <div layout="column" ng-show="selectedSegmentationCategoryContext != undefined">
+      <div layout="column" ng-show="$root.selectedSegmentationCategoryContext != undefined">
         <md-tabs md-selected="selectedIndex" md-autoselect md-dynamic-height>
           <md-tab ng-repeat="segment in segments" label="{{segment.labelID}}">
             <md-tab-template layout="column">
@@ -174,7 +165,7 @@
                   </md-select>
                 </md-input-container>
               </div>
-              <div ng-show="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"  flex>
+              <div ng-show="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)" flex>
                 <md-input-container>
                   <label>SegmentAlgorithmName</label>
                   <input ng-required="isSegmentAlgorithmNameRequired(segment.SegmentAlgorithmType)"
@@ -183,17 +174,11 @@
               </div>
             </div>
             <div layout="row">
-              <div ng-controller="SegmentedPropertyCategoryCodeController as ctrl" class="ng-scope" flex>
-              <custom-Autocomplete></custom-Autocomplete>
-              </div>
-              <div ng-controller="SegmentedPropertyTypeController as ctrl" class="ng-scope" flex>
-              <custom-Autocomplete></custom-Autocomplete>
-              </div>
+              <segmented-property-category-selector required="true" segment-number="{{segment.labelID}}" flex></segmented-property-category-selector>
+              <segmented-property-type-selector required="true" segment-number="{{segment.labelID}}" flex></segmented-property-type-selector>
             </div>
             <div layout="row">
-              <div ng-controller="SegmentedPropertyTypeModifierController as ctrl" class="ng-scope" flex>
-              <custom-Autocomplete></custom-Autocomplete>
-              </div>
+              <segmented-property-type-modifier-selector segment-number="{{segment.labelID}}" flex></segmented-property-type-modifier-selector>
               <div flex label="Recommended Display RGB Value"
                    md-color-picker="segment.recommendedDisplayRGBValue.backgroundOptions"
                    ng-model="segment.recommendedDisplayRGBValue.color"></div>
@@ -203,13 +188,9 @@
               <v-pane>
                 <v-pane-header>Optional</v-pane-header>
                 <v-pane-content>
-                <div layout="row" ng-show="selectedAnatomicRegionContext != undefined" >
-                  <div ng-controller="AnatomicRegionController as ctrl" flex>
-                  <custom-Autocomplete></custom-Autocomplete>
-                  </div>
-                  <div ng-controller="AnatomicRegionModifierController as ctrl" class="ng-scope" flex>
-                  <custom-Autocomplete></custom-Autocomplete>
-                  </div>
+                <div layout="row" ng-show="$root.selectedAnatomicRegionContext != undefined" >
+                  <anatomic-region-selector segment-number="{{segment.labelID}}" flex></anatomic-region-selector>
+                  <anatomic-region-modifier-selector segment-number="{{segment.labelID}}" flex></anatomic-region-modifier-selector>
                 </div>
                 </v-pane-content>
               </v-pane>
@@ -219,7 +200,7 @@
           </md-tab>
         </md-tabs>
       </div>
-      <div layout="row" ng-show="selectedSegmentationCategoryContext != undefined">
+      <div layout="row" ng-show="$root.selectedSegmentationCategoryContext != undefined">
         <div>
         <md-button name="submitButton" class="md-raised md-primary" type="submit">OK</md-button>
         </div>
