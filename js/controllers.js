@@ -578,6 +578,8 @@ define(['ajv'], function (Ajv) {
 
       if ($scope.segment.quantity) {
         doc["QuantityValueCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity);
+        // TODO: replace DerivationDode with correct one once available
+        doc["DerivationCode"] = vm.getCodeSequenceAttributes($scope.segment.quantity);
         doc["MeasurementUnitsCode"] = vm.getCodeSequenceAttributes($scope.segment.unit);
       }
       $scope.output = JSON.stringify(doc, null, 2);
