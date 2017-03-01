@@ -6,8 +6,7 @@
     "AnatomicRegionSequence",
     "FrameLaterality",
     "QuantityValueCode",
-    "MeasurementUnitsCode",
-    "DerivationCode"
+    "MeasurementUnitsCode"
   ],
   "additionalProperties": false,
   "properties": {
