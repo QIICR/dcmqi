@@ -189,8 +189,8 @@
                 <v-pane-header>Optional</v-pane-header>
                 <v-pane-content>
                 <div layout="row" ng-show="$root.selectedAnatomicRegionContext != undefined" >
-                  <anatomic-region-selector flex></anatomic-region-selector>
-                  <anatomic-region-modifier-selector flex></anatomic-region-modifier-selector>
+                  <anatomic-region-selector segment-number="{{segment.labelID}}" flex></anatomic-region-selector>
+                  <anatomic-region-modifier-selector segment-number="{{segment.labelID}}" flex></anatomic-region-modifier-selector>
                 </div>
                 </v-pane-content>
               </v-pane>

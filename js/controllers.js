@@ -42,6 +42,7 @@ define(['ajv'], function (Ajv) {
     .controller('SegmentedPropertyTypeController', SegmentedPropertyTypeController)
     .controller('SegmentedPropertyTypeModifierController', SegmentedPropertyTypeModifierController);
 
+
   function MainController($scope) {
     $scope.headlineText = "DCMQI Meta Information Generators";
     $scope.toolTipDelay = 500;
@@ -614,6 +615,9 @@ define(['ajv'], function (Ajv) {
     };
 
     self.selectedItemChange = function(item) {
+      if (self.selectedItem === null) {
+        self.searchText = "";
+      }
       $rootScope.$emit(self.selectionChangedEvent, {
         segmentNumber: $scope.segmentNumber,
         item:self.selectedItem,
@@ -633,6 +637,9 @@ define(['ajv'], function (Ajv) {
     }
 
     function selectedItemChange(item) {
+      if (self.selectedItem === null) {
+        self.searchText = "";
+      }
       $rootScope.$emit(self.selectionChangedEvent, {item:item, segment:$scope.segment});
     }
 
@@ -797,6 +804,7 @@ define(['ajv'], function (Ajv) {
       if (self.selectedItem === null) {
         var color = "";
         var hasRecommendedColor = false;
+        self.searchText = "";
       } else if (self.selectedItem.object.recommendedDisplayRGBValue != undefined) {
         hasRecommendedColor = true;
         var rgb = self.selectedItem.object.recommendedDisplayRGBValue;
