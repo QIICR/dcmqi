@@ -45,6 +45,29 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
   )
 
+find_program(DCIODVFY_EXECUTABLE dciodvfy)
+
+if(EXISTS ${DCIODVFY_EXECUTABLE})
+  dcmqi_add_test(
+    NAME ${itk2dcm}_makeParametricMap_dciodvfy
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND ${DCIODVFY_EXECUTABLE}
+      ${MODULE_TEMP_DIR}/paramap.dcm
+    TEST_DEPENDS
+      ${itk2dcm}_makeParametricMap
+  )
+  dcmqi_add_test(
+    NAME ${itk2dcm}_makeParametricMapFP_dciodvfy
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND ${DCIODVFY_EXECUTABLE}
+      ${MODULE_TEMP_DIR}/paramap-float.dcm
+    TEST_DEPENDS
+      ${itk2dcm}_makeParametricMapFP
+  )
+else()
+  message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
+endif()
+
 #-----------------------------------------------------------------------------
 set(dcm2itk paramap2itkimage)
 
@@ -64,12 +87,23 @@ dcmqi_add_test(
   MODULE_NAME ${MODULE_NAME}
   RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
   COMMAND $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}/pm-example.nrrd ${MODULE_TEMP_DIR}/pmap.nrrd
+    --compare ${BASELINE}/pm-example.nrrd ${MODULE_TEMP_DIR}/makeNRRDParametricMap-pmap.nrrd
     ${dcm2itk}Test
       --inputDICOM ${MODULE_TEMP_DIR}/paramap.dcm
       --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRDParametricMap
   TEST_DEPENDS
     ${itk2dcm}_makeParametricMap
+  )
+
+dcmqi_add_test(
+  NAME ${MODULE_NAME}_meta_roundtrip
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    ${MODULE_TEMP_DIR}/makeNRRDParametricMap-meta.json
+  TEST_DEPENDS
+    ${dcm2itk}_makeNRRDParametricMap
   )
 
 dcmqi_add_test(
@@ -77,10 +111,21 @@ dcmqi_add_test(
   MODULE_NAME ${MODULE_NAME}
   RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
   COMMAND $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}/pm-example-float.nrrd ${MODULE_TEMP_DIR}/pmap.nrrd
+    --compare ${BASELINE}/pm-example-float.nrrd ${MODULE_TEMP_DIR}/makeNRRDParametricMapFP-pmap.nrrd
     ${dcm2itk}Test
       --inputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
       --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRDParametricMapFP
   TEST_DEPENDS
     ${itk2dcm}_makeParametricMapFP
+  )
+
+dcmqi_add_test(
+  NAME ${MODULE_NAME}_FP_meta_roundtrip
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
+    ${MODULE_TEMP_DIR}/makeNRRDParametricMapFP-meta.json
+  TEST_DEPENDS
+    ${dcm2itk}_makeNRRDParametricMapFP
   )

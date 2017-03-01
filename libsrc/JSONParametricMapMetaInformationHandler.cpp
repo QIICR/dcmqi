@@ -9,7 +9,8 @@ namespace dcmqi {
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL),
-        anatomicRegionSequence(NULL) {
+        anatomicRegionSequence(NULL),
+        derivationCode(NULL){
   }
 
   JSONParametricMapMetaInformationHandler::JSONParametricMapMetaInformationHandler(string jsonInput)
@@ -17,7 +18,8 @@ namespace dcmqi {
         measurementUnitsCode(NULL),
         measurementMethodCode(NULL),
         quantityValueCode(NULL),
-        anatomicRegionSequence(NULL) {
+        anatomicRegionSequence(NULL),
+        derivationCode(NULL){
   }
 
   JSONParametricMapMetaInformationHandler::~JSONParametricMapMetaInformationHandler() {
@@ -29,13 +31,15 @@ namespace dcmqi {
       delete this->quantityValueCode;
     if (this->anatomicRegionSequence)
       delete this->anatomicRegionSequence;
+    if (this->derivationCode)
+      delete this->derivationCode;
   }
 
   void JSONParametricMapMetaInformationHandler::setFrameLaterality(const string& value) {
     this->frameLaterality = value;
   };
 
-  void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const string& value) {
+  void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const float& value) {
     this->realWorldValueSlope = value;
   };
 
@@ -47,9 +51,22 @@ namespace dcmqi {
     this->derivedPixelContrast = value;
   };
 
+  void JSONParametricMapMetaInformationHandler::setDerivationDescription(const string& value) {
+    this->derivationDescription = value;
+  };
+
   void JSONParametricMapMetaInformationHandler::setMeasurementUnitsCode(const string& code, const string& designator,
                                                                         const string& meaning) {
     this->measurementUnitsCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+  }
+
+  void JSONParametricMapMetaInformationHandler::setDerivationCode(const string &code, const string &designator,
+                                                                  const string &meaning) {
+    this->derivationCode = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
+  }
+
+  void JSONParametricMapMetaInformationHandler::addSourceImageDiffusionBValue(const string& value){
+    this->diffusionBValues.push_back(value);
   }
 
   void JSONParametricMapMetaInformationHandler::setMeasurementUnitsCode(const CodeSequenceMacro& codeSequence) {
@@ -79,7 +96,7 @@ namespace dcmqi {
     this->anatomicRegionSequence = Helper::createNewCodeSequence(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
-  void JSONParametricMapMetaInformationHandler::setAnatomicRegionSequence(const CodeSequenceMacro &codeSequence) {
+  void JSONParametricMapMetaInformationHandler::setAnatomicRegionSequence(const CodeSequenceMacro& codeSequence) {
     this->anatomicRegionSequence = new CodeSequenceMacro(codeSequence);
   }
 
@@ -99,9 +116,10 @@ namespace dcmqi {
       this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
       this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
       this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
-      this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1").asString();
+      this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", 1.0).asFloat();
       this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
       this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
+      this->derivationDescription = this->metaInfoRoot.get("DerivationDescription", "").asString();
       this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "U").asString();
 
       Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
@@ -132,6 +150,13 @@ namespace dcmqi {
                                           elem.get("CodeMeaning", "").asString());
       }
 
+      elem = this->metaInfoRoot["DerivationCode"];
+      if (!elem.isNull()) {
+        this->setDerivationCode(elem.get("CodeValue", "").asString(),
+                                elem.get("CodingSchemeDesignator", "").asString(),
+                                elem.get("CodeMeaning", "").asString());
+      }
+
     } catch (exception& e) {
       cout << e.what() << endl;
       throw JSONReadErrorException();
@@ -157,6 +182,7 @@ namespace dcmqi {
     data["RealWorldValueSlope"] = this->realWorldValueSlope;
     data["DerivedPixelContrast"] = this->derivedPixelContrast;
     data["FrameLaterality"] = this->frameLaterality;
+    data["DerivationDescription"] = this->derivationDescription;
 
     if (this->measurementUnitsCode)
       data["MeasurementUnitsCode"] = codeSequence2Json(this->measurementUnitsCode);
@@ -166,6 +192,14 @@ namespace dcmqi {
       data["QuantityValueCode"] = codeSequence2Json(this->quantityValueCode);
     if (this->anatomicRegionSequence)
       data["AnatomicRegionSequence"] = codeSequence2Json(this->anatomicRegionSequence);
+    if (this->anatomicRegionSequence)
+      data["DerivationCode"] = codeSequence2Json(this->derivationCode);
+
+    if (this->diffusionBValues.size() > 0) {
+      data["SourceImageDiffusionBValues"] = Json::Value(Json::arrayValue);
+      for (vector<string>::iterator it = this->diffusionBValues.begin() ; it != this->diffusionBValues.end(); ++it)
+        data["SourceImageDiffusionBValues"].append(*it);
+    }
 
     Json::StyledWriter styledWriter;
 

@@ -23,16 +23,17 @@ int main(int argc, char *argv[])
   string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
 
   typedef itk::ImageFileWriter<FloatImageType> WriterType;
+  string outputPrefix = prefix.empty() ? "" : prefix + "-";
   WriterType::Pointer writer = WriterType::New();
   stringstream imageFileNameSStream;
-  imageFileNameSStream << outputDirName << "/" << "pmap" << fileExtension;
+  imageFileNameSStream << outputDirName << "/" << outputPrefix << "pmap" << fileExtension;
   writer->SetFileName(imageFileNameSStream.str().c_str());
   writer->SetInput(result.first);
   writer->SetUseCompression(1);
   writer->Update();
 
   stringstream jsonOutput;
-  jsonOutput << outputDirName << "/" << "meta.json";
+  jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
 
   ofstream outputFile;
   outputFile.open(jsonOutput.str().c_str());
