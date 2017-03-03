@@ -10,6 +10,7 @@
   <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
 
   <parameters>
+    <label>Required input/output parameters</label>
     <file>
       <name>inputSEGFileName</name>
       <label>SEG file name</label>
@@ -18,13 +19,18 @@
       <description>File name of the input DICOM Segmentation image object.</description>
     </file>
 
-    <file>
+    <directory>
       <name>outputDirName</name>
       <label>Output directory name</label>
       <channel>input</channel>
       <longflag>outputDirectory</longflag>
       <description>Directory to store individual segments saved using the output format specified files. When specified, file names will contain prefix, followed by the segment number.</description>
-    </file>
+    </directory>
+
+  </parameters>
+
+  <parameters advanced="true">
+    <label>Advanced parameters</label>
 
     <string>
       <name>prefix</name>
