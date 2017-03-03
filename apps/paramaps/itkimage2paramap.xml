@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
   <category>Informatics.Converters</category>
-  <title>Encode DICOM Parametric Map</title>
+  <title>Convert ITK image to DICOM Parametric Map</title>
   <description>Convert a parametric map provided in any of the formats supported by ITK, such as NRRD or NIFTI, into a DICOM Parametric Map image object.</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
   <category>Informatics</category>
-  <title>Convert DICOM SEG into ITK image</title>
+  <title>Convert DICOM Segmentation Image into ITK image(s)</title>
   <description>This tool can be used to convert DICOM Segmentation into volumetric segmentations stored as labeled pixels using research format, such as NRRD or NIfTI, and meta information stored in the JSON file format.</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>

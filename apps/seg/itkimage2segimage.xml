@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
   <category>Informatics.Converters</category>
-  <title>Encode DICOM SEG</title>
+  <title>Convert ITK image(s) into DICOM Segmentation Image</title>
   <description>Convert the volumetric segmentation(s) stored as labeled pixels using any of the formats supported by ITK, such as NRRD or NIFTI, into a DICOM Segmentation Object (further referred to as SEG).</description>
   <version>1.0</version>
   <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
