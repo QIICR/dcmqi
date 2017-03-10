@@ -35,13 +35,16 @@
 
 using namespace std;
 
+// common type definitions
 typedef short ShortPixelType;
 typedef itk::Image<ShortPixelType, 3> ShortImageType;
 typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
 
 namespace dcmqi {
 
-  class ConverterBase {
+  class MultiframeConverter {
+  public:
+    virtual int convert();
 
   protected:
     static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
@@ -124,7 +127,7 @@ namespace dcmqi {
       */
 
       // Determine ordering of the frames, keep mapping from ImagePositionPatient string
-      //   to the distance, and keep track (just out of curiousity) how many frames overlap
+      //   to the distance, and keep track (just out of curiosity) how many frames overlap
       vnl_vector<double> refOrigin(3);
       {
         OFBool isPerFrame;

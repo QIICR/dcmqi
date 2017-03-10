@@ -22,7 +22,7 @@
 #include <itkChangeInformationImageFilter.h>
 
 // DCMQI includes
-#include "dcmqi/ConverterBase.h"
+#include "dcmqi/MultiframeConverter.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
 using namespace std;
@@ -32,7 +32,7 @@ typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterTyp
 
 namespace dcmqi {
 
-  class ImageSEGConverter : public ConverterBase {
+  class SegmentationImageConverter : public MultiframeConverter {
 
   public:
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,

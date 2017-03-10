@@ -3,7 +3,7 @@
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 typedef dcmqi::Helper helper;
