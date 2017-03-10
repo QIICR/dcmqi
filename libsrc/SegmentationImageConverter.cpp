@@ -1,11 +1,11 @@
 
 // DCMQI includes
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
 
 
 namespace dcmqi {
 
-  DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+  DcmDataset* SegmentationImageConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices) {
@@ -447,7 +447,7 @@ namespace dcmqi {
   }
 
 
-  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
+  pair <map<unsigned,ShortImageType::Pointer>, string> SegmentationImageConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
@@ -703,7 +703,7 @@ namespace dcmqi {
     return pair <map<unsigned,ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
   }
 
-  void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
+  void SegmentationImageConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                JSONSegmentationMetaInformationHandler &metaInfo) {
     OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined, coordinatingCenter;
 

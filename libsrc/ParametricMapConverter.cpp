@@ -4,15 +4,29 @@
 #include <itkCastImageFilter.h>
 
 // DCMQI includes
-#include "dcmqi/ParaMapConverter.h"
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/ParametricMapConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
 
 using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+  DcmDataset* itkimage2paramapReplacement(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                          const string &metaData) {
+    /*
+    ParametricMapConverter pmConverter(parametricMapImage, dcmDatasets, metaData);
+    pmConverter.convert();
+
+    return convert.getDataset(); */
+    return NULL;
+  }
+
+  pair <FloatImageType::Pointer, string> paramap2itkimageReplacement(DcmDataset *pmapDataset){
+    return pair<FloatImageType::Pointer,string>();
+  };
+
+  DcmDataset* ParametricMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+                                          const string &metaData) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage(parametricMapImage);
@@ -24,8 +38,8 @@ namespace dcmqi {
     metaInfo.setFirstValueMapped(calculator->GetMinimum());
     metaInfo.setLastValueMapped(calculator->GetMaximum());
 
-    IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
-    ContentIdentificationMacro contentID = createContentIdentificationInformation(metaInfo);
+    IODEnhGeneralEquipmentModule::EquipmentInfo eq = ParametricMapConverter::getEnhEquipmentInfo();
+    ContentIdentificationMacro contentID = ParametricMapConverter::createContentIdentificationInformation(metaInfo);
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
     // TODO: following should maybe be moved to meta info
@@ -432,7 +446,7 @@ namespace dcmqi {
     return output;
   }
 
-  pair <FloatImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
+  pair <FloatImageType::Pointer, string> ParametricMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
@@ -548,7 +562,7 @@ namespace dcmqi {
     return pair <FloatImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
-  OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
+  OFCondition ParametricMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                          const JSONParametricMapMetaInformationHandler &metaInfo,
                                          const unsigned long frameNo, OFVector<FGBase*> groups)
   {
@@ -608,7 +622,7 @@ namespace dcmqi {
     return result;
   }
 
-  void ParaMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
+  void ParametricMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
                                                           JSONParametricMapMetaInformationHandler &metaInfo) {
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);

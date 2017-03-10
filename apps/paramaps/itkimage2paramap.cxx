@@ -3,7 +3,7 @@
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/ParaMapConverter.h"
+#include "dcmqi/ParametricMapConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                         (std::istreambuf_iterator<char>()));
 
-  DcmDataset* result = dcmqi::ParaMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
+  DcmDataset* result = dcmqi::ParametricMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
 
   if (result == NULL) {
     return EXIT_FAILURE;

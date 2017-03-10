@@ -1,11 +1,11 @@
 
 // DCMQI includes
-#include "dcmqi/ConverterBase.h"
+#include "dcmqi/MultiframeConverter.h"
 
 
 namespace dcmqi {
 
-  IODGeneralEquipmentModule::EquipmentInfo ConverterBase::getEquipmentInfo() {
+  IODGeneralEquipmentModule::EquipmentInfo MultiframeConverter::getEquipmentInfo() {
     // TODO: change to following for most recent dcmtk
     // return IODGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
     //                                                 QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
@@ -17,13 +17,13 @@ namespace dcmqi {
     return eq;
   }
 
-  IODEnhGeneralEquipmentModule::EquipmentInfo ConverterBase::getEnhEquipmentInfo() {
+  IODEnhGeneralEquipmentModule::EquipmentInfo MultiframeConverter::getEnhEquipmentInfo() {
     return IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
                                                        QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
   }
 
   // TODO: defaults for sub classes needs to be defined
-  ContentIdentificationMacro ConverterBase::createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo) {
+  ContentIdentificationMacro MultiframeConverter::createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo) {
     ContentIdentificationMacro ident;
     CHECK_COND(ident.setContentCreatorName("dcmqi"));
     if(metaInfo.metaInfoRoot["seriesAttributes"].isMember("ContentDescription")){

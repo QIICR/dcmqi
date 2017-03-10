@@ -1,19 +1,15 @@
 
 #-----------------------------------------------------------------------------
-set(ADDITIONAL_SRCS)
 
 set(INCLUDE_DIR ../include/dcmqi)
 
 set(HDRS
-  ${INCLUDE_DIR}/preproc.h
-  ${INCLUDE_DIR}/QIICRConstants.h
-  ${INCLUDE_DIR}/QIICRUIDs.h
-  ${INCLUDE_DIR}/ConverterBase.h
-  ${INCLUDE_DIR}/Exceptions.h
-  ${INCLUDE_DIR}/framesorter.h
-  ${INCLUDE_DIR}/ImageSEGConverter.h
-  ${INCLUDE_DIR}/ParaMapConverter
+  ${INCLUDE_DIR}/DICOMFrame.h
+  ${INCLUDE_DIR}/ImageVolume.h
+  ${INCLUDE_DIR}/MultiframeConverter.h
   ${INCLUDE_DIR}/Helper.h
+  ${INCLUDE_DIR}/SegmentationImageConverter.h
+  ${INCLUDE_DIR}/ParametricMapConverter.h
   ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
   ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
   ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
@@ -21,16 +17,42 @@ set(HDRS
   )
 
 set(SRCS
-  ConverterBase.cpp
-  ImageSEGConverter.cpp
-  ParaMapConverter.cpp
+  DICOMFrame.cpp
+  ImageVolume.cpp
+  MultiframeConverter.cpp
   Helper.cpp
+  SegmentationImageConverter.cpp
+  ParametricMapConverter.cpp
   JSONMetaInformationHandlerBase.cpp
   JSONParametricMapMetaInformationHandler.cpp
   JSONSegmentationMetaInformationHandler.cpp
   SegmentAttributes.cpp
   )
 
+set(ADDITIONAL_HDRS
+  ${INCLUDE_DIR}/DICOMFrame.h
+  ${INCLUDE_DIR}/ImageVolume.h
+  ${INCLUDE_DIR}/SegmentVolume.h
+  ${INCLUDE_DIR}/MultiframeObject.h
+  ${INCLUDE_DIR}/ParametricMapObject.h
+  ${INCLUDE_DIR}/SegmentationImageObject.h
+  ${INCLUDE_DIR}/ImageVolumeGeometry.h
+  ${INCLUDE_DIR}/Exceptions.h
+  ${INCLUDE_DIR}/framesorter.h
+  ${INCLUDE_DIR}/preproc.h
+  ${INCLUDE_DIR}/QIICRConstants.h
+  ${INCLUDE_DIR}/QIICRUIDs.h
+  )
+
+set(ADDITIONAL_SRCS
+  DICOMFrame.cpp
+  ImageVolume.cpp
+  SegmentVolume.cpp
+  MultiframeObject.cpp
+  ParametricMapObject.cpp
+  SegmentationImageObject.cpp
+  ImageVolumeGeometry.cpp
+  )
 
 if(DCMQI_BUILTIN_JSONCPP)
   list(APPEND ADDITIONAL_SRCS
@@ -44,6 +66,7 @@ set(lib_name dcmqi)
 add_library(${lib_name} STATIC
   ${HDRS}
   ${SRCS}
+  ${ADDITIONAL_HDRS}
   ${ADDITIONAL_SRCS}
   )
 
