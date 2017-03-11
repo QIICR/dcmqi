@@ -25,9 +25,20 @@ namespace dcmqi {
     return pair<FloatImageType::Pointer,string>();
   };
 
+
+  ParametricMapConverter::ParametricMapConverter(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+                         const string &metaData){
+    this->originalRepresentation = ITK_REPR;
+  }
+
+  ParametricMapConverter::ParametricMapConverter(DcmDataset* dcmDataset){
+    this->originalRepresentation = DICOM_REPR;
+  }
+
   DcmDataset* ParametricMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                           const string &metaData) {
 
+    // Calculate intensity range - required
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage(parametricMapImage);
     calculator->Compute();
@@ -42,15 +53,15 @@ namespace dcmqi {
     ContentIdentificationMacro contentID = ParametricMapConverter::createContentIdentificationInformation(metaInfo);
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
-    // TODO: following should maybe be moved to meta info
-    OFString imageFlavor = "VOLUME";
-    OFString pixContrast = "NONE";
-    if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
-      pixContrast = metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
-    }
-
     // TODO: initialize modality from the source / add to schema?
-    OFString modality = "MR";
+    DcmDataset* srcDataset = NULL;
+    if(dcmDatasets.size()) {
+      srcDataset = dcmDatasets[0];
+    } else {
+      return NULL;
+    }
+    OFString modality;
+    srcDataset->findAndGetOFString(DCM_Modality, modality);
 
     FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
@@ -59,13 +70,12 @@ namespace dcmqi {
         DPMParametricMapIOD::create<IODFloatingPointImagePixelModule>(modality, metaInfo.getSeriesNumber().c_str(),
                                                                       metaInfo.getInstanceNumber().c_str(),
                                                                       inputSize[1], inputSize[0], eq, contentID,
-                                                                      imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
+                                                                      "VOLUME", "QUANTITY", DPMTypes::CQ_RESEARCH);
     if (OFCondition* pCondition = OFget<OFCondition>(&obj))
       return NULL;
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    DcmDataset* srcDataset = NULL;
     if(dcmDatasets.size()){
       srcDataset = dcmDatasets[0];
     }
