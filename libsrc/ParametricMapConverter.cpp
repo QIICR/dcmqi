@@ -37,8 +37,6 @@ namespace dcmqi {
                                                                             ss.str());
   };
 
-
-
   DcmDataset* ParametricMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                           const string &metaData) {
 
@@ -720,7 +718,7 @@ namespace dcmqi {
       }
 
       FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
-      
+
       if(derivationImage){
         OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
         if(derivationImageItems.size()>0){
