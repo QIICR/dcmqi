@@ -26,34 +26,19 @@ namespace dcmqi {
   };
 
 
-  ParametricMapConverter::ParametricMapConverter(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
-                         const string &metaData){
-    this->originalRepresentation = ITK_REPR;
-  }
-
-  ParametricMapConverter::ParametricMapConverter(DcmDataset* dcmDataset){
-    this->originalRepresentation = DICOM_REPR;
-  }
 
   DcmDataset* ParametricMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                           const string &metaData) {
 
-    // Calculate intensity range - required
-    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
-    calculator->SetImage(parametricMapImage);
-    calculator->Compute();
-
     JSONParametricMapMetaInformationHandler metaInfo(metaData);
     metaInfo.read();
 
-    metaInfo.setFirstValueMapped(calculator->GetMinimum());
-    metaInfo.setLastValueMapped(calculator->GetMaximum());
-
+    // Prepare ContentIdentification
     IODEnhGeneralEquipmentModule::EquipmentInfo eq = ParametricMapConverter::getEnhEquipmentInfo();
     ContentIdentificationMacro contentID = ParametricMapConverter::createContentIdentificationInformation(metaInfo);
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
-    // TODO: initialize modality from the source / add to schema?
+    // Get image modality from the source dataset
     DcmDataset* srcDataset = NULL;
     if(dcmDatasets.size()) {
       srcDataset = dcmDatasets[0];
@@ -61,11 +46,13 @@ namespace dcmqi {
       return NULL;
     }
     OFString modality;
-    srcDataset->findAndGetOFString(DCM_Modality, modality);
+    CHECK_COND(srcDataset->findAndGetOFString(DCM_Modality, modality));
 
+    // Get size of the image to be converted
     FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
+    // create Parametric map object
     OFvariant<OFCondition,DPMParametricMapIOD> obj =
         DPMParametricMapIOD::create<IODFloatingPointImagePixelModule>(modality, metaInfo.getSeriesNumber().c_str(),
                                                                       metaInfo.getInstanceNumber().c_str(),
@@ -76,14 +63,16 @@ namespace dcmqi {
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
+    // import metadata from the source datasets
+    // TODO: not clear why readFoR is set to False
     CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
 
     /* Initialize dimension module */
-    char dimUID[128];
-    dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
     IODMultiframeDimensionModule &mfdim = pMapDoc->getIODMultiframeDimensionModule();
-    OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dimUID,
+    OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, Helper::generateUID(),
                                                  DCM_RealWorldValueMappingSequence, "Frame position");
+
+    // Initialize PM geometry
 
     // Shared FGs: PixelMeasuresSequence
     {
@@ -98,6 +87,8 @@ namespace dcmqi {
       spacingSStream << scientific << labelSpacing[2];
       CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
       CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
+
+      // SHARED
       CHECK_COND(pMapDoc->addForAllFrames(*pixmsr));
     }
 
@@ -119,9 +110,12 @@ namespace dcmqi {
               Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
 
       //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
+      // SHARED
       CHECK_COND(pMapDoc->addForAllFrames(*planor));
     }
 
+
+    // Initialize metadata - anatomy
     FGFrameAnatomy frameAnaFG;
     frameAnaFG.setLaterality(FGFrameAnatomy::str2Laterality(metaInfo.getFrameLaterality().c_str()));
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionSequence")){
@@ -132,6 +126,8 @@ namespace dcmqi {
     } else {
       frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
     }
+
+    // SHARED
     CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
     FGIdentityPixelValueTransformation idTransFG;
@@ -141,8 +137,11 @@ namespace dcmqi {
     FGParametricMapFrameType frameTypeFG;
     std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\QUANTITY";
     frameTypeFG.setFrameType(frameTypeStr.c_str());
+
+    // SHARED
     CHECK_COND(pMapDoc->addForAllFrames(frameTypeFG));
 
+    // Initialize RWVM
     FGRealWorldValueMapping rwvmFG;
     FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
     if (!realWorldValueMappingItem )
@@ -153,8 +152,13 @@ namespace dcmqi {
     realWorldValueMappingItem->setRealWorldValueSlope(metaInfo.getRealWorldValueSlope());
     realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
 
-    realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(metaInfo.getFirstValueMapped());
-    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
+    // Calculate intensity range - required
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
+    calculator->SetImage(parametricMapImage);
+    calculator->Compute();
+
+    realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(calculator->GetMinimum());
+    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(calculator->GetMaximum());
 
     CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
     if (measurementUnitCode != NULL) {
@@ -183,7 +187,7 @@ namespace dcmqi {
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
     quantity->setValueType(ContentItemMacro::VT_CODE);
 
-    // initialize optional items, if available
+    // initialize optional RWVM items, if available
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
       CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
@@ -393,12 +397,6 @@ namespace dcmqi {
         // Frame Content
         OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
 
-#if ADD_DERIMG
-        // Already pushed above if siVector.size > 0
-        // if(fgder)
-          // perFrameFGs.push_back(fgder);
-#endif
-
         DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
         result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
 
@@ -568,6 +566,8 @@ namespace dcmqi {
     return pair <FloatImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
+  // appears to be not used
+#if 0
   OFCondition ParametricMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                          const JSONParametricMapMetaInformationHandler &metaInfo,
                                          const unsigned long frameNo, OFVector<FGBase*> groups)
@@ -627,6 +627,7 @@ namespace dcmqi {
     }
     return result;
   }
+#endif
 
   void ParametricMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
                                                           JSONParametricMapMetaInformationHandler &metaInfo) {
@@ -665,7 +666,7 @@ namespace dcmqi {
 
         Float64 slope;
         // TODO: replace the following call by following getter once it is available
-//        item->getRealWorldValueSlope(slope);
+        //item->getRealWorldValueSlope(slope);
         item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
         metaInfo.setRealWorldValueSlope(slope);
 

@@ -44,9 +44,12 @@ namespace dcmqi {
 
   class MultiframeConverter {
   public:
-    virtual int convert();
+    //virtual int convert();
+    MultiframeConverter(){
+    };
 
-  protected:
+
+
     static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
     static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
     static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo);
