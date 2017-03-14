@@ -15,7 +15,11 @@ namespace dcmqi {
 
   // Maintain properties of the image volume
   // Attributes ara parallel to those of itkImageData, but limited to what we need for the task of conversion,
-  // and the class is not templated over the pixel type
+  // and the class is not templated over the pixel type, since we may not know the pixel type
+  // at the time class is instantiated.
+  //
+  // Initially, limit implementation and support to just Float32 used by the original PM converter.
+
   class ImageVolume {
   public:
     // pixel types that are relevant for the types of objects we want to support
@@ -47,7 +51,11 @@ namespace dcmqi {
   protected:
     int initializeDirections(FGInterface &);
     int initializeExtent(FGInterface &);
-    bool getDeclaredSpacing(FGInterface&);
+    bool getDeclaredSliceSpacing(FGInterface&);
+    bool getCalculatedSliceSpacing();
+
+    int setDirections(vnl_vector<double> rowDirection, vnl_vector<double> columnDirection, vnl_vector<double> sliceDirection);
+    int setOrigin(vnl_vector<double>);
 
   private:
 

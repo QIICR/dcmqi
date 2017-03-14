@@ -50,7 +50,7 @@ namespace dcmqi {
                                  const string &metaData);
     static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
 
-    // do the conversion
+    // given one representation, generate the parallel one
     int convert();
 
     // get the result
@@ -75,6 +75,7 @@ namespace dcmqi {
     // these are the items we will need in the process of conversion
     vector<DcmDataset*> referencedDatasets;
     string metaData;
+
   };
 
 }

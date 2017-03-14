@@ -1,5 +1,6 @@
 
 // DCMQI includes
+#include <dcmqi/QIICRUIDs.h>
 #include "dcmqi/Helper.h"
 
 namespace dcmqi {
@@ -368,5 +369,15 @@ namespace dcmqi {
     return new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
+  OFString Helper::generateUID() {
+    char charUID[128];
+    dcmGenerateUniqueIdentifier(charUID, QIICR_UID_ROOT);
+    return OFString(charUID);
+  }
 
+  OFString Helper::getTagAsOFString(DcmDataset* dcm, DcmTagKey tag) {
+    OFString value;
+    CHECK_COND(dcm->findAndGetOFString(tag, value));
+    return value;
+  }
 }
