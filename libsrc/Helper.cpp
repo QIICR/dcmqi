@@ -380,4 +380,16 @@ namespace dcmqi {
     CHECK_COND(dcm->findAndGetOFString(tag, value));
     return value;
   }
+
+  CodeSequenceMacro Helper::jsonToCodeSequenceMacro(Json::Value jv){
+    return CodeSequenceMacro(jv["CodeValue"].asCString(),
+                             jv["CodingSchemeDesignator"].asCString(),
+                             jv["CodeMeaning"].asCString());
+  }
+
+  string Helper::codeSequenceMacroToString(CodeSequenceMacro c){
+    OFString codeValue, codingSchemeDesignator, codeMeaning;
+    string s = string()+codeValue.c_str()+","+codingSchemeDesignator.c_str()+","+codeMeaning.c_str();
+    return s;
+  }
 }

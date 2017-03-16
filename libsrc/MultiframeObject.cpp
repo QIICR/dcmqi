@@ -72,15 +72,42 @@ bool MultiframeObject::metaDataIsComplete() {
 }
 
 // List of tags, and FGs they belong to, for initializing dimensions module
-int MultiframeObject::initializeDimensions(IODMultiframeDimensionModule& dimModule,
-                                           std::vector<std::pair<DcmTag,DcmTag> > dimTagList){
+int MultiframeObject::initializeDimensions(std::vector<std::pair<DcmTag,DcmTag> > dimTagList){
   OFString dimUID;
+
+  dimensionsModule.clearData();
 
   dimUID = dcmqi::Helper::generateUID();
   for(int i=0;i<dimTagList.size();i++){
     std::pair<DcmTag,DcmTag> dimTagPair = dimTagList[i];
-    CHECK_COND(dimModule.addDimensionIndex(dimTagPair.first, dimUID, dimTagPair.second,
+    CHECK_COND(dimensionsModule.addDimensionIndex(dimTagPair.first, dimUID, dimTagPair.second,
     dimTagPair.first.getTagName()));
   }
+  return EXIT_SUCCESS;
+}
+
+int MultiframeObject::initializePixelMeasuresFG(){
+  string pixelSpacingStr, sliceSpacingStr;
+
+  pixelSpacingStr = dcmqi::Helper::floatToStrScientific(volumeGeometry.spacing[0])+
+      "\\"+dcmqi::Helper::floatToStrScientific(volumeGeometry.spacing[1]);
+  sliceSpacingStr = dcmqi::Helper::floatToStrScientific(volumeGeometry.spacing[2]);
+
+  CHECK_COND(pixelMeasuresFG.setPixelSpacing(pixelSpacingStr.c_str()));
+  CHECK_COND(pixelMeasuresFG.setSpacingBetweenSlices(sliceSpacingStr.c_str()));
+  CHECK_COND(pixelMeasuresFG.setSliceThickness(sliceSpacingStr.c_str()));
+
+  return EXIT_SUCCESS;
+}
+
+int MultiframeObject::initializePlaneOrientationFG() {
+  planeOrientationPatientFG.setImageOrientationPatient(
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.rowDirection[0]).c_str(),
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.rowDirection[1]).c_str(),
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.rowDirection[2]).c_str(),
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.columnDirection[0]).c_str(),
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.columnDirection[1]).c_str(),
+      dcmqi::Helper::floatToStrScientific(volumeGeometry.columnDirection[2]).c_str()
+  );
   return EXIT_SUCCESS;
 }
