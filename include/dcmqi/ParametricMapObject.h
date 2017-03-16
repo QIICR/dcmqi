@@ -36,11 +36,13 @@ public:
 protected:
   typedef itk::CastImageFilter<Float32ITKImageType,DummyImageType>
       Float32ToDummyCasterType;
+  typedef itk::MinimumMaximumImageCalculator<Float32ITKImageType> MinMaxCalculatorType;
 
   int initializeVolumeGeometry();
   int createParametricMap();
-  int initializeDimensionsModule();
   int initializeCompositeContext();
+  int initializeFrameAnatomyFG();
+  int initializeRWVMFG();
 
   // Functional groups initialization
 

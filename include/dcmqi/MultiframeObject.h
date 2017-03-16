@@ -77,8 +77,12 @@ protected:
   virtual int initializeCompositeContext();
   virtual bool metaDataIsComplete();
 
+
+
   // List of tags, and FGs they belong to, for initializing dimensions module
-  int initializeDimensions(IODMultiframeDimensionModule&, std::vector<std::pair<DcmTag, DcmTag> >);
+  int initializeDimensions(std::vector<std::pair<DcmTag, DcmTag> >);
+  int initializePixelMeasuresFG();
+  int initializePlaneOrientationFG();
 
   // constants to describe original representation of the data being converted
   enum {
