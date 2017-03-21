@@ -154,37 +154,56 @@ int ParametricMapObject::initializeRWVMFG() {
 
   if(metaDataJson.isMember("MeasurementsUnitsCode")){
     CodeSequenceMacro& unitsCodeDcmtk = realWorldValueMappingItem->getMeasurementUnitsCode();
-    unitsCodeDcmtk = dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["MeasurementsUnitsCode"]);
+    unitsCodeDcmtk.set(metaDataJson["MeasurementsUnitsCode"]["CodeValue"].asCString(),
+                         metaDataJson["MeasurementsUnitsCode"]["CodingSchemeDesignator"].asCString(),
+                         metaDataJson["MeasurementsUnitsCode"]["CodeMeaning"].asCString());
     cout << "Measurements units initialized to " <<
          dcmqi::Helper::codeSequenceMacroToString(unitsCodeDcmtk);
+
     realWorldValueMappingItem->setLUTExplanation(metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     realWorldValueMappingItem->setLUTLabel(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString());
   }
 
   if(metaDataJson.isMember("QuantityValueCode")){
-    CodeSequenceMacro& unitsCodeDcmtk = realWorldValueMappingItem->getMeasurementUnitsCode();
-    unitsCodeDcmtk = dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]);
-
-    ContentItemMacro* quantity = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaDataJson["QuantityValueCode"]["CodeValue"].asCString(),
-        metaDataJson["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
-        metaDataJson["QuantityValueCode"]["CodeMeaning"].asCString());
-
-    if (!quantity || !qSpec || !qCodeName)
-    {
-      return NULL;
-    }
-
-    quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
-    quantity->getEntireConceptCodeSequence().push_back(qSpec);
-    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
-    quantity->setValueType(ContentItemMacro::VT_CODE);
-
+    ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C1C6", "SRT", "Quantity"),
+                                                                dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
   }
 
+  // TODO: factor out defined CodeSequenceMacros into definitions as in dcmsr/include/dcmtk/dcmsr/codes
+  if(metaDataJson.isMember("MeasurementMethodCode")){
+    ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C306", "SRT", "Measurement Method"),
+                                                                dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["MeasurementMethodCode"]));
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
+  }
 
+  if(metaDataJson.isMember("ModelFittingMethodCode")){
+    // TODO: update this once CP-1665 is integrated into the standard
+    ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("xxxxx2", "99DCMCP1665", "Model Fitting Method"),
+                                                        dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["ModelFittingMethodCode"]));
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
+  }
+
+  if(metaDataJson.isMember("SourceImageDiffusionBValues")){
+    for(int bvalId=0;bvalId<metaDataJson["SourceImageDiffusionBValues"].size();bvalId++){
+      ContentItemMacro* bval = new ContentItemMacro;
+      CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "s/mm2");
+      // TODO: update this once CP-1665 is integrated into the standard
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("xxxxx1", "99DCMCP1665", "Source image diffusion b-value");
+
+      if (!bval || !bvalUnits || !qCodeName)
+      {
+        return NULL;
+      }
+
+      bval->setValueType(ContentItemMacro::VT_NUMERIC);
+      bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
+      bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
+      if(bval->setNumericValue(metaDataJson["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
+        cout << "Failed to insert the value!" << endl;;
+      realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
+    }
+  }
 #if 0
 
   // initialize optional RWVM items, if available

@@ -20,6 +20,7 @@
 #include <dcmtk/dcmiod/modequipment.h>
 #include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modmultiframedimension.h>
+#include <dcmtk/dcmiod/iodcontentitemmacro.h>
 
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/ImageVolumeGeometry.h"
@@ -77,7 +78,7 @@ protected:
   virtual int initializeCompositeContext();
   virtual bool metaDataIsComplete();
 
-
+  ContentItemMacro* initializeContentItemMacro(CodeSequenceMacro, CodeSequenceMacro);
 
   // List of tags, and FGs they belong to, for initializing dimensions module
   int initializeDimensions(std::vector<std::pair<DcmTag, DcmTag> >);

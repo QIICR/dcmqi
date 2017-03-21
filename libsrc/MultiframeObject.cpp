@@ -111,3 +111,21 @@ int MultiframeObject::initializePlaneOrientationFG() {
   );
   return EXIT_SUCCESS;
 }
+
+ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro conceptName,
+                                                               CodeSequenceMacro conceptCode){
+  ContentItemMacro* item = new ContentItemMacro();
+  CodeSequenceMacro* concept = new CodeSequenceMacro(conceptName);
+  CodeSequenceMacro* value = new CodeSequenceMacro(conceptCode);
+
+  if (!item || !concept || !value)
+  {
+    return NULL;
+  }
+
+  item->getEntireConceptNameCodeSequence().push_back(concept);
+  item->getEntireConceptCodeSequence().push_back(value);
+  item->setValueType(ContentItemMacro::VT_CODE);
+
+  return EXIT_SUCCESS;
+}

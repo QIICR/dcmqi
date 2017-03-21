@@ -170,6 +170,7 @@ namespace dcmqi {
     // TODO: LutExplanation and LUTLabel should be added as Metainformation
     realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
+
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
