@@ -9,6 +9,8 @@
 
 # Introduction
 
+[![Join the chat at https://gitter.im/QIICR/dcmqi](https://badges.gitter.im/QIICR/dcmqi.svg)](https://gitter.im/QIICR/dcmqi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of [quantitative image analysis](http://journals.sagepub.com/doi/pdf/10.1177/0962280214537333) research data using [DICOM standard](https://en.wikipedia.org/wiki/DICOM).
 
 Specifically, the current focus of development for dcmqi is to support conversion of the following data types to and from DICOM:
