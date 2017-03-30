@@ -22,7 +22,7 @@
     <directory>
       <name>outputDirName</name>
       <label>Output directory name</label>
-      <channel>input</channel>
+      <channel>output</channel>
       <longflag>outputDirectory</longflag>
       <description>Directory to store individual segments saved using the output format specified files. When specified, file names will contain prefix, followed by the segment number.</description>
     </directory>
