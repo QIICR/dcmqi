@@ -6,6 +6,7 @@
       {
         "CodeMeaning": "Tissue",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "T-D0050",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -337,6 +338,7 @@
       {
         "CodeMeaning": "Morphologically Altered Structure",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "M-01000",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -512,6 +514,7 @@
       {
         "CodeMeaning": "Body Substance",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": false,
         "cid": "7150",
         "CodeValue": "T-D0080",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -601,6 +604,7 @@
       {
         "CodeMeaning": "Physical object",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "A-00004",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -1126,6 +1130,7 @@
       {
         "CodeMeaning": "Anatomical Structure",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": false,
         "cid": "7150",
         "CodeValue": "T-D000A",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -14893,6 +14898,7 @@
       {
         "CodeMeaning": "Function",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "R-42019",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -14911,6 +14917,7 @@
       {
         "CodeMeaning": "Substance",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "F-61002",
         "contextGroupName": "SegmentationPropertyCategories",
@@ -14929,6 +14936,7 @@
       {
         "CodeMeaning": "Spatial and Relational Concept",
         "CodingSchemeDesignator": "SRT",
+        "showAnatomy": true,
         "cid": "7150",
         "CodeValue": "R-42018",
         "contextGroupName": "SegmentationPropertyCategories",
