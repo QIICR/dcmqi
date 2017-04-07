@@ -1,9 +1,8 @@
 
 #-----------------------------------------------------------------------------
 include(FindGit)
-include(dcmqiMacroExtractRepositoryInfo)
 
-dcmqiMacroExtractRepositoryInfo(VAR_PREFIX DCMQI)
+git_wc_info(${DCMQI_SOURCE_DIR} DCMQI)
 configure_file(
   ${DCMQI_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
   ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
