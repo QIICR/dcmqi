@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
 #-----------------------------------------------------------------------------
 # Superbuild
 #
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${DCMQI_CMAKE_DIR}" ${CMAKE_MODULE_PATH})
 set(EXTERNAL_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMakeExternals)
 set(EXTERNAL_PROJECT_FILE_PREFIX "")
 include(ExternalProject)
@@ -144,6 +146,8 @@ set(DCMQI_VERSION_PATCH 5)
 set(DCMQI_VERSION
     "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}.${DCMQI_VERSION_PATCH}")
 
+set(DCMQI_LATEST_TAG "latest")
+
 # Append the library version information to the library target
 # properties.  A parent project may set its own properties and/or may
 # block this.
@@ -153,7 +157,6 @@ if(NOT DCMQI_NO_LIBRARY_VERSION)
     SOVERSION "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}"
     )
 endif()
-
 
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
@@ -268,6 +271,15 @@ if(NOT Slicer_DIR)
 endif()
 
 #-----------------------------------------------------------------------------
+# Version information
+#
+# Add target extracting version information. The target configures
+# 'DCMQICPackOptions.cmake' and 'dcmqiVersionConfigure.h'
+#
+include(dcmqiConfigureVersionTarget)
+add_dependencies(dcmqi dcmqiConfigureVersion)
+
+#-----------------------------------------------------------------------------
 # DCMQIConfig
 #
 
@@ -323,7 +335,7 @@ else()
       set(CPACK_SYSTEM_NAME win32)
     endif()
   endif()
-  set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_SYSTEM_NAME}")
+  set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${DCMQI_VERSION}-${CPACK_SYSTEM_NAME}")
   set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${EXTENSION_DESCRIPTION})
   if(UNIX)
@@ -331,5 +343,9 @@ else()
   elseif(WIN32)
     set(CPACK_GENERATOR "ZIP")
   endif()
+  if(NOT DEFINED DCMQI_CPACK_PROJECT_CONFIG_FILE)
+    message(FATAL_ERROR "DCMQI_CPACK_PROJECT_CONFIG_FILE is not defined")
+  endif()
+  set(CPACK_PROJECT_CONFIG_FILE "${DCMQI_CPACK_PROJECT_CONFIG_FILE}")
   include(CPack)
 endif()
