@@ -212,3 +212,4 @@ int dcmqi::ImageVolume::initializeExtent(FGInterface &fgInterface) {
 
   return EXIT_SUCCESS;
 }
+

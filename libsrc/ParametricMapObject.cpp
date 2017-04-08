@@ -40,6 +40,8 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeFrameAnatomyFG();
   initializeRWVMFG();
 
+
+
   return EXIT_SUCCESS;
 }
 
@@ -204,69 +206,6 @@ int ParametricMapObject::initializeRWVMFG() {
       realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
     }
   }
-#if 0
 
-  // initialize optional RWVM items, if available
-  if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
-    ContentItemMacro* measureMethod = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeValue"].asCString(),
-        metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeMeaning"].asCString());
-
-    if (!measureMethod || !qSpec || !qCodeName)
-    {
-      return NULL;
-    }
-
-    measureMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
-    measureMethod->getEntireConceptCodeSequence().push_back(qSpec);
-    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(measureMethod);
-    measureMethod->setValueType(ContentItemMacro::VT_CODE);
-  }
-
-  if(metaInfo.metaInfoRoot.isMember("ModelFittingMethodCode")){
-    ContentItemMacro* fittingMethod = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx2", "99QIICR", "Model fitting method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodeValue"].asCString(),
-        metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodeMeaning"].asCString());
-
-    if (!fittingMethod || !qSpec || !qCodeName)
-    {
-      return NULL;
-    }
-
-    fittingMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
-    fittingMethod->getEntireConceptCodeSequence().push_back(qSpec);
-    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(fittingMethod);
-    fittingMethod->setValueType(ContentItemMacro::VT_CODE);
-  }
-
-  if(metaInfo.metaInfoRoot.isMember("SourceImageDiffusionBValues")){
-    for(int bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
-      ContentItemMacro* bval = new ContentItemMacro;
-      CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "seconds per square millimeter");
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx1", "99QIICR", "Source image diffusion b-value");
-
-      if (!bval || !bvalUnits || !qCodeName)
-      {
-        return NULL;
-      }
-
-      bval->setValueType(ContentItemMacro::VT_NUMERIC);
-      bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
-      bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
-      if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
-        cout << "Failed to insert the value!" << endl;;
-      realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
-      cout << bval->toString() << endl;
-    }
-  }
-
-  rwvmFG.getRealWorldValueMapping().push_back(realWorldValueMappingItem);
-#endif
   return EXIT_SUCCESS;
 }

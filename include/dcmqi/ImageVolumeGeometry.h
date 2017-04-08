@@ -10,6 +10,7 @@
 #include <itkVector.h>
 #include <itkSize.h>
 #include <itkImage.h>
+#include <dcmtk/dcmdata/dcdatset.h>
 
 class ImageVolumeGeometry {
 
@@ -28,11 +29,15 @@ public:
   typedef DummyImageType::DirectionType DirectionType;
 
   ImageVolumeGeometry();
+  // initialize from DICOM
+  ImageVolumeGeometry(DcmDataset*);
 
   int setSpacing(DoubleVectorType);
   int setOrigin(PointType);
   int setExtent(SizeType);
   int setDirections(DirectionType);
+
+  DummyImageType::Pointer getITKRepresentation();
 
 protected:
   // use vnl_vector to simplify support of vector calculations
