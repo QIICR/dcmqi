@@ -87,10 +87,10 @@ license you like.
 #ifndef JSON_VERSION_H_INCLUDED
 # define JSON_VERSION_H_INCLUDED
 
-# define JSONCPP_VERSION_STRING "0.10.5"
+# define JSONCPP_VERSION_STRING "0.10.6"
 # define JSONCPP_VERSION_MAJOR 0
 # define JSONCPP_VERSION_MINOR 10
-# define JSONCPP_VERSION_PATCH 5
+# define JSONCPP_VERSION_PATCH 6
 # define JSONCPP_VERSION_QUALIFIER
 # define JSONCPP_VERSION_HEXA ((JSONCPP_VERSION_MAJOR << 24) | (JSONCPP_VERSION_MINOR << 16) | (JSONCPP_VERSION_PATCH << 8))
 
@@ -566,7 +566,12 @@ public:
   static const UInt64 maxUInt64;
 #endif // defined(JSON_HAS_INT64)
 
+//MW: workaround for bug in NVIDIAs CUDA 7.5 nvcc compiler
+#ifdef  __NVCC__
+public:
+#else
 private:
+#endif //__NVCC__
 #ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
   class CZString {
   public:
