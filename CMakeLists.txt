@@ -136,11 +136,11 @@ foreach(type LIBRARY RUNTIME ARCHIVE)
 endforeach()
 
 #-----------------------------------------------------------------------------
-# DCMQI version number.  An even minor number corresponds to releases.
+# DCMQI version number
 #
-set(DCMQI_VERSION_MAJOR 0)
+set(DCMQI_VERSION_MAJOR 1)
 set(DCMQI_VERSION_MINOR 0)
-set(DCMQI_VERSION_PATCH 1)
+set(DCMQI_VERSION_PATCH 5)
 set(DCMQI_VERSION
     "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}.${DCMQI_VERSION_PATCH}")
 
