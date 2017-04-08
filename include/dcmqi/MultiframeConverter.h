@@ -285,6 +285,10 @@ namespace dcmqi {
           CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
           ippPoint[j] = atof(ippStr.c_str());
         }
+        // NB: this will map slice origin to index without failure, unless the point is out
+        //   of FOV bounds!
+        // TODO: do a better job matching volume slices by considering comparison of the origin
+        //   and orientation of the slice within tolerance
         if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
           //cout << "image position: " << ippPoint << endl;
           //cerr << "ippIndex: " << ippIndex << endl;

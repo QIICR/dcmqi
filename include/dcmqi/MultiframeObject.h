@@ -24,6 +24,7 @@
 
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/ImageVolumeGeometry.h"
+#include "dcmqi/DICOMFrame.h"
 
 using namespace std;
 /*
@@ -75,7 +76,10 @@ protected:
   // from ITK
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
+  // initialize attributes of the composite context that are common for all multiframe objects
   virtual int initializeCompositeContext();
+  // check whether all of the attributes required for initialization of the object are present in the
+  //   input metadata
   virtual bool metaDataIsComplete();
 
   ContentItemMacro* initializeContentItemMacro(CodeSequenceMacro, CodeSequenceMacro);
@@ -84,6 +88,12 @@ protected:
   int initializeDimensions(std::vector<std::pair<DcmTag, DcmTag> >);
   int initializePixelMeasuresFG();
   int initializePlaneOrientationFG();
+
+  static int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
+                                          vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >);
+
+  static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume,
+                                    dcmqi::DICOMFrame& frame);
 
   // constants to describe original representation of the data being converted
   enum {

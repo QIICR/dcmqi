@@ -129,3 +129,42 @@ ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro
 
   return EXIT_SUCCESS;
 }
+
+// populates slice2frame vector that maps each of the volume slices to the set of frames that
+// are considered as derivation dataset
+int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
+                                                   const vector<DcmDataset*> dcmDatasets,
+                                                   vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > slice2frame){
+  for(int d=0;d<dcmDatasets.size();d++){
+    Uint32 numFrames;
+    DcmDataset* dcm = dcmDatasets[d];
+    if(dcm->findAndGetUint32(DCM_NumberOfFrames, numFrames).good()){
+      // this is a multiframe object
+      for(int f=0;f<numFrames;f++){
+        dcmqi::DICOMFrame frame(dcm,f+1);
+        vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
+
+        for(int s=0;s<intersectingSlices.size();s++)
+          slice2frame[s].insert(frame);
+
+      }
+    } else {
+      dcmqi::DICOMFrame frame(dcm);
+      vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
+
+      for(int s=0;s<intersectingSlices.size();s++)
+        slice2frame[s].insert(frame);
+
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
+std::vector<int> MultiframeObject::findIntersectingSlices(ImageVolumeGeometry &volume, dcmqi::DICOMFrame &frame) {
+  std::vector<int> intersectingSlices;
+
+
+
+  return intersectingSlices;
+}
