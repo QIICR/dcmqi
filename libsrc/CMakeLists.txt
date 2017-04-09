@@ -1,19 +1,5 @@
 
 #-----------------------------------------------------------------------------
-include(FindGit)
-include(dcmqiMacroExtractRepositoryInfo)
-
-dcmqiMacroExtractRepositoryInfo(VAR_PREFIX dcmqi)
-configure_file(
-  ${DCMQI_SOURCE_DIR}/CMake/dcmqiVersionConfigure.h.in
-  ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
-  )
-
-source_group("Generated" FILES
-  ${DCMQI_BINARY_DIR}/include/dcmqi/internal/VersionConfigure.h
-  )
-
-#-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
 
 if(DCMQI_BUILTIN_JSONCPP)

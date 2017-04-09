@@ -4,7 +4,7 @@ branches:
 version: 0.0.{build}
 os:
   - Visual Studio 2013
-clone_depth: 1
+shallow_clone: false
 skip_tags: true
 clone_folder: c:\dcmqi
 configuration:
@@ -49,6 +49,9 @@ before_build:
     dir
 build_script:
   - cmd: cmake --build . --config Release -- /m
+  - cmd: |
+      cd c:\dcmqi\dcmqi-build\dcmqi-build
+      cmake --build . --config Release --target PACKAGE -- /m
 after_build:
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv help
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv.cmd help

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
 #-----------------------------------------------------------------------------
 # Superbuild
 #
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${DCMQI_CMAKE_DIR}" ${CMAKE_MODULE_PATH})
 set(EXTERNAL_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMakeExternals)
 set(EXTERNAL_PROJECT_FILE_PREFIX "")
 include(ExternalProject)
@@ -136,13 +138,15 @@ foreach(type LIBRARY RUNTIME ARCHIVE)
 endforeach()
 
 #-----------------------------------------------------------------------------
-# DCMQI version number.  An even minor number corresponds to releases.
+# DCMQI version number
 #
-set(DCMQI_MAJOR_VERSION 0)
-set(DCMQI_MINOR_VERSION 0)
-set(DCMQI_PATCH_VERSION 1)
+set(DCMQI_VERSION_MAJOR 1)
+set(DCMQI_VERSION_MINOR 0)
+set(DCMQI_VERSION_PATCH 5)
 set(DCMQI_VERSION
-    "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}.${DCMQI_PATCH_VERSION}")
+    "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}.${DCMQI_VERSION_PATCH}")
+
+set(DCMQI_LATEST_TAG "latest")
 
 # Append the library version information to the library target
 # properties.  A parent project may set its own properties and/or may
@@ -150,10 +154,9 @@ set(DCMQI_VERSION
 if(NOT DCMQI_NO_LIBRARY_VERSION)
   set(DCMQI_LIBRARY_PROPERTIES ${DCMQI_LIBRARY_PROPERTIES}
     VERSION "${DCMQI_VERSION}"
-    SOVERSION "${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}"
+    SOVERSION "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}"
     )
 endif()
-
 
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
@@ -162,13 +165,13 @@ if(NOT DCMQI_INSTALL_BIN_DIR)
   set(DCMQI_INSTALL_BIN_DIR "bin")
 endif()
 if(NOT DCMQI_INSTALL_LIB_DIR)
-  set(DCMQI_INSTALL_LIB_DIR "lib/dcmqi-${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}")
+  set(DCMQI_INSTALL_LIB_DIR "lib/dcmqi-${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}")
 endif()
 if(NOT DCMQI_INSTALL_CMAKE_DIR)
-  set(DCMQI_INSTALL_CMAKE_DIR "lib/dcmqi-${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}/CMake")
+  set(DCMQI_INSTALL_CMAKE_DIR "lib/dcmqi-${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}/CMake")
 endif()
 if(NOT DCMQI_INSTALL_INCLUDE_DIR)
-  set(DCMQI_INSTALL_INCLUDE_DIR "include/dcmqi-${DCMQI_MAJOR_VERSION}.${DCMQI_MINOR_VERSION}")
+  set(DCMQI_INSTALL_INCLUDE_DIR "include/dcmqi-${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}")
 endif()
 if(NOT DCMQI_INSTALL_DOC_DIR)
   set(DCMQI_INSTALL_DOC_DIR "doc")
@@ -268,6 +271,15 @@ if(NOT Slicer_DIR)
 endif()
 
 #-----------------------------------------------------------------------------
+# Version information
+#
+# Add target extracting version information. The target configures
+# 'DCMQICPackOptions.cmake' and 'dcmqiVersionConfigure.h'
+#
+include(dcmqiConfigureVersionTarget)
+add_dependencies(dcmqi dcmqiConfigureVersion)
+
+#-----------------------------------------------------------------------------
 # DCMQIConfig
 #
 
@@ -305,13 +317,17 @@ if(DEFINED Slicer_DIR)
   include(${Slicer_EXTENSION_CPACK})
 else()
   set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${CMAKE_BINARY_DIR};${PROJECT_NAME};RuntimeLibraries;/")
-  set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${DCMTK_DIR};DCMTK;shlib;/")
-  set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${ITK_DIR};ITK;RuntimeLibraries;/")
+  if(EXISTS "${DCMTK_DIR}/cmake_install.cmake")
+    set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${DCMTK_DIR};DCMTK;shlib;/")
+  endif()
+  if(EXISTS "${ITK_DIR}/cmake_install.cmake")
+    set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${ITK_DIR};ITK;RuntimeLibraries;/")
+  endif()
   set(CPACK_PACKAGE_NAME "dcmqi")
   set(CPACK_PACKAGE_VENDOR "Quantitative Image Informatics for Cancer Research (QIICR)")
-  set(CPACK_PACKAGE_VERSION_MAJOR ${DCMQI_MAJOR_VERSION})
-  set(CPACK_PACKAGE_VERSION_MINOR ${DCMQI_MINOR_VERSION})
-  set(CPACK_PACKAGE_VERSION_PATCH ${DCMQI_PATCH_VERSION})
+  set(CPACK_PACKAGE_VERSION_MAJOR ${DCMQI_VERSION_MAJOR})
+  set(CPACK_PACKAGE_VERSION_MINOR ${DCMQI_VERSION_MINOR})
+  set(CPACK_PACKAGE_VERSION_PATCH ${DCMQI_VERSION_PATCH})
   if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(CPACK_SYSTEM_NAME "mac")
   elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -323,7 +339,7 @@ else()
       set(CPACK_SYSTEM_NAME win32)
     endif()
   endif()
-  set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_SYSTEM_NAME}")
+  set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${DCMQI_VERSION}-${CPACK_SYSTEM_NAME}")
   set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${EXTENSION_DESCRIPTION})
   if(UNIX)
@@ -331,5 +347,9 @@ else()
   elseif(WIN32)
     set(CPACK_GENERATOR "ZIP")
   endif()
+  if(NOT DEFINED DCMQI_CPACK_PROJECT_CONFIG_FILE)
+    message(FATAL_ERROR "DCMQI_CPACK_PROJECT_CONFIG_FILE is not defined")
+  endif()
+  set(CPACK_PROJECT_CONFIG_FILE "${DCMQI_CPACK_PROJECT_CONFIG_FILE}")
   include(CPack)
 endif()
