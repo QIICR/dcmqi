@@ -116,6 +116,8 @@ else()
   endif()
 endif()
 
+message(STATUS "${msg} - ${is_release_answer}")
+
 GIT_WC_INFO(${DCMQI_SOURCE_DIR} DCMQI)
 
 string(REGEX MATCH ".*([0-9][0-9][0-9][0-9])\\-([0-9][0-9])\\-([0-9][0-9]).*" _out
