@@ -49,11 +49,11 @@ deploy:
     script: ci_addons publish_github_release qiicr/dcmqi --prerelease-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
     skip_cleanup: true
     on:
-      repo: qiicr/dcmqi
+      repo: QIICR/dcmqi
       branch: master
   - provider: script
     script: ci_addons publish_github_release qiicr/dcmqi --release-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz"
     skip_cleanup: true
     on:
-      repo: qiicr/dcmqi
+      repo: QIICR/dcmqi
       tags: true
