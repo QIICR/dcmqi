@@ -11,6 +11,13 @@ configuration:
   - Release
 platform:
   - x64
+environment:
+  PYTHON_DIR: "C:\\Python35-x64"
+  PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
+  GITHUB_TOKEN:
+    secure: mnRPU2KJBMkkUa4fo4ebLpsEG/gYpcAy4/X2ihGiwZiPGpkyvF1ItFFRSlUGubvf
+  APPVEYOR_API_TOKEN:
+    secure: 3+wBc5SxNqx3XjsY3EZ7afvQbLAWWcw30SPGK7q+QPA=
 before_build:
   # Install tools required to run DCMQI "doc" tests
   - npm install jsonlint -g
@@ -41,6 +48,8 @@ before_build:
         $client = new-object System.Net.WebClient;
         $client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.5/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
   - 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
+  # Install package required to automatically create or update GitHub releases
+  - pip install scikit-ci-addons==0.14.0
   # Configure project
   - |
     mkdir c:\dcmqi\dcmqi-build
@@ -56,8 +65,10 @@ after_build:
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv help
   - cmd: c:\Users\appveyor\AppData\Roaming\npm\ajv.cmd help
   - cmd: cd c:\dcmqi\dcmqi-build\dcmqi-build && set PATH=%PATH%;c:\DCMTK-install\bin;c:\ITK-install\bin;c:\zlib-install\lib;c:\Users\appveyor\AppData\Roaming\npm && ctest -j4 -VV -C Release -D ExperimentalTest --no-compress-output
-artifacts:
-  - path: dcmqi-build
-    name: dcmqi
-    type: zip
-
+  - ps: |
+        ci_addons publish_github_release qiicr/dcmqi `
+           --exit-success-if-missing-token `
+           --release-packages "c:\dcmqi\dcmqi-build\dcmqi-build\dcmqi-*-win64.zip" `
+           --prerelease-packages "c:\dcmqi\dcmqi-build\dcmqi-build\dcmqi-*-win64-*.zip" `
+           --prerelease-packages-clear-pattern "dcmqi-*-win64-*" `
+           --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"

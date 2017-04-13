@@ -8,6 +8,7 @@ os:
 
 env:
 - CTEST_MODEL=Experimental
+- secure: "DdMrxLUEDFvaYekg425LRQjw35/qUFuRcQAhHZFu6Wh4pXiUSgweUB9m4LmL74QtxDUBWKo+AP9vM3v8fvsLvFk11My/t0neSgTk4SXDdvtyZOsmhFnfBo6tsNHdJM7z6DLQpSMKU0A2GOEFdjDvfk3DOV1/eGBHsCXQ9s00TME+XVL1AD4gNdvh3bed2FNNHjESNoiLx1iFGgKH0HIO0jtbHa9vr4abHd73znWsVtiKVLuPw5J168Hw9eCUsylj+PfU8DSf7asBXJ0If5eJ8tvPLPc4DKfciIfX83PuOqxlz/DBTRmxr1crsGkGHYCsnAHxV/DMvDxWoGLZc/AJLo0eDMusRaVkur28ng/xsMRqZtHv6E/bcsCUMtp3mpED+abCWNnEyWPnQQsJwt6yD3EEB0uO8Ld2fEdYddbEz7krdqmb8t9ROAhhXPoVrOt+oul+ndYlXzDbZOYFiai6/Jkf2oGg/XsFEPdLSnoBmzJKEWa3S0LHKiKrXv33amHN7A3i++zfs8ysiESFgdlxHkUypI+bMNJh5Z0WCzfnuoEoq6xysuc2pHZqlsFAcMuo1lpj5T7nP5gjat1hBPZgK3GF21ccv5rHvtEDjp5qLZHYs0RfQbzSKb8IEWrMU7hKXJ1V5N8VzkitCvDCbZbKImJ9joBTSXtnRTGEUoDdoLw="
 
 compiler:
 - clang
@@ -24,8 +25,10 @@ before_script:
 - wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270308/dicom3tools_macexe_1.00.snapshot.20161218101718.zip -O dicom3tools.zip
 - tar zxf dicom3tools.zip
 - mv dciodvfy /usr/local/bin/
-# Use scikit-ci-addons to streamline installation of CMake
-- pip install scikit-ci-addons==0.11.0
+# Use scikit-ci-addons to
+# * streamline installation of CMake
+# * install package required to automatically create or update GitHub releases
+- pip install scikit-ci-addons==0.14.0
 - ci_addons travis/install_cmake 3.6.2
 # Install Ninja
 - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
@@ -40,3 +43,16 @@ script:
 - |
   cd /Users/travis/build/QIICR/dcmqi-build/dcmqi-build
   ninja package
+deploy:
+  - provider: script
+    script: ci_addons publish_github_release qiicr/dcmqi --prerelease-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
+    skip_cleanup: true
+    on:
+      repo: qiicr/dcmqi
+      branch: master
+  - provider: script
+    script: ci_addons publish_github_release qiicr/dcmqi --release-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz"
+    skip_cleanup: true
+    on:
+      repo: qiicr/dcmqi
+      tags: true
