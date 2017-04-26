@@ -814,6 +814,7 @@ define(['ajv'], function (Ajv) {
       }
       $rootScope.$emit(self.selectionChangedEvent, {
         item:self.selectedItem,
+        segmentNumber:$scope.segmentNumber,
         value:item ? item.object : item,
         segmentedPropertyType:item ? item.object : item,
         hasRecommendedColor:hasRecommendedColor,
