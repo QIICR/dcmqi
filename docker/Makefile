@@ -62,7 +62,8 @@ dcmqi.generate_package: prereq.pull_dockcross
 
 # Build "dcmqi" docker image
 dcmqi.docker_image:
-	tar -xzvf $(ROOT_DIR)/$(BUILD_DIR)/dcmqi-build/dcmqi-linux.tar.gz -C $(DOCKER_DIR)/dcmqi
+	$(eval PACKAGE_FILE_NAME := $(shell ls /home/ubuntu/dcmqi/build/dcmqi-build/_CPack_Packages/linux/TGZ/dcmqi-*-linux*.tar.gz))
+	tar -xzvf $(PACKAGE_FILE_NAME) -C $(DOCKER_DIR)/dcmqi
 	cd $(DOCKER_DIR) && \
 	docker build -t $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
 		--build-arg IMAGE=$(ORG)/dcmqi \
