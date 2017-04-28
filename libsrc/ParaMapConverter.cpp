@@ -133,7 +133,7 @@ namespace dcmqi {
     realWorldValueMappingItem->setRealWorldValueSlope(metaInfo.getRealWorldValueSlope());
     realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
 
-    realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(metaInfo.getFirstValueMapped());
+    realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(metaInfo.getFirstValueMapped());
     realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
 
     CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
