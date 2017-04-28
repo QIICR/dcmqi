@@ -16,6 +16,11 @@ namespace dcmqi {
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
 
+    if(metaInfo.segmentsAttributesMappingList.size() != segmentations.size()){
+      cerr << "Mismatch between the number of input segmentation files and the size of metainfo list!" << endl;
+      return NULL;
+    };
+
     IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
     ContentIdentificationMacro ident = createContentIdentificationInformation(metaInfo);
     CHECK_COND(ident.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
