@@ -14,6 +14,9 @@ BUILD_DIR = build
 DOCKER_DIR = $(ROOT_DIR)/docker
 TMP = /tmp
 
+# Shell
+SHELL = /bin/bash
+
 dicom3tools_version=dicom3tools_1.00.snapshot.20160721064406
 
 #
@@ -25,7 +28,9 @@ image: dcmqi dcmqi.test
 # Pull dockcross image
 prereq.pull_dockcross:
 	$(DOCKER) pull dockcross/manylinux-x64
-	$(DOCKER) run --rm  dockcross/manylinux-x64 > $(TMP)/dockcross
+	$(DOCKER) run dockcross/manylinux-x64 > $(TMP)/dockcross
+	# Ignore error because of https://circleci.com/docs/docker-btrfs-error/
+	$(DOCKER) rm -f dockcross/manylinux-x64 || true
 	chmod u+x $(TMP)/dockcross
 
 # Download and build dicom3tools
@@ -61,8 +66,23 @@ dcmqi.generate_package: prereq.pull_dockcross
 	$(TMP)/dockcross ninja -C$(BUILD_DIR)/dcmqi-build package
 
 # Build "dcmqi" docker image
+# 
+# Docker expects package content to be in directory dcmqi-linux. As a
+# workaround, the content of the cpack-generated package, stored in
+# dcmqi-<version>-linux-<date>-<hash> directory is copied to dcmqi-linux.
+#
 dcmqi.docker_image:
-	tar -xzvf $(ROOT_DIR)/$(BUILD_DIR)/dcmqi-build/dcmqi-linux.tar.gz -C $(DOCKER_DIR)/dcmqi
+	$(info $$ROOT_DIR ${ROOT_DIR})
+	$(info $$BUILD_DIR ${BUILD_DIR})
+	$(eval PACKAGE_FILE_NAME := $(shell ls $(ROOT_DIR)/build/dcmqi-build/_CPack_Packages/linux/TGZ/dcmqi-*-linux*.tar.gz))
+	tar -xzvf $(PACKAGE_FILE_NAME) -C $(DOCKER_DIR)/dcmqi
+	$(eval PACKAGE_PATH_NAME := $(shell find $(ROOT_DIR)/build/dcmqi-build/_CPack_Packages/linux/TGZ/ -mindepth 1 -maxdepth 1 -type d))
+	$(info $$PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
+	$(info $$PACKAGE_PATH_NAME ${PACKAGE_PATH_NAME})
+
+	$(info $$DOCKER_DIR ${DOCKER_DIR})
+
+	$(shell cp -r $(PACKAGE_PATH_NAME) $(DOCKER_DIR)/dcmqi/dcmqi-linux)
 	cd $(DOCKER_DIR) && \
 	docker build -t $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
 		--build-arg IMAGE=$(ORG)/dcmqi \
