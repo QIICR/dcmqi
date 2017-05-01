@@ -66,6 +66,11 @@ dcmqi.generate_package: prereq.pull_dockcross
 	$(TMP)/dockcross ninja -C$(BUILD_DIR)/dcmqi-build package
 
 # Build "dcmqi" docker image
+# 
+# Docker expects package content to be in directory dcmqi-linux. As a
+# workaround, the content of the cpack-generated package, stored in
+# dcmqi-<version>-linux-<date>-<hash> directory is copied to dcmqi-linux.
+#
 dcmqi.docker_image:
 	$(info $$ROOT_DIR ${ROOT_DIR})
 	$(info $$BUILD_DIR ${BUILD_DIR})
