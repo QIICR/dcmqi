@@ -64,6 +64,7 @@ foreach(varname IN ITEMS GIT_EXECUTABLE Subversion_SVN_EXECUTABLE)
     list(APPEND DCMQI_EP_CMAKE_CACHE_ARGS -D${varname}:FILEPATH=${${varname}})
   endif()
 endforeach()
+list(APPEND DCMQI_EP_CMAKE_CACHE_ARGS -DCMAKE_CXX_STANDARD:STRING=${DCMQI_CMAKE_CXX_STANDARD})
 
 ExternalProject_Add(${proj}
   ${${proj}_EP_ARGS}
