@@ -16,5 +16,6 @@ namespace dcmqi {
 
   int DICOMFrame::initializeFrameGeometryFromEnhancedInstance() {
     OFString ippStr;
+    return EXIT_SUCCESS;
   }
 }
