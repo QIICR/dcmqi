@@ -151,7 +151,7 @@ int ParametricMapObject::initializeRWVMFG() {
   calculator->SetImage(itkImage);
   calculator->Compute();
 
-  realWorldValueMappingItem->setRealWorldValueFirstValueMappeSigned(calculator->GetMinimum());
+  realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(calculator->GetMinimum());
   realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(calculator->GetMaximum());
 
   if(metaDataJson.isMember("MeasurementsUnitsCode")){
