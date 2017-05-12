@@ -253,7 +253,6 @@ namespace dcmqi {
     OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
 
     IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem;
-    refseries.push_back(refseriesItem);
 
     OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem->getReferencedInstanceItems();
 
@@ -392,6 +391,10 @@ namespace dcmqi {
         fgder->clearData();
       }
     }
+
+    // add ReferencedSeriesItem only if it is not empty
+    if(refinstances.size())
+      refseries.push_back(refseriesItem);
 
     delete fgppp;
     delete fgfc;
