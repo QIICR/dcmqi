@@ -41,6 +41,9 @@ namespace dcmqi {
 
     int getFrameNumber() const; // 0 for legacy datasets, 1 or above for enhanced objects
     OFString getInstanceUID() const;
+    vnl_vector<double> getFrameIPP(){
+      return frameIPP;
+    };
 
   private:
 
