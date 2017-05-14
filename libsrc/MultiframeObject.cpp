@@ -163,8 +163,18 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
 
 std::vector<int> MultiframeObject::findIntersectingSlices(ImageVolumeGeometry &volume, dcmqi::DICOMFrame &frame) {
   std::vector<int> intersectingSlices;
+  // for now, adopt a simple strategy that maps origin of the frame to index, and selects the slice corresponding
+  //  to this index as the intersecting one
+  ImageVolumeGeometry::DummyImageType::Pointer itkvolume = volume.getITKRepresentation();
+  ImageVolumeGeometry::DummyImageType::PointType point;
+  ImageVolumeGeometry::DummyImageType::IndexType index;
+  vnl_vector<double> frameIPP = frame.getFrameIPP();
+  point[0] = frameIPP[0];
+  point[1] = frameIPP[1];
+  point[2] = frameIPP[2];
 
-
+  if(itkvolume->TransformPhysicalPointToIndex(point, index))
+    intersectingSlices.push_back(index[2]);
 
   return intersectingSlices;
 }

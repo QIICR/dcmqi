@@ -21,6 +21,10 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
 
   initializeVolumeGeometry();
 
+  // NB: the sequence of steps initializing different components of the object parallels that
+  //  in the original converter function. It probably makes sense to revisit the sequence
+  //  of these steps. It does not necessarily need to happen in this order.
+
   // TODO: consider creating parametric map object after all FGs are initialized instead
   createParametricMap();
 
@@ -40,7 +44,8 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeFrameAnatomyFG();
   initializeRWVMFG();
 
-
+  // initialize referenced instances
+  ///initializeReferencedInstances();
 
   return EXIT_SUCCESS;
 }
@@ -195,7 +200,7 @@ int ParametricMapObject::initializeRWVMFG() {
 
       if (!bval || !bvalUnits || !qCodeName)
       {
-        return NULL;
+        return EXIT_FAILURE;
       }
 
       bval->setValueType(ContentItemMacro::VT_NUMERIC);
