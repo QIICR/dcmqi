@@ -7,11 +7,18 @@
 #include "dcmqi/internal/VersionConfigure.h"
 
 
+typedef dcmqi::Helper helper;
+
+
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
   
   PARSE_ARGS;
+
+  if(helper::isUndefinedOrPathDoesNotExist(inputSEGFileName, "Input DICOM file")
+     || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
+    return EXIT_FAILURE;
 
   DcmFileFormat sliceFF;
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));

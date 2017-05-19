@@ -26,6 +26,7 @@
 #include "dcmqi/QIICRConstants.h"
 #include "dcmqi/QIICRUIDs.h"
 #include "dcmqi/internal/VersionConfigure.h"
+#include "dcmqi/Helper.h"
 
 using namespace std;
 
@@ -130,10 +131,15 @@ Json::Value getMeasurements(DSRDocument &doc) {
   return measurements;
 }
 
+
 int main(int argc, char** argv){
   std::cout << dcmqi_INFO << std::endl;
 
   PARSE_ARGS;
+
+  if(dcmqi::Helper::isUndefinedOrPathDoesNotExist(inputSRFileName, "Input DICOM file")) {
+    return EXIT_FAILURE;
+  }
 
   Json::Value metaRoot;
 

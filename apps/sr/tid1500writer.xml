@@ -16,7 +16,7 @@
       <label>JSON metadata file</label>
       <channel>input</channel>
       <longflag>inputMetadata</longflag>
-      <description>JSON file that contains the list of mesurements and other meta data items that can be specified by the user. See documentation for details.</description>
+      <description>JSON file that contains the list of measurements and other meta data items that can be specified by the user. See documentation for details.</description>
     </file>
 
     <file>
