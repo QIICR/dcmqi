@@ -37,6 +37,13 @@ namespace dcmqi {
         initializeFrameGeometryFromLegacyInstance();
       }
 
+      OFString seriesUIDOF, instanceUIDOF;
+      if(dataset->findAndGetOFString(DCM_SeriesInstanceUID, seriesUIDOF).good()){
+        seriesUID = seriesUIDOF.c_str();
+      }
+      if(dataset->findAndGetOFString(DCM_SOPInstanceUID, instanceUIDOF).good()){
+        instanceUID = instanceUIDOF.c_str();
+      }
     };
 
     int getFrameNumber() const; // 0 for legacy datasets, 1 or above for enhanced objects
@@ -44,6 +51,14 @@ namespace dcmqi {
     vnl_vector<double> getFrameIPP(){
       return frameIPP;
     };
+
+    string getSeriesUID(){
+      return seriesUID;
+    }
+
+    string getInstanceUID(){
+      return instanceUID;
+    }
 
   private:
 
@@ -54,6 +69,8 @@ namespace dcmqi {
     DcmDataset *frameDataset;
     int frameNumber;
     vnl_vector<double> frameIPP;
+
+    string seriesUID, instanceUID;
 
     ImageVolumeGeometry frameGeometry;
 

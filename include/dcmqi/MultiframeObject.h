@@ -89,11 +89,13 @@ protected:
   int initializePixelMeasuresFG();
   int initializePlaneOrientationFG();
 
-  static int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
-                                          vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >);
+  int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
+                                          vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);
 
   static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume,
                                     dcmqi::DICOMFrame& frame);
+
+  void insertDerivationSeriesInstance(string seriesUID, string instanceUID);
 
   // constants to describe original representation of the data being converted
   enum {
@@ -139,6 +141,9 @@ protected:
   OFVector<FGPlanePosPatient> planePosPatientFGList;
   OFVector<FGFrameContent> frameContentFGList;
   OFVector<FGDerivationImage> derivationImageFGList;
+
+  // Mapping from the derivation items SeriesUIDs to InstanceUIDs
+  std::map<std::string, std::set<std::string> > derivationSeriesToInstanceUIDs;
 
 };
 
