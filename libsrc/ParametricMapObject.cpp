@@ -44,8 +44,29 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeFrameAnatomyFG();
   initializeRWVMFG();
 
+  // Mapping from parametric map volume slices to the DICOM frames
+  vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > slice2frame;
+
   // initialize referenced instances
-  ///initializeReferencedInstances();
+  mapVolumeSlicesToDICOMFrames(this->volumeGeometry, derivationDatasets, slice2frame);
+
+  // map individual series UIDs to the list of instance UIDs
+
+
+  std::map<std::string, std::set<std::string> > seriesToInstanceUIDs;
+  for(int slice=0;slice!=slice2frame.size();slice++){
+    for(set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare>::const_iterator frameI=slice2frame[slice].begin();
+        frameI!=slice2frame[slice].end();++frameI){
+      dcmqi::DICOMFrame frame = *frameI;
+      if(seriesToInstanceUIDs.find(frame.getSeriesUID()) == seriesToInstanceUIDs.end()){
+        seriesToInstanceUIDs[frame.getSeriesUID()] = frame.getInstanceUID();
+      } else {
+        seriesToInstanceUIDs[frame.getSeriesUID()].push_back(frame.getInstanceUID());
+      }
+    }
+  }
+
+
 
   return EXIT_SUCCESS;
 }

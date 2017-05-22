@@ -132,9 +132,10 @@ ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro
 
 // populates slice2frame vector that maps each of the volume slices to the set of frames that
 // are considered as derivation dataset
+// TODO: this function assumes that all of the derivation datasets are images, which is probably ok
 int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
                                                    const vector<DcmDataset*> dcmDatasets,
-                                                   vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > slice2frame){
+                                                   vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
   for(int d=0;d<dcmDatasets.size();d++){
     Uint32 numFrames;
     DcmDataset* dcm = dcmDatasets[d];
@@ -144,17 +145,21 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
         dcmqi::DICOMFrame frame(dcm,f+1);
         vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
 
-        for(int s=0;s<intersectingSlices.size();s++)
+        for(int s=0;s<intersectingSlices.size();s++) {
           slice2frame[s].insert(frame);
-
+          if (!s)
+            this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
+        }
       }
     } else {
       dcmqi::DICOMFrame frame(dcm);
       vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
 
-      for(int s=0;s<intersectingSlices.size();s++)
+      for(int s=0;s<intersectingSlices.size();s++) {
         slice2frame[s].insert(frame);
-
+        if (!s)
+          this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
+      }
     }
   }
 
@@ -177,4 +182,10 @@ std::vector<int> MultiframeObject::findIntersectingSlices(ImageVolumeGeometry &v
     intersectingSlices.push_back(index[2]);
 
   return intersectingSlices;
+}
+
+void MultiframeObject::insertDerivationSeriesInstance(string seriesUID, string instanceUID){
+  if(derivationSeriesToInstanceUIDs.find(seriesUID) == derivationSeriesToInstanceUIDs.end())
+    derivationSeriesToInstanceUIDs[seriesUID] = std::set<string>();
+  derivationSeriesToInstanceUIDs[seriesUID].insert(instanceUID);
 }
