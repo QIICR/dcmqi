@@ -26,6 +26,7 @@
 #include "dcmqi/QIICRConstants.h"
 #include "dcmqi/QIICRUIDs.h"
 #include "dcmqi/internal/VersionConfigure.h"
+#include "dcmqi/Helper.h"
 
 using namespace std;
 
@@ -60,11 +61,26 @@ DcmFileFormat addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr)
   return ff;
 }
 
+
+typedef dcmqi::Helper helper;
+
+
 int main(int argc, char** argv){
 
   std::cout << dcmqi_INFO << std::endl;
 
   PARSE_ARGS;
+
+  if(helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")
+    || helper::isUndefinedOrPathDoesNotExist(compositeContextDataDir, "Input composite context data directory")
+    || helper::isUndefinedOrPathDoesNotExist(imageLibraryDataDir, "Input image library data directory")) {
+    return EXIT_FAILURE;
+  }
+
+  if(outputFileName.empty()) {
+    cerr << "Error: Output DICOM file must be specified!" << endl;
+    return EXIT_FAILURE;
+  }
 
   Json::Value metaRoot;
 
@@ -262,34 +278,32 @@ int main(int argc, char** argv){
 
   OFCHECK_EQUAL(doc.getDocumentType(), DSRTypes::DT_EnhancedSR);
 
-  if(!outputFileName.empty()){
-    DcmFileFormat ff;
-    DcmDataset *dataset = ff.getDataset();
+  DcmFileFormat ff;
+  DcmDataset *dataset = ff.getDataset();
 
-    OFString contentDate, contentTime;
-    DcmDate::getCurrentDate(contentDate);
-    DcmTime::getCurrentTime(contentTime);
+  OFString contentDate, contentTime;
+  DcmDate::getCurrentDate(contentDate);
+  DcmTime::getCurrentTime(contentTime);
 
-    CHECK_COND(doc.setManufacturer(QIICR_MANUFACTURER));
-    CHECK_COND(doc.setDeviceSerialNumber(QIICR_DEVICE_SERIAL_NUMBER));
-    CHECK_COND(doc.setManufacturerModelName(QIICR_MANUFACTURER_MODEL_NAME));
-    CHECK_COND(doc.setSoftwareVersions(QIICR_SOFTWARE_VERSIONS));
+  CHECK_COND(doc.setManufacturer(QIICR_MANUFACTURER));
+  CHECK_COND(doc.setDeviceSerialNumber(QIICR_DEVICE_SERIAL_NUMBER));
+  CHECK_COND(doc.setManufacturerModelName(QIICR_MANUFACTURER_MODEL_NAME));
+  CHECK_COND(doc.setSoftwareVersions(QIICR_SOFTWARE_VERSIONS));
 
-    CHECK_COND(doc.setSeriesDate(contentDate.c_str()));
-    CHECK_COND(doc.setSeriesTime(contentTime.c_str()));
+  CHECK_COND(doc.setSeriesDate(contentDate.c_str()));
+  CHECK_COND(doc.setSeriesTime(contentTime.c_str()));
 
-    CHECK_COND(doc.write(*dataset));
+  CHECK_COND(doc.write(*dataset));
 
-    if(compositeContextInitialized){
-      cout << "Composite Context initialized" << endl;
-      DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
-      DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
-      DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
-    }
-
-    CHECK_COND(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
-    std::cout << "SR saved!" << std::endl;
+  if(compositeContextInitialized){
+    cout << "Composite Context initialized" << endl;
+    DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
+    DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
+    DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
   }
+
+  CHECK_COND(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
+  std::cout << "SR saved!" << std::endl;
 
   return 0;
 }

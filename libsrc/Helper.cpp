@@ -4,6 +4,34 @@
 
 namespace dcmqi {
 
+  bool Helper::isUndefinedOrPathDoesNotExist(const string &var, const string &humanReadableName) {
+    return Helper::isUndefined(var, humanReadableName) || !Helper::pathExists(var);
+  }
+
+  bool Helper::isUndefinedOrPathsDoNotExist(vector<string> &var, const string &humanReadableName) {
+    return Helper::isUndefined(var, humanReadableName) || !Helper::pathsExist(var);
+  }
+
+  bool Helper::pathsExist(const vector<string> &paths) {
+    bool allExist = true;
+    for(vector<string>::const_iterator iter = paths.begin(); iter != paths.end(); ++iter) {
+      if (!Helper::pathExists(*iter)){
+        allExist = false;
+      }
+    }
+    return allExist;
+  }
+
+  bool Helper::pathExists(const string &path) {
+    struct stat buffer;
+    if (stat (path.c_str(), &buffer) != 0) {
+      cerr << "Error: " << path << " not found!" << endl;
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   string Helper::getFileExtensionFromType(const string& type) {
     string extension = ".nrrd";
     if (type == "nii" || type == "nifti")

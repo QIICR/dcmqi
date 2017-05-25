@@ -7,11 +7,18 @@
 #include "dcmqi/internal/VersionConfigure.h"
 
 
+typedef dcmqi::Helper helper;
+
+
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
 
   PARSE_ARGS;
+
+  if(helper::isUndefinedOrPathDoesNotExist(inputFileName, "Input DICOM file")
+     || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
+    return EXIT_FAILURE;
 
   DcmFileFormat sliceFF;
   std::cout << "Opening input file " << inputFileName.c_str() << std::endl;
@@ -20,7 +27,7 @@ int main(int argc, char *argv[])
 
   pair <FloatImageType::Pointer, string> result =  dcmqi::ParaMapConverter::paramap2itkimage(dataset);
 
-  string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
+  string fileExtension = helper::getFileExtensionFromType(outputType);
 
   typedef itk::ImageFileWriter<FloatImageType> WriterType;
   string outputPrefix = prefix.empty() ? "" : prefix + "-";

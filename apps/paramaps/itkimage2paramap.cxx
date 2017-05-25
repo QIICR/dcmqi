@@ -6,14 +6,18 @@
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
+
+typedef dcmqi::Helper helper;
+
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
 
   PARSE_ARGS;
 
-  if (inputFileName.empty() || metaDataFileName.empty() || outputParaMapFileName.empty() )
-  {
+  if(helper::isUndefinedOrPathDoesNotExist(inputFileName, "Input image file")
+     || helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")
+     || helper::isUndefined(outputParaMapFileName, "Output DICOM file")) {
     return EXIT_FAILURE;
   }
 
@@ -23,11 +27,13 @@ int main(int argc, char *argv[])
   FloatImageType::Pointer parametricMapImage = reader->GetOutput();
 
   if(dicomDirectory.size()){
-    vector<string> dicomFileList = dcmqi::Helper::getFileListRecursively(dicomDirectory.c_str());
+    if (!helper::pathExists(dicomDirectory))
+      return EXIT_FAILURE;
+    vector<string> dicomFileList = helper::getFileListRecursively(dicomDirectory.c_str());
     dicomImageFileList.insert(dicomImageFileList.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  vector<DcmDataset*> dcmDatasets = dcmqi::Helper::loadDatasets(dicomImageFileList);
+  vector<DcmDataset*> dcmDatasets = helper::loadDatasets(dicomImageFileList);
 
   if(dcmDatasets.empty()){
     cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;

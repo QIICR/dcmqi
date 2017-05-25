@@ -6,29 +6,22 @@
 #include "dcmqi/ImageSEGConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
+typedef dcmqi::Helper helper;
+
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
   
   PARSE_ARGS;
 
-  if (segImageFiles.empty()){
-    cerr << "Error: No input image files specified!" << endl;
+  if(helper::isUndefinedOrPathsDoNotExist(segImageFiles, "Input image files")
+     || helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")
+     || helper::isUndefined(outputSEGFileName, "Output DICOM file")) {
     return EXIT_FAILURE;
   }
 
   if(dicomImageFiles.empty() && dicomDirectory.empty()){
     cerr << "Error: No input DICOM files specified!" << endl;
-    return EXIT_FAILURE;
-  }
-
-  if(metaDataFileName.empty()){
-    cerr << "Error: Input metadata file must be specified!" << endl;
-    return EXIT_FAILURE;
-  }
-
-  if(outputSEGFileName.empty()){
-    cerr << "Error: Output DICOM file must be specified!" << endl;
     return EXIT_FAILURE;
   }
 
@@ -43,11 +36,16 @@ int main(int argc, char *argv[])
   }
 
   if(dicomDirectory.size()){
-    vector<string> dicomFileList = dcmqi::Helper::getFileListRecursively(dicomDirectory.c_str());
+    if (!helper::pathExists(dicomDirectory))
+      return EXIT_FAILURE;
+    vector<string> dicomFileList = helper::getFileListRecursively(dicomDirectory.c_str());
     dicomImageFiles.insert(dicomImageFiles.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  vector<DcmDataset*> dcmDatasets = dcmqi::Helper::loadDatasets(dicomImageFiles);
+  if(!helper::pathsExist(dicomImageFiles))
+    return EXIT_FAILURE;
+
+  vector<DcmDataset*> dcmDatasets = helper::loadDatasets(dicomImageFiles);
 
   if(dcmDatasets.empty()){
     cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;

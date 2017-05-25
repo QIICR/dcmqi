@@ -27,6 +27,20 @@ namespace dcmqi {
 
   public:
 
+    static bool isUndefinedOrPathDoesNotExist(const string &var, const string &humanReadableName);
+    static bool isUndefinedOrPathsDoNotExist(vector<string> &var, const string &humanReadableName);
+
+    template<typename T>
+    static bool isUndefined(const T &var, const string &humanReadableName) {
+      if (var.empty()) {
+        cerr << "Error: " << humanReadableName << " must be specified!" << endl;
+        return true;
+      }
+      return false;
+    }
+    static bool pathsExist(const vector<string> &paths);
+    static bool pathExists(const string &path);
+
     static string getFileExtensionFromType(const string& type);
     static vector<string> getFileListRecursively(string directory);
     static vector<DcmDataset*> loadDatasets(const vector<string>& dicomImageFiles);
