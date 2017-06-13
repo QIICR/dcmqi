@@ -73,10 +73,16 @@ Json::Value getMeasurements(DSRDocument &doc) {
           measurement["activitySession"] = st.getCurrentContentItem().getStringValue().c_str();
         }
         st.gotoNode(nnid);
+
         if (st.gotoNamedChildNode(DSRCodedEntryValue("C2348792", "UMLS", "Time Point"))) {
           // TODO: think about it
           cout << "Time Point: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["timePoint"] = st.getCurrentContentItem().getStringValue().c_str();
+        }
+        st.gotoNode(nnid);
+
+        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C036", "SRT", "Measurement Method"))) {
+          measurement["measurementMethod"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoNode(nnid);
 
