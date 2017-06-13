@@ -70,9 +70,22 @@ Json::Value getMeasurements(DSRDocument &doc) {
         if (st.gotoNamedChildNode(DSRCodedEntryValue("C67447", "NCIt", "Activity Session"))) {
           // TODO: think about it
           cout << "Activity Session: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["ActivitySession"] = st.getCurrentContentItem().getStringValue().c_str();
+          measurement["activitySession"] = st.getCurrentContentItem().getStringValue().c_str();
         }
         st.gotoNode(nnid);
+
+        if (st.gotoNamedChildNode(DSRCodedEntryValue("C2348792", "UMLS", "Time Point"))) {
+          // TODO: think about it
+          cout << "Time Point: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
+          measurement["timePoint"] = st.getCurrentContentItem().getStringValue().c_str();
+        }
+        st.gotoNode(nnid);
+
+        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C036", "SRT", "Measurement Method"))) {
+          measurement["measurementMethod"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
+        }
+        st.gotoNode(nnid);
+
         if (st.gotoNamedChildNode(CODE_DCM_ReferencedSegment)) {
           DSRImageReferenceValue referenceImage = st.getCurrentContentItem().getImageReference();
           OFVector<Uint16> items;
@@ -94,6 +107,12 @@ Json::Value getMeasurements(DSRDocument &doc) {
           measurement["TrackingIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
         }
         st.gotoNode(nnid);
+        if (st.gotoNamedChildNode(CODE_DCM_TrackingUniqueIdentifier)) {
+          cout << "TrackingUniqueIdentifier: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
+          measurement["TrackingUniqueIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
+        }
+        st.gotoNode(nnid);
+
         if (st.gotoNamedChildNode(CODE_DCM_Finding)) {
           measurement["Finding"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
