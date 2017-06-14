@@ -11,6 +11,8 @@
 
 #include <dcmtk/dcmsr/codes/dcm.h>
 #include <dcmtk/dcmsr/codes/srt.h>
+#include <dcmtk/dcmsr/codes/umls.h>
+#include <dcmtk/dcmsr/codes/ncit.h>
 #include <dcmtk/dcmsr/cmr/tid1500.h>
 
 #include <dcmtk/dcmdata/dcdeftag.h>
@@ -67,21 +69,21 @@ Json::Value getMeasurements(DSRDocument &doc) {
     do {
       if (nnid) {
         Json::Value measurement;
-        if (st.gotoNamedChildNode(DSRCodedEntryValue("C67447", "NCIt", "Activity Session"))) {
+        if (st.gotoNamedChildNode(CODE_NCIt_ActivitySession)) {
           // TODO: think about it
           cout << "Activity Session: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["activitySession"] = st.getCurrentContentItem().getStringValue().c_str();
         }
         st.gotoNode(nnid);
 
-        if (st.gotoNamedChildNode(DSRCodedEntryValue("C2348792", "UMLS", "Time Point"))) {
+        if (st.gotoNamedChildNode(CODE_UMLS_TimePoint)) {
           // TODO: think about it
           cout << "Time Point: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
           measurement["timePoint"] = st.getCurrentContentItem().getStringValue().c_str();
         }
         st.gotoNode(nnid);
 
-        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C036", "SRT", "Measurement Method"))) {
+        if (st.gotoNamedChildNode(CODE_SRT_MeasurementMethod)) {
           measurement["measurementMethod"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoNode(nnid);
@@ -117,7 +119,7 @@ Json::Value getMeasurements(DSRDocument &doc) {
           measurement["Finding"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoNode(nnid);
-        if (st.gotoNamedChildNode(DSRCodedEntryValue("G-C0E3", "SRT", "Finding Site"))) {
+        if (st.gotoNamedChildNode(CODE_SRT_FindingSite)) {
           measurement["FindingSite"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
         }
         st.gotoNode(nnid);
