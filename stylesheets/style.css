@@ -12,7 +12,8 @@
 
 #jsonButtons {
   position: absolute;
-  right: 10px;
+  bottom: 1.0em;
+  right: 0.8em;
 }
 
 .autocomplete-custom-template li {

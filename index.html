@@ -5,8 +5,13 @@
     <link rel="stylesheet" href="bower_components/md-color-picker/dist/mdColorPicker.min.css">
     <link rel="stylesheet" href="bower_components/v-accordion/dist/v-accordion.min.css"/>
     <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="bower_components//github-fork-ribbon-css/gh-fork-ribbon.css" />
+    <!--[if lt IE 9]>
+      <link rel="stylesheet" href="bower_components//github-fork-ribbon-css/gh-fork-ribbon.ie.css" />
+    <![endif]-->
   </head>
   <body>
+  <a class="github-fork-ribbon" href="https://github.com/QIICR/dcmqi" title="Fork me on GitHub">Fork me on GitHub</a>
     <md-content>
       <div layout="column">
         <md-toolbar class="layout-row tiny" id="toolbar">
@@ -16,13 +21,13 @@
                 <img class="png-icon" src="assets/QIICR_horizontal.png" style="max-height: 50px;max-width: 100%;">
               </a>
             </md-button>
-            <span flex></span>
-            <md-button ng-click="" class="md-fab md-mini md-primary" aria-label="Github link">
-              <a href="https://github.com/QIICR/dcmqi" target="_blank">
-                <img class="png-icon" src="assets/GitHub-Mark-64px.png" style="max-height: 50px;max-width: 100%;">
-              </a>
-              <md-tooltip md-direction="bottom" md-delay="toolTipDelay">Github Repository Page</md-tooltip>
-            </md-button>
+            <!--<span flex></span>-->
+            <!--<md-button ng-click="" class="md-fab md-mini md-primary" aria-label="Github link">-->
+              <!--<a href="https://github.com/QIICR/dcmqi" target="_blank">-->
+                <!--<img class="png-icon" src="assets/GitHub-Mark-64px.png" style="max-height: 50px;max-width: 100%;">-->
+              <!--</a>-->
+              <!--<md-tooltip md-direction="bottom" md-delay="toolTipDelay">Github Repository Page</md-tooltip>-->
+            <!--</md-button>-->
           </div>
         </md-toolbar>
         <ng-view></ng-view>
