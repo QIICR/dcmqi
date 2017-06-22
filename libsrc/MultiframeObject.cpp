@@ -189,3 +189,41 @@ void MultiframeObject::insertDerivationSeriesInstance(string seriesUID, string i
     derivationSeriesToInstanceUIDs[seriesUID] = std::set<string>();
   derivationSeriesToInstanceUIDs[seriesUID].insert(instanceUID);
 }
+
+int MultiframeObject::initializeCommonInstanceReferenceModule(IODCommonInstanceReferenceModule &commref, vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
+
+  // map individual series UIDs to the list of instance UIDs - we need to have this organization
+  // to populate Common instance reference module
+  std::map<std::string, std::set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > series2frame;
+  for(int slice=0;slice!=slice2frame.size();slice++){
+    for(set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare>::const_iterator frameI=slice2frame[slice].begin();
+        frameI!=slice2frame[slice].end();++frameI){
+      dcmqi::DICOMFrame frame = *frameI;
+      if(series2frame.find(frame.getSeriesUID()) == series2frame.end()){
+        std::set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> setOfInstances;
+        setOfInstances.insert(frame);
+        series2frame[frame.getSeriesUID()] = setOfInstances;
+      } else {
+        series2frame[frame.getSeriesUID()].insert(frame);
+      }
+    }
+  }
+
+  // create a new ReferencedSeriesItem for each series, and populate with instances
+  OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
+  for(std::map<std::string, std::set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >::const_iterator mIt=series2frame.begin(); mIt!=series2frame.end();++mIt){
+    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem;
+    refseriesItem->setSeriesInstanceUID(mIt->first.c_str());
+    OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem->getReferencedInstanceItems();
+
+    for(std::set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare>::const_iterator sIt=mIt->second.begin();sIt!=mIt->second.end();++sIt){
+      dcmqi::DICOMFrame frame = *sIt;
+      SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+      CHECK_COND(refinstancesItem->setReferencedSOPClassUID(frame.getClassUID().c_str()));
+      CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(frame.getInstanceUID().c_str()));
+      refinstances.push_back(refinstancesItem);
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
