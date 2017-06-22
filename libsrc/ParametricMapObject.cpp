@@ -26,6 +26,8 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   // NB: the sequence of steps initializing different components of the object parallels that
   //  in the original converter function. It probably makes sense to revisit the sequence
   //  of these steps. It does not necessarily need to happen in this order.
+  initializeEquipmentInfo();
+  initializeContentIdentification();
 
   // TODO: consider creating parametric map object after all FGs are initialized instead
   createParametricMap();
@@ -101,8 +103,10 @@ int ParametricMapObject::createParametricMap() {
 
                                                                     DPMTypes::CQ_RESEARCH);
   // TODO: look into the following, check with @che85 on the purpose of this line!
-  if (OFCondition* pCondition = OFget<OFCondition>(&obj))
+  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    std::cerr << "Failed to create parametric map object!" << std::endl;
     return EXIT_FAILURE;
+  }
 
   parametricMap = OFget<DPMParametricMapIOD>(&obj);
 

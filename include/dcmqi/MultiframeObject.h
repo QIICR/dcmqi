@@ -78,7 +78,7 @@ protected:
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
   // initialize attributes of the composite context that are common for all multiframe objects
-  virtual int initializeCompositeContext();
+  //virtual int initializeCompositeContext();
   // check whether all of the attributes required for initialization of the object are present in the
   //   input metadata
   virtual bool metaDataIsComplete();
@@ -113,8 +113,12 @@ protected:
   Json::Value metaDataJson;
 
   // Multiframe DICOM object representation
+  // probably not needed, since need object-specific DCMTK class in
+  // derived classes
   DcmDataset* dcmRepresentation;
 
+  // probably not needed at this level, since for SEG each segment will
+  // have separate geometry definition
   ImageVolumeGeometry volumeGeometry;
 
   // DcmDataset(s) that hold the original representation of the

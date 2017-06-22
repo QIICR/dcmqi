@@ -33,6 +33,10 @@ public:
 
   int updateMetaDataFromDICOM(std::vector<DcmDataset*>);
 
+  DPMParametricMapIOD* getDICOMRepresentation(){
+    return parametricMap;
+  };
+
 protected:
   typedef itk::CastImageFilter<Float32ITKImageType,DummyImageType>
       Float32ToDummyCasterType;

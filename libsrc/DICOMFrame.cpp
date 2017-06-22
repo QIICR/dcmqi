@@ -7,6 +7,7 @@
 namespace dcmqi {
   int DICOMFrame::initializeFrameGeometryFromLegacyInstance() {
     OFString ippStr;
+    frameIPP.set_size(3);
     for(int j=0;j<3;j++){
       CHECK_COND(frameDataset->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
       frameIPP[j] = atof(ippStr.c_str());

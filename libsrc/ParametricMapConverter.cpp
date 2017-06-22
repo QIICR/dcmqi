@@ -6,6 +6,7 @@
 // DCMQI includes
 #include "dcmqi/ParametricMapConverter.h"
 #include "dcmqi/SegmentationImageConverter.h"
+#include "dcmqi/ParametricMapObject.h"
 
 using namespace std;
 
@@ -13,11 +14,14 @@ namespace dcmqi {
 
   DcmDataset* itkimage2paramapReplacement(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                          const string &metaData) {
-    /*
-    ParametricMapConverter pmConverter(parametricMapImage, dcmDatasets, metaData);
-    pmConverter.convert();
+    ParametricMapObject pm;
+    pm.initializeFromITK(parametricMapImage, metaData, dcmDatasets);
 
-    return convert.getDataset(); */
+    DPMParametricMapIOD* pmap = pm.getDICOMRepresentation();
+
+    DcmDataset* output = new DcmDataset();
+    CHECK_COND(pmap->writeDataset(*output));
+
     return NULL;
   }
 

@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                         (std::istreambuf_iterator<char>()));
 
-  DcmDataset* result = dcmqi::ParametricMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
+  DcmDataset* result = dcmqi::itkimage2paramapReplacement(parametricMapImage, dcmDatasets, metadata);
 
   if (result == NULL) {
     return EXIT_FAILURE;
