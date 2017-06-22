@@ -21,6 +21,7 @@
 #include <dcmtk/dcmiod/modenhequipment.h>
 #include <dcmtk/dcmiod/modmultiframedimension.h>
 #include <dcmtk/dcmiod/iodcontentitemmacro.h>
+#include <dcmtk/dcmiod/modcommoninstanceref.h>
 
 #include "dcmqi/Exceptions.h"
 #include "dcmqi/ImageVolumeGeometry.h"
@@ -88,6 +89,7 @@ protected:
   int initializeDimensions(std::vector<std::pair<DcmTag, DcmTag> >);
   int initializePixelMeasuresFG();
   int initializePlaneOrientationFG();
+  int initializeCommonInstanceReferenceModule(IODCommonInstanceReferenceModule &, vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
   int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
                                           vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);

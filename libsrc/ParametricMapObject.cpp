@@ -5,6 +5,8 @@
 #include <dcmqi/Helper.h>
 #include <itkMinimumMaximumImageCalculator.h>
 #include "dcmqi/ParametricMapObject.h"
+#include <dcmtk/dcmiod/iodcommn.h>
+#include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
                                            const string &metaDataStr,
@@ -48,25 +50,11 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > slice2frame;
 
   // initialize referenced instances
+  // this is done using this utility function from the parent class, since this functionality will
+  // be needed both in the PM and SEG objects
   mapVolumeSlicesToDICOMFrames(this->volumeGeometry, derivationDatasets, slice2frame);
 
-  // map individual series UIDs to the list of instance UIDs
-
-
-  std::map<std::string, std::set<std::string> > seriesToInstanceUIDs;
-  for(int slice=0;slice!=slice2frame.size();slice++){
-    for(set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare>::const_iterator frameI=slice2frame[slice].begin();
-        frameI!=slice2frame[slice].end();++frameI){
-      dcmqi::DICOMFrame frame = *frameI;
-      if(seriesToInstanceUIDs.find(frame.getSeriesUID()) == seriesToInstanceUIDs.end()){
-        seriesToInstanceUIDs[frame.getSeriesUID()] = frame.getInstanceUID();
-      } else {
-        seriesToInstanceUIDs[frame.getSeriesUID()].push_back(frame.getInstanceUID());
-      }
-    }
-  }
-
-
+  initializeCommonInstanceReferenceModule(this->parametricMap->getCommonInstanceReference(), slice2frame);
 
   return EXIT_SUCCESS;
 }
