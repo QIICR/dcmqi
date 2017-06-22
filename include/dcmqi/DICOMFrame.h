@@ -47,23 +47,26 @@ namespace dcmqi {
       if(dataset->findAndGetOFString(DCM_SOPClassUID, classUIDOF).good()){
         classUID = classUIDOF.c_str();
       }
+
     };
 
-    int getFrameNumber() const; // 0 for legacy datasets, 1 or above for enhanced objects
-    OFString getInstanceUID() const;
+    int getFrameNumber() const {
+      return frameNumber; // 0 for legacy datasets, 1 or above for enhanced objects
+    };
+
     vnl_vector<double> getFrameIPP(){
       return frameIPP;
     };
 
-    string getSeriesUID(){
+    string getSeriesUID() const {
       return seriesUID;
     }
 
-    string getInstanceUID(){
+    string getInstanceUID() const{
       return instanceUID;
     }
 
-    string getClassUID(){
+    string getClassUID() const {
       return classUID;
     }
 

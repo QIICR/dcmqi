@@ -18,16 +18,22 @@ int MultiframeObject::initializeMetaDataFromString(const std::string &metaDataSt
 
 int MultiframeObject::initializeEquipmentInfo() {
   if(sourceRepresentationType == ITK_REPR){
+    equipmentInfoModule = IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
+                                                                      QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
+    /*
     equipmentInfoModule.m_Manufacturer = QIICR_MANUFACTURER;
     equipmentInfoModule.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
     equipmentInfoModule.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
     equipmentInfoModule.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
+    */
+
   } else { // DICOM_REPR
   }
   return EXIT_SUCCESS;
 }
 
 int MultiframeObject::initializeContentIdentification() {
+
   if(sourceRepresentationType == ITK_REPR){
     CHECK_COND(contentIdentificationMacro.setContentCreatorName("dcmqi"));
     if(metaDataJson.isMember("ContentDescription")){
@@ -40,6 +46,12 @@ int MultiframeObject::initializeContentIdentification() {
     } else {
       CHECK_COND(contentIdentificationMacro.setContentLabel("DCMQI"));
     }
+    if(metaDataJson.isMember("InstanceNumber")){
+      CHECK_COND(contentIdentificationMacro.setInstanceNumber(metaDataJson["InstanceNumber"].asCString()));
+    } else {
+      CHECK_COND(contentIdentificationMacro.setInstanceNumber("1"));
+    }
+    CHECK_COND(contentIdentificationMacro.check())
     return EXIT_SUCCESS;
   } else { // DICOM_REPR
   }
