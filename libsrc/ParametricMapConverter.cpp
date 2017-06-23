@@ -17,12 +17,10 @@ namespace dcmqi {
     ParametricMapObject pm;
     pm.initializeFromITK(parametricMapImage, metaData, dcmDatasets);
 
-    DPMParametricMapIOD* pmap = pm.getDICOMRepresentation();
+    DcmDataset *output = new DcmDataset();
+    pm.getDICOMRepresentation(*output);
 
-    DcmDataset* output = new DcmDataset();
-    CHECK_COND(pmap->writeDataset(*output));
-
-    return NULL;
+    return output;
   }
 
   pair <FloatImageType::Pointer, string> paramap2itkimageReplacement(DcmDataset *pmapDataset){

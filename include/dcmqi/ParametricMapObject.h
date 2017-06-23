@@ -20,6 +20,11 @@
  */
 class ParametricMapObject : public MultiframeObject {
 public:
+
+  ParametricMapObject(){
+    parametricMap = NULL;
+  }
+
   typedef IODFloatingPointImagePixelModule::value_type Float32PixelType;
   typedef itk::Image<Float32PixelType, 3> Float32ITKImageType;
 
@@ -33,8 +38,9 @@ public:
 
   int updateMetaDataFromDICOM(std::vector<DcmDataset*>);
 
-  DPMParametricMapIOD* getDICOMRepresentation(){
-    return parametricMap;
+  int getDICOMRepresentation(DcmDataset& dcm){
+    if(parametricMap)
+      CHECK_COND(parametricMap->write(dcm));
   };
 
 protected:

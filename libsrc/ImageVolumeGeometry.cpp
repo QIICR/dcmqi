@@ -49,6 +49,8 @@ ImageVolumeGeometry::DummyImageType::Pointer ImageVolumeGeometry::getITKRepresen
   ImageVolumeGeometry::DummyImageType::SpacingType spacing;
   ImageVolumeGeometry::DummyImageType::RegionType region;
 
+  image = ImageVolumeGeometry::DummyImageType::New();
+
   index.Fill(0);
 
   size[0] = extent[0];
