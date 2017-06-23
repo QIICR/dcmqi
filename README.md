@@ -1,4 +1,3 @@
-
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi)
 
 | Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.0.5.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.0.5) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
