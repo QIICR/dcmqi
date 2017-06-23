@@ -1,5 +1,5 @@
 #
-# DCMTK
+# DCMTK 
 #
 
 set(proj DCMTK)
@@ -25,7 +25,7 @@ if(DEFINED DCMTK_DIR AND NOT EXISTS ${DCMTK_DIR})
 endif()
 
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  set(revision_tag "d8ed091cda2b815226eafe41f5b4fe3bd22f8d5d")
+  set(revision_tag "04c996a620d09adec7576ad5f2dba273a44b7411")
   if(${proj}_REVISION_TAG)
     set(revision_tag ${${proj}_REVISION_TAG})
   endif()

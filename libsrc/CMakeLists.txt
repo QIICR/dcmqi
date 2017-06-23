@@ -1,6 +1,35 @@
-
 #-----------------------------------------------------------------------------
 set(ADDITIONAL_SRCS)
+
+set(INCLUDE_DIR ../include/dcmqi)
+
+set(HDRS
+  ${INCLUDE_DIR}/preproc.h
+  ${INCLUDE_DIR}/QIICRConstants.h
+  ${INCLUDE_DIR}/QIICRUIDs.h
+  ${INCLUDE_DIR}/ConverterBase.h
+  ${INCLUDE_DIR}/Exceptions.h
+  ${INCLUDE_DIR}/framesorter.h
+  ${INCLUDE_DIR}/ImageSEGConverter.h
+  ${INCLUDE_DIR}/ParaMapConverter
+  ${INCLUDE_DIR}/Helper.h
+  ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
+  ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
+  ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
+  ${INCLUDE_DIR}/SegmentAttributes.h
+  )
+
+set(SRCS
+  ConverterBase.cpp
+  ImageSegConverter.cpp
+  ParaMapConverter.cpp
+  Helper.cpp
+  JSONMetaInformationHandlerBase.cpp
+  JSONParametricMapMetaInformationHandler.cpp
+  JSONSegmentationMetaInformationHandler.cpp
+  SegmentAttributes.cpp
+  )
+
 
 if(DCMQI_BUILTIN_JSONCPP)
   list(APPEND ADDITIONAL_SRCS
@@ -12,14 +41,8 @@ endif()
 set(lib_name dcmqi)
 
 add_library(${lib_name} STATIC
-  ConverterBase.cpp
-  Helper.cpp
-  ImageSEGConverter.cpp
-  ParaMapConverter.cpp
-  JSONMetaInformationHandlerBase.cpp
-  JSONParametricMapMetaInformationHandler.cpp
-  JSONSegmentationMetaInformationHandler.cpp
-  SegmentAttributes.cpp
+  ${HDRS}
+  ${SRCS}
   ${ADDITIONAL_SRCS}
   )
 
