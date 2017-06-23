@@ -8,6 +8,7 @@
 #include <dcmtk/dcmiod/iodcommn.h>
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
+
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
                                            const string &metaDataStr,
                                            std::vector<DcmDataset *> derivationDatasets) {
