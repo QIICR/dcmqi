@@ -22,7 +22,7 @@ set(HDRS
 
 set(SRCS
   ConverterBase.cpp
-  ImageSegConverter.cpp
+  ImageSEGConverter.cpp
   ParaMapConverter.cpp
   Helper.cpp
   JSONMetaInformationHandlerBase.cpp
