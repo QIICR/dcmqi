@@ -47,8 +47,16 @@ You can communicate you feedback, feature requests, comments or problem reports 
 
 # Acknowledgments
 
+To acknowledge dcmqi in an academic paper, please cite
+
+> Herz C, Fillion-Robin JC, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A. _dcmqi: an open source library for standardized communication of quantitative image analysis results using DICOM_. Cancer Research, 2017 (in press)
+
+If you like dcmqi, please give the dcmqi repository [a star on github](https://help.github.com/articles/about-stars/). This is an easy way to show thanks and it can help us qualify for useful services that are only open to widely recognized open projects.
+
 This work is supported primarily by the National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov). We also acknowledge support of the following grants: [Neuroimage Analysis Center (NAC)](http://nac.spl.harvard.edu/) (P41 EB015902, PI Kikinis) and [National Center for Image Guided Therapy (NCIGT)](http://ncigt.org) (P41 EB015898, PI Tempany).
 
 # References
 
-1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) _DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research._ *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+
+2. Herz C, Fillion-Robin JC, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A. (2017) _dcmqi: an open source library for standardized communication of quantitative image analysis results using DICOM_. *Cancer Research* (in press)
