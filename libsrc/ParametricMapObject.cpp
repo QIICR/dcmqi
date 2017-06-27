@@ -109,7 +109,7 @@ int ParametricMapObject::createParametricMap() {
     return EXIT_FAILURE;
   }
 
-  parametricMap = OFget<DPMParametricMapIOD>(&obj);
+  parametricMap = new DPMParametricMapIOD( *OFget<DPMParametricMapIOD>(&obj) );
 
   // These FG are constant
   FGIdentityPixelValueTransformation idTransFG;
