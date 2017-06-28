@@ -28,8 +28,13 @@ namespace dcmqi {
     ParametricMapObject pm;
     pm.initializeFromDICOM(pmapDataset);
 
+    Json::StyledWriter styledWriter;
+    std::stringstream ss;
+
+    ss << styledWriter.write(pm.getMetaDataJson());
+
     return pair <ParametricMapObject::Float32ITKImageType::Pointer, string>(pm.getITKRepresentation(),
-                                                                            pm.getMetaDataJson().asString());
+                                                                            ss.str());
   };
 
 
