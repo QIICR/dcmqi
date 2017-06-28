@@ -56,7 +56,13 @@ DSRCodedEntryValue json2cev(Json::Value& j){
 DcmFileFormat addFileToEvidence(DSRDocument &doc, string dirStr, string fileStr){
   DcmFileFormat ff;
   OFString fullPath;
-  CHECK_COND(ff.loadFile(OFStandard::combineDirAndFilename(fullPath,dirStr.c_str(),fileStr.c_str())));
+
+  if(dirStr.size())
+    OFStandard::combineDirAndFilename(fullPath,dirStr.c_str(),fileStr.c_str());
+  else
+    fullPath = OFString(fileStr.c_str());
+  CHECK_COND(ff.loadFile(fullPath));
+
   CHECK_COND(doc.getCurrentRequestedProcedureEvidence().addItem(*ff.getDataset()));
   return ff;
 }
@@ -71,9 +77,7 @@ int main(int argc, char** argv){
 
   PARSE_ARGS;
 
-  if(helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")
-    || helper::isUndefinedOrPathDoesNotExist(compositeContextDataDir, "Input composite context data directory")
-    || helper::isUndefinedOrPathDoesNotExist(imageLibraryDataDir, "Input image library data directory")) {
+  if(helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")){
     return EXIT_FAILURE;
   }
 
@@ -112,10 +116,16 @@ int main(int argc, char** argv){
   if(metaRoot.isMember("imageLibrary")){
     for(Json::ArrayIndex i=0;i<metaRoot["imageLibrary"].size();i++){
       DcmFileFormat ff;
+      OFString dicomFilePath;
+
       // Not sure what is a safe way to combine path components ...
-      string dicomFilePath = (imageLibraryDataDir+"/"+metaRoot["imageLibrary"][i].asCString());
+      if(imageLibraryDataDir.size())
+        OFStandard::combineDirAndFilename(dicomFilePath,imageLibraryDataDir.c_str(),metaRoot["imageLibrary"][i].asCString());
+      else
+        dicomFilePath = metaRoot["imageLibrary"][i].asCString();
+
       cout << "Loading " << dicomFilePath << endl;
-      CHECK_COND(ff.loadFile(dicomFilePath.c_str()));
+      CHECK_COND(ff.loadFile(dicomFilePath));
 
 
       if(i==0){
