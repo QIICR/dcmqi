@@ -11,6 +11,7 @@
 #include <dcmtk/dcmfg/fgparametricmapframetype.h>
 #include <dcmtk/dcmfg/fgrealworldvaluemapping.h>
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
+#include <dcmtk/dcmdata/dcrledrg.h>
 #include <itkCastImageFilter.h>
 
 #include "MultiframeObject.h"
@@ -43,6 +44,12 @@ public:
       CHECK_COND(parametricMap->write(dcm));
   };
 
+  int initializeFromDICOM(DcmDataset * sourceDataset);
+
+  Float32ITKImageType::Pointer getITKRepresentation() const {
+    return itkImage;
+  }
+
 protected:
   typedef itk::CastImageFilter<Float32ITKImageType,DummyImageType>
       Float32ToDummyCasterType;
@@ -65,8 +72,6 @@ protected:
 
   // Data containers specific to this object
   Float32ITKImageType::Pointer itkImage;
-
-
 
 private:
   DPMParametricMapIOD* parametricMap;

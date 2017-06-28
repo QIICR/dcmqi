@@ -228,3 +228,69 @@ int ParametricMapObject::initializeRWVMFG() {
 
   return EXIT_SUCCESS;
 }
+
+
+int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
+
+  DcmRLEDecoderRegistration::registerCodecs();
+
+  OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
+  dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
+
+  OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*sourceDataset);
+  if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+    throw -1;
+  }
+
+  DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+
+  initializeVolumeGeometryFromDICOM(pMapDoc, sourceDataset);
+
+  // Initialize the image
+  Float32ITKImageType::Pointer itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
+
+  DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
+  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    throw -1;
+  }
+
+  DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
+
+  FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
+  for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
+
+    Float32PixelType *frame = frames.getFrame(frameId);
+
+    bool isPerFrame;
+
+    FGPlanePosPatient *planposfg =
+      OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+    assert(planposfg);
+
+    FGFrameContent *fracon =
+      OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
+    assert(fracon);
+
+    // populate meta information needed for Slicer ScalarVolumeNode initialization
+    {
+    }
+
+    Float32ITKImageType::IndexType index;
+    // initialize slice with the frame content
+    for(int row=0;row<volumeGeometry.extent[1];row++){
+      index[1] = row;
+      index[2] = frameId;
+      for(int col=0;col<volumeGeometry.extent[0];col++){
+        unsigned pixelPosition = row*volumeGeometry.extent[0] + col;
+        index[0] = col;
+        itkImage->SetPixel(index, frame[pixelPosition]);
+      }
+    }
+  }
+
+
+//  informationHandler metaInfo;
+//  populateMetaInformationFromDICOM(pmapDataset, metaInfo);
+
+  return EXIT_SUCCESS;
+}

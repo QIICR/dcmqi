@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <FloatImageType::Pointer, string> result =  dcmqi::ParametricMapConverter::paramap2itkimage(dataset);
+  pair <FloatImageType::Pointer, string> result =  dcmqi::paramap2itkimageReplacement(dataset);
 
   string fileExtension = helper::getFileExtensionFromType(outputType);
 
