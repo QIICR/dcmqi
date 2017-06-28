@@ -71,6 +71,11 @@ namespace dcmqi {
 
     static OFString generateUID();
     static OFString getTagAsOFString(DcmDataset*, DcmTagKey);
+
+    static string getCodeSequenceValue(CodeSequenceMacro &codeSequence);
+    static string getCodeSequenceDesignator(CodeSequenceMacro &codeSequence);
+    static string getCodeSequenceMeaning(CodeSequenceMacro &codeSequence);
+    static Json::Value codeSequence2Json(CodeSequenceMacro &codeSequence);
   };
 
 }
