@@ -247,7 +247,10 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
   initializeVolumeGeometryFromDICOM(pMapDoc, sourceDataset);
 
   // Initialize the image
-  Float32ITKImageType::Pointer itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
+  itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
+
+  itkImage->Allocate();
+  itkImage->FillBuffer(0);
 
   DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
   if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {

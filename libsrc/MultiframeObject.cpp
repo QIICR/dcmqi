@@ -71,7 +71,6 @@ int MultiframeObject::initializeVolumeGeometryFromITK(DummyImageType::Pointer im
   volumeGeometry.setSpacing(spacing);
   volumeGeometry.setOrigin(origin);
   volumeGeometry.setExtent(extent);
-
   volumeGeometry.setDirections(directions);
 
   return EXIT_SUCCESS;
