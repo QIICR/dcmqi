@@ -298,8 +298,89 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
 
 template <typename T>
 void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
+  // TODO: move shared information retrieval to parent class
 
   OFString temp;
   doc->getSeries().getSeriesDescription(temp);
   metaDataJson["SeriesDescription"] = temp.c_str();
+
+  doc->getSeries().getSeriesNumber(temp);
+  metaDataJson["SeriesNumber"] = temp.c_str();
+
+  doc->getIODGeneralImageModule().getInstanceNumber(temp);
+  metaDataJson["InstanceNumber"] = temp.c_str();
+
+  using namespace dcmqi;
+
+  doc->getSeries().getBodyPartExamined(temp);
+  metaDataJson["BodyPartExamined"] = temp.c_str();
+
+  doc->getDPMParametricMapImageModule().getImageType(temp, 3);
+  metaDataJson["DerivedPixelContrast"] = temp.c_str();
+
+  if (doc->getNumberOfFrames() > 0) {
+    FGInterface& fg = doc->getFunctionalGroups();
+    FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
+                                                fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
+    if (rw->getRealWorldValueMapping().size() > 0) {
+      FGRealWorldValueMapping::RWVMItem *item = rw->getRealWorldValueMapping()[0];
+      metaDataJson["MeasurementUnitsCode"] = Helper::codeSequence2Json(item->getMeasurementUnitsCode());
+
+      Float64 slope;
+      item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
+      metaDataJson["RealWorldValueSlope"] = slope;
+
+      vector<string> diffusionBValues;
+
+      for(int quantIdx=0; quantIdx<item->getEntireQuantityDefinitionSequence().size(); quantIdx++) {
+//      TODO: what if there are more than one?
+        ContentItemMacro* macro = item->getEntireQuantityDefinitionSequence()[quantIdx];
+        CodeSequenceMacro* codeSequence= macro->getConceptNameCodeSequence();
+        if (codeSequence != NULL) {
+          OFString codeMeaning;
+          codeSequence->getCodeMeaning(codeMeaning);
+          OFString designator, meaning, value;
+
+          if (codeMeaning == "Quantity") {
+            CodeSequenceMacro* quantityValueCode = macro->getConceptCodeSequence();
+            if (quantityValueCode != NULL) {
+              metaDataJson["QuantityValueCode"] = Helper::codeSequence2Json(*quantityValueCode);
+            }
+          } else if (codeMeaning == "Measurement Method") {
+            CodeSequenceMacro* measurementMethodValueCode = macro->getConceptCodeSequence();
+            if (measurementMethodValueCode != NULL) {
+              metaDataJson["MeasurementMethodCode"] = Helper::codeSequence2Json(*measurementMethodValueCode);
+            }
+          } else if (codeMeaning == "Source image diffusion b-value") {
+            macro->getNumericValue(value);
+            diffusionBValues.push_back(value.c_str());
+          }
+        }
+      }
+
+      if (diffusionBValues.size() > 0) {
+        metaDataJson["SourceImageDiffusionBValues"] = Json::Value(Json::arrayValue);
+        for (vector<string>::iterator it = diffusionBValues.begin() ; it != diffusionBValues.end(); ++it)
+          metaDataJson["SourceImageDiffusionBValues"].append(*it);
+      }
+    }
+
+    FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
+    OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
+
+    if(derivationImageItems.size()>0){
+      DerivationImageItem* derivationImageItem = derivationImageItems[0];
+      CodeSequenceMacro* derivationCode = derivationImageItem->getDerivationCodeItems()[0];
+      if (derivationCode != NULL) {
+        metaDataJson["DerivationCode"] = Helper::codeSequence2Json(*derivationCode);
+      }
+    }
+
+    FGFrameAnatomy* fa = OFstatic_cast(FGFrameAnatomy*, fg.get(0, DcmFGTypes::EFG_FRAMEANATOMY));
+    metaDataJson["AnatomicRegionSequence"] = Helper::codeSequence2Json(fa->getAnatomy().getAnatomicRegion());
+
+    FGFrameAnatomy::LATERALITY frameLaterality;
+    fa->getLaterality(frameLaterality);
+    metaDataJson["FrameLaterality"] = fa->laterality2Str(frameLaterality).c_str();
+  }
 }
