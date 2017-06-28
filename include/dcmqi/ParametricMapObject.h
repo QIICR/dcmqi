@@ -46,6 +46,9 @@ public:
 
   int initializeFromDICOM(DcmDataset * sourceDataset);
 
+  template <typename T>
+  void initializeMetaDataFromDICOM(T doc);
+
   Float32ITKImageType::Pointer getITKRepresentation() const {
     return itkImage;
   }

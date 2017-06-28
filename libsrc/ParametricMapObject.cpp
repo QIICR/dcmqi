@@ -291,9 +291,15 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
     }
   }
 
-
-//  informationHandler metaInfo;
-//  populateMetaInformationFromDICOM(pmapDataset, metaInfo);
+  initializeMetaDataFromDICOM(pMapDoc);
 
   return EXIT_SUCCESS;
+}
+
+template <typename T>
+void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
+
+  OFString temp;
+  doc->getSeries().getSeriesDescription(temp);
+  metaDataJson["SeriesDescription"] = temp.c_str();
 }
