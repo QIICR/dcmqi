@@ -45,6 +45,7 @@ public:
     typename T::DirectionType direction;
     typename T::SpacingType spacing;
     typename T::RegionType region;
+    typename T::PointType origin;
 
     image = T::New();
 
@@ -68,6 +69,12 @@ public:
     for (int i = 0; i < 3; i++)
       direction[i][2] = sliceDirection[i];
 
+    origin[0] = this->origin[0];
+    origin[1] = this->origin[1];
+    origin[2] = this->origin[2];
+
+    image->SetRegions(region);
+    image->SetOrigin(origin);
     image->SetDirection(direction);
     image->SetSpacing(spacing);
 
