@@ -77,9 +77,7 @@ int main(int argc, char** argv){
 
   PARSE_ARGS;
 
-  if(helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")
-    || helper::isUndefinedOrPathDoesNotExist(compositeContextDataDir, "Input composite context data directory")
-    || helper::isUndefinedOrPathDoesNotExist(imageLibraryDataDir, "Input image library data directory")) {
+  if(helper::isUndefinedOrPathDoesNotExist(metaDataFileName, "Input metadata file")){
     return EXIT_FAILURE;
   }
 
