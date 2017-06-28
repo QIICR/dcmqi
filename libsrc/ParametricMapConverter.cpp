@@ -24,7 +24,12 @@ namespace dcmqi {
   }
 
   pair <FloatImageType::Pointer, string> paramap2itkimageReplacement(DcmDataset *pmapDataset){
-    return pair<FloatImageType::Pointer,string>();
+
+    ParametricMapObject pm;
+    pm.initializeFromDICOM(pmapDataset);
+
+    return pair <ParametricMapObject::Float32ITKImageType::Pointer, string>(pm.getITKRepresentation(),
+                                                                            pm.getMetaDataJson().asString());
   };
 
 
@@ -266,7 +271,7 @@ namespace dcmqi {
       slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
       cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
       for(int i=0;i<slice2derimg.size();i++){
-        cout << "  Slice " << i << ": ";
+//        cout << "  Slice " << i << ": ";
         for(int j=0;j<slice2derimg[i].size();j++){
           cout << slice2derimg[i][j] << " ";
           hasDerivationImages = true;
@@ -403,7 +408,7 @@ namespace dcmqi {
         DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
         result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
 
-        cout << "Frame " << sliceNumber << " added" << endl;
+//        cout << "Frame " << sliceNumber << " added" << endl;
       }
 
       // remove derivation image FG from the per-frame FGs, only if applicable!

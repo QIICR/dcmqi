@@ -182,7 +182,7 @@ std::vector<int> MultiframeObject::findIntersectingSlices(ImageVolumeGeometry &v
   std::vector<int> intersectingSlices;
   // for now, adopt a simple strategy that maps origin of the frame to index, and selects the slice corresponding
   //  to this index as the intersecting one
-  ImageVolumeGeometry::DummyImageType::Pointer itkvolume = volume.getITKRepresentation();
+  ImageVolumeGeometry::DummyImageType::Pointer itkvolume = volume.getITKRepresentation<ImageVolumeGeometry::DummyImageType>();
   ImageVolumeGeometry::DummyImageType::PointType point;
   ImageVolumeGeometry::DummyImageType::IndexType index;
   vnl_vector<double> frameIPP = frame.getFrameIPP();
@@ -237,5 +237,208 @@ int MultiframeObject::initializeCommonInstanceReferenceModule(IODCommonInstanceR
     }
   }
 
+  return EXIT_SUCCESS;
+}
+
+int MultiframeObject::getImageDirections(FGInterface& fgInterface, DirectionType &dir){
+  // TODO: handle the situation when FoR is not initialized
+  OFBool isPerFrame;
+  vnl_vector<double> rowDirection(3), colDirection(3);
+
+  FGPlaneOrientationPatient *planorfg = OFstatic_cast(FGPlaneOrientationPatient*,
+                                                      fgInterface.get(0, DcmFGTypes::EFG_PLANEORIENTPATIENT, isPerFrame));
+  if(!planorfg){
+    cerr << "Plane Orientation (Patient) is missing, cannot parse input " << endl;
+    return EXIT_FAILURE;
+  }
+  OFString orientStr;
+  for(int i=0;i<3;i++){
+    if(planorfg->getImageOrientationPatient(orientStr, i).good()){
+      rowDirection[i] = atof(orientStr.c_str());
+    } else {
+      cerr << "Failed to get orientation " << i << endl;
+      return EXIT_FAILURE;
+    }
+  }
+  for(int i=3;i<6;i++){
+    if(planorfg->getImageOrientationPatient(orientStr, i).good()){
+      colDirection[i-3] = atof(orientStr.c_str());
+    } else {
+      cerr << "Failed to get orientation " << i << endl;
+      return EXIT_FAILURE;
+    }
+  }
+  vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, colDirection);
+  sliceDirection.normalize();
+
+  cout << "Row direction: " << rowDirection << endl;
+  cout << "Col direction: " << colDirection << endl;
+
+  for(int i=0;i<3;i++){
+    dir[i][0] = rowDirection[i];
+    dir[i][1] = colDirection[i];
+    dir[i][2] = sliceDirection[i];
+  }
+
+  cout << "Z direction: " << sliceDirection << endl;
+
+  return 0;
+}
+
+int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection,
+                                          PointType &imageOrigin, double &sliceSpacing, double &sliceExtent) {
+  // Size
+  // Rows/Columns can be read directly from the respective attributes
+  // For number of slices, consider that all segments must have the same number of frames.
+  //   If we have FoR UID initialized, this means every segment should also have Plane
+  //   Position (Patient) initialized. So we can get the number of slices by looking
+  //   how many per-frame functional groups a segment has.
+
+  vector<double> originDistances;
+  map<OFString, double> originStr2distance;
+  map<OFString, unsigned> frame2overlap;
+  double minDistance = 0.0;
+
+  sliceSpacing = 0;
+
+  unsigned numFrames = fgInterface.getNumberOfFrames();
+
+  // Determine ordering of the frames, keep mapping from ImagePositionPatient string
+  //   to the distance, and keep track (just out of curiosity) how many frames overlap
+  vnl_vector<double> refOrigin(3);
+  {
+    OFBool isPerFrame;
+    FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+                                                 fgInterface.get(0, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+    for(int j=0;j<3;j++){
+      OFString planposStr;
+      if(planposfg->getImagePositionPatient(planposStr, j).good()){
+        refOrigin[j] = atof(planposStr.c_str());
+      } else {
+        cerr << "Failed to read patient position" << endl;
+      }
+    }
+  }
+
+  for(size_t frameId=0;frameId<numFrames;frameId++){
+    OFBool isPerFrame;
+    FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+                                                 fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+
+    if(!planposfg){
+      cerr << "PlanePositionPatient is missing" << endl;
+      return EXIT_FAILURE;
+    }
+
+    if(!isPerFrame){
+      cerr << "PlanePositionPatient is required for each frame!" << endl;
+      return EXIT_FAILURE;
+    }
+
+    vnl_vector<double> sOrigin;
+    OFString sOriginStr = "";
+    sOrigin.set_size(3);
+    for(int j=0;j<3;j++){
+      OFString planposStr;
+      if(planposfg->getImagePositionPatient(planposStr, j).good()){
+        sOrigin[j] = atof(planposStr.c_str());
+        sOriginStr += planposStr;
+        if(j<2)
+          sOriginStr+='/';
+      } else {
+        cerr << "Failed to read patient position" << endl;
+        return EXIT_FAILURE;
+      }
+    }
+
+    // check if this frame has already been encountered
+    if(originStr2distance.find(sOriginStr) == originStr2distance.end()){
+      vnl_vector<double> difference;
+      difference.set_size(3);
+      difference[0] = sOrigin[0]-refOrigin[0];
+      difference[1] = sOrigin[1]-refOrigin[1];
+      difference[2] = sOrigin[2]-refOrigin[2];
+      double dist = dot_product(difference,sliceDirection);
+      frame2overlap[sOriginStr] = 1;
+      originStr2distance[sOriginStr] = dist;
+      assert(originStr2distance.find(sOriginStr) != originStr2distance.end());
+      originDistances.push_back(dist);
+
+      if(frameId==0){
+        minDistance = dist;
+        imageOrigin[0] = sOrigin[0];
+        imageOrigin[1] = sOrigin[1];
+        imageOrigin[2] = sOrigin[2];
+      }
+      else if(dist<minDistance){
+        imageOrigin[0] = sOrigin[0];
+        imageOrigin[1] = sOrigin[1];
+        imageOrigin[2] = sOrigin[2];
+        minDistance = dist;
+      }
+    } else {
+      frame2overlap[sOriginStr]++;
+    }
+  }
+
+  // it IS possible to have a segmentation object containing just one frame!
+  if(numFrames>1){
+    // WARNING: this should be improved further. Spacing should be calculated for
+    //  consecutive frames of the individual segment. Right now, all frames are considered
+    //  indiscriminately. Question is whether it should be computed at all, considering we do
+    //  not have any information about whether the 2 frames are adjacent or not, so perhaps we should
+    //  always rely on the declared spacing, and not even try to compute it?
+    // TODO: discuss this with the QIICR team!
+
+    // sort all unique distances, this will be used to check consistency of
+    //  slice spacing, and also to locate the slice position from ImagePositionPatient
+    //  later when we read the segments
+    sort(originDistances.begin(), originDistances.end());
+
+    sliceSpacing = fabs(originDistances[0]-originDistances[1]);
+
+    for(size_t i=1;i<originDistances.size(); i++){
+      float dist1 = fabs(originDistances[i-1]-originDistances[i]);
+      float delta = sliceSpacing-dist1;
+    }
+
+    sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
+    unsigned overlappingFramesCnt = 0;
+    for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
+        it!=frame2overlap.end();++it){
+      if(it->second>1)
+        overlappingFramesCnt++;
+    }
+
+    cout << "Total frames: " << numFrames << endl;
+    cout << "Total frames with unique IPP: " << originDistances.size() << endl;
+    cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
+    cout << "Origin: " << imageOrigin << endl;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingType &spacing){
+  OFBool isPerFrame;
+  FGPixelMeasures *pixelMeasures = OFstatic_cast(FGPixelMeasures*,
+                                                 fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
+  if(!pixelMeasures){
+    cerr << "Pixel measures FG is missing!" << endl;
+    return EXIT_FAILURE;
+  }
+
+  pixelMeasures->getPixelSpacing(spacing[0], 0);
+  pixelMeasures->getPixelSpacing(spacing[1], 1);
+
+  Float64 spacingFloat;
+  if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
+    spacing[2] = spacingFloat;
+  } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
+    // SliceThickness can be carried forward from the source images, and may not be what we need
+    // As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
+    cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". using it!" << endl;
+    spacing[2] = spacingFloat;
+  }
   return EXIT_SUCCESS;
 }

@@ -40,39 +40,3 @@ int ImageVolumeGeometry::setDirections(DirectionType d) {
     sliceDirection[i] = d[i][2];
   return EXIT_SUCCESS;
 }
-
-ImageVolumeGeometry::DummyImageType::Pointer ImageVolumeGeometry::getITKRepresentation(){
-  ImageVolumeGeometry::DummyImageType::Pointer image;
-  ImageVolumeGeometry::DummyImageType::IndexType index;
-  ImageVolumeGeometry::DummyImageType::SizeType size;
-  ImageVolumeGeometry::DummyImageType::DirectionType direction;
-  ImageVolumeGeometry::DummyImageType::SpacingType spacing;
-  ImageVolumeGeometry::DummyImageType::RegionType region;
-
-  image = ImageVolumeGeometry::DummyImageType::New();
-
-  index.Fill(0);
-
-  size[0] = extent[0];
-  size[1] = extent[1];
-  size[2] = extent[2];
-
-  region.SetIndex(index);
-  region.SetSize(size);
-
-  spacing[0] = this->spacing[0];
-  spacing[1] = this->spacing[1];
-  spacing[2] = this->spacing[2];
-
-  for (int i = 0; i < 3; i++)
-    direction[i][0] = rowDirection[i];
-  for (int i = 0; i < 3; i++)
-    direction[i][1] = columnDirection[i];
-  for (int i = 0; i < 3; i++)
-    direction[i][2] = sliceDirection[i];
-
-  image->SetDirection(direction);
-  image->SetSpacing(spacing);
-
-  return image;
-}
