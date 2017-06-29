@@ -192,7 +192,7 @@ namespace dcmqi {
       data["QuantityValueCode"] = codeSequence2Json(this->quantityValueCode);
     if (this->anatomicRegionSequence)
       data["AnatomicRegionSequence"] = codeSequence2Json(this->anatomicRegionSequence);
-    if (this->anatomicRegionSequence)
+    if (this->derivationCode)
       data["DerivationCode"] = codeSequence2Json(this->derivationCode);
 
     if (this->diffusionBValues.size() > 0) {

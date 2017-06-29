@@ -682,17 +682,19 @@ namespace dcmqi {
       }
 
       FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
-      OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
-
-      if(derivationImageItems.size()>0){
-        DerivationImageItem* derivationImageItem = derivationImageItems[0];
-        CodeSequenceMacro* derivationCode = derivationImageItem->getDerivationCodeItems()[0];
-        if (derivationCode != NULL) {
-          OFString designator, meaning, value;
-          derivationCode->getCodeValue(value);
-          derivationCode->getCodeMeaning(meaning);
-          derivationCode->getCodingSchemeDesignator(designator);
-          metaInfo.setDerivationCode(value.c_str(), designator.c_str(), meaning.c_str());
+      
+      if(derivationImage){
+        OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
+        if(derivationImageItems.size()>0){
+          DerivationImageItem* derivationImageItem = derivationImageItems[0];
+          CodeSequenceMacro* derivationCode = derivationImageItem->getDerivationCodeItems()[0];
+          if (derivationCode != NULL) {
+            OFString designator, meaning, value;
+            derivationCode->getCodeValue(value);
+            derivationCode->getCodeMeaning(meaning);
+            derivationCode->getCodingSchemeDesignator(designator);
+            metaInfo.setDerivationCode(value.c_str(), designator.c_str(), meaning.c_str());
+          }
         }
       }
 
