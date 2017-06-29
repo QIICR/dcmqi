@@ -366,13 +366,14 @@ void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
     }
 
     FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
-    OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
-
-    if(derivationImageItems.size()>0){
-      DerivationImageItem* derivationImageItem = derivationImageItems[0];
-      CodeSequenceMacro* derivationCode = derivationImageItem->getDerivationCodeItems()[0];
-      if (derivationCode != NULL) {
-        metaDataJson["DerivationCode"] = Helper::codeSequence2Json(*derivationCode);
+    if(derivationImage) {
+      OFVector<DerivationImageItem *> &derivationImageItems = derivationImage->getDerivationImageItems();
+      if (derivationImageItems.size() > 0) {
+        DerivationImageItem *derivationImageItem = derivationImageItems[0];
+        CodeSequenceMacro *derivationCode = derivationImageItem->getDerivationCodeItems()[0];
+        if (derivationCode != NULL) {
+          metaDataJson["DerivationCode"] = Helper::codeSequence2Json(*derivationCode);
+        }
       }
     }
 
