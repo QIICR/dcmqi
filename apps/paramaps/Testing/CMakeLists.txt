@@ -161,7 +161,7 @@ dcmqi_add_test(
       --outputDirectory ${MODULE_TEMP_DIR}
       --prefix makeNRRDParametricMap-3slices-256x256
   TEST_DEPENDS
-  ${itk2dcm}_makeParametricMapNoDerImg
+  ${itk2dcm}_makeParametricMapNoDerImg256x256
   )
 
 dcmqi_add_test(
@@ -175,6 +175,6 @@ dcmqi_add_test(
       --outputDirectory ${MODULE_TEMP_DIR}
       --prefix makeNRRDParametricMap-3slices-252x255
   TEST_DEPENDS
-  ${itk2dcm}_makeParametricMapNoDerImg
+  ${itk2dcm}_makeParametricMapNoDerImg252x255
   )
 
