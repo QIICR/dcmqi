@@ -336,9 +336,9 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
     throw -1;
   }
 
-  DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);
+  parametricMap = *OFget<DPMParametricMapIOD*>(&result);
 
-  initializeVolumeGeometryFromDICOM(pMapDoc, sourceDataset);
+  initializeVolumeGeometryFromDICOM(parametricMap, sourceDataset);
 
   // Initialize the image
   itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
@@ -346,14 +346,14 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
   itkImage->Allocate();
   itkImage->FillBuffer(0);
 
-  DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
+  DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
   if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
     throw -1;
   }
 
   DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
 
-  FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
+  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
   for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
 
     Float32PixelType *frame = frames.getFrame(frameId);
@@ -385,7 +385,7 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
     }
   }
 
-  initializeMetaDataFromDICOM(pMapDoc);
+  initializeMetaDataFromDICOM(parametricMap);
 
   return EXIT_SUCCESS;
 }
