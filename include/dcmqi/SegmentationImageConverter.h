@@ -32,6 +32,8 @@ typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterTyp
 
 namespace dcmqi {
 
+  pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimageReplacement(DcmDataset *segDataset);
+
   class SegmentationImageConverter : public MultiframeConverter {
 
   public:

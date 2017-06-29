@@ -1,9 +1,25 @@
 
 // DCMQI includes
 #include "dcmqi/SegmentationImageConverter.h"
+#include "dcmqi/SegmentationImageObject.h"
 
+using namespace std;
 
 namespace dcmqi {
+
+  pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimageReplacement(DcmDataset *segDataset) {
+
+    SegmentationImageObject seg;
+    seg.initializeFromDICOM(segDataset);
+
+    Json::StyledWriter styledWriter;
+    std::stringstream ss;
+
+    ss << styledWriter.write(seg.getMetaDataJson());
+
+    return pair <map<unsigned,SegmentationImageObject::ShortImageType::Pointer>, string>(seg.getITKRepresentation(),
+                                                                                         ss.str());
+  };
 
   DcmDataset* SegmentationImageConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
