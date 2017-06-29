@@ -14,7 +14,6 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
   dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
-  DcmSegmentation *segmentation = NULL;
   OFCondition cond = DcmSegmentation::loadDataset(*sourceDataset, segmentation);
   if(!segmentation){
     cerr << "Failed to load seg! " << cond.text() << endl;
@@ -80,87 +79,6 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
       segment2image[segmentId] = newSegmentImage;
     }
 
-    // populate meta information needed for Slicer ScalarVolumeNode initialization
-    //  (for example)
-    {
-      // NOTE: according to the standard, segment numbering should start from 1,
-      //  not clear if this is intentional behavior or a bug in DCMTK expecting
-      //  it to start from 0
-
-      DcmSegment *segment = segmentation->getSegment(segmentId);
-      if (segment == NULL) {
-        cerr << "Failed to get segment for segment ID " << segmentId << endl;
-        continue;
-      }
-
-      // get CIELab color for the segment
-      Uint16 ciedcm[3];
-      unsigned cielabScaled[3];
-      float cielab[3], ciexyz[3];
-      unsigned rgb[3];
-      if (segment->getRecommendedDisplayCIELabValue(
-        ciedcm[0], ciedcm[1], ciedcm[2]
-      ).bad()) {
-        // NOTE: if the call above fails, it overwrites the values anyway,
-        //  not sure if this is a dcmtk bug or not
-        ciedcm[0] = 43803;
-        ciedcm[1] = 26565;
-        ciedcm[2] = 37722;
-        cerr << "Failed to get CIELab values - initializing to default " <<
-             ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << endl;
-      }
-      cielabScaled[0] = unsigned(ciedcm[0]);
-      cielabScaled[1] = unsigned(ciedcm[1]);
-      cielabScaled[2] = unsigned(ciedcm[2]);
-
-      Helper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0], &cielab[0]);
-      Helper::getCIEXYZFromCIELab(&cielab[0], &ciexyz[0]);
-      Helper::getRGBFromCIEXYZ(&ciexyz[0], &rgb[0]);
-
-      // TODO: factor out SegmentAttributes
-      SegmentAttributes *segmentAttributes = createAndGetNewSegment(segmentId);
-
-      if (segmentAttributes) {
-        segmentAttributes->setLabelID(segmentId);
-        DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
-        string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
-        segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);
-
-        if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
-          cerr << "AlgorithmType is not valid with value " << readableAlgorithmType << endl;
-          throw -1;
-        }
-        if (algorithmType != DcmSegTypes::SAT_MANUAL) {
-          OFString segmentAlgorithmName;
-          segment->getSegmentAlgorithmName(segmentAlgorithmName);
-          if (segmentAlgorithmName.length() > 0)
-            segmentAttributes->setSegmentAlgorithmName(segmentAlgorithmName.c_str());
-        }
-
-        OFString segmentDescription;
-        segment->getSegmentDescription(segmentDescription);
-        segmentAttributes->setSegmentDescription(segmentDescription.c_str());
-
-        segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
-        segmentAttributes->setSegmentedPropertyCategoryCodeSequence(segment->getSegmentedPropertyCategoryCode());
-        segmentAttributes->setSegmentedPropertyTypeCodeSequence(segment->getSegmentedPropertyTypeCode());
-
-        if (segment->getSegmentedPropertyTypeModifierCode().size() > 0) {
-          segmentAttributes->setSegmentedPropertyTypeModifierCodeSequence(
-            segment->getSegmentedPropertyTypeModifierCode()[0]);
-        }
-
-        GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-        CodeSequenceMacro &anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
-        if (anatomicRegionSequence.check(true).good()) {
-          segmentAttributes->setAnatomicRegionSequence(anatomyMacro.getAnatomicRegion());
-        }
-        if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
-          segmentAttributes->setAnatomicRegionModifierSequence(anatomyMacro.getAnatomicRegionModifier()[0]);
-        }
-      }
-    }
-
     // get string representation of the frame origin
     ShortImageType::PointType frameOriginPoint;
     ShortImageType::IndexType frameOriginIndex;
@@ -213,6 +131,8 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   return EXIT_SUCCESS;
 }
 
+
+
 int SegmentationImageObject::initializeMetaDataFromDICOM(DcmDataset *segDataset) {
 
   OFString temp;
@@ -241,23 +161,123 @@ int SegmentationImageObject::initializeMetaDataFromDICOM(DcmDataset *segDataset)
   if (temp.size())
     metaDataJson["ClinicalTrialCoordinatingCenterName"] = temp.c_str();
 
+  metaDataJson["segmentAttributes"] = getSegmentAttributesMetadata();
+
   return EXIT_SUCCESS;
 }
 
-dcmqi::SegmentAttributes *SegmentationImageObject::createAndGetNewSegment(unsigned labelID) {
-  using namespace dcmqi;
-  for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = segmentsAttributesMappingList.begin();
-       vIt != segmentsAttributesMappingList.end(); ++vIt) {
-    for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
-      SegmentAttributes *segmentAttributes = mIt->second;
-      if (segmentAttributes->getLabelID() == labelID)
-        return NULL;
-    }
-  }
+Json::Value  SegmentationImageObject::getSegmentAttributesMetadata() {
 
-  SegmentAttributes *segment = new SegmentAttributes(labelID);
-  map<unsigned,SegmentAttributes*> tempMap;
-  tempMap[labelID] = segment;
-  segmentsAttributesMappingList.push_back(tempMap);
-  return segment;
+  using namespace dcmqi;
+
+  FGInterface &fgInterface = segmentation->getFunctionalGroups();
+
+  Json::Value values(Json::arrayValue);
+
+  for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++) {
+    const DcmIODTypes::Frame *frame = segmentation->getFrame(frameId);
+    bool isPerFrame;
+
+    FGSegmentation *fgseg =
+      OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
+    assert(fgseg);
+
+    Uint16 segmentId = -1;
+    if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
+      cerr << "Failed to get seg number!";
+      throw -1;
+    }
+
+    // populate meta information needed for Slicer ScalarVolumeNode initialization
+    //  (for example)
+
+    // NOTE: according to the standard, segment numbering should start from 1,
+    //  not clear if this is intentional behavior or a bug in DCMTK expecting
+    //  it to start from 0
+    DcmSegment *segment = segmentation->getSegment(segmentId);
+    if (segment == NULL) {
+      cerr << "Failed to get segment for segment ID " << segmentId << endl;
+      continue;
+    }
+
+    // get CIELab color for the segment
+    Uint16 ciedcm[3];
+    unsigned cielabScaled[3];
+    float cielab[3], ciexyz[3];
+    unsigned rgb[3];
+    if (segment->getRecommendedDisplayCIELabValue(
+      ciedcm[0], ciedcm[1], ciedcm[2]
+    ).bad()) {
+      // NOTE: if the call above fails, it overwrites the values anyway,
+      //  not sure if this is a dcmtk bug or not
+      ciedcm[0] = 43803;
+      ciedcm[1] = 26565;
+      ciedcm[2] = 37722;
+      cerr << "Failed to get CIELab values - initializing to default " <<
+           ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << endl;
+    }
+    cielabScaled[0] = unsigned(ciedcm[0]);
+    cielabScaled[1] = unsigned(ciedcm[1]);
+    cielabScaled[2] = unsigned(ciedcm[2]);
+
+    Helper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0], &cielab[0]);
+    Helper::getCIEXYZFromCIELab(&cielab[0], &ciexyz[0]);
+    Helper::getRGBFromCIEXYZ(&ciexyz[0], &rgb[0]);
+
+    Json::Value segmentEntry;
+
+    OFString temp;
+
+    segmentEntry["labelID"] = segmentId;
+
+    segment->getSegmentDescription(temp);
+    segmentEntry["SegmentDescription"] = temp.c_str();
+
+
+    DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
+    string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
+    segmentEntry["SegmentAlgorithmType"] = readableAlgorithmType;
+
+    if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
+      cerr << "AlgorithmType is not valid with value " << readableAlgorithmType << endl;
+      throw -1;
+    }
+    if (algorithmType != DcmSegTypes::SAT_MANUAL) {
+      segment->getSegmentAlgorithmName(temp);
+      if (temp.length() > 0)
+        segmentEntry["SegmentAlgorithmName"] = temp.c_str();
+    }
+
+    Json::Value rgbArray(Json::arrayValue);
+    rgbArray.append(rgb[0]);
+    rgbArray.append(rgb[1]);
+    rgbArray.append(rgb[2]);
+    segmentEntry["recommendedDisplayRGBValue"] = rgbArray;
+
+    segmentEntry["SegmentedPropertyCategoryCodeSequence"] =
+      Helper::codeSequence2Json(segment->getSegmentedPropertyCategoryCode());
+
+    segmentEntry["SegmentedPropertyTypeCodeSequence"] =
+      Helper::codeSequence2Json(segment->getSegmentedPropertyTypeCode());
+
+    if (segment->getSegmentedPropertyTypeModifierCode().size() > 0) {
+      segmentEntry["SegmentedPropertyTypeModifierCodeSequence"] =
+        Helper::codeSequence2Json(*(segment->getSegmentedPropertyTypeModifierCode())[0]);
+    }
+
+    GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
+    CodeSequenceMacro &anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
+    if (anatomicRegionSequence.check(true).good()) {
+      segmentEntry["AnatomicRegionSequence"] = Helper::codeSequence2Json(anatomyMacro.getAnatomicRegion());
+    }
+    if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
+      segmentEntry["AnatomicRegionModifierSequence"] =
+        Helper::codeSequence2Json(*(anatomyMacro.getAnatomicRegionModifier()[0]));
+    }
+
+    Json::Value innerList(Json::arrayValue);
+    innerList.append(segmentEntry);
+    values.append(innerList);
+  }
+  return values;
 }

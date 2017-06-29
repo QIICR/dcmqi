@@ -35,7 +35,10 @@ public:
 
   int initializeFromDICOM(DcmDataset* sourceDataset);
 
-  int initializeMetaDataFromDICOM(DcmDataset*);
+  map<unsigned,ShortImageType::Pointer> getITKRepresentation() const {
+    // TODO: think about naming
+    return segment2image;
+  }
 
 protected:
   // Data containers specific to this object
@@ -44,13 +47,15 @@ protected:
   // ITK images corresponding to the individual segments
   map<unsigned,ShortImageType::Pointer> segment2image;
 
-  dcmqi::SegmentAttributes* createAndGetNewSegment(unsigned labelID);
+  int initializeMetaDataFromDICOM(DcmDataset*);
+
+  Json::Value getSegmentAttributesMetadata();
 
   // vector contains one item per input itkImageData label
   // each item is a map from labelID to segment attributes
   vector<map<unsigned,dcmqi::SegmentAttributes*> > segmentsAttributesMappingList;
 
-  private:
+private:
   DcmSegmentation* segmentation;
 
 };

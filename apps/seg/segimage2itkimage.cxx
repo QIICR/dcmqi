@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::SegmentationImageConverter::dcmSegmentation2itkimage(dataset);
+  pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::dcmSegmentation2itkimageReplacement(dataset);
 
   string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
