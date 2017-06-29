@@ -44,7 +44,7 @@ namespace dcmqi {
     OFvariant<OFCondition,DPMParametricMapIOD> obj =
         DPMParametricMapIOD::create<IODFloatingPointImagePixelModule>(modality, metaInfo.getSeriesNumber().c_str(),
                                                                       metaInfo.getInstanceNumber().c_str(),
-                                                                      inputSize[0], inputSize[1], eq, contentID,
+                                                                      inputSize[1], inputSize[0], eq, contentID,
                                                                       imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
     if (OFCondition* pCondition = OFget<OFCondition>(&obj))
       return NULL;

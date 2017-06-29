@@ -45,6 +45,26 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
   )
 
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeParametricMapNoDerImg256x256
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    --inputImage ${BASELINE}/pm-example-3slices-256x256.nrrd
+    --inputDICOMList ${BASELINE}/pm-example-slice.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/paramap-3slices-256x256.dcm
+  )
+
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeParametricMapNoDerImg252x255
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    --inputImage ${BASELINE}/pm-example-3slices-252x255.nrrd
+    --inputDICOMList ${BASELINE}/pm-example-slice.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/paramap-3slices-252x255.dcm
+  )
+
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
@@ -129,3 +149,32 @@ dcmqi_add_test(
   TEST_DEPENDS
     ${dcm2itk}_makeNRRDParametricMapFP
   )
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRDParametricMapNoDerImg256x256
+  MODULE_NAME ${MODULE_NAME}
+  RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/pm-example-3slices-256x256.nrrd ${MODULE_TEMP_DIR}/makeNRRDParametricMap-3slices-256x256-pmap.nrrd
+    ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/paramap-3slices-256x256.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRDParametricMap-3slices-256x256
+  TEST_DEPENDS
+  ${itk2dcm}_makeParametricMapNoDerImg
+  )
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRDParametricMapNoDerImg252x255
+  MODULE_NAME ${MODULE_NAME}
+  RESOURCE_LOCK ${MODULE_TEMP_DIR}/pmap.nrrd
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/pm-example-3slices-252x255.nrrd ${MODULE_TEMP_DIR}/makeNRRDParametricMap-3slices-252x255-pmap.nrrd
+    ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/paramap-3slices-252x255.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRDParametricMap-3slices-252x255
+  TEST_DEPENDS
+  ${itk2dcm}_makeParametricMapNoDerImg
+  )
+
