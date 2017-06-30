@@ -278,12 +278,12 @@ Uint16 SegmentationImageObject::getSegmentId(FGInterface &fgInterface, size_t fr
   bool isPerFrame;
   FGSegmentation *fgseg =
       OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
-//    assert(fgseg);
+    assert(fgseg);
 
   Uint16 segmentId = -1;
   if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
       cerr << "Failed to get seg number!";
-//      throw -1;
+      throw -1;
     }
   return segmentId;
 }

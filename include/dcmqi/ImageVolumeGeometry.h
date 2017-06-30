@@ -18,7 +18,7 @@ class ImageVolumeGeometry {
   friend class ParametricMapObject;
   friend class SegmentationImageObject;
 
-  public:
+public:
   typedef itk::Vector<double,3> DoubleVectorType;
   typedef itk::Size<3> SizeType;
 
