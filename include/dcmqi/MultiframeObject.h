@@ -84,7 +84,7 @@ protected:
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
   template <typename T>
-  int initializeVolumeGeometryFromDICOM(T iodImage, DcmDataset *dataset) {
+  int initializeVolumeGeometryFromDICOM(T iodImage, DcmDataset *dataset, bool useComputedVolumeExtent=false) {
     SpacingType spacing;
     PointType origin;
     DirectionType directions;
@@ -101,9 +101,9 @@ protected:
 
     double computedSliceSpacing, computedVolumeExtent;
     vnl_vector<double> sliceDirection(3);
-    sliceDirection[0] = *directions[0];
-    sliceDirection[1] = *directions[1];
-    sliceDirection[2] = *directions[2];
+    sliceDirection[0] = directions[0][2];
+    sliceDirection[1] = directions[1][2];
+    sliceDirection[2] = directions[2][2];
     if (computeVolumeExtent(fgInterface, sliceDirection, origin, computedSliceSpacing, computedVolumeExtent)) {
       cerr << "Failed to compute origin and/or slice spacing!" << endl;
       throw -1;
@@ -130,7 +130,14 @@ protected:
       if(dataset->findAndGetOFString(DCM_Columns, str).good())
         extent[0] = atoi(str.c_str());
     }
-    extent[2] = fgInterface.getNumberOfFrames();
+
+    if (useComputedVolumeExtent) {
+      extent[2] = ceil(computedVolumeExtent/spacing[2])+1;
+    } else {
+      extent[2] = fgInterface.getNumberOfFrames();
+    }
+
+    cout << extent << endl;
 
     volumeGeometry.setSpacing(spacing);
     volumeGeometry.setOrigin(origin);
