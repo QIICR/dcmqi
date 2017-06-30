@@ -81,6 +81,7 @@ namespace dcmqi {
 
     /* Initialize dimension module */
     IODMultiframeDimensionModule &mfdim = pMapDoc->getIODMultiframeDimensionModule();
+    // TODO: this is probably incorrect
     OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, Helper::generateUID(),
                                                  DCM_RealWorldValueMappingSequence, "Frame position");
 

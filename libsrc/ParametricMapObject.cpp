@@ -122,13 +122,39 @@ int ParametricMapObject::createParametricMap() {
   frameTypeFG.setFrameType(frameTypeStr.c_str());
   CHECK_COND(parametricMap->addForAllFrames(frameTypeFG));
 
+  /* Initialize dimension module */
+  IODMultiframeDimensionModule &mfdim = parametricMap->getIODMultiframeDimensionModule();
+
+  // Initialize dimension index
+  OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dcmqi::Helper::generateUID(),
+                                               DCM_PlanePositionSequence, "ImagePositionPatient");
+
   return EXIT_SUCCESS;
 }
 
 int ParametricMapObject::initializeCompositeContext() {
   // TODO: should this be done in the parent?
   if(derivationDcmDatasets.size()){
-    CHECK_COND(parametricMap->import(*derivationDcmDatasets[0], OFTrue, OFTrue, OFFalse, OFTrue));
+    /* Import GeneralSeriesModule - content for the reference
+     from include/dcmtk/dcmiod/modgeneralseries.h:
+     * Modality: (CS, 1, 1)
+     *  Series Instance Number: (UI, 1, 1)
+     *  Series Number: (IS, 1, 2)
+     *  Laterality: (CS, 1, 2C)
+     *  Series Date: (DA, 1, 3)
+     *  Series Time: (TM, 1, 3)
+     *  Performing Physician's Name: (PN, 1, 3)
+     *  Protocol Name: (LO, 1, 3)
+     *  Series Description: (LO, 1, 3)
+     *  Operators' Name: (PN, 1-n, 3)
+     *  Body Part Examined: (CS, 1, 3)
+     *  Patient Position: (CS, 1, 2C)
+     */
+    CHECK_COND(parametricMap->import(*derivationDcmDatasets[0],
+                                     OFTrue, // Patient
+                                     OFTrue, // Study
+                                     OFTrue, // Frame of reference
+                                     OFTrue)); // Series
 
   } else {
     // TODO: once we support passing of composite context in metadata, propagate it
@@ -404,6 +430,47 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
         // TODO: read derivation code from metadata, if available, and pass instead of the default
         addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
     }
+
+    Float32ITKImageType::RegionType sliceRegion;
+    Float32ITKImageType::IndexType sliceIndex;
+    Float32ITKImageType::SizeType inputSize = itkImage->GetBufferedRegion().GetSize();
+
+    sliceIndex[0] = 0;
+    sliceIndex[1] = 0;
+    sliceIndex[2] = sliceNumber;
+
+    inputSize[2] = 1;
+
+    sliceRegion.SetIndex(sliceIndex);
+    sliceRegion.SetSize(inputSize);
+
+    const unsigned frameSize = inputSize[0] * inputSize[1];
+
+    OFVector<IODFloatingPointImagePixelModule::value_type> data(frameSize);
+
+    itk::ImageRegionConstIteratorWithIndex<Float32ITKImageType> sliceIterator(itkImage, sliceRegion);
+
+    unsigned framePixelCnt = 0;
+    for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd(); ++sliceIterator, ++framePixelCnt){
+      data[framePixelCnt] = sliceIterator.Get();
+      Float32ITKImageType::IndexType idx = sliceIterator.GetIndex();
+      //      cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
+    }
+
+    // Plane Position
+    Float32ITKImageType::PointType sliceOriginPoint;
+    itkImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
+    fgppp->setImagePositionPatient(
+        dcmqi::Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
+        dcmqi::Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
+        dcmqi::Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+
+    // Frame Content
+    OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
+
+    DPMParametricMapIOD::FramesType frames = parametricMap->getFrames();
+    result = OFget<DPMParametricMapIOD::Frames<IODFloatingPointImagePixelModule::value_type> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
+
   }
 
   return EXIT_SUCCESS;
