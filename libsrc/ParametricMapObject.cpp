@@ -46,7 +46,10 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeDimensions(dimensionTags);
 
   initializePixelMeasuresFG();
+  CHECK_COND(parametricMap->addForAllFrames(pixelMeasuresFG));
+
   initializePlaneOrientationFG();
+  CHECK_COND(parametricMap->addForAllFrames(planeOrientationPatientFG));
 
   // PM-specific FGs
   initializeFrameAnatomyFG();
@@ -180,6 +183,8 @@ int ParametricMapObject::initializeFrameAnatomyFG() {
   } else {
     frameAnatomyFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
   }
+
+  CHECK_COND(parametricMap->addForAllFrames(frameAnatomyFG));
 
   return EXIT_SUCCESS;
 }
