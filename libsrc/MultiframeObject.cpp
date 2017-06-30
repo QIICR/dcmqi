@@ -489,3 +489,4 @@ int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingT
   }
   return EXIT_SUCCESS;
 }
+
