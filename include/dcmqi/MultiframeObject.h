@@ -166,6 +166,10 @@ protected:
   static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume,
                                     dcmqi::DICOMFrame& frame);
 
+  int addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> frames,
+                                                        CodeSequenceMacro purposeOfReferenceCode  = CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                        CodeSequenceMacro derivationCode = CodeSequenceMacro("110001","DCM","Image Processing"));
+
   void insertDerivationSeriesInstance(string seriesUID, string instanceUID);
 
   // constants to describe original representation of the data being converted

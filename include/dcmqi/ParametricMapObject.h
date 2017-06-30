@@ -63,8 +63,9 @@ protected:
   int initializeCompositeContext();
   int initializeFrameAnatomyFG();
   int initializeRWVMFG();
+  int initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-  // Functional groups initialization
+    // Functional groups initialization
 
   // Functional groups specific to PM:
   //  - Shared
