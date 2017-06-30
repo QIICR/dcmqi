@@ -100,6 +100,8 @@ int ParametricMapObject::createParametricMap() {
 
   // create Parametric map object
 
+  // TODO: revisit intialization of the modality - if source images are available, modality should match
+  //  that in the source images!
   OFvariant<OFCondition,DPMParametricMapIOD> obj =
       DPMParametricMapIOD::create<IODFloatingPointImagePixelModule>(metaDataJson["Modality"].asCString(),
                                                                     metaDataJson["SeriesNumber"].asCString(),
