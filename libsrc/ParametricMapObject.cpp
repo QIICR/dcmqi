@@ -199,11 +199,11 @@ int ParametricMapObject::initializeRWVMFG() {
   realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(calculator->GetMinimum());
   realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(calculator->GetMaximum());
 
-  if(metaDataJson.isMember("MeasurementsUnitsCode")){
+  if(metaDataJson.isMember("MeasurementUnitsCode")){
     CodeSequenceMacro& unitsCodeDcmtk = realWorldValueMappingItem->getMeasurementUnitsCode();
-    unitsCodeDcmtk.set(metaDataJson["MeasurementsUnitsCode"]["CodeValue"].asCString(),
-                         metaDataJson["MeasurementsUnitsCode"]["CodingSchemeDesignator"].asCString(),
-                         metaDataJson["MeasurementsUnitsCode"]["CodeMeaning"].asCString());
+    unitsCodeDcmtk.set(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString(),
+                         metaDataJson["MeasurementUnitsCode"]["CodingSchemeDesignator"].asCString(),
+                         metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     cout << "Measurements units initialized to " <<
          dcmqi::Helper::codeSequenceMacroToString(unitsCodeDcmtk);
 
@@ -211,33 +211,91 @@ int ParametricMapObject::initializeRWVMFG() {
     realWorldValueMappingItem->setLUTLabel(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString());
   }
 
-
+  /*
   if(metaDataJson.isMember("QuantityValueCode")){
     ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C1C6", "SRT", "Quantity"),
                                                                 dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
+  }*/
+
+  ContentItemMacro* quantity = new ContentItemMacro;
+  CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
+  CodeSequenceMacro* qSpec = new CodeSequenceMacro(
+      metaDataJson["QuantityValueCode"]["CodeValue"].asCString(),
+      metaDataJson["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
+      metaDataJson["QuantityValueCode"]["CodeMeaning"].asCString());
+
+  if (!quantity || !qSpec || !qCodeName)
+  {
+    return EXIT_FAILURE;
   }
 
+  quantity->getEntireConceptNameCodeSequence().push_back(qCodeName);
+  quantity->getEntireConceptCodeSequence().push_back(qSpec);
+  realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
+  quantity->setValueType(ContentItemMacro::VT_CODE);
+
+  /*
   // TODO: factor out defined CodeSequenceMacros into definitions as in dcmsr/include/dcmtk/dcmsr/codes
   if(metaDataJson.isMember("MeasurementMethodCode")){
     ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C306", "SRT", "Measurement Method"),
                                                                 dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["MeasurementMethodCode"]));
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
+  } */
+
+  if(metaDataJson.isMember("MeasurementMethodCode")){
+    ContentItemMacro* measureMethod = new ContentItemMacro;
+    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
+    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
+        metaDataJson["MeasurementMethodCode"]["CodeValue"].asCString(),
+        metaDataJson["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),
+        metaDataJson["MeasurementMethodCode"]["CodeMeaning"].asCString());
+
+    if (!measureMethod || !qSpec || !qCodeName)
+    {
+      return EXIT_FAILURE;
+    }
+
+    measureMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
+    measureMethod->getEntireConceptCodeSequence().push_back(qSpec);
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(measureMethod);
+    measureMethod->setValueType(ContentItemMacro::VT_CODE);
   }
 
+  /*
   if(metaDataJson.isMember("ModelFittingMethodCode")){
     // TODO: update this once CP-1665 is integrated into the standard
-    ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("xxxxx2", "99DCMCP1665", "Model Fitting Method"),
+    ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("113241", "DCM", "Model Fitting Method"),
                                                         dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["ModelFittingMethodCode"]));
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
+  } */
+
+  if(metaDataJson.isMember("ModelFittingMethodCode")){
+    ContentItemMacro* fittingMethod = new ContentItemMacro;
+    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
+    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
+        metaDataJson["ModelFittingMethodCode"]["CodeValue"].asCString(),
+        metaDataJson["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
+        metaDataJson["ModelFittingMethodCode"]["CodeMeaning"].asCString());
+
+    if (!fittingMethod || !qSpec || !qCodeName)
+    {
+      return NULL;
+    }
+
+    fittingMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
+    fittingMethod->getEntireConceptCodeSequence().push_back(qSpec);
+    realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(fittingMethod);
+    fittingMethod->setValueType(ContentItemMacro::VT_CODE);
   }
+
 
   if(metaDataJson.isMember("SourceImageDiffusionBValues")) {
     for (int bvalId = 0; bvalId < metaDataJson["SourceImageDiffusionBValues"].size(); bvalId++) {
       ContentItemMacro *bval = new ContentItemMacro;
       CodeSequenceMacro *bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "s/mm2");
       // TODO: update this once CP-1665 is integrated into the standard
-      CodeSequenceMacro *qCodeName = new CodeSequenceMacro("xxxxx1", "99DCMCP1665", "Source image diffusion b-value");
+      CodeSequenceMacro *qCodeName = new CodeSequenceMacro("113240", "DCM", "Source image diffusion b-value");
 
       if (!bval || !bvalUnits || !qCodeName) {
         return EXIT_FAILURE;
