@@ -77,8 +77,6 @@ protected:
   // Data containers specific to this object
   Float32ITKImageType::Pointer itkImage;
 
-
-
 private:
   DPMParametricMapIOD* parametricMap;
 };
