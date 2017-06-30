@@ -127,8 +127,6 @@ int ParametricMapObject::createParametricMap() {
 
   /* Initialize dimension module */
   IODMultiframeDimensionModule &mfdim = parametricMap->getIODMultiframeDimensionModule();
-
-  // Initialize dimension index
   OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dcmqi::Helper::generateUID(),
                                                DCM_PlanePositionSequence, "ImagePositionPatient");
 
@@ -158,15 +156,6 @@ int ParametricMapObject::initializeCompositeContext() {
                                      OFTrue, // Study
                                      OFTrue, // Frame of reference
                                      OFTrue)); // Series
-
-    {
-      // DEBUG ->
-      OFString forUID;
-      CHECK_COND(parametricMap->getFrameOfReference().getFrameOfReferenceUID(forUID));
-      std::cout << "FoR UID:" << forUID << std::endl;
-
-      // <- DEBUG
-    }
 
   } else {
     // TODO: once we support passing of composite context in metadata, propagate it
@@ -199,9 +188,6 @@ int ParametricMapObject::initializeRWVMFG() {
   FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem =
       new FGRealWorldValueMapping::RWVMItem();
 
-  if (!realWorldValueMappingItem )
-    return EXIT_FAILURE;
-
   realWorldValueMappingItem->setRealWorldValueSlope(metaDataJson["RealWorldValueSlope"].asFloat());
   realWorldValueMappingItem->setRealWorldValueIntercept(0);
 
@@ -225,6 +211,7 @@ int ParametricMapObject::initializeRWVMFG() {
     realWorldValueMappingItem->setLUTLabel(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString());
   }
 
+
   if(metaDataJson.isMember("QuantityValueCode")){
     ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C1C6", "SRT", "Quantity"),
                                                                 dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
@@ -245,26 +232,28 @@ int ParametricMapObject::initializeRWVMFG() {
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
   }
 
-  if(metaDataJson.isMember("SourceImageDiffusionBValues")){
-    for(int bvalId=0;bvalId<metaDataJson["SourceImageDiffusionBValues"].size();bvalId++){
-      ContentItemMacro* bval = new ContentItemMacro;
-      CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "s/mm2");
+  if(metaDataJson.isMember("SourceImageDiffusionBValues")) {
+    for (int bvalId = 0; bvalId < metaDataJson["SourceImageDiffusionBValues"].size(); bvalId++) {
+      ContentItemMacro *bval = new ContentItemMacro;
+      CodeSequenceMacro *bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "s/mm2");
       // TODO: update this once CP-1665 is integrated into the standard
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("xxxxx1", "99DCMCP1665", "Source image diffusion b-value");
+      CodeSequenceMacro *qCodeName = new CodeSequenceMacro("xxxxx1", "99DCMCP1665", "Source image diffusion b-value");
 
-      if (!bval || !bvalUnits || !qCodeName)
-      {
+      if (!bval || !bvalUnits || !qCodeName) {
         return EXIT_FAILURE;
       }
 
       bval->setValueType(ContentItemMacro::VT_NUMERIC);
       bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
       bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
-      if(bval->setNumericValue(metaDataJson["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
+      if (bval->setNumericValue(metaDataJson["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
         cout << "Failed to insert the value!" << endl;;
       realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
     }
   }
+
+  rwvmFG.getRealWorldValueMapping().push_back(realWorldValueMappingItem);
+  parametricMap->addForAllFrames(rwvmFG);
 
   return EXIT_SUCCESS;
 }
