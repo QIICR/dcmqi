@@ -8,7 +8,6 @@
 // DCMQI includes
 #include "MultiframeObject.h"
 #include "Helper.h"
-#include "SegmentAttributes.h"
 
 // DCMTK includes
 #include <dcmtk/dcmfg/fgderimg.h>
@@ -47,17 +46,19 @@ protected:
   // ITK images corresponding to the individual segments
   map<unsigned,ShortImageType::Pointer> segment2image;
 
+  DcmSegmentation* segmentation;
+
+  int iterateOverFramesAndMatchSlices();
+
+  int unpackFrameAndWriteSegmentImage(const size_t& frameId, const Uint16& segmentId, const unsigned int& slice);
+
   int initializeMetaDataFromDICOM(DcmDataset*);
+
+  int createNewSegmentImage(Uint16 segmentId);
 
   Json::Value getSegmentAttributesMetadata();
 
-  // vector contains one item per input itkImageData label
-  // each item is a map from labelID to segment attributes
-  vector<map<unsigned,dcmqi::SegmentAttributes*> > segmentsAttributesMappingList;
-
-private:
-  DcmSegmentation* segmentation;
-
+  Uint16 getSegmentId(FGInterface &fgInterface, size_t frameId) const;
 };
 
 
