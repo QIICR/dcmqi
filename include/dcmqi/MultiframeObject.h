@@ -172,6 +172,13 @@ protected:
 
   void insertDerivationSeriesInstance(string seriesUID, string instanceUID);
 
+  int setDerivationDatasets(std::vector<DcmDataset*> derivationDatasets){
+    for(std::vector<DcmDataset*>::const_iterator vIt=derivationDatasets.begin();
+        vIt!=derivationDatasets.end();++vIt)
+      derivationDcmDatasets.push_back(*vIt);
+    return EXIT_SUCCESS;
+  }
+
   // constants to describe original representation of the data being converted
   enum {
     DICOM_REPR = 0,

@@ -12,6 +12,9 @@
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
                                            const string &metaDataStr,
                                            std::vector<DcmDataset *> derivationDatasets) {
+
+  setDerivationDatasets(derivationDatasets);
+
   sourceRepresentationType = ITK_REPR;
 
   itkImage = inputImage;
@@ -155,6 +158,15 @@ int ParametricMapObject::initializeCompositeContext() {
                                      OFTrue, // Study
                                      OFTrue, // Frame of reference
                                      OFTrue)); // Series
+
+    {
+      // DEBUG ->
+      OFString forUID;
+      CHECK_COND(parametricMap->getFrameOfReference().getFrameOfReferenceUID(forUID));
+      std::cout << "FoR UID:" << forUID << std::endl;
+
+      // <- DEBUG
+    }
 
   } else {
     // TODO: once we support passing of composite context in metadata, propagate it
