@@ -358,6 +358,9 @@ namespace dcmqi {
           CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
           CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
 
+          // AF: I am not sure why this is needed - I would expect these attributes should be initialized
+          //  by DerivationImageItem. Perhaps this is a workaround for an issue that was fixed since then.
+          // Not including this in the refactored implementation.
           if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
             SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
             CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));

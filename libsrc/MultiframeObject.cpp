@@ -147,6 +147,8 @@ ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro
 int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
                                                    const vector<DcmDataset*> dcmDatasets,
                                                    vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
+  slice2frame.resize(volume.extent[2]);
+
   for(int d=0;d<dcmDatasets.size();d++){
     Uint32 numFrames;
     DcmDataset* dcm = dcmDatasets[d];
@@ -171,6 +173,52 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
         if (!s)
           this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
       }
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
+
+int MultiframeObject::addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> derivationFrames,
+                                                         CodeSequenceMacro purposeOfReferenceCode,
+                                                         CodeSequenceMacro derivationCode){
+  DerivationImageItem *derimgItem;
+  // TODO: check what we should do with DerivationDescription
+  CHECK_COND(fgder->addDerivationImageItem(derivationCode,"",derimgItem));
+
+
+  OFVector<DcmDataset*> siVector;
+  std::vector<dcmqi::DICOMFrame> frameVector;
+
+  for(set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare>::const_iterator sIt=derivationFrames.begin();
+      sIt!=derivationFrames.end();++sIt) {
+
+    // TODO: it seems that with the current dcmtk functionality it is not possible to set the referenced
+    //  frame number. Revisit this after discussing with Michael.
+    siVector.push_back((*sIt).getDataset());
+    frameVector.push_back(*sIt);
+  }
+
+  OFVector<SourceImageItem*> srcimgItems;
+  CHECK_COND(derimgItem->addSourceImageItems(siVector, purposeOfReferenceCode, srcimgItems));
+
+  // iterate over source image items (assuming they are in the same order as in siVector!), and initialize
+  // frame number, if applicable
+  unsigned siItemCnt=0;
+  for(OFVector<SourceImageItem*>::iterator vIt=srcimgItems.begin();
+      vIt!=srcimgItems.end();++vIt,++siItemCnt) {
+    // TODO: when multuple frames from the same instance are used, they should be referenced within a single
+    //  ImageSOPInstanceReferenceMacro. There would need to be another level of checks over all of the frames
+    //  that are mapped to the given slice to identify those that are from the same instance, and populate the
+    //  list of frames. I can't think of any use case where this would be immediately important, but if we ever
+    //  use multiframe for DCE/DWI, with all of the temporal/b-value frames stored in a single object, there will
+    //  be multiple frames used to derive a single frame in a parametric map, for example.
+    if(frameVector[siItemCnt].getFrameNumber()) {
+      OFVector<Uint16> frameNumbersVector;
+      ImageSOPInstanceReferenceMacro &instRef = (*vIt)->getImageSOPInstanceReference();
+      frameNumbersVector.push_back(frameVector[siItemCnt].getFrameNumber());
+      instRef.setReferencedFrameNumber(frameNumbersVector);
     }
   }
 

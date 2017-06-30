@@ -70,6 +70,10 @@ namespace dcmqi {
       return classUID;
     }
 
+    DcmDataset* getDataset() const {
+      return frameDataset;
+    }
+
   private:
 
     int initializeFrameGeometryFromLegacyInstance();

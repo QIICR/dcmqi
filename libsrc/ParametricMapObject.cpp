@@ -59,6 +59,8 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
 
   initializeCommonInstanceReferenceModule(this->parametricMap->getCommonInstanceReference(), slice2frame);
 
+  initializeFrames(slice2frame);
+
   return EXIT_SUCCESS;
 }
 
@@ -384,4 +386,25 @@ void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
     fa->getLaterality(frameLaterality);
     metaDataJson["FrameLaterality"] = fa->laterality2Str(frameLaterality).c_str();
   }
+}
+
+int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame){
+  FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
+  FGFrameContent* fgfc = new FGFrameContent();
+  FGDerivationImage* fgder = new FGDerivationImage();
+  OFVector<FGBase*> perFrameFGs;
+
+  perFrameFGs.push_back(fgppp);
+  perFrameFGs.push_back(fgfc);
+
+  unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
+
+  for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
+    if(!slice2frame[sliceNumber].empty()){
+        // TODO: read derivation code from metadata, if available, and pass instead of the default
+        addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
+    }
+  }
+
+  return EXIT_SUCCESS;
 }
