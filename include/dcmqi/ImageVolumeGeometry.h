@@ -79,6 +79,9 @@ class ImageVolumeGeometry {
     image->SetDirection(direction);
     image->SetSpacing(spacing);
 
+    image->Allocate();
+    image->FillBuffer(0);
+
     return image;
   }
 

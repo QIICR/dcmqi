@@ -343,9 +343,6 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
   // Initialize the image
   itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
 
-  itkImage->Allocate();
-  itkImage->FillBuffer(0);
-
   DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
   if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
     throw -1;
