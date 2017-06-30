@@ -20,9 +20,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
     throw -1;
   }
 
-  initializeVolumeGeometryFromDICOM(segmentation, sourceDataset);
-
-//  imageSize[2] = ceil(computedVolumeExtent/imageSpacing[2])+1;
+  initializeVolumeGeometryFromDICOM(segmentation, sourceDataset, true);
 
   // Initialize the image
   itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
@@ -173,6 +171,7 @@ Json::Value  SegmentationImageObject::getSegmentAttributesMetadata() {
   FGInterface &fgInterface = segmentation->getFunctionalGroups();
 
   Json::Value values(Json::arrayValue);
+  vector<Uint16> processedSegmentIDs;
 
   for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++) {
     const DcmIODTypes::Frame *frame = segmentation->getFrame(frameId);
@@ -199,6 +198,11 @@ Json::Value  SegmentationImageObject::getSegmentAttributesMetadata() {
       cerr << "Failed to get segment for segment ID " << segmentId << endl;
       continue;
     }
+
+    if(std::find(processedSegmentIDs.begin(), processedSegmentIDs.end(), segmentId) != processedSegmentIDs.end()) {
+      continue;
+    }
+    processedSegmentIDs.push_back(segmentId);
 
     // get CIELab color for the segment
     Uint16 ciedcm[3];
