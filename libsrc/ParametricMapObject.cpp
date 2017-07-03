@@ -406,9 +406,6 @@ void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
   doc->getSeries().getBodyPartExamined(temp);
   metaDataJson["BodyPartExamined"] = temp.c_str();
 
-  doc->getDPMParametricMapImageModule().getImageType(temp, 3);
-  metaDataJson["DerivedPixelContrast"] = temp.c_str();
-
   if (doc->getNumberOfFrames() > 0) {
     FGInterface& fg = doc->getFunctionalGroups();
     FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,

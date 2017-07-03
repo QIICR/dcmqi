@@ -22,8 +22,8 @@
     "CodeMeaning": "m2/s"
   },
   "MeasurementMethodCode": {
-    "CodeValue": "DWMPxxxx10",
-    "CodingSchemeDesignator": "99QIICR",
+    "CodeValue": "113290",
+    "CodingSchemeDesignator": "DCM",
     "CodeMeaning": "Mono-exponential diffusion model"
   },
   "SourceImageDiffusionBValues": ["0","1400"],
