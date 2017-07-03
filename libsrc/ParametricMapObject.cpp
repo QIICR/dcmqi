@@ -480,15 +480,17 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
   FGDerivationImage* fgder = new FGDerivationImage();
   OFVector<FGBase*> perFrameFGs;
 
-  perFrameFGs.push_back(fgppp);
-  perFrameFGs.push_back(fgfc);
-
   unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
 
   for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
+
+    perFrameFGs.push_back(fgppp);
+    perFrameFGs.push_back(fgfc);
+
     if(!slice2frame[sliceNumber].empty()){
         // TODO: read derivation code from metadata, if available, and pass instead of the default
         addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
+      perFrameFGs.push_back(fgder);
     }
 
     Float32ITKImageType::RegionType sliceRegion;
@@ -530,6 +532,8 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
 
     DPMParametricMapIOD::FramesType frames = parametricMap->getFrames();
     result = OFget<DPMParametricMapIOD::Frames<IODFloatingPointImagePixelModule::value_type> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
+
+    perFrameFGs.clear();
 
   }
 
