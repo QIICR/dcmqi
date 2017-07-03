@@ -18,7 +18,7 @@ dependencies:
     - "~/.pyenv"
 
   post:
-    - sudo apt-get install lcov && sudo apt-get remove cmake &&  wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz && tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz && sudo cp -r cmake-3.6.0-rc4-Linux-x86_64/* /usr && cmake --version && mkdir codecov-build && cd codecov-build && ls -lat /usr/bin && /usr/bin/cmake  .. && make -j4 && cd dcmqi-build && ctest . && lcov --gcov-tool /usr/bin/gcov-4.9 --directory . --capture --output-file coverage.lcov && lcov --remove coverage.lcov '/usr/*' 'ITK/*' 'DCMTK/*' 'SlicerExecutionModel/*' 'jsoncpp/*' 'dcmqi-build/*' --output-file coverage_clean.lcov && bash <(curl -s https://codecov.io/bash) -X gcov -C ${CIRCLE_SHA1} -f coverage_clean.lcov -R ../..
+    - sudo apt-get install lcov && sudo apt-get remove cmake &&  wget --no-check-certificate https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz && tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz && sudo cp -r cmake-3.6.0-rc4-Linux-x86_64/* /usr && cmake --version && mkdir codecov-build && cd codecov-build && ls -lat /usr/bin && /usr/bin/cmake  .. && make -j4 && cd dcmqi-build && ctest . && lcov --directory . --capture --output-file coverage.lcov && lcov --remove coverage.lcov '/usr/*' 'ITK/*' 'DCMTK/*' 'SlicerExecutionModel/*' 'jsoncpp/*' 'dcmqi-build/*' --output-file coverage_clean.lcov && bash <(curl -s https://codecov.io/bash) -X gcov -C ${CIRCLE_SHA1} -f coverage_clean.lcov -R ../..
     - cd docker && make dcmqi
     # Install package required by convert.py
     - pip install lxml==3.6.4
