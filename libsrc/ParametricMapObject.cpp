@@ -488,8 +488,15 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
     perFrameFGs.push_back(fgfc);
 
     if(!slice2frame[sliceNumber].empty()){
-        // TODO: read derivation code from metadata, if available, and pass instead of the default
-        addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
+        if(metaDataJson.isMember("DerivationCode")){
+          CodeSequenceMacro purposeOfReference = CodeSequenceMacro("121322","DCM","Source image for image processing operation");
+          CodeSequenceMacro derivationCode = CodeSequenceMacro(metaDataJson["DerivationCode"]["CodeValue"].asCString(),
+                                                               metaDataJson["DerivationCode"]["CodingSchemeDesignator"].asCString(),
+                                                               metaDataJson["DerivationCode"]["CodeMeaning"].asCString());
+          addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber], purposeOfReference, derivationCode);
+        } else {
+          addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
+        }
       perFrameFGs.push_back(fgder);
     }
 
