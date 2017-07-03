@@ -67,6 +67,7 @@ int MultiframeObject::initializeVolumeGeometryFromITK(DummyImageType::Pointer im
   spacing = image->GetSpacing();
   directions = image->GetDirection();
   extent = image->GetLargestPossibleRegion().GetSize();
+  origin = image->GetOrigin();
 
   volumeGeometry.setSpacing(spacing);
   volumeGeometry.setOrigin(origin);
@@ -237,8 +238,9 @@ std::vector<int> MultiframeObject::findIntersectingSlices(ImageVolumeGeometry &v
   point[1] = frameIPP[1];
   point[2] = frameIPP[2];
 
-  if(itkvolume->TransformPhysicalPointToIndex(point, index))
+  if(itkvolume->TransformPhysicalPointToIndex(point, index)) {
     intersectingSlices.push_back(index[2]);
+  }
 
   return intersectingSlices;
 }
