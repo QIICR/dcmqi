@@ -168,7 +168,7 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
     } else {
       dcmqi::DICOMFrame frame(dcm);
       vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-
+      
       for(int s=0;s<intersectingSlices.size();s++) {
         slice2frame[s].insert(frame);
         if (!s)
@@ -273,6 +273,7 @@ int MultiframeObject::initializeCommonInstanceReferenceModule(IODCommonInstanceR
   // create a new ReferencedSeriesItem for each series, and populate with instances
   OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> &refseries = commref.getReferencedSeriesItems();
   for(std::map<std::string, std::set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >::const_iterator mIt=series2frame.begin(); mIt!=series2frame.end();++mIt){
+    // TODO: who is supposed to de-allocate this?
     IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem;
     refseriesItem->setSeriesInstanceUID(mIt->first.c_str());
     OFVector<SOPInstanceReferenceMacro*> &refinstances = refseriesItem->getReferencedInstanceItems();
@@ -284,6 +285,8 @@ int MultiframeObject::initializeCommonInstanceReferenceModule(IODCommonInstanceR
       CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(frame.getInstanceUID().c_str()));
       refinstances.push_back(refinstancesItem);
     }
+
+    refseries.push_back(refseriesItem);
   }
 
   return EXIT_SUCCESS;
