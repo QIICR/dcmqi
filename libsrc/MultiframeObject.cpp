@@ -168,7 +168,7 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
     } else {
       dcmqi::DICOMFrame frame(dcm);
       vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-      
+
       for(int s=0;s<intersectingSlices.size();s++) {
         slice2frame[s].insert(frame);
         if (!s)
@@ -188,15 +188,11 @@ int MultiframeObject::addDerivationItemToDerivationFG(FGDerivationImage* fgder, 
   // TODO: check what we should do with DerivationDescription
   CHECK_COND(fgder->addDerivationImageItem(derivationCode,"",derimgItem));
 
-
   OFVector<DcmDataset*> siVector;
   std::vector<dcmqi::DICOMFrame> frameVector;
 
   for(set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare>::const_iterator sIt=derivationFrames.begin();
       sIt!=derivationFrames.end();++sIt) {
-
-    // TODO: it seems that with the current dcmtk functionality it is not possible to set the referenced
-    //  frame number. Revisit this after discussing with Michael.
     siVector.push_back((*sIt).getDataset());
     frameVector.push_back(*sIt);
   }
