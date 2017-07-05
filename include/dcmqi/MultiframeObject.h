@@ -12,6 +12,8 @@
 #include <dcmtk/dcmfg/fgfracon.h>
 #include <dcmtk/dcmfg/fgderimg.h>
 #include <dcmtk/dcmiod/modfloatingpointimagepixel.h>
+#include <dcmtk/dcmiod/modgeneralseries.h>
+#include <dcmtk/dcmiod/modgeneralimage.h>
 
 #include <itkImage.h>
 #include <json/json.h>
@@ -154,7 +156,8 @@ protected:
   int getDeclaredImageSpacing(FGInterface &fgInterface, SpacingType &spacing);
 
   // initialize attributes of the composite context that are common for all multiframe objects
-  //virtual int initializeCompositeContext();
+  int initializeCompositeContext();
+  int initializeSeriesSpecificAttributes(IODGeneralSeriesModule&, IODGeneralImageModule&);
   // check whether all of the attributes required for initialization of the object are present in the
   //   input metadata
   virtual bool metaDataIsComplete();

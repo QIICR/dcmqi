@@ -39,6 +39,8 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   // populate metadata about patient/study, from derivation
   //  datasets or from metadata
   initializeCompositeContext();
+  initializeSeriesSpecificAttributes(parametricMap->getIODGeneralSeriesModule(),
+                                     parametricMap->getIODGeneralImageModule());
 
   // populate functional groups
   std::vector<std::pair<DcmTag,DcmTag> > dimensionTags;

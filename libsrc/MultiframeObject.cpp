@@ -491,3 +491,42 @@ int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingT
   return EXIT_SUCCESS;
 }
 
+
+int MultiframeObject::initializeSeriesSpecificAttributes(IODGeneralSeriesModule& generalSeriesModule,
+                                                         IODGeneralImageModule& generalImageModule){
+
+  // TODO: error checks
+  string bodyPartExamined;
+  if(metaDataJson.isMember("BodyPartExamined")){
+    bodyPartExamined = metaDataJson["BodyPartExamined"].asCString();
+  }
+  if(derivationDcmDatasets.size() && bodyPartExamined.empty()) {
+    OFString bodyPartStr;
+    DcmDataset *srcDataset = derivationDcmDatasets[0];
+    if(srcDataset->findAndGetOFString(DCM_BodyPartExamined, bodyPartStr).good()) {
+      if (!bodyPartStr.empty())
+        bodyPartExamined = bodyPartStr.c_str();
+    }
+  }
+
+  if(!bodyPartExamined.empty())
+    generalSeriesModule.setBodyPartExamined(bodyPartExamined.c_str());
+
+  // SeriesDate/Time should be of when parametric map was taken; initialize to when it was saved
+  {
+    OFString contentDate, contentTime;
+    DcmDate::getCurrentDate(contentDate);
+    DcmTime::getCurrentTime(contentTime);
+
+    // TODO: AcquisitionTime
+    generalSeriesModule.setSeriesDate(contentDate.c_str());
+    generalSeriesModule.setSeriesTime(contentTime.c_str());
+    generalImageModule.setContentDate(contentDate.c_str());
+    generalImageModule.setContentTime(contentTime.c_str());
+  }
+
+  generalSeriesModule.setSeriesDescription(metaDataJson["SeriesDescription"].asCString());
+  generalSeriesModule.setSeriesNumber(metaDataJson["SeriesNumber"].asCString());
+
+  return EXIT_SUCCESS;
+}
