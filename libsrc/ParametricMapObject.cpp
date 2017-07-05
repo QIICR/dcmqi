@@ -484,11 +484,22 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
 
   unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
 
+  // if there is a derivation item for at least one frame, DerivationImageSequence must be present
+  //   for every frame.
+  bool derivationFGRequired = false;
+  for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
+    if(!slice2frame[sliceNumber].empty()){
+      derivationFGRequired = true;
+      break;
+    }
+  }
+
   for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
 
     perFrameFGs.push_back(fgppp);
     perFrameFGs.push_back(fgfc);
 
+    fgder->clearData();
     if(!slice2frame[sliceNumber].empty()){
         if(metaDataJson.isMember("DerivationCode")){
           CodeSequenceMacro purposeOfReference = CodeSequenceMacro("121322","DCM","Source image for image processing operation");
@@ -499,8 +510,10 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
         } else {
           addDerivationItemToDerivationFG(fgder, slice2frame[sliceNumber]);
         }
-      perFrameFGs.push_back(fgder);
     }
+
+    if(derivationFGRequired)
+      perFrameFGs.push_back(fgder);
 
     Float32ITKImageType::RegionType sliceRegion;
     Float32ITKImageType::IndexType sliceIndex;
