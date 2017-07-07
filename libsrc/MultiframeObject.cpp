@@ -119,6 +119,9 @@ int MultiframeObject::initializeVolumeGeometryFromDICOM(FGInterface &fgInterface
 
   cout << "computed extent: " << computedVolumeExtent << "/" << spacing[2] << endl;
 
+  // difference between the origins of the first and last frames, divide by SpacingBetweenSlices
+  // (which must be declared for meaningful interpretation of the SEG geometry, as amended in CP-1427), and add 1.
+  // see also: https://github.com/QIICR/dcmqi/issues/275
   extent[2] = round(computedVolumeExtent/spacing[2] + 1);
 
   cout << "Extent:" << extent << endl;
@@ -377,7 +380,7 @@ int MultiframeObject::getImageDirections(FGInterface& fgInterface, DirectionType
 }
 
 int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection,
-                                          PointType &imageOrigin, double &sliceSpacing, double &sliceExtent) {
+                                          PointType &imageOrigin, double &sliceSpacing, double &volumeExtent) {
   // Size
   // Rows/Columns can be read directly from the respective attributes
   // For number of slices, consider that all segments must have the same number of frames.
@@ -462,10 +465,10 @@ int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<d
     for(size_t i=1;i<originDistances.size(); i++){
       float dist1 = fabs(originDistances[i-1]-originDistances[i]);
       float delta = sliceSpacing-dist1;
-      cout << "Spacing between frame " << i-1 << " and " << i << ": " << dist1 << endl;
+//      cout << "Spacing between frame " << i-1 << " and " << i << ": " << dist1 << endl;
     }
 
-    sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
+    volumeExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
     unsigned overlappingFramesCnt = 0;
     for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
         it!=frame2overlap.end();++it){

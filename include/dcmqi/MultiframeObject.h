@@ -89,7 +89,7 @@ protected:
   int getImageDirections(FGInterface& fgInterface, DirectionType &dir);
 
   int computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection, PointType &imageOrigin,
-                          double &sliceSpacing, double &sliceExtent);
+                          double &sliceSpacing, double &volumeExtent);
   int getDeclaredImageSpacing(FGInterface &fgInterface, SpacingType &spacing);
 
   // initialize attributes of the composite context that are common for all multiframe objects
