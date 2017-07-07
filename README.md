@@ -1,5 +1,7 @@
 
-[![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi)
+[![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi) [![codecov](https://codecov.io/gh/QIICR/dcmqi/branch/master/graph/badge.svg)](https://codecov.io/gh/QIICR/dcmqi) [![Join the chat at https://gitter.im/QIICR/dcmqi](https://badges.gitter.im/QIICR/dcmqi.svg)](https://gitter.im/QIICR/dcmqi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
 
 | Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.0.5.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.0.5) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
 |--------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
@@ -9,8 +11,6 @@
 | Build Status for latest | [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi) | [![TravisCI](https://travis-ci.org/QIICR/dcmqi.svg?branch=master)](https://travis-ci.org/QIICR/dcmqi) | [![Appveyor](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi) |
 
 # Introduction
-
-[![Join the chat at https://gitter.im/QIICR/dcmqi](https://badges.gitter.im/QIICR/dcmqi.svg)](https://gitter.im/QIICR/dcmqi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of [quantitative image analysis](http://journals.sagepub.com/doi/pdf/10.1177/0962280214537333) research data using [DICOM standard](https://en.wikipedia.org/wiki/DICOM).
 
