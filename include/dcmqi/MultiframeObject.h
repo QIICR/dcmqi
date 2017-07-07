@@ -85,7 +85,7 @@ protected:
   // from ITK
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
-  int initializeVolumeGeometryFromDICOM(FGInterface &fgInterface, DcmDataset *dataset);
+  int initializeVolumeGeometryFromDICOM(FGInterface &fgInterface);
   int getImageDirections(FGInterface& fgInterface, DirectionType &dir);
 
   int computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection, PointType &imageOrigin,
@@ -140,8 +140,6 @@ protected:
   Json::Value metaDataJson;
 
   // Multiframe DICOM object representation
-  // probably not needed, since need object-specific DCMTK class in
-  // derived classes
   DcmDataset* dcmRepresentation;
 
   // probably not needed at this level, since for SEG each segment will

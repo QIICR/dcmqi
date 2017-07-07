@@ -77,7 +77,7 @@ int MultiframeObject::initializeVolumeGeometryFromITK(DummyImageType::Pointer im
   return EXIT_SUCCESS;
 }
 
-int MultiframeObject::initializeVolumeGeometryFromDICOM(FGInterface &fgInterface, DcmDataset *dataset) {
+int MultiframeObject::initializeVolumeGeometryFromDICOM(FGInterface &fgInterface) {
   SpacingType spacing;
   PointType origin;
   DirectionType directions;
@@ -111,15 +111,11 @@ int MultiframeObject::initializeVolumeGeometryFromDICOM(FGInterface &fgInterface
          " Declared = " << spacing[2] << " Computed = " << computedSliceSpacing << endl;
   }
 
-  // Region size
-  {
-    OFString str;
-    if(dataset->findAndGetOFString(DCM_Rows, str).good())
-      extent[1] = atoi(str.c_str());
-    if(dataset->findAndGetOFString(DCM_Columns, str).good())
-      extent[0] = atoi(str.c_str());
-  }
-
+  OFString str;
+  if(dcmRepresentation->findAndGetOFString(DCM_Rows, str).good())
+    extent[1] = atoi(str.c_str());
+  if(dcmRepresentation->findAndGetOFString(DCM_Columns, str).good())
+    extent[0] = atoi(str.c_str());
 
   cout << "computed extent: " << computedVolumeExtent << "/" << spacing[2] << endl;
 

@@ -6,6 +6,8 @@
 
 int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
 
+  dcmRepresentation = sourceDataset;
+
 //  TODO: add SegmentationImageObject to namespace dcmqi
   using namespace dcmqi;
 
@@ -20,7 +22,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
     throw -1;
   }
 
-  initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups(), sourceDataset);
+  initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
   itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
   iterateOverFramesAndMatchSlices();
   initializeMetaDataFromDICOM(sourceDataset);

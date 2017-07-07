@@ -34,7 +34,7 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeContentIdentification();
 
   // TODO: consider creating parametric map object after all FGs are initialized instead
-  createParametricMap();
+  createDICOMParametricMap();
 
   // populate metadata about patient/study, from derivation
   //  datasets or from metadata
@@ -82,7 +82,7 @@ int ParametricMapObject::initializeVolumeGeometry() {
 
     MultiframeObject::initializeVolumeGeometryFromITK(caster->GetOutput());
   } else {
-
+    MultiframeObject::initializeVolumeGeometryFromDICOM(parametricMap->getFunctionalGroups());
   }
   return EXIT_SUCCESS;
 }
@@ -98,7 +98,7 @@ int ParametricMapObject::updateMetaDataFromDICOM(std::vector<DcmDataset *> dcmLi
   return EXIT_SUCCESS;
 }
 
-int ParametricMapObject::createParametricMap() {
+int ParametricMapObject::createDICOMParametricMap() {
 
   // create Parametric map object
 
@@ -137,6 +137,48 @@ int ParametricMapObject::createParametricMap() {
   OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dcmqi::Helper::generateUID(),
                                                DCM_PlanePositionSequence, "ImagePositionPatient");
 
+  return EXIT_SUCCESS;
+}
+
+int ParametricMapObject::createITKParametricMap() {
+
+  initializeVolumeGeometry();
+
+  // Initialize the image
+  itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
+
+  DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
+  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    throw -1;
+  }
+
+  DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
+
+  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
+  for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
+    bool isPerFrame;
+
+    FGPlanePosPatient *planposfg =
+      OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+    assert(planposfg);
+
+    FGFrameContent *fracon =
+      OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
+    assert(fracon);
+
+    Float32PixelType *frame = frames.getFrame(frameId);
+    Float32ITKImageType::IndexType index;
+    // initialize slice with the frame content
+    for(int row=0;row<volumeGeometry.extent[1];row++){
+      index[1] = row;
+      index[2] = frameId;
+      for(int col=0;col<volumeGeometry.extent[0];col++){
+        unsigned pixelPosition = row*volumeGeometry.extent[0] + col;
+        index[0] = col;
+        itkImage->SetPixel(index, frame[pixelPosition]);
+      }
+    }
+  }
   return EXIT_SUCCESS;
 }
 
@@ -328,6 +370,9 @@ int ParametricMapObject::initializeRWVMFG() {
 
 int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
 
+  sourceRepresentationType = DICOM_REPR;
+  dcmRepresentation = sourceDataset;
+
   DcmRLEDecoderRegistration::registerCodecs();
 
   OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
@@ -340,76 +385,31 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
 
   parametricMap = *OFget<DPMParametricMapIOD*>(&result);
 
-  initializeVolumeGeometryFromDICOM(parametricMap->getFunctionalGroups(), sourceDataset);
-
-  // Initialize the image
-  itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
-
-  DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
-  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
-    throw -1;
-  }
-
-  DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
-
-  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
-  for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
-
-    Float32PixelType *frame = frames.getFrame(frameId);
-
-    bool isPerFrame;
-
-    FGPlanePosPatient *planposfg =
-      OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-    assert(planposfg);
-
-    FGFrameContent *fracon =
-      OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
-    assert(fracon);
-
-    // populate meta information needed for Slicer ScalarVolumeNode initialization
-    {
-    }
-
-    Float32ITKImageType::IndexType index;
-    // initialize slice with the frame content
-    for(int row=0;row<volumeGeometry.extent[1];row++){
-      index[1] = row;
-      index[2] = frameId;
-      for(int col=0;col<volumeGeometry.extent[0];col++){
-        unsigned pixelPosition = row*volumeGeometry.extent[0] + col;
-        index[0] = col;
-        itkImage->SetPixel(index, frame[pixelPosition]);
-      }
-    }
-  }
-
-  initializeMetaDataFromDICOM(parametricMap);
+  initializeMetaDataFromDICOM();
+  createITKParametricMap();
 
   return EXIT_SUCCESS;
 }
 
-template <typename T>
-void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
-  // TODO: move shared information retrieval to parent class
+void ParametricMapObject::initializeMetaDataFromDICOM() {
 
   OFString temp;
-  doc->getSeries().getSeriesDescription(temp);
+  parametricMap->getSeries().getSeriesDescription(temp);
   metaDataJson["SeriesDescription"] = temp.c_str();
 
-  doc->getSeries().getSeriesNumber(temp);
+  parametricMap->getSeries().getSeriesNumber(temp);
   metaDataJson["SeriesNumber"] = temp.c_str();
 
-  doc->getIODGeneralImageModule().getInstanceNumber(temp);
+  parametricMap->getIODGeneralImageModule().getInstanceNumber(temp);
   metaDataJson["InstanceNumber"] = temp.c_str();
 
   using namespace dcmqi;
 
-  doc->getSeries().getBodyPartExamined(temp);
+  parametricMap->getSeries().getBodyPartExamined(temp);
   metaDataJson["BodyPartExamined"] = temp.c_str();
 
-  if (doc->getNumberOfFrames() > 0) {
-    FGInterface& fg = doc->getFunctionalGroups();
+  if (parametricMap->getNumberOfFrames() > 0) {
+    FGInterface& fg = parametricMap->getFunctionalGroups();
     FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
                                                 fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
     if (rw->getRealWorldValueMapping().size() > 0) {

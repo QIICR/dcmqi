@@ -46,8 +46,7 @@ public:
 
   int initializeFromDICOM(DcmDataset * sourceDataset);
 
-  template <typename T>
-  void initializeMetaDataFromDICOM(T doc);
+  void initializeMetaDataFromDICOM();
 
   Float32ITKImageType::Pointer getITKRepresentation() const {
     return itkImage;
@@ -59,13 +58,14 @@ protected:
   typedef itk::MinimumMaximumImageCalculator<Float32ITKImageType> MinMaxCalculatorType;
 
   int initializeVolumeGeometry();
-  int createParametricMap();
+  int createDICOMParametricMap();
+  int createITKParametricMap();
   int initializeCompositeContext();
   int initializeFrameAnatomyFG();
   int initializeRWVMFG();
   int initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-    // Functional groups initialization
+  // Functional groups initialization
 
   // Functional groups specific to PM:
   //  - Shared
