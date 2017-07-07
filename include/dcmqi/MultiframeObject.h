@@ -85,70 +85,7 @@ protected:
   // from ITK
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
-  template <typename T>
-  int initializeVolumeGeometryFromDICOM(T iodImage, DcmDataset *dataset, bool useComputedVolumeExtent=false) {
-    SpacingType spacing;
-    PointType origin;
-    DirectionType directions;
-    SizeType extent;
-
-    FGInterface &fgInterface = iodImage->getFunctionalGroups();
-
-    if (getImageDirections(fgInterface, directions)) {
-      cerr << "Failed to get image directions" << endl;
-      throw -1;
-    }
-
-    cout << directions << endl;
-
-    double computedSliceSpacing, computedVolumeExtent;
-    vnl_vector<double> sliceDirection(3);
-    sliceDirection[0] = directions[0][2];
-    sliceDirection[1] = directions[1][2];
-    sliceDirection[2] = directions[2][2];
-    if (computeVolumeExtent(fgInterface, sliceDirection, origin, computedSliceSpacing, computedVolumeExtent)) {
-      cerr << "Failed to compute origin and/or slice spacing!" << endl;
-      throw -1;
-    }
-
-    if (getDeclaredImageSpacing(fgInterface, spacing)) {
-      cerr << "Failed to get image spacing from DICOM!" << endl;
-      throw -1;
-    }
-
-    const double tolerance = 1e-5;
-    if(!spacing[2]){
-      spacing[2] = computedSliceSpacing;
-    } else if(fabs(spacing[2]-computedSliceSpacing)>tolerance){
-      cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
-           " Declared = " << spacing[2] << " Computed = " << computedSliceSpacing << endl;
-    }
-
-    // Region size
-    {
-      OFString str;
-      if(dataset->findAndGetOFString(DCM_Rows, str).good())
-        extent[1] = atoi(str.c_str());
-      if(dataset->findAndGetOFString(DCM_Columns, str).good())
-        extent[0] = atoi(str.c_str());
-    }
-
-    if (useComputedVolumeExtent) {
-      extent[2] = ceil(computedVolumeExtent/spacing[2])+1;
-    } else {
-      extent[2] = fgInterface.getNumberOfFrames();
-    }
-
-    cout << extent << endl;
-
-    volumeGeometry.setSpacing(spacing);
-    volumeGeometry.setOrigin(origin);
-    volumeGeometry.setExtent(extent);
-    volumeGeometry.setDirections(directions);
-
-    return EXIT_SUCCESS;
-  }
-
+  int initializeVolumeGeometryFromDICOM(FGInterface &fgInterface, DcmDataset *dataset);
   int getImageDirections(FGInterface& fgInterface, DirectionType &dir);
 
   int computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection, PointType &imageOrigin,
@@ -241,7 +178,10 @@ protected:
   // Mapping from the derivation items SeriesUIDs to InstanceUIDs
   std::map<std::string, std::set<std::string> > derivationSeriesToInstanceUIDs;
 
-};
+  vnl_vector<double> getFrameOrigin(FGInterface &fgInterface, int frameId) const;
+  vnl_vector<double> getFrameOrigin(FGPlanePosPatient *planposfg) const;
+
+  };
 
 
 #endif //DCMQI_MULTIFRAMEOBJECT_H

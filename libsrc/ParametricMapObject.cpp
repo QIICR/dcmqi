@@ -340,7 +340,7 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
 
   parametricMap = *OFget<DPMParametricMapIOD*>(&result);
 
-  initializeVolumeGeometryFromDICOM(parametricMap, sourceDataset);
+  initializeVolumeGeometryFromDICOM(parametricMap->getFunctionalGroups(), sourceDataset);
 
   // Initialize the image
   itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();

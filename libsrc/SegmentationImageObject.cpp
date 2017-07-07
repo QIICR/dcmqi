@@ -20,7 +20,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
     throw -1;
   }
 
-  initializeVolumeGeometryFromDICOM(segmentation, sourceDataset, true);
+  initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups(), sourceDataset);
   itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
   iterateOverFramesAndMatchSlices();
   initializeMetaDataFromDICOM(sourceDataset);
@@ -70,13 +70,19 @@ int SegmentationImageObject::iterateOverFramesAndMatchSlices() {
         frameOriginPoint[j] = atof(planposStr.c_str());
       }
     }
+    cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
 
     if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
       cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
            " is outside image geometry!" << frameOriginIndex << endl;
       cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
       throw -1;
+    } else {
+      cout << "Frame " << frameId << " origin " << frameOriginPoint <<
+           " is inside image geometry!" << frameOriginIndex << endl;
+      cout << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
     }
+
     unsigned slice = frameOriginIndex[2];
 
     unpackFrameAndWriteSegmentImage(frameId, segmentId, slice);
