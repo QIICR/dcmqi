@@ -113,7 +113,6 @@ int ParametricMapObject::createDICOMParametricMap() {
                                                                     equipmentInfoModule,
                                                                     contentIdentificationMacro,
                                                                     "VOLUME", "QUANTITY",
-
                                                                     DPMTypes::CQ_RESEARCH);
   // TODO: look into the following, check with @che85 on the purpose of this line!
   if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
@@ -253,8 +252,8 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("MeasurementUnitsCode")){
     CodeSequenceMacro& unitsCodeDcmtk = realWorldValueMappingItem->getMeasurementUnitsCode();
     unitsCodeDcmtk.set(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString(),
-                         metaDataJson["MeasurementUnitsCode"]["CodingSchemeDesignator"].asCString(),
-                         metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
+                       metaDataJson["MeasurementUnitsCode"]["CodingSchemeDesignator"].asCString(),
+                       metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     cout << "Measurements units initialized to " <<
          dcmqi::Helper::codeSequenceMacroToString(unitsCodeDcmtk);
 
@@ -265,16 +264,13 @@ int ParametricMapObject::initializeRWVMFG() {
   /*
   if(metaDataJson.isMember("QuantityValueCode")){
     ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C1C6", "SRT", "Quantity"),
-                                                                dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
+      dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
   }*/
 
   ContentItemMacro* quantity = new ContentItemMacro;
   CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
-  CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-      metaDataJson["QuantityValueCode"]["CodeValue"].asCString(),
-      metaDataJson["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
-      metaDataJson["QuantityValueCode"]["CodeMeaning"].asCString());
+  CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("QuantityValueCode");
 
   if (!quantity || !qSpec || !qCodeName)
   {
@@ -297,10 +293,7 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("MeasurementMethodCode")){
     ContentItemMacro* measureMethod = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaDataJson["MeasurementMethodCode"]["CodeValue"].asCString(),
-        metaDataJson["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaDataJson["MeasurementMethodCode"]["CodeMeaning"].asCString());
+    CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("MeasurementMethodCode");
 
     if (!measureMethod || !qSpec || !qCodeName)
     {
@@ -324,10 +317,7 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("ModelFittingMethodCode")){
     ContentItemMacro* fittingMethod = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaDataJson["ModelFittingMethodCode"]["CodeValue"].asCString(),
-        metaDataJson["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaDataJson["ModelFittingMethodCode"]["CodeMeaning"].asCString());
+    CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("ModelFittingMethodCode");
 
     if (!fittingMethod || !qSpec || !qCodeName)
     {
@@ -365,6 +355,13 @@ int ParametricMapObject::initializeRWVMFG() {
   parametricMap->addForAllFrames(rwvmFG);
 
   return EXIT_SUCCESS;
+}
+
+CodeSequenceMacro *ParametricMapObject::createCodeSequenceFromMetadata(const string &codeName) const {
+  return new CodeSequenceMacro(
+        metaDataJson[codeName]["CodeValue"].asCString(),
+        metaDataJson[codeName]["CodingSchemeDesignator"].asCString(),
+        metaDataJson[codeName]["CodeMeaning"].asCString());
 }
 
 

@@ -79,6 +79,8 @@ protected:
 
 private:
   DPMParametricMapIOD* parametricMap;
+
+  CodeSequenceMacro *createCodeSequenceFromMetadata(const string &codeName) const;
 };
 
 
