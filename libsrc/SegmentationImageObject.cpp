@@ -24,7 +24,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
 
   initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
   itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
-  vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmendIDandSliceNumber(
+  vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmendIdAndSliceNumber(
     segmentation->getFunctionalGroups());
   unpackFramesAndWriteSegmentImage(matchedFramesWithSlices);
   initializeMetaDataFromDICOM(sourceDataset);
@@ -32,9 +32,9 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   return EXIT_SUCCESS;
 }
 
-vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIDandSliceNumber(FGInterface &fgInterface) {
+vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIdAndSliceNumber(FGInterface &fgInterface) {
 
-  vector< pair<Uint16 , long> > matchedFramesWithSlices;
+  vector< pair<Uint16, long> > matchedFramesWithSlices;
 
   for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
     bool isPerFrame;
@@ -45,7 +45,6 @@ vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIDa
     assert(frameContent);
 #endif
 
-    // check for valid segment ID
     Uint16 segmentId = getSegmentId(fgInterface, frameId);
 
     // WARNING: this is needed only for David's example, which numbers
@@ -55,17 +54,14 @@ vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIDa
       throw -1;
     }
 
-    // if not found -> create duplicate of itkimage and set all values to 0
     if(segment2image.find(segmentId) == segment2image.end()) {
       createNewSegmentImage(segmentId);
     }
 
-    // get plane position for current frame
     FGPlanePosPatient *planposfg =
       OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
     assert(planposfg);
 
-    // get string representation of the frame origin
     ShortImageType::PointType frameOriginPoint;
     ShortImageType::IndexType frameOriginIndex;
     for(int j=0;j<3;j++){
@@ -76,18 +72,13 @@ vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIDa
     }
     clog << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
 
-    // make sure that frame origin is in image geometry if itkimage
     if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
       cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
            " is outside image geometry!" << frameOriginIndex << endl;
       cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
       throw -1;
     }
-
-    pair<Uint16 , long> temp;
-    temp.first = segmentId;
-    temp.second = frameOriginIndex[2];
-    matchedFramesWithSlices.push_back(temp);
+    matchedFramesWithSlices.push_back(make_pair(segmentId, frameOriginIndex[2]));
   }
   return matchedFramesWithSlices;
 }
@@ -106,12 +97,13 @@ int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
 
     DcmIODTypes::Frame *unpackedFrame = NULL;
 
-    if (segmentation->getSegmentationType() == DcmSegTypes::ST_BINARY)
+    if (segmentation->getSegmentationType() == DcmSegTypes::ST_BINARY) {
       unpackedFrame = DcmSegUtils::unpackBinaryFrame(frame,
                                                      volumeGeometry.extent[1], // Rows
                                                      volumeGeometry.extent[0]); // Cols
-    else
+    } else {
       unpackedFrame = new DcmIODTypes::Frame(*frame);
+    }
 
     for (unsigned row = 0; row < volumeGeometry.extent[1]; row++) {
       for (unsigned col = 0; col < volumeGeometry.extent[0]; col++) {
