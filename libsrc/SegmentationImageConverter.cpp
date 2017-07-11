@@ -17,7 +17,7 @@ namespace dcmqi {
 
     ss << styledWriter.write(seg.getMetaDataJson());
 
-    return pair <map<unsigned,SegmentationImageObject::ShortImageType::Pointer>, string>(seg.getITKRepresentation(),
+    return pair <map<unsigned,SegmentationImageObject::ShortITKImageType::Pointer>, string>(seg.getITKRepresentation(),
                                                                                          ss.str());
   };
 
