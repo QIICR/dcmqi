@@ -48,10 +48,10 @@ protected:
 
   DcmSegmentation* segmentation;
 
-  int iterateOverFramesAndMatchSlices();
+  // returns a vector with a size equal to the number of frames each holding segmentID and sliceNumber
+  vector< pair<Uint16 , long> > matchFramesWithSegmendIDandSliceNumber(FGInterface &fgInterface);
 
-  int unpackFrameAndWriteSegmentImage(const size_t& frameId, const Uint16& segmentId, const unsigned int& slice);
-
+  int unpackFramesAndWriteSegmentImage(vector< pair<Uint16 , long> > matchingSegmentIDsAndSliceNumbers);
   int initializeMetaDataFromDICOM(DcmDataset*);
 
   int createNewSegmentImage(Uint16 segmentId);

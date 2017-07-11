@@ -24,28 +24,28 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
 
   initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
   itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
-  iterateOverFramesAndMatchSlices();
+  vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmendIDandSliceNumber(
+    segmentation->getFunctionalGroups());
+  unpackFramesAndWriteSegmentImage(matchedFramesWithSlices);
   initializeMetaDataFromDICOM(sourceDataset);
 
   return EXIT_SUCCESS;
 }
 
-int SegmentationImageObject::iterateOverFramesAndMatchSlices() {
-  // Iterate over frames, find the matching slice for each of the frames based on
-  // ImagePositionPatient, set non-zero pixels to the segment number. Notify
-  // about pixels that are initialized more than once.
+vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIDandSliceNumber(FGInterface &fgInterface) {
 
-  FGInterface &fgInterface = segmentation->getFunctionalGroups();
+  vector< pair<Uint16 , long> > matchedFramesWithSlices;
 
   for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
     bool isPerFrame;
 
 #ifndef NDEBUG
-    FGFrameContent *fracon =
+    FGFrameContent *frameContent =
       OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
-    assert(fracon);
+    assert(frameContent);
 #endif
 
+    // check for valid segment ID
     Uint16 segmentId = getSegmentId(fgInterface, frameId);
 
     // WARNING: this is needed only for David's example, which numbers
@@ -55,10 +55,12 @@ int SegmentationImageObject::iterateOverFramesAndMatchSlices() {
       throw -1;
     }
 
+    // if not found -> create duplicate of itkimage and set all values to 0
     if(segment2image.find(segmentId) == segment2image.end()) {
       createNewSegmentImage(segmentId);
     }
 
+    // get plane position for current frame
     FGPlanePosPatient *planposfg =
       OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
     assert(planposfg);
@@ -72,57 +74,64 @@ int SegmentationImageObject::iterateOverFramesAndMatchSlices() {
         frameOriginPoint[j] = atof(planposStr.c_str());
       }
     }
-    cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
+    clog << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
 
+    // make sure that frame origin is in image geometry if itkimage
     if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
       cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
            " is outside image geometry!" << frameOriginIndex << endl;
       cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
       throw -1;
-    } else {
-      cout << "Frame " << frameId << " origin " << frameOriginPoint <<
-           " is inside image geometry!" << frameOriginIndex << endl;
-      cout << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
     }
 
-    unsigned slice = frameOriginIndex[2];
-
-    unpackFrameAndWriteSegmentImage(frameId, segmentId, slice);
+    pair<Uint16 , long> temp;
+    temp.first = segmentId;
+    temp.second = frameOriginIndex[2];
+    matchedFramesWithSlices.push_back(temp);
   }
-  return EXIT_SUCCESS;
+  return matchedFramesWithSlices;
 }
 
-int SegmentationImageObject::unpackFrameAndWriteSegmentImage(const size_t& frameId, const Uint16& segmentId,
-                                                             const unsigned int& slice) {
-  const DcmIODTypes::Frame *frame = segmentation->getFrame(frameId);
+int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
+  vector< pair<Uint16 , long> > matchingSegmentIDsAndSliceNumbers) {
 
-  DcmIODTypes::Frame *unpackedFrame = NULL;
+  for (std::vector< pair<Uint16 , long> >::iterator it = matchingSegmentIDsAndSliceNumbers.begin();
+       it != matchingSegmentIDsAndSliceNumbers.end(); ++it) {
 
-  if(segmentation->getSegmentationType() == DcmSegTypes::ST_BINARY)
-    unpackedFrame = DcmSegUtils::unpackBinaryFrame(frame,
-                                                   volumeGeometry.extent[1], // Rows
-                                                   volumeGeometry.extent[0]); // Cols
-  else
-    unpackedFrame = new DcmIODTypes::Frame(*frame);
+    unsigned frameId = it - matchingSegmentIDsAndSliceNumbers.begin();
+    Uint16 segmentId = (*it).first;
+    long sliceNumber = (*it).second;
 
-  for(unsigned row=0; row < volumeGeometry.extent[1]; row++){
-    for(unsigned col=0; col < volumeGeometry.extent[0]; col++){
-      ShortImageType::PixelType pixel;
-      unsigned bitCnt = row * volumeGeometry.extent[0] + col;
-      pixel = unpackedFrame->pixData[bitCnt];
+    const DcmIODTypes::Frame *frame = segmentation->getFrame(frameId);
 
-      if(pixel!=0){
-        ShortImageType::IndexType index;
-        index[0] = col;
-        index[1] = row;
-        index[2] = slice;
-        segment2image[segmentId]->SetPixel(index, segmentId);
+    DcmIODTypes::Frame *unpackedFrame = NULL;
+
+    if (segmentation->getSegmentationType() == DcmSegTypes::ST_BINARY)
+      unpackedFrame = DcmSegUtils::unpackBinaryFrame(frame,
+                                                     volumeGeometry.extent[1], // Rows
+                                                     volumeGeometry.extent[0]); // Cols
+    else
+      unpackedFrame = new DcmIODTypes::Frame(*frame);
+
+    for (unsigned row = 0; row < volumeGeometry.extent[1]; row++) {
+      for (unsigned col = 0; col < volumeGeometry.extent[0]; col++) {
+        ShortImageType::PixelType pixel;
+        unsigned bitCnt = row * volumeGeometry.extent[0] + col;
+        pixel = unpackedFrame->pixData[bitCnt];
+
+        if (pixel != 0) {
+          ShortImageType::IndexType index;
+          index[0] = col;
+          index[1] = row;
+          index[2] = sliceNumber;
+          segment2image[segmentId]->SetPixel(index, segmentId);
+        }
       }
     }
-  }
 
-  if(unpackedFrame != NULL)
-    delete unpackedFrame;
+    if (unpackedFrame != NULL)
+      delete unpackedFrame;
+  }
 
   return EXIT_SUCCESS;
 }
@@ -171,7 +180,7 @@ int SegmentationImageObject::initializeMetaDataFromDICOM(DcmDataset *segDataset)
   return EXIT_SUCCESS;
 }
 
-Json::Value  SegmentationImageObject::getSegmentAttributesMetadata() {
+Json::Value SegmentationImageObject::getSegmentAttributesMetadata() {
 
   using namespace dcmqi;
 
