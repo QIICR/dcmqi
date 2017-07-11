@@ -26,7 +26,7 @@ class SegmentationImageObject : public MultiframeObject {
 public:
 
   typedef short ShortPixelType;
-  typedef itk::Image<ShortPixelType, 3> ShortImageType;
+  typedef itk::Image<ShortPixelType, 3> ShortITKImageType;
 
   SegmentationImageObject(){
     segmentation = NULL;
@@ -34,22 +34,22 @@ public:
 
   int initializeFromDICOM(DcmDataset* sourceDataset);
 
-  map<unsigned,ShortImageType::Pointer> getITKRepresentation() const {
+  map<unsigned,ShortITKImageType::Pointer> getITKRepresentation() const {
     // TODO: think about naming
     return segment2image;
   }
 
 protected:
   // Data containers specific to this object
-  ShortImageType::Pointer itkImage;
+  ShortITKImageType::Pointer itkImage;
 
   // ITK images corresponding to the individual segments
-  map<unsigned,ShortImageType::Pointer> segment2image;
+  map<unsigned,ShortITKImageType::Pointer> segment2image;
 
   DcmSegmentation* segmentation;
 
   // returns a vector with a size equal to the number of frames each holding segmentID and sliceNumber
-  vector< pair<Uint16 , long> > matchFramesWithSegmendIdAndSliceNumber(FGInterface &fgInterface);
+  vector< pair<Uint16 , long> > matchFramesWithSegmentIdAndSliceNumber(FGInterface &fgInterface);
 
   int unpackFramesAndWriteSegmentImage(vector< pair<Uint16 , long> > matchingSegmentIDsAndSliceNumbers);
   int initializeMetaDataFromDICOM(DcmDataset*);

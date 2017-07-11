@@ -23,8 +23,8 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   }
 
   initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
-  itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
-  vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmendIdAndSliceNumber(
+  itkImage = volumeGeometry.getITKRepresentation<ShortITKImageType>();
+  vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmentIdAndSliceNumber(
     segmentation->getFunctionalGroups());
   unpackFramesAndWriteSegmentImage(matchedFramesWithSlices);
   initializeMetaDataFromDICOM(sourceDataset);
@@ -32,7 +32,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   return EXIT_SUCCESS;
 }
 
-vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIdAndSliceNumber(FGInterface &fgInterface) {
+vector< pair<Uint16, long> > SegmentationImageObject::matchFramesWithSegmentIdAndSliceNumber(FGInterface &fgInterface) {
 
   vector< pair<Uint16, long> > matchedFramesWithSlices;
 
@@ -62,8 +62,8 @@ vector< pair<Uint16 , long> > SegmentationImageObject::matchFramesWithSegmendIdA
       OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
     assert(planposfg);
 
-    ShortImageType::PointType frameOriginPoint;
-    ShortImageType::IndexType frameOriginIndex;
+    ShortITKImageType::PointType frameOriginPoint;
+    ShortITKImageType::IndexType frameOriginIndex;
     for(int j=0;j<3;j++){
       OFString planposStr;
       if(planposfg->getImagePositionPatient(planposStr, j).good()){
@@ -107,12 +107,12 @@ int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
 
     for (unsigned row = 0; row < volumeGeometry.extent[1]; row++) {
       for (unsigned col = 0; col < volumeGeometry.extent[0]; col++) {
-        ShortImageType::PixelType pixel;
+        ShortITKImageType::PixelType pixel;
         unsigned bitCnt = row * volumeGeometry.extent[0] + col;
         pixel = unpackedFrame->pixData[bitCnt];
 
         if (pixel != 0) {
-          ShortImageType::IndexType index;
+          ShortITKImageType::IndexType index;
           index[0] = col;
           index[1] = row;
           index[2] = sliceNumber;
@@ -129,11 +129,11 @@ int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
 }
 
 int SegmentationImageObject::createNewSegmentImage(Uint16 segmentId) {
-  typedef itk::ImageDuplicator<ShortImageType> DuplicatorType;
+  typedef itk::ImageDuplicator<ShortITKImageType> DuplicatorType;
   DuplicatorType::Pointer dup = DuplicatorType::New();
   dup->SetInputImage(itkImage);
   dup->Update();
-  ShortImageType::Pointer newSegmentImage = dup->GetOutput();
+  ShortITKImageType::Pointer newSegmentImage = dup->GetOutput();
   newSegmentImage->FillBuffer(0);
   segment2image[segmentId] = newSegmentImage;
   return EXIT_SUCCESS;
