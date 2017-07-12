@@ -60,6 +60,7 @@ protected:
   int initializeVolumeGeometry();
   int createDICOMParametricMap();
   int createITKParametricMap();
+  int createITKImageFromFrames(FGInterface&, DPMParametricMapIOD::Frames<Float32PixelType>);
   int initializeCompositeContext();
   int initializeFrameAnatomyFG();
   int initializeRWVMFG();

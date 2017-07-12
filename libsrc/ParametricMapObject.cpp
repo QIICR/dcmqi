@@ -151,9 +151,15 @@ int ParametricMapObject::createITKParametricMap() {
     throw -1;
   }
 
+  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
   DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
 
-  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
+  createITKImageFromFrames(fgInterface, frames);
+  return EXIT_SUCCESS;
+}
+
+int ParametricMapObject::createITKImageFromFrames(FGInterface &fgInterface,
+                                                  DPMParametricMapIOD::Frames<Float32PixelType> frames) {
   for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
     bool isPerFrame;
 
