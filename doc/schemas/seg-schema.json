@@ -99,6 +99,9 @@
             "SegmentAlgorithmType"
           ],
           "properties": {
+            "segmentationFileName": {
+              "type": "string"
+            },
             "labelID": {
               "type": "integer",
               "default": 1
