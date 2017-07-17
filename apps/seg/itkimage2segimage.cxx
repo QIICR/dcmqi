@@ -55,7 +55,41 @@ int main(int argc, char *argv[])
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                        (std::istreambuf_iterator<char>()));
-  DcmDataset* result = dcmqi::SegmentationImageConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+
+  Json::Value metaRoot;
+  istringstream metainfoisstream(metadata);
+  metainfoisstream >> metaRoot;
+  if(metaRoot.isMember("segmentAttributesFileMapping")){
+    if(metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()){
+      cerr << "Number of files in segmentAttributesFileMapping should match the number of entries in segmentAttributes!" << endl;
+      return EXIT_FAILURE;
+    }
+    // otherwise, re-order the entries in the segmentAtrributes list to match the order of files in segmentAttributesFileMapping
+    Json::Value reorderedSegmentAttributes;
+    vector<int> fileOrder(segImageFiles.size());
+    vector<ShortImageType::Pointer> segmentationsReordered(segImageFiles.size());
+    for(int filePosition=0;filePosition<segImageFiles.size();filePosition++){
+      for(int mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
+        size_t foundPos = segImageFiles[filePosition].rfind(metaRoot["segmentAttributesFileMapping"][mappingPosition].asCString());
+        if(foundPos == std::string::npos){
+          cerr << "Failed to map an item from the segmentAttributesFileMapping attribute to an input file name!" << endl;
+          return EXIT_FAILURE;
+        }
+        fileOrder[filePosition] = mappingPosition;
+        break;
+      }
+    }
+    for(int i=0;i<segImageFiles.size();i++){
+      if(fileOrder[i]==-1){
+        cerr << "Failed to map segmentation file order" << endl;
+        return EXIT_FAILURE;
+      }
+      segmentationsReordered[i] = segmentations[fileOrder[i]];
+    }
+    segmentations = segmentationsReordered;
+  }
+
+  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
   if (result == NULL){
     return EXIT_FAILURE;
