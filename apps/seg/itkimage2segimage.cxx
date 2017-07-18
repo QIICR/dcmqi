@@ -67,24 +67,26 @@ int main(int argc, char *argv[])
     // otherwise, re-order the entries in the segmentAtrributes list to match the order of files in segmentAttributesFileMapping
     Json::Value reorderedSegmentAttributes;
     vector<int> fileOrder(segImageFiles.size());
+    fill(fileOrder.begin(), fileOrder.end(), -1);
     vector<ShortImageType::Pointer> segmentationsReordered(segImageFiles.size());
     for(int filePosition=0;filePosition<segImageFiles.size();filePosition++){
       for(int mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
-        size_t foundPos = segImageFiles[filePosition].rfind(metaRoot["segmentAttributesFileMapping"][mappingPosition].asCString());
-        if(foundPos == std::string::npos){
-          cerr << "Failed to map an item from the segmentAttributesFileMapping attribute to an input file name!" << endl;
-          return EXIT_FAILURE;
+        string mappingItem = metaRoot["segmentAttributesFileMapping"][mappingPosition].asCString();
+        size_t foundPos = segImageFiles[filePosition].rfind(mappingItem);
+        if(foundPos != std::string::npos){
+          fileOrder[filePosition] = mappingPosition;
+          break;
         }
-        fileOrder[filePosition] = mappingPosition;
-        break;
       }
-    }
-    for(int i=0;i<segImageFiles.size();i++){
-      if(fileOrder[i]==-1){
-        cerr << "Failed to map segmentation file order" << endl;
+      if(fileOrder[filePosition] == -1){
+        cerr << "Failed to map " << segImageFiles[filePosition] << " from the segmentAttributesFileMapping attribute to an input file name!" << endl;
         return EXIT_FAILURE;
       }
-      segmentationsReordered[i] = segmentations[fileOrder[i]];
+    }
+    cout << "Order of input ITK images updated as shown below based on the segmentAttributesFileMapping attribute:" << endl;
+    for(int i=0;i<segImageFiles.size();i++){
+      cout << " image " << i << " moved to position " << fileOrder[i] << endl;
+      segmentationsReordered[fileOrder[i]] = segmentations[i];
     }
     segmentations = segmentationsReordered;
   }
