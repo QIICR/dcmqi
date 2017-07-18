@@ -85,6 +85,12 @@
       ],
       "default": ""
     },
+    "segmentAttributesFileMapping": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "segmentAttributes": {
       "type": "array",
       "items": {
@@ -99,9 +105,6 @@
             "SegmentAlgorithmType"
           ],
           "properties": {
-            "segmentationFileName": {
-              "type": "string"
-            },
             "labelID": {
               "type": "integer",
               "default": 1
