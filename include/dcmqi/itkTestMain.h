@@ -89,7 +89,7 @@ int main(int ac, char *av[])
 {
   itk::FloatingPointExceptions::Enable();
 
-  double       intensityTolerance  = 2.0;
+  double       intensityTolerance  = 0.0001;
   unsigned int numberOfPixelsTolerance = 0;
   unsigned int radiusTolerance = 0;
 
