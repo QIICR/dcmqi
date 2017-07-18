@@ -70,7 +70,7 @@ if(EXISTS ${DCIODVFY_EXECUTABLE})
       ${itk2dcm}_makeSEG_multiple_segment_files
     )
     dcmqi_add_test(
-      NAME ${itk2dcm}_makeSEG_multiple_segment_files_dciodvfy
+      NAME ${itk2dcm}_makeSEG_multiple_segment_files_reordered_dciodvfy
       MODULE_NAME ${MODULE_NAME}
       COMMAND ${DCIODVFY_EXECUTABLE}
         ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
