@@ -40,6 +40,16 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
   )
 
+  dcmqi_add_test(
+    NAME ${itk2dcm}_makeSEG_multiple_segment_files_reordered
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${itk2dcm}>
+      --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments_reordered.json
+      --inputImageList ${BASELINE}/heart_seg.nrrd,${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd
+      --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+      --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
+    )
+
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
@@ -58,6 +68,14 @@ if(EXISTS ${DCIODVFY_EXECUTABLE})
       ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
     TEST_DEPENDS
       ${itk2dcm}_makeSEG_multiple_segment_files
+    )
+    dcmqi_add_test(
+      NAME ${itk2dcm}_makeSEG_multiple_segment_files_reordered_dciodvfy
+      MODULE_NAME ${MODULE_NAME}
+      COMMAND ${DCIODVFY_EXECUTABLE}
+        ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
+      TEST_DEPENDS
+        ${itk2dcm}_makeSEG_multiple_segment_files_reordered
     )
 else()
   message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
@@ -105,6 +123,21 @@ dcmqi_add_test(
   TEST_DEPENDS
     ${itk2dcm}_makeSEG_multiple_segment_files
   )
+
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_multiple_segment_files_reordered
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+      --compare ${BASELINE}/liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments_reordered-1.nrrd
+      --compare ${BASELINE}/spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments_reordered-2.nrrd
+      --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments_reordered-3.nrrd
+      ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRD_multiple_segments_reordered
+    TEST_DEPENDS
+      ${itk2dcm}_makeSEG_multiple_segment_files_reordered
+    )
 
 dcmqi_add_test(
   NAME seg_meta_roundtrip

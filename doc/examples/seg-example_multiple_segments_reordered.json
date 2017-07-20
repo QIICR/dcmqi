@@ -9,6 +9,12 @@
   "SeriesNumber": "300",
   "InstanceNumber": "1",
 
+  "segmentAttributesFileMapping": [
+    "liver_seg.nrrd",
+    "spine_seg.nrrd",
+    "heart_seg.nrrd"
+  ],
+
   "segmentAttributes": [
     [
       {

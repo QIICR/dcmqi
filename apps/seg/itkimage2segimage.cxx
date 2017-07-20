@@ -11,7 +11,7 @@ typedef dcmqi::Helper helper;
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
-  
+
   PARSE_ARGS;
 
   if(helper::isUndefinedOrPathsDoNotExist(segImageFiles, "Input image files")
@@ -55,6 +55,42 @@ int main(int argc, char *argv[])
   ifstream metainfoStream(metaDataFileName.c_str(), ios_base::binary);
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                        (std::istreambuf_iterator<char>()));
+
+  Json::Value metaRoot;
+  istringstream metainfoisstream(metadata);
+  metainfoisstream >> metaRoot;
+  if(metaRoot.isMember("segmentAttributesFileMapping")){
+    if(metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()){
+      cerr << "Number of files in segmentAttributesFileMapping should match the number of entries in segmentAttributes!" << endl;
+      return EXIT_FAILURE;
+    }
+    // otherwise, re-order the entries in the segmentAtrributes list to match the order of files in segmentAttributesFileMapping
+    Json::Value reorderedSegmentAttributes;
+    vector<int> fileOrder(segImageFiles.size());
+    fill(fileOrder.begin(), fileOrder.end(), -1);
+    vector<ShortImageType::Pointer> segmentationsReordered(segImageFiles.size());
+    for(int filePosition=0;filePosition<segImageFiles.size();filePosition++){
+      for(int mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
+        string mappingItem = metaRoot["segmentAttributesFileMapping"][mappingPosition].asCString();
+        size_t foundPos = segImageFiles[filePosition].rfind(mappingItem);
+        if(foundPos != std::string::npos){
+          fileOrder[filePosition] = mappingPosition;
+          break;
+        }
+      }
+      if(fileOrder[filePosition] == -1){
+        cerr << "Failed to map " << segImageFiles[filePosition] << " from the segmentAttributesFileMapping attribute to an input file name!" << endl;
+        return EXIT_FAILURE;
+      }
+    }
+    cout << "Order of input ITK images updated as shown below based on the segmentAttributesFileMapping attribute:" << endl;
+    for(int i=0;i<segImageFiles.size();i++){
+      cout << " image " << i << " moved to position " << fileOrder[i] << endl;
+      segmentationsReordered[fileOrder[i]] = segmentations[i];
+    }
+    segmentations = segmentationsReordered;
+  }
+
   DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
   if (result == NULL){
