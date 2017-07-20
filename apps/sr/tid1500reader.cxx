@@ -135,10 +135,7 @@ Json::Value getMeasurements(DSRDocument &doc) {
             localMeasurement["units"] = DSRCodedEntryValue2CodeSequence(measurementValue.getMeasurementUnit());
             localMeasurement["quantity"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getConceptName());
 
-            // Note: if the second argument is set to true (the default), the
-            // whole tree will be searched!
-            // See details in https://github.com/QIICR/dcmqi/issues/261
-            if(st.gotoNamedChildNode(CODE_DCM_Derivation, false)){
+            if(st.gotoNamedChildNode(CODE_DCM_Derivation)){
               localMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
               st.gotoParent();
             }
