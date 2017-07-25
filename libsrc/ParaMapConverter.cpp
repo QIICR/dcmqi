@@ -56,7 +56,9 @@ namespace dcmqi {
       srcDataset = dcmDatasets[0];
     }
     if (srcDataset)
-      CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
+      // import Patient, Study and Frame of Reference; do not import Series
+      // attributes
+      CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
     char dimUID[128];

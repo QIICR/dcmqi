@@ -36,8 +36,9 @@ namespace dcmqi {
         eq,     // equipment
         ident);   // content identification
 
-    /* Import patient and study from existing file */
-    CHECK_COND(segdoc->import(*dcmDatasets[0], OFTrue, OFTrue, OFFalse, OFTrue));
+    // import Patient, Study and Frame of Reference; do not import Series
+    // attributes
+    CHECK_COND(segdoc->import(*dcmDatasets[0], OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
     char dimUID[128];
