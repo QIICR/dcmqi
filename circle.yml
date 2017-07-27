@@ -27,7 +27,7 @@ dependencies:
         ../build/dcmqi-build/ \
         ../util/junit/conv.xsl > ../build/BaseTest.xml
     # Install package required to automatically create or update GitHub releases
-    - pip install scikit-ci-addons==0.14.0
+    - pip install -U "scikit-ci-addons>=0.17.0"
 
 test:
   post:
