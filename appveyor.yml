@@ -49,7 +49,7 @@ before_build:
         $client.DownloadFile("https://github.com/fedorov/SlicerExecutionModel/releases/download/SlicerExecutionModel-dcmqi-VS12-Win64-Release-v0.0.5/SlicerExecutionModel-dcmqi.zip", "C:\SlicerExecutionModel-dcmqi.zip")
   - 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
   # Install package required to automatically create or update GitHub releases
-  - pip install -U "scikit-ci-addons>=0.17.0"
+  - pip install -U "scikit-ci-addons>=0.18.0"
   # Configure project
   - |
     mkdir c:\dcmqi\dcmqi-build
