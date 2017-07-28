@@ -6,7 +6,6 @@
 #include "dcmqi/QIICRConstants.h"
 #include "dcmqi/ParametricMapObject.h"
 
-
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
                                            const string &metaDataStr,
                                            std::vector<DcmDataset *> derivationDatasets) {
@@ -516,7 +515,6 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
   unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
 
   bool derivationFGRequired = isDerivationFGRequired(slice2frame);
-
   for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
 
     perFrameFGs.push_back(fgppp);

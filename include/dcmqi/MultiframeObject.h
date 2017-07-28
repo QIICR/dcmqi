@@ -141,6 +141,8 @@ protected:
   Json::Value metaDataJson;
 
   // Multiframe DICOM object representation
+  // probably not needed, since need object-specific DCMTK class in
+  // derived classes
   DcmDataset* dcmRepresentation;
 
   // probably not needed at this level, since for SEG each segment will
@@ -177,8 +179,7 @@ protected:
 
   vnl_vector<double> getFrameOrigin(FGInterface &fgInterface, int frameId) const;
   vnl_vector<double> getFrameOrigin(FGPlanePosPatient *planposfg) const;
-
-  };
+};
 
 
 #endif //DCMQI_MULTIFRAMEOBJECT_H

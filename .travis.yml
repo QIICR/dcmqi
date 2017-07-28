@@ -29,7 +29,7 @@ before_script:
 # Use scikit-ci-addons to
 # * streamline installation of CMake
 # * install package required to automatically create or update GitHub releases
-- pip install scikit-ci-addons==0.14.0
+- pip install -U "scikit-ci-addons>=0.18.0"
 - ci_addons travis/install_cmake 3.6.2
 # Install Ninja
 - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip

@@ -73,9 +73,13 @@ namespace dcmqi {
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    // import metadata from the source datasets
-    // TODO: not clear why readFoR is set to False
-    CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFFalse, OFTrue));
+    if(dcmDatasets.size()){
+      srcDataset = dcmDatasets[0];
+    }
+    if (srcDataset)
+      // import Patient, Study and Frame of Reference; do not import Series
+      // attributes
+      CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
     IODMultiframeDimensionModule &mfdim = pMapDoc->getIODMultiframeDimensionModule();

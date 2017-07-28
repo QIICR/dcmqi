@@ -4,7 +4,6 @@
 
 #include "dcmqi/SegmentationImageObject.h"
 
-
 int SegmentationImageObject::initializeFromITK(vector<ShortImageType::Pointer> itkSegmentations,
                                                const string &metaDataStr, vector<DcmDataset *> derivationDatasets,
                                                bool skipEmptySlices) {

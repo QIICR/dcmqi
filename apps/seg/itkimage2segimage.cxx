@@ -11,7 +11,7 @@ typedef dcmqi::Helper helper;
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
-  
+
   PARSE_ARGS;
 
   if(helper::isUndefinedOrPathsDoNotExist(segImageFiles, "Input image files")

@@ -16,7 +16,6 @@
 #include <itkCastImageFilter.h>
 #include <itkMinimumMaximumImageCalculator.h>
 
-
 #include "MultiframeObject.h"
 
 /*
@@ -72,9 +71,7 @@ protected:
 
   bool isDerivationFGRequired(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame);
 
-
-    IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
-  // Functional groups initialization
+  IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
 
   // Functional groups specific to PM:
   //  - Shared
@@ -88,7 +85,6 @@ protected:
 
 private:
   DPMParametricMapIOD* parametricMap;
-
   CodeSequenceMacro *createCodeSequenceFromMetadata(const string &codeName) const;
 };
 

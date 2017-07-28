@@ -10,7 +10,6 @@
 #include "Helper.h"
 #include "QIICRConstants.h"
 
-
 // DCMTK includes
 #include <dcmtk/dcmfg/fgderimg.h>
 #include <dcmtk/dcmfg/fgseg.h>
@@ -43,7 +42,6 @@ public:
     if(segmentation)
       CHECK_COND(segmentation->writeDataset(dcm));
   };
-
   map<unsigned,ShortImageType::Pointer> getITKRepresentation() const {
     // TODO: think about naming
     return segment2image;
