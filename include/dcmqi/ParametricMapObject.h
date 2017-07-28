@@ -70,7 +70,10 @@ protected:
   int initializeRWVMFG();
   int initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-  IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
+  bool isDerivationFGRequired(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame);
+
+
+    IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
   // Functional groups initialization
 
   // Functional groups specific to PM:

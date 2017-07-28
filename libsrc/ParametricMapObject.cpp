@@ -61,7 +61,7 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   // initialize referenced instances
   // this is done using this utility function from the parent class, since this functionality will
   // be needed both in the PM and SEG objects
-  mapVolumeSlicesToDICOMFrames(this->volumeGeometry, derivationDatasets, slice2frame);
+  mapVolumeSlicesToDICOMFrames(derivationDatasets, slice2frame);
 
   initializeCommonInstanceReferenceModule(this->parametricMap->getCommonInstanceReference(), slice2frame);
 
@@ -343,7 +343,7 @@ int ParametricMapObject::initializeRWVMFG() {
 
     if (!fittingMethod || !qSpec || !qCodeName)
     {
-      return NULL;
+      return EXIT_FAILURE;
     }
 
     fittingMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
@@ -495,7 +495,19 @@ void ParametricMapObject::initializeMetaDataFromDICOM() {
   }
 }
 
+bool ParametricMapObject::isDerivationFGRequired(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame) {
+  // if there is a derivation item for at least one frame, DerivationImageSequence must be present for every frame.
+  unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
+  for (unsigned long sliceNumber=0;sliceNumber<nSlices; sliceNumber++) {
+    if(!slice2frame[sliceNumber].empty()){
+      return true;
+    }
+  }
+  return false;
+}
+
 int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame){
+
   FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
   FGFrameContent* fgfc = new FGFrameContent();
   FGDerivationImage* fgder = new FGDerivationImage();
@@ -503,15 +515,7 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
 
   unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
 
-  // if there is a derivation item for at least one frame, DerivationImageSequence must be present
-  //   for every frame.
-  bool derivationFGRequired = false;
-  for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
-    if(!slice2frame[sliceNumber].empty()){
-      derivationFGRequired = true;
-      break;
-    }
-  }
+  bool derivationFGRequired = isDerivationFGRequired(slice2frame);
 
   for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
 

@@ -54,23 +54,280 @@ int SegmentationImageObject::initializeFromITK(vector<ShortImageType::Pointer> i
   initializePlaneOrientationFG();
   CHECK_COND(segmentation->addForAllFrames(planeOrientationPatientFG));
 
-  // Mapping from parametric map volume slices to the DICOM frames
   vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > slice2frame;
+  mapVolumeSlicesToDICOMFrames(derivationDatasets, slice2frame);
 
-  // TODO: not sure about volumeGeometry since it was created from the first segmentation volume only
-  mapVolumeSlicesToDICOMFrames(volumeGeometry, derivationDatasets, slice2frame);
+  // NB: this assumes all segmentation files have the same dimensions; alternatively, need to
+  //    do this operation for each segmentation file
+  vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage<ShortImageType>(derivationDatasets,
+                                                                                                 itkSegmentations[0]);
 
   initializeCommonInstanceReferenceModule(segmentation->getCommonInstanceReference(), slice2frame);
 
-  // NB this assumes all segmentation files have the same dimensions; alternatively, need to
-  //   do this operation for each segmentation file
-  vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(derivationDatasets,
-                                                                                 itkSegmentations[0]);
+  // initial frames ...
 
-  //  initializeFrames(slice2derimg);
+  FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
+  FGFrameContent* fgfc = new FGFrameContent();
+  FGDerivationImage* fgder = new FGDerivationImage();
+  OFVector<FGBase*> perFrameFGs;
+
+  perFrameFGs.push_back(fgppp);
+  perFrameFGs.push_back(fgfc);
+  if(hasDerivationImages(slice2derimg))
+    perFrameFGs.push_back(fgder);
+
+  int uidfound = 0, uidnotfound = 0;
+  const unsigned frameSize = volumeGeometry.extent[0] * volumeGeometry.extent[1];
+  Uint8 *frameData = new Uint8[frameSize];
+
+//  for(size_t segFileNumber=0; segFileNumber<itkImages.size(); segFileNumber++) {
+//
+//    cout << "Processing input label " << itkImages[segFileNumber] << endl;
+//
+//    LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
+//    l2lm->SetInput(itkImages[segFileNumber]);
+//    l2lm->Update();
+//
+//    typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
+//    typedef itk::LabelStatisticsImageFilter<ShortImageType,ShortImageType> LabelStatisticsType;
+//
+//    LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
+//
+//    cout << "Found " << l2lm->GetOutput()->GetNumberOfLabelObjects() << " label(s)" << endl;
+//    labelStats->SetInput(itkImages[segFileNumber]);
+//    labelStats->SetLabelInput(itkImages[segFileNumber]);
+//    labelStats->Update();
+//
+//    // TODO: implement crop segments box
+//
+//    for(unsigned segLabelNumber=0 ; segLabelNumber<l2lm->GetOutput()->GetNumberOfLabelObjects();segLabelNumber++){
+//      LabelType* labelObject = l2lm->GetOutput()->GetNthLabelObject(segLabelNumber);
+//      short label = labelObject->GetLabel();
+//
+//      if(!label){
+//        cout << "Skipping label 0" << endl;
+//        continue;
+//      }
+//
+//      cout << "Processing label " << label << endl;
+//
+//      LabelStatisticsType::BoundingBoxType bbox = labelStats->GetBoundingBox(label);
+//      unsigned firstSlice, lastSlice;
+//      //bool skipEmptySlices = true; // TODO: what to do with that line?
+//      //bool skipEmptySlices = false; // TODO: what to do with that line?
+//      if(skipEmptySlices){
+//        firstSlice = bbox[4];
+//        lastSlice = bbox[5]+1;
+//      } else {
+//        firstSlice = 0;
+//        lastSlice = inputSize[2];
+//      }
+//
+//      cout << "Total non-empty slices that will be encoded in SEG for label " <<
+//           label << " is " << lastSlice-firstSlice << endl <<
+//           " (inclusive from " << firstSlice << " to " <<
+//           lastSlice << ")" << endl;
+//
+//      DcmSegment* segment = NULL;
+//      if(metaInfo.segmentsAttributesMappingList[segFileNumber].find(label) == metaInfo.segmentsAttributesMappingList[segFileNumber].end()){
+//        cerr << "ERROR: Failed to match label from image to the segment metadata!" << endl;
+//        return NULL;
+//      }
+//
+//      SegmentAttributes* segmentAttributes = metaInfo.segmentsAttributesMappingList[segFileNumber][label];
+//
+//      DcmSegTypes::E_SegmentAlgoType algoType = DcmSegTypes::SAT_UNKNOWN;
+//      string algoName = "";
+//      string algoTypeStr = segmentAttributes->getSegmentAlgorithmType();
+//      if(algoTypeStr == "MANUAL"){
+//        algoType = DcmSegTypes::SAT_MANUAL;
+//      } else {
+//        if(algoTypeStr == "AUTOMATIC")
+//          algoType = DcmSegTypes::SAT_AUTOMATIC;
+//        if(algoTypeStr == "SEMIAUTOMATIC")
+//          algoType = DcmSegTypes::SAT_SEMIAUTOMATIC;
+//
+//        algoName = segmentAttributes->getSegmentAlgorithmName();
+//        if(algoName == ""){
+//          cerr << "ERROR: Algorithm name must be specified for non-manual algorithm types!" << endl;
+//          return NULL;
+//        }
+//      }
+//
+//      CodeSequenceMacro* typeCode = segmentAttributes->getSegmentedPropertyTypeCodeSequence();
+//      CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCodeSequence();
+//      assert(typeCode != NULL && categoryCode!= NULL);
+//      OFString segmentLabel;
+//      CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
+//      CHECK_COND(DcmSegment::create(segment, segmentLabel, *categoryCode, *typeCode, algoType, algoName.c_str()));
+//
+//      if(segmentAttributes->getSegmentDescription().length() > 0)
+//        segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
+//
+//      CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifierCodeSequence();
+//      if (typeModifierCode != NULL) {
+//        OFVector<CodeSequenceMacro*>& modifiersVector = segment->getSegmentedPropertyTypeModifierCode();
+//        modifiersVector.push_back(typeModifierCode);
+//      }
+//
+//      GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
+//      if (segmentAttributes->getAnatomicRegionSequence() != NULL){
+//        OFVector<CodeSequenceMacro*>& anatomyMacroModifiersVector = anatomyMacro.getAnatomicRegionModifier();
+//        CodeSequenceMacro& anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
+//        anatomicRegionSequence = *segmentAttributes->getAnatomicRegionSequence();
+//
+//        if(segmentAttributes->getAnatomicRegionModifierSequence() != NULL){
+//          CodeSequenceMacro* anatomicRegionModifierSequence = segmentAttributes->getAnatomicRegionModifierSequence();
+//          anatomyMacroModifiersVector.push_back(anatomicRegionModifierSequence);
+//        }
+//      }
+//
+//      unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
+//      unsigned cielabScaled[3];
+//      float cielab[3], ciexyz[3];
+//
+//      Helper::getCIEXYZFromRGB(&rgb[0],&ciexyz[0]);
+//      Helper::getCIELabFromCIEXYZ(&ciexyz[0],&cielab[0]);
+//      Helper::getIntegerScaledCIELabFromCIELab(&cielab[0],&cielabScaled[0]);
+//      CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielabScaled[0],cielabScaled[1],cielabScaled[2]));
+//
+//      Uint16 segmentNumber;
+//      CHECK_COND(segdoc->addSegment(segment, segmentNumber /* returns logical segment number */));
+//
+//      // TODO: make it possible to skip empty frames (optional)
+//      // iterate over slices for an individual label and populate output frames
+//      for(unsigned sliceNumber=firstSlice;sliceNumber<lastSlice;sliceNumber++){
+//
+//        // PerFrame FG: FrameContentSequence
+//        //fracon->setStackID("1"); // all frames go into the same stack
+//        CHECK_COND(fgfc->setDimensionIndexValues(segmentNumber, 0));
+//        CHECK_COND(fgfc->setDimensionIndexValues(sliceNumber-firstSlice+1, 1));
+//        //ostringstream inStackPosSStream; // StackID is not present/needed
+//        //inStackPosSStream << s+1;
+//        //fracon->setInStackPositionNumber(s+1);
+//
+//        // PerFrame FG: PlanePositionSequence
+//        {
+//          ShortImageType::PointType sliceOriginPoint;
+//          ShortImageType::IndexType sliceOriginIndex;
+//          sliceOriginIndex.Fill(0);
+//          sliceOriginIndex[2] = sliceNumber;
+//          itkImages[segFileNumber]->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
+//          ostringstream pppSStream;
+//          if(sliceNumber>0){
+//            ShortImageType::PointType prevOrigin;
+//            ShortImageType::IndexType prevIndex;
+//            prevIndex.Fill(0);
+//            prevIndex[2] = sliceNumber-1;
+//            itkImages[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
+//          }
+//          fgppp->setImagePositionPatient(
+//            Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
+//            Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
+//            Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+//        }
+//
+//        /* Add frame that references this segment */
+//        {
+//          ShortImageType::RegionType sliceRegion;
+//          ShortImageType::IndexType sliceIndex;
+//          ShortImageType::SizeType sliceSize;
+//
+//          sliceIndex[0] = 0;
+//          sliceIndex[1] = 0;
+//          sliceIndex[2] = sliceNumber;
+//
+//          sliceSize[0] = volumeGeometry.extent[0];
+//          sliceSize[1] = volumeGeometry.extent[1];
+//          sliceSize[2] = 1;
+//
+//          sliceRegion.SetIndex(sliceIndex);
+//          sliceRegion.SetSize(sliceSize);
+//
+//          unsigned framePixelCnt = 0;
+//          itk::ImageRegionConstIteratorWithIndex<ShortImageType> sliceIterator(itkImages[segFileNumber], sliceRegion);
+//          for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
+//            if(sliceIterator.Get() == label){
+//              frameData[framePixelCnt] = 1;
+//              ShortImageType::IndexType idx = sliceIterator.GetIndex();
+//              //cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
+//            } else
+//              frameData[framePixelCnt] = 0;
+//          }
+//
+//          /*
+//          if(sliceNumber>=dcmDatasets.size()){
+//            cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
+//            return NULL;
+//          }*/
+//
+//          OFVector<DcmDataset*> siVector;
+//          for(size_t derImageInstanceNum=0;
+//              derImageInstanceNum<slice2derimg[sliceNumber].size();
+//              derImageInstanceNum++){
+//            siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
+//          }
+//
+//          if(siVector.size()>0){
+//
+//            DerivationImageItem *derimgItem;
+//            CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
+//
+//            cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+//
+//            OFVector<SourceImageItem*> srcimgItems;
+//            CHECK_COND(derimgItem->addSourceImageItems(siVector,
+//                                                       CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+//                                                       srcimgItems));
+//
+//            if(1){
+//              // initialize class UID and series instance UID
+//              ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
+//              OFString instanceUID;
+//              CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
+//              CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
+//
+//              if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
+//                SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+//                CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
+//                CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
+//                refinstances.push_back(refinstancesItem);
+//                instanceUIDs.insert(instanceUID);
+//                uidnotfound++;
+//              } else {
+//                uidfound++;
+//              }
+//            }
+//          }
+//
+//          CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
+//
+//          // remove derivation image FG from the per-frame FGs, only if applicable!
+//          if(siVector.size()>0){
+//            // clean up for the next frame
+//            fgder->clearData();
+//          }
+//
+//        }
+//      }
+//    }
+//  }
+//
+//  delete fgfc;
+//  delete fgppp;
+//  delete fgder;
 
   return EXIT_SUCCESS;
 
+}
+
+bool SegmentationImageObject::hasDerivationImages(vector<vector<int> > &slice2derimg) const {
+  for (vector<vector<int> >::const_iterator vI = slice2derimg.begin(); vI != slice2derimg.end(); ++vI) {
+    if ((*vI).size() > 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 int SegmentationImageObject::initializeEquipmentInfo() {
@@ -427,17 +684,17 @@ Uint16 SegmentationImageObject::getSegmentId(FGInterface &fgInterface, size_t fr
   return segmentId;
 }
 
-// AF: I could not quickly figure out how to template this function over image type - suggestions are welcomed!
+template <typename ImageType, typename ImageTypePointer>
 vector<vector<int> > SegmentationImageObject::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                                         const ShortImageType::Pointer &labelImage) {
+                                                                                         const ImageTypePointer &labelImage) {
   // Find mapping from the segmentation slice number to the derivation image
   // Assume that orientation of the segmentation is the same as the source series
   unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
   vector<vector<int> > slice2derimg(numLabelSlices);
   for(size_t i=0;i<dcmDatasets.size();i++){
     OFString ippStr;
-    ShortImageType::PointType ippPoint;
-    ShortImageType::IndexType ippIndex;
+    typename ImageType::PointType ippPoint;
+    typename ImageType::IndexType ippIndex;
     for(int j=0;j<3;j++){
       CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
       ippPoint[j] = atof(ippStr.c_str());

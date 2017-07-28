@@ -185,10 +185,9 @@ ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro
 // populates slice2frame vector that maps each of the volume slices to the set of frames that
 // are considered as derivation dataset
 // TODO: this function assumes that all of the derivation datasets are images, which is probably ok
-int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
-                                                   const vector<DcmDataset*> dcmDatasets,
+int MultiframeObject::mapVolumeSlicesToDICOMFrames(const vector<DcmDataset*> dcmDatasets,
                                                    vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
-  slice2frame.resize(volume.extent[2]);
+  slice2frame.resize(volumeGeometry.extent[2]);
 
   for(vector<DcmDataset* >::const_iterator it=dcmDatasets.begin();it!=dcmDatasets.end();++it) {
     Uint32 numFrames;
@@ -196,27 +195,26 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
     if(dcm->findAndGetUint32(DCM_NumberOfFrames, numFrames).good()){
       // this is a multiframe object
       for(int f=0;f<numFrames;f++){
-        dcmqi::DICOMFrame frame(dcm,f+1);
-        vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-
-        for(int s=0;s<intersectingSlices.size();s++) {
-          slice2frame[s].insert(frame);
-          if (!s)
-            this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
-        }
+        findIntersectingSlicesAndAddDerivationSeriesInstance(slice2frame, dcm, f+1);
       }
     } else {
-      dcmqi::DICOMFrame frame(dcm);
-      vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-
-      for(int s=0;s<intersectingSlices.size();s++) {
-        slice2frame[s].insert(frame);
-        if (!s)
-          this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
-      }
+      findIntersectingSlicesAndAddDerivationSeriesInstance(slice2frame, dcm);
     }
   }
+  return EXIT_SUCCESS;
+}
 
+int MultiframeObject::findIntersectingSlicesAndAddDerivationSeriesInstance(
+  vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > &slice2frame, DcmDataset *dcm, int frameNo) {
+  dcmqi::DICOMFrame frame(dcm, frameNo);
+  vector<int> intersectingSlices = findIntersectingSlices(volumeGeometry, frame);
+
+  if(intersectingSlices.size())
+    insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
+
+  for(int s=0;s<intersectingSlices.size();s++) {
+    slice2frame[s].insert(frame);
+  }
   return EXIT_SUCCESS;
 }
 

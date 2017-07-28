@@ -65,10 +65,7 @@ protected:
   int initializeVolumeGeometry();
   int initializeCompositeContext();
 
-  int initializeFrames(vector<vector<int> > slice2derimg);
-
-
-    // returns a vector with a size equal to the number of frames each holding segmentID and sliceNumber
+  // returns a vector with a size equal to the number of frames each holding segmentID and sliceNumber
   vector< pair<Uint16 , long> > matchFramesWithSegmentIdAndSliceNumber(FGInterface &fgInterface);
 
   int unpackFramesAndWriteSegmentImage(vector< pair<Uint16 , long> > matchingSegmentIDsAndSliceNumbers);
@@ -82,8 +79,11 @@ protected:
 
   Uint16 getSegmentId(FGInterface &fgInterface, size_t frameId) const;
 
+  template <typename ImageType, typename ImageTypePointer>
   vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
-                                                                  const ShortImageType::Pointer &labelImage);
+                                                                  const ImageTypePointer &labelImage);
+
+  bool hasDerivationImages(vector<vector<int> > &slice2derimg) const;
 };
 
 

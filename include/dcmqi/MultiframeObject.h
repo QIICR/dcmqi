@@ -106,17 +106,19 @@ protected:
   int initializePlaneOrientationFG();
   int initializeCommonInstanceReferenceModule(IODCommonInstanceReferenceModule &, vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-  int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
-                                          vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);
+  int mapVolumeSlicesToDICOMFrames(const vector<DcmDataset*>,
+                                   vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);
 
-  static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume,
-                                    dcmqi::DICOMFrame& frame);
+  static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume, dcmqi::DICOMFrame& frame);
 
   int addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> frames,
                                                         CodeSequenceMacro purposeOfReferenceCode  = CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
                                                         CodeSequenceMacro derivationCode = CodeSequenceMacro("110001","DCM","Image Processing"));
 
   void insertDerivationSeriesInstance(string seriesUID, string instanceUID);
+
+  int findIntersectingSlicesAndAddDerivationSeriesInstance(
+    vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > &slice2frame, DcmDataset *dcm, int frameNo=0);
 
   int setDerivationDatasets(std::vector<DcmDataset*> derivationDatasets){
     for(std::vector<DcmDataset*>::const_iterator vIt=derivationDatasets.begin();
