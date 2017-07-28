@@ -12,7 +12,10 @@
 #include <dcmtk/dcmfg/fgrealworldvaluemapping.h>
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 #include <dcmtk/dcmdata/dcrledrg.h>
+
 #include <itkCastImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
+
 
 #include "MultiframeObject.h"
 
@@ -57,6 +60,7 @@ protected:
       Float32ToDummyCasterType;
   typedef itk::MinimumMaximumImageCalculator<Float32ITKImageType> MinMaxCalculatorType;
 
+  int initializeEquipmentInfo();
   int initializeVolumeGeometry();
   int createDICOMParametricMap();
   int createITKParametricMap();
@@ -66,6 +70,7 @@ protected:
   int initializeRWVMFG();
   int initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
+  IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
   // Functional groups initialization
 
   // Functional groups specific to PM:

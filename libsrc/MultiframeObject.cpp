@@ -3,7 +3,6 @@
 //
 
 #include <dcmqi/Helper.h>
-#include "dcmqi/QIICRConstants.h"
 #include "dcmqi/MultiframeObject.h"
 
 int MultiframeObject::initializeFromDICOM(std::vector<DcmDataset *> sourceDataset) {
@@ -13,22 +12,6 @@ int MultiframeObject::initializeFromDICOM(std::vector<DcmDataset *> sourceDatase
 int MultiframeObject::initializeMetaDataFromString(const std::string &metaDataStr) {
   std::istringstream metaDataStream(metaDataStr);
   metaDataStream >> metaDataJson;
-  return EXIT_SUCCESS;
-}
-
-int MultiframeObject::initializeEquipmentInfo() {
-  if(sourceRepresentationType == ITK_REPR){
-    equipmentInfoModule = IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
-                                                                      QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
-    /*
-    equipmentInfoModule.m_Manufacturer = QIICR_MANUFACTURER;
-    equipmentInfoModule.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
-    equipmentInfoModule.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
-    equipmentInfoModule.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
-    */
-
-  } else { // DICOM_REPR
-  }
   return EXIT_SUCCESS;
 }
 
@@ -207,9 +190,9 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
                                                    vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
   slice2frame.resize(volume.extent[2]);
 
-  for(int d=0;d<dcmDatasets.size();d++){
+  for(vector<DcmDataset* >::const_iterator it=dcmDatasets.begin();it!=dcmDatasets.end();++it) {
     Uint32 numFrames;
-    DcmDataset* dcm = dcmDatasets[d];
+    DcmDataset* dcm = *it;
     if(dcm->findAndGetUint32(DCM_NumberOfFrames, numFrames).good()){
       // this is a multiframe object
       for(int f=0;f<numFrames;f++){
@@ -236,7 +219,6 @@ int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
 
   return EXIT_SUCCESS;
 }
-
 
 int MultiframeObject::addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> derivationFrames,
                                                          CodeSequenceMacro purposeOfReferenceCode,
@@ -524,7 +506,6 @@ int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingT
   }
   return EXIT_SUCCESS;
 }
-
 
 int MultiframeObject::initializeSeriesSpecificAttributes(IODGeneralSeriesModule& generalSeriesModule,
                                                          IODGeneralImageModule& generalImageModule){

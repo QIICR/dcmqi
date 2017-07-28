@@ -4,6 +4,136 @@
 
 #include "dcmqi/SegmentationImageObject.h"
 
+
+int SegmentationImageObject::initializeFromITK(vector<ShortImageType::Pointer> itkSegmentations,
+                                               const string &metaDataStr, vector<DcmDataset *> derivationDatasets,
+                                               bool skipEmptySlices) {
+
+  setDerivationDatasets(derivationDatasets);
+
+  sourceRepresentationType = ITK_REPR;
+
+  // TODO: think about the following code. Do all input segmentations have the same extent?
+  itkImages = itkSegmentations;
+
+  initializeMetaDataFromString(metaDataStr);
+
+//  if(!metaDataIsComplete()){
+//    updateMetaDataFromDICOM(derivationDatasets);
+//  }
+
+  initializeVolumeGeometry();
+
+  // NB: the sequence of steps initializing different components of the object parallels that
+  //  in the original converter function. It probably makes sense to revisit the sequence
+  //  of these steps. It does not necessarily need to happen in this order.
+  initializeEquipmentInfo();
+  initializeContentIdentification();
+
+//  OFString frameOfRefUID;
+//  if(!segdoc->getFrameOfReference().getFrameOfReferenceUID(frameOfRefUID).good()){
+//    // TODO: add FoR UID to the metadata JSON and check that before generating one!
+//    char frameOfRefUIDchar[128];
+//    dcmGenerateUniqueIdentifier(frameOfRefUIDchar, QIICR_UID_ROOT);
+//    CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
+//  }
+//
+
+  createDICOMSegmentation();
+
+  // populate metadata about patient/study, from derivation
+  //  datasets or from metadata
+  initializeCompositeContext();
+
+  initializeSeriesSpecificAttributes(segmentation->getSeries(),
+                                     segmentation->getGeneralImage());
+
+  initializePixelMeasuresFG();
+  CHECK_COND(segmentation->addForAllFrames(pixelMeasuresFG));
+
+  initializePlaneOrientationFG();
+  CHECK_COND(segmentation->addForAllFrames(planeOrientationPatientFG));
+
+  // Mapping from parametric map volume slices to the DICOM frames
+  vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > slice2frame;
+
+  // TODO: not sure about volumeGeometry since it was created from the first segmentation volume only
+  mapVolumeSlicesToDICOMFrames(volumeGeometry, derivationDatasets, slice2frame);
+
+  initializeCommonInstanceReferenceModule(segmentation->getCommonInstanceReference(), slice2frame);
+
+  // NB this assumes all segmentation files have the same dimensions; alternatively, need to
+  //   do this operation for each segmentation file
+  vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(derivationDatasets,
+                                                                                 itkSegmentations[0]);
+
+  //  initializeFrames(slice2derimg);
+
+  return EXIT_SUCCESS;
+
+}
+
+int SegmentationImageObject::initializeEquipmentInfo() {
+  if(sourceRepresentationType == ITK_REPR){
+    generalEquipmentInfoModule = IODGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER,
+                                                                          QIICR_DEVICE_SERIAL_NUMBER,
+                                                                          QIICR_MANUFACTURER_MODEL_NAME,
+                                                                          QIICR_SOFTWARE_VERSIONS);
+  } else { // DICOM_REPR
+  }
+  return EXIT_SUCCESS;
+}
+
+int SegmentationImageObject::initializeVolumeGeometry() {
+  if(sourceRepresentationType == ITK_REPR){
+
+    ShortToDummyCasterType::Pointer caster =
+      ShortToDummyCasterType::New();
+    // right now assuming that all input segmentations have the same volume extent
+    // TODO: make this work when input segmentation have different geometry
+    caster->SetInput(itkImages[0]);
+    caster->Update();
+
+    MultiframeObject::initializeVolumeGeometryFromITK(caster->GetOutput());
+  } else {
+    MultiframeObject::initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
+  }
+  return EXIT_SUCCESS;
+}
+
+int SegmentationImageObject::createDICOMSegmentation() {
+
+  DcmSegmentation::createBinarySegmentation(segmentation,
+                                            volumeGeometry.extent[1],
+                                            volumeGeometry.extent[0],
+                                            generalEquipmentInfoModule,
+                                            contentIdentificationMacro);   // content identification
+
+  /* Initialize dimension module */
+  IODMultiframeDimensionModule &mfdim = segmentation->getDimensions();
+  OFString dimUID = dcmqi::Helper::generateUID();
+  CHECK_COND(mfdim.addDimensionIndex(DCM_ReferencedSegmentNumber, dimUID, DCM_SegmentIdentificationSequence,
+                                     DcmTag(DCM_ReferencedSegmentNumber).getTagName()));
+  CHECK_COND(mfdim.addDimensionIndex(DCM_ImagePositionPatient, dimUID,
+                                     DCM_PlanePositionSequence, "ImagePositionPatient"));
+
+  return EXIT_SUCCESS;
+}
+
+int SegmentationImageObject::initializeCompositeContext() {
+  if(derivationDcmDatasets.size()){
+    CHECK_COND(segmentation->import(*derivationDcmDatasets[0],
+                                    OFTrue, // Patient
+                                    OFTrue, // Study
+                                    OFTrue, // Frame of reference
+                                    OFFalse)); // Series
+  } else {
+    // TODO: once we support passing of composite context in metadata, propagate it into segmentation here
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+
 int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
 
   dcmRepresentation = sourceDataset;
@@ -23,7 +153,7 @@ int SegmentationImageObject::initializeFromDICOM(DcmDataset* sourceDataset) {
   }
 
   initializeVolumeGeometryFromDICOM(segmentation->getFunctionalGroups());
-  itkImage = volumeGeometry.getITKRepresentation<ShortITKImageType>();
+  itkImage = volumeGeometry.getITKRepresentation<ShortImageType>();
   vector< pair<Uint16 , long> > matchedFramesWithSlices = matchFramesWithSegmentIdAndSliceNumber(
     segmentation->getFunctionalGroups());
   unpackFramesAndWriteSegmentImage(matchedFramesWithSlices);
@@ -62,8 +192,8 @@ vector< pair<Uint16, long> > SegmentationImageObject::matchFramesWithSegmentIdAn
       OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
     assert(planposfg);
 
-    ShortITKImageType::PointType frameOriginPoint;
-    ShortITKImageType::IndexType frameOriginIndex;
+    ShortImageType::PointType frameOriginPoint;
+    ShortImageType::IndexType frameOriginIndex;
     for(int j=0;j<3;j++){
       OFString planposStr;
       if(planposfg->getImagePositionPatient(planposStr, j).good()){
@@ -107,12 +237,12 @@ int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
 
     for (unsigned row = 0; row < volumeGeometry.extent[1]; row++) {
       for (unsigned col = 0; col < volumeGeometry.extent[0]; col++) {
-        ShortITKImageType::PixelType pixel;
+        ShortImageType::PixelType pixel;
         unsigned bitCnt = row * volumeGeometry.extent[0] + col;
         pixel = unpackedFrame->pixData[bitCnt];
 
         if (pixel != 0) {
-          ShortITKImageType::IndexType index;
+          ShortImageType::IndexType index;
           index[0] = col;
           index[1] = row;
           index[2] = sliceNumber;
@@ -129,11 +259,11 @@ int SegmentationImageObject::unpackFramesAndWriteSegmentImage(
 }
 
 int SegmentationImageObject::createNewSegmentImage(Uint16 segmentId) {
-  typedef itk::ImageDuplicator<ShortITKImageType> DuplicatorType;
+  typedef itk::ImageDuplicator<ShortImageType> DuplicatorType;
   DuplicatorType::Pointer dup = DuplicatorType::New();
   dup->SetInputImage(itkImage);
   dup->Update();
-  ShortITKImageType::Pointer newSegmentImage = dup->GetOutput();
+  ShortImageType::Pointer newSegmentImage = dup->GetOutput();
   newSegmentImage->FillBuffer(0);
   segment2image[segmentId] = newSegmentImage;
   return EXIT_SUCCESS;
@@ -295,4 +425,34 @@ Uint16 SegmentationImageObject::getSegmentId(FGInterface &fgInterface, size_t fr
       throw -1;
     }
   return segmentId;
+}
+
+// AF: I could not quickly figure out how to template this function over image type - suggestions are welcomed!
+vector<vector<int> > SegmentationImageObject::getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
+                                                                                         const ShortImageType::Pointer &labelImage) {
+  // Find mapping from the segmentation slice number to the derivation image
+  // Assume that orientation of the segmentation is the same as the source series
+  unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
+  vector<vector<int> > slice2derimg(numLabelSlices);
+  for(size_t i=0;i<dcmDatasets.size();i++){
+    OFString ippStr;
+    ShortImageType::PointType ippPoint;
+    ShortImageType::IndexType ippIndex;
+    for(int j=0;j<3;j++){
+      CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
+      ippPoint[j] = atof(ippStr.c_str());
+    }
+    // NB: this will map slice origin to index without failure, unless the point is out
+    //   of FOV bounds!
+    // TODO: do a better job matching volume slices by considering comparison of the origin
+    //   and orientation of the slice within tolerance
+    if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
+      //cout << "image position: " << ippPoint << endl;
+      //cerr << "ippIndex: " << ippIndex << endl;
+      // if certain DICOM instance does not map to a label slice, just skip it
+      continue;
+    }
+    slice2derimg[ippIndex[2]].push_back(i);
+  }
+  return slice2derimg;
 }

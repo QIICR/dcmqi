@@ -79,7 +79,6 @@ protected:
   // what this function does depends on whether we are coming from
   //  DICOM or from ITK. No parameters, since all it does is exchange
   //  between DICOM and MetaData
-  int initializeEquipmentInfo();
   int initializeContentIdentification();
 
   // from ITK
@@ -151,8 +150,6 @@ protected:
   OFVector<DcmDataset*> sourceDcmDatasets;
 
   // Common components present in the derived classes
-  // TODO: check whether both PM and SEG use Enh module or not, refactor based on that
-  IODEnhGeneralEquipmentModule::EquipmentInfo equipmentInfoModule;
   ContentIdentificationMacro contentIdentificationMacro;
   IODMultiframeDimensionModule dimensionsModule;
 

@@ -3,10 +3,8 @@
 //
 
 #include <dcmqi/Helper.h>
-#include <itkMinimumMaximumImageCalculator.h>
+#include "dcmqi/QIICRConstants.h"
 #include "dcmqi/ParametricMapObject.h"
-#include <dcmtk/dcmiod/iodcommn.h>
-#include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 
 
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
@@ -98,6 +96,24 @@ int ParametricMapObject::updateMetaDataFromDICOM(std::vector<DcmDataset *> dcmLi
   return EXIT_SUCCESS;
 }
 
+int ParametricMapObject::initializeEquipmentInfo() {
+  if(sourceRepresentationType == ITK_REPR){
+    enhancedEquipmentInfoModule = IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER,
+                                                                              QIICR_DEVICE_SERIAL_NUMBER,
+                                                                              QIICR_MANUFACTURER_MODEL_NAME,
+                                                                              QIICR_SOFTWARE_VERSIONS);
+    /*
+    enhancedEquipmentInfoModule.m_Manufacturer = QIICR_MANUFACTURER;
+    enhancedEquipmentInfoModule.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
+    enhancedEquipmentInfoModule.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
+    enhancedEquipmentInfoModule.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
+    */
+
+  } else { // DICOM_REPR
+  }
+  return EXIT_SUCCESS;
+}
+
 int ParametricMapObject::createDICOMParametricMap() {
 
   // create Parametric map object
@@ -110,7 +126,7 @@ int ParametricMapObject::createDICOMParametricMap() {
                                                                     metaDataJson["InstanceNumber"].asCString(),
                                                                     volumeGeometry.extent[1],
                                                                     volumeGeometry.extent[0],
-                                                                    equipmentInfoModule,
+                                                                    enhancedEquipmentInfoModule,
                                                                     contentIdentificationMacro,
                                                                     "VOLUME", "QUANTITY",
                                                                     DPMTypes::CQ_RESEARCH);
@@ -209,7 +225,7 @@ int ParametricMapObject::initializeCompositeContext() {
                                      OFTrue, // Patient
                                      OFTrue, // Study
                                      OFTrue, // Frame of reference
-                                     OFTrue)); // Series
+                                     OFFalse)); // Series
 
   } else {
     // TODO: once we support passing of composite context in metadata, propagate it
