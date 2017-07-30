@@ -35,15 +35,21 @@
 
 using namespace std;
 
+// common type definitions
 typedef short ShortPixelType;
 typedef itk::Image<ShortPixelType, 3> ShortImageType;
 typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
 
 namespace dcmqi {
 
-  class ConverterBase {
+  class MultiframeConverter {
+  public:
+    //virtual int convert();
+    MultiframeConverter(){
+    };
 
-  protected:
+
+
     static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
     static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
     static ContentIdentificationMacro createContentIdentificationInformation(JSONMetaInformationHandlerBase &metaInfo);
@@ -124,7 +130,7 @@ namespace dcmqi {
       */
 
       // Determine ordering of the frames, keep mapping from ImagePositionPatient string
-      //   to the distance, and keep track (just out of curiousity) how many frames overlap
+      //   to the distance, and keep track (just out of curiosity) how many frames overlap
       vnl_vector<double> refOrigin(3);
       {
         OFBool isPerFrame;
@@ -279,6 +285,10 @@ namespace dcmqi {
           CHECK_COND(dcmDatasets[i]->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j));
           ippPoint[j] = atof(ippStr.c_str());
         }
+        // NB: this will map slice origin to index without failure, unless the point is out
+        //   of FOV bounds!
+        // TODO: do a better job matching volume slices by considering comparison of the origin
+        //   and orientation of the slice within tolerance
         if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
           //cout << "image position: " << ippPoint << endl;
           //cerr << "ippIndex: " << ippIndex << endl;

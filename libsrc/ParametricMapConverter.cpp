@@ -4,54 +4,75 @@
 #include <itkCastImageFilter.h>
 
 // DCMQI includes
-#include "dcmqi/ParaMapConverter.h"
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/ParametricMapConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
+#include "dcmqi/ParametricMapObject.h"
 
 using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+  DcmDataset* itkimage2paramapReplacement(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
                                          const string &metaData) {
+    ParametricMapObject pm;
+    pm.initializeFromITK(parametricMapImage, metaData, dcmDatasets);
 
-    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
-    calculator->SetImage(parametricMapImage);
-    calculator->Compute();
+    DcmDataset *output = new DcmDataset();
+    pm.getDICOMRepresentation(*output);
+
+    return output;
+  }
+
+  pair <FloatImageType::Pointer, string> paramap2itkimageReplacement(DcmDataset *pmapDataset){
+
+    ParametricMapObject pm;
+    pm.initializeFromDICOM(pmapDataset);
+
+    Json::StyledWriter styledWriter;
+    std::stringstream ss;
+
+    ss << styledWriter.write(pm.getMetaDataJson());
+
+    return pair <ParametricMapObject::Float32ITKImageType::Pointer, string>(pm.getITKRepresentation(),
+                                                                            ss.str());
+  };
+
+  DcmDataset* ParametricMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+                                          const string &metaData) {
 
     JSONParametricMapMetaInformationHandler metaInfo(metaData);
     metaInfo.read();
 
-    metaInfo.setFirstValueMapped(calculator->GetMinimum());
-    metaInfo.setLastValueMapped(calculator->GetMaximum());
-
-    IODEnhGeneralEquipmentModule::EquipmentInfo eq = getEnhEquipmentInfo();
-    ContentIdentificationMacro contentID = createContentIdentificationInformation(metaInfo);
+    // Prepare ContentIdentification
+    IODEnhGeneralEquipmentModule::EquipmentInfo eq = ParametricMapConverter::getEnhEquipmentInfo();
+    ContentIdentificationMacro contentID = ParametricMapConverter::createContentIdentificationInformation(metaInfo);
     CHECK_COND(contentID.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
 
-    // TODO: following should maybe be moved to meta info
-    OFString imageFlavor = "VOLUME";
-    OFString pixContrast = "NONE";
-    if(metaInfo.metaInfoRoot.isMember("DerivedPixelContrast")){
-      pixContrast = metaInfo.metaInfoRoot["DerivedPixelContrast"].asCString();
+    // Get image modality from the source dataset
+    DcmDataset* srcDataset = NULL;
+    if(dcmDatasets.size()) {
+      srcDataset = dcmDatasets[0];
+    } else {
+      return NULL;
     }
+    OFString modality;
+    CHECK_COND(srcDataset->findAndGetOFString(DCM_Modality, modality));
 
-    // TODO: initialize modality from the source / add to schema?
-    OFString modality = "MR";
-
+    // Get size of the image to be converted
     FloatImageType::SizeType inputSize = parametricMapImage->GetBufferedRegion().GetSize();
     cout << "Input image size: " << inputSize << endl;
 
+    // create Parametric map object
     OFvariant<OFCondition,DPMParametricMapIOD> obj =
         DPMParametricMapIOD::create<IODFloatingPointImagePixelModule>(modality, metaInfo.getSeriesNumber().c_str(),
                                                                       metaInfo.getInstanceNumber().c_str(),
                                                                       inputSize[1], inputSize[0], eq, contentID,
-                                                                      imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
+                                                                      "VOLUME", "QUANTITY", DPMTypes::CQ_RESEARCH);
     if (OFCondition* pCondition = OFget<OFCondition>(&obj))
       return NULL;
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    DcmDataset* srcDataset = NULL;
     if(dcmDatasets.size()){
       srcDataset = dcmDatasets[0];
     }
@@ -61,11 +82,12 @@ namespace dcmqi {
       CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
-    char dimUID[128];
-    dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
     IODMultiframeDimensionModule &mfdim = pMapDoc->getIODMultiframeDimensionModule();
-    OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, dimUID,
+    // TODO: this is probably incorrect
+    OFCondition result = mfdim.addDimensionIndex(DCM_ImagePositionPatient, Helper::generateUID(),
                                                  DCM_RealWorldValueMappingSequence, "Frame position");
+
+    // Initialize PM geometry
 
     // Shared FGs: PixelMeasuresSequence
     {
@@ -80,6 +102,8 @@ namespace dcmqi {
       spacingSStream << scientific << labelSpacing[2];
       CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
       CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
+
+      // SHARED
       CHECK_COND(pMapDoc->addForAllFrames(*pixmsr));
     }
 
@@ -101,9 +125,12 @@ namespace dcmqi {
               Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
 
       //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
+      // SHARED
       CHECK_COND(pMapDoc->addForAllFrames(*planor));
     }
 
+
+    // Initialize metadata - anatomy
     FGFrameAnatomy frameAnaFG;
     frameAnaFG.setLaterality(FGFrameAnatomy::str2Laterality(metaInfo.getFrameLaterality().c_str()));
     if(metaInfo.metaInfoRoot.isMember("AnatomicRegionSequence")){
@@ -114,6 +141,8 @@ namespace dcmqi {
     } else {
       frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
     }
+
+    // SHARED
     CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
     FGIdentityPixelValueTransformation idTransFG;
@@ -123,8 +152,11 @@ namespace dcmqi {
     FGParametricMapFrameType frameTypeFG;
     std::string frameTypeStr = "DERIVED\\PRIMARY\\VOLUME\\QUANTITY";
     frameTypeFG.setFrameType(frameTypeStr.c_str());
+
+    // SHARED
     CHECK_COND(pMapDoc->addForAllFrames(frameTypeFG));
 
+    // Initialize RWVM
     FGRealWorldValueMapping rwvmFG;
     FGRealWorldValueMapping::RWVMItem* realWorldValueMappingItem = new FGRealWorldValueMapping::RWVMItem();
     if (!realWorldValueMappingItem )
@@ -135,8 +167,13 @@ namespace dcmqi {
     realWorldValueMappingItem->setRealWorldValueSlope(metaInfo.getRealWorldValueSlope());
     realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
 
-    realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(metaInfo.getFirstValueMapped());
-    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(metaInfo.getLastValueMapped());
+    // Calculate intensity range - required
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
+    calculator->SetImage(parametricMapImage);
+    calculator->Compute();
+
+    realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(calculator->GetMinimum());
+    realWorldValueMappingItem->setRealWorldValueLastValueMappedSigned(calculator->GetMaximum());
 
     CodeSequenceMacro* measurementUnitCode = metaInfo.getMeasurementUnitsCode();
     if (measurementUnitCode != NULL) {
@@ -148,6 +185,7 @@ namespace dcmqi {
     // TODO: LutExplanation and LUTLabel should be added as Metainformation
     realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
+
     ContentItemMacro* quantity = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
@@ -165,7 +203,7 @@ namespace dcmqi {
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(quantity);
     quantity->setValueType(ContentItemMacro::VT_CODE);
 
-    // initialize optional items, if available
+    // initialize optional RWVM items, if available
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
       CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
@@ -187,7 +225,7 @@ namespace dcmqi {
 
     if(metaInfo.metaInfoRoot.isMember("ModelFittingMethodCode")){
       ContentItemMacro* fittingMethod = new ContentItemMacro;
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx2", "99QIICR", "Model fitting method");
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodeValue"].asCString(),
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
@@ -208,7 +246,7 @@ namespace dcmqi {
       for(int bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
         ContentItemMacro* bval = new ContentItemMacro;
         CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "seconds per square millimeter");
-        CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx1", "99QIICR", "Source image diffusion b-value");
+        CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113240", "DCM", "Source image diffusion b-value");
 
         if (!bval || !bvalUnits || !qCodeName)
         {
@@ -241,7 +279,7 @@ namespace dcmqi {
       slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
       cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
       for(int i=0;i<slice2derimg.size();i++){
-        cout << "  Slice " << i << ": ";
+//        cout << "  Slice " << i << ": ";
         for(int j=0;j<slice2derimg[i].size();j++){
           cout << slice2derimg[i][j] << " ";
           hasDerivationImages = true;
@@ -319,6 +357,9 @@ namespace dcmqi {
           CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
           CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
 
+          // AF: I am not sure why this is needed - I would expect these attributes should be initialized
+          //  by DerivationImageItem. Perhaps this is a workaround for an issue that was fixed since then.
+          // Not including this in the refactored implementation.
           if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
             SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
             CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
@@ -375,16 +416,10 @@ namespace dcmqi {
         // Frame Content
         OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
 
-#if ADD_DERIMG
-        // Already pushed above if siVector.size > 0
-        // if(fgder)
-          // perFrameFGs.push_back(fgder);
-#endif
-
         DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
         result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
 
-        cout << "Frame " << sliceNumber << " added" << endl;
+//        cout << "Frame " << sliceNumber << " added" << endl;
       }
 
       // remove derivation image FG from the per-frame FGs, only if applicable!
@@ -434,7 +469,7 @@ namespace dcmqi {
     return output;
   }
 
-  pair <FloatImageType::Pointer, string> ParaMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
+  pair <FloatImageType::Pointer, string> ParametricMapConverter::paramap2itkimage(DcmDataset *pmapDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
@@ -550,7 +585,9 @@ namespace dcmqi {
     return pair <FloatImageType::Pointer, string>(pmImage, metaInfo.getJSONOutputAsString());
   }
 
-  OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
+  // appears to be not used
+#if 0
+  OFCondition ParametricMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                          const JSONParametricMapMetaInformationHandler &metaInfo,
                                          const unsigned long frameNo, OFVector<FGBase*> groups)
   {
@@ -609,8 +646,9 @@ namespace dcmqi {
     }
     return result;
   }
+#endif
 
-  void ParaMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
+  void ParametricMapConverter::populateMetaInformationFromDICOM(DcmDataset *pmapDataset,
                                                           JSONParametricMapMetaInformationHandler &metaInfo) {
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
@@ -647,7 +685,7 @@ namespace dcmqi {
 
         Float64 slope;
         // TODO: replace the following call by following getter once it is available
-//        item->getRealWorldValueSlope(slope);
+        //item->getRealWorldValueSlope(slope);
         item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
         metaInfo.setRealWorldValueSlope(slope);
 
@@ -684,7 +722,7 @@ namespace dcmqi {
       }
 
       FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
-      
+
       if(derivationImage){
         OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
         if(derivationImageItems.size()>0){

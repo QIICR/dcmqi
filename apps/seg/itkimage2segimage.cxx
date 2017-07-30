@@ -3,7 +3,7 @@
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 typedef dcmqi::Helper helper;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     segmentations = segmentationsReordered;
   }
 
-  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+  DcmDataset* result = dcmqi::SegmentationImageConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
   if (result == NULL){
     return EXIT_FAILURE;

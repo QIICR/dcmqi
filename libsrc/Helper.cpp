@@ -1,5 +1,6 @@
 
 // DCMQI includes
+#include <dcmqi/QIICRUIDs.h>
 #include "dcmqi/Helper.h"
 
 namespace dcmqi {
@@ -368,5 +369,53 @@ namespace dcmqi {
     return new CodeSequenceMacro(code.c_str(), designator.c_str(), meaning.c_str());
   }
 
+  OFString Helper::generateUID() {
+    char charUID[128];
+    dcmGenerateUniqueIdentifier(charUID, QIICR_UID_ROOT);
+    return OFString(charUID);
+  }
 
+  OFString Helper::getTagAsOFString(DcmDataset* dcm, DcmTagKey tag) {
+    OFString value;
+    CHECK_COND(dcm->findAndGetOFString(tag, value));
+    return value;
+  }
+
+  CodeSequenceMacro Helper::jsonToCodeSequenceMacro(Json::Value jv){
+    return CodeSequenceMacro(jv["CodeValue"].asCString(),
+                             jv["CodingSchemeDesignator"].asCString(),
+                             jv["CodeMeaning"].asCString());
+  }
+
+  string Helper::codeSequenceMacroToString(CodeSequenceMacro c){
+    OFString codeValue, codingSchemeDesignator, codeMeaning;
+    string s = string()+codeValue.c_str()+","+codingSchemeDesignator.c_str()+","+codeMeaning.c_str();
+    return s;
+  }
+
+  Json::Value Helper::codeSequence2Json(CodeSequenceMacro &codeSequence) {
+    Json::Value value;
+    value["CodeValue"] = getCodeSequenceValue(codeSequence);
+    value["CodingSchemeDesignator"] = getCodeSequenceDesignator(codeSequence);
+    value["CodeMeaning"] = getCodeSequenceMeaning(codeSequence);
+    return value;
+  }
+
+  string Helper::getCodeSequenceValue(CodeSequenceMacro &codeSequence) {
+    OFString value;
+    codeSequence.getCodeValue(value);
+    return value.c_str();
+  }
+
+  string Helper::getCodeSequenceDesignator(CodeSequenceMacro &codeSequence) {
+    OFString designator;
+    codeSequence.getCodingSchemeDesignator(designator);
+    return designator.c_str();
+  }
+
+  string Helper::getCodeSequenceMeaning(CodeSequenceMacro &codeSequence) {
+    OFString meaning;
+    codeSequence.getCodeMeaning(meaning);
+    return meaning.c_str();
+  }
 }

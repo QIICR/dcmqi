@@ -1,39 +1,16 @@
 
 #-----------------------------------------------------------------------------
-set(ADDITIONAL_SRCS)
 
-set(INCLUDE_DIR ../include/dcmqi)
-
-set(HDRS
-  ${INCLUDE_DIR}/preproc.h
-  ${INCLUDE_DIR}/QIICRConstants.h
-  ${INCLUDE_DIR}/QIICRUIDs.h
-  ${INCLUDE_DIR}/ConverterBase.h
-  ${INCLUDE_DIR}/Exceptions.h
-  ${INCLUDE_DIR}/framesorter.h
-  ${INCLUDE_DIR}/ImageSEGConverter.h
-  ${INCLUDE_DIR}/ParaMapConverter
-  ${INCLUDE_DIR}/Helper.h
-  ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
-  ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
-  ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
-  ${INCLUDE_DIR}/SegmentAttributes.h
+file(GLOB_RECURSE HDRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/include/dcmqi/*.h
   )
 
-set(SRCS
-  ConverterBase.cpp
-  ImageSEGConverter.cpp
-  ParaMapConverter.cpp
-  Helper.cpp
-  JSONMetaInformationHandlerBase.cpp
-  JSONParametricMapMetaInformationHandler.cpp
-  JSONSegmentationMetaInformationHandler.cpp
-  SegmentAttributes.cpp
+file(GLOB_RECURSE SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/libsrc/*.cpp
   )
-
 
 if(DCMQI_BUILTIN_JSONCPP)
-  list(APPEND ADDITIONAL_SRCS
+  list(APPEND SRCS
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
     )
   set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp)
@@ -44,7 +21,6 @@ set(lib_name dcmqi)
 add_library(${lib_name} STATIC
   ${HDRS}
   ${SRCS}
-  ${ADDITIONAL_SRCS}
   )
 
 if(DCMQI_LIBRARY_PROPERTIES)

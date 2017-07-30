@@ -1,11 +1,40 @@
 
 // DCMQI includes
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/SegmentationImageConverter.h"
+#include "dcmqi/SegmentationImageObject.h"
 
+using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+  DcmDataset* itkimage2paramapReplacement(vector<DcmDataset*> dcmDatasets,
+                                          vector<ShortImageType::Pointer> segmentations,
+                                          const string &metaData,
+                                          bool skipEmptySlices) {
+    SegmentationImageObject seg;
+    seg.initializeFromITK(segmentations, metaData, dcmDatasets, skipEmptySlices);
+
+    DcmDataset *output = new DcmDataset();
+    seg.getDICOMRepresentation(*output);
+
+    return output;
+  }
+
+  pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimageReplacement(DcmDataset *segDataset) {
+
+    SegmentationImageObject seg;
+    seg.initializeFromDICOM(segDataset);
+
+    Json::StyledWriter styledWriter;
+    std::stringstream ss;
+
+    ss << styledWriter.write(seg.getMetaDataJson());
+
+    return pair <map<unsigned,SegmentationImageObject::ShortImageType::Pointer>, string>(seg.getITKRepresentation(),
+                                                                                         ss.str());
+  };
+
+  DcmDataset* SegmentationImageConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices) {
@@ -115,7 +144,6 @@ namespace dcmqi {
     for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
       if((*vI).size()>0)
         hasDerivationImages = true;
-
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();
@@ -448,7 +476,7 @@ namespace dcmqi {
   }
 
 
-  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
+  pair <map<unsigned,ShortImageType::Pointer>, string> SegmentationImageConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
 
     DcmRLEDecoderRegistration::registerCodecs();
 
@@ -704,7 +732,7 @@ namespace dcmqi {
     return pair <map<unsigned,ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
   }
 
-  void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
+  void SegmentationImageConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                JSONSegmentationMetaInformationHandler &metaInfo) {
     OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined, coordinatingCenter;
 
