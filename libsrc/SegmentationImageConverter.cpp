@@ -7,6 +7,19 @@ using namespace std;
 
 namespace dcmqi {
 
+  DcmDataset* itkimage2paramapReplacement(vector<DcmDataset*> dcmDatasets,
+                                          vector<ShortImageType::Pointer> segmentations,
+                                          const string &metaData,
+                                          bool skipEmptySlices) {
+    SegmentationImageObject seg;
+    seg.initializeFromITK(segmentations, metaData, dcmDatasets, skipEmptySlices);
+
+    DcmDataset *output = new DcmDataset();
+    seg.getDICOMRepresentation(*output);
+
+    return output;
+  }
+
   pair <map<unsigned,ShortImageType::Pointer>, string> dcmSegmentation2itkimageReplacement(DcmDataset *segDataset) {
 
     SegmentationImageObject seg;
@@ -131,7 +144,6 @@ namespace dcmqi {
     for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
       if((*vI).size()>0)
         hasDerivationImages = true;
-
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();

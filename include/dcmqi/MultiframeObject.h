@@ -79,80 +79,16 @@ protected:
   // what this function does depends on whether we are coming from
   //  DICOM or from ITK. No parameters, since all it does is exchange
   //  between DICOM and MetaData
-  int initializeEquipmentInfo();
   int initializeContentIdentification();
 
   // from ITK
   int initializeVolumeGeometryFromITK(DummyImageType::Pointer);
 
-  template <typename T>
-  int initializeVolumeGeometryFromDICOM(T iodImage, DcmDataset *dataset, bool useComputedVolumeExtent=false) {
-    SpacingType spacing;
-    PointType origin;
-    DirectionType directions;
-    SizeType extent;
-
-    FGInterface &fgInterface = iodImage->getFunctionalGroups();
-
-    if (getImageDirections(fgInterface, directions)) {
-      cerr << "Failed to get image directions" << endl;
-      throw -1;
-    }
-
-    cout << directions << endl;
-
-    double computedSliceSpacing, computedVolumeExtent;
-    vnl_vector<double> sliceDirection(3);
-    sliceDirection[0] = directions[0][2];
-    sliceDirection[1] = directions[1][2];
-    sliceDirection[2] = directions[2][2];
-    if (computeVolumeExtent(fgInterface, sliceDirection, origin, computedSliceSpacing, computedVolumeExtent)) {
-      cerr << "Failed to compute origin and/or slice spacing!" << endl;
-      throw -1;
-    }
-
-    if (getDeclaredImageSpacing(fgInterface, spacing)) {
-      cerr << "Failed to get image spacing from DICOM!" << endl;
-      throw -1;
-    }
-
-    const double tolerance = 1e-5;
-    if(!spacing[2]){
-      spacing[2] = computedSliceSpacing;
-    } else if(fabs(spacing[2]-computedSliceSpacing)>tolerance){
-      cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
-           " Declared = " << spacing[2] << " Computed = " << computedSliceSpacing << endl;
-    }
-
-    // Region size
-    {
-      OFString str;
-      if(dataset->findAndGetOFString(DCM_Rows, str).good())
-        extent[1] = atoi(str.c_str());
-      if(dataset->findAndGetOFString(DCM_Columns, str).good())
-        extent[0] = atoi(str.c_str());
-    }
-
-    if (useComputedVolumeExtent) {
-      extent[2] = ceil(computedVolumeExtent/spacing[2])+1;
-    } else {
-      extent[2] = fgInterface.getNumberOfFrames();
-    }
-
-    cout << extent << endl;
-
-    volumeGeometry.setSpacing(spacing);
-    volumeGeometry.setOrigin(origin);
-    volumeGeometry.setExtent(extent);
-    volumeGeometry.setDirections(directions);
-
-    return EXIT_SUCCESS;
-  }
-
+  int initializeVolumeGeometryFromDICOM(FGInterface &fgInterface);
   int getImageDirections(FGInterface& fgInterface, DirectionType &dir);
 
   int computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection, PointType &imageOrigin,
-                          double &sliceSpacing, double &sliceExtent);
+                          double &sliceSpacing, double &volumeExtent);
   int getDeclaredImageSpacing(FGInterface &fgInterface, SpacingType &spacing);
 
   // initialize attributes of the composite context that are common for all multiframe objects
@@ -170,17 +106,19 @@ protected:
   int initializePlaneOrientationFG();
   int initializeCommonInstanceReferenceModule(IODCommonInstanceReferenceModule &, vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-  int mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry&, const vector<DcmDataset*>,
-                                          vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);
+  int mapVolumeSlicesToDICOMFrames(const vector<DcmDataset*>,
+                                   vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> >&);
 
-  static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume,
-                                    dcmqi::DICOMFrame& frame);
+  static std::vector<int> findIntersectingSlices(ImageVolumeGeometry& volume, dcmqi::DICOMFrame& frame);
 
   int addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> frames,
                                                         CodeSequenceMacro purposeOfReferenceCode  = CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
                                                         CodeSequenceMacro derivationCode = CodeSequenceMacro("110001","DCM","Image Processing"));
 
   void insertDerivationSeriesInstance(string seriesUID, string instanceUID);
+
+  int findIntersectingSlicesAndAddDerivationSeriesInstance(
+    vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > &slice2frame, DcmDataset *dcm, int frameNo=0);
 
   int setDerivationDatasets(std::vector<DcmDataset*> derivationDatasets){
     for(std::vector<DcmDataset*>::const_iterator vIt=derivationDatasets.begin();
@@ -216,8 +154,6 @@ protected:
   OFVector<DcmDataset*> sourceDcmDatasets;
 
   // Common components present in the derived classes
-  // TODO: check whether both PM and SEG use Enh module or not, refactor based on that
-  IODEnhGeneralEquipmentModule::EquipmentInfo equipmentInfoModule;
   ContentIdentificationMacro contentIdentificationMacro;
   IODMultiframeDimensionModule dimensionsModule;
 
@@ -241,6 +177,8 @@ protected:
   // Mapping from the derivation items SeriesUIDs to InstanceUIDs
   std::map<std::string, std::set<std::string> > derivationSeriesToInstanceUIDs;
 
+  vnl_vector<double> getFrameOrigin(FGInterface &fgInterface, int frameId) const;
+  vnl_vector<double> getFrameOrigin(FGPlanePosPatient *planposfg) const;
 };
 
 

@@ -3,11 +3,8 @@
 //
 
 #include <dcmqi/Helper.h>
-#include <itkMinimumMaximumImageCalculator.h>
+#include "dcmqi/QIICRConstants.h"
 #include "dcmqi/ParametricMapObject.h"
-#include <dcmtk/dcmiod/iodcommn.h>
-#include <dcmtk/dcmpmap/dpmparametricmapiod.h>
-
 
 int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputImage,
                                            const string &metaDataStr,
@@ -34,7 +31,7 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   initializeContentIdentification();
 
   // TODO: consider creating parametric map object after all FGs are initialized instead
-  createParametricMap();
+  createDICOMParametricMap();
 
   // populate metadata about patient/study, from derivation
   //  datasets or from metadata
@@ -63,7 +60,7 @@ int ParametricMapObject::initializeFromITK(Float32ITKImageType::Pointer inputIma
   // initialize referenced instances
   // this is done using this utility function from the parent class, since this functionality will
   // be needed both in the PM and SEG objects
-  mapVolumeSlicesToDICOMFrames(this->volumeGeometry, derivationDatasets, slice2frame);
+  mapVolumeSlicesToDICOMFrames(derivationDatasets, slice2frame);
 
   initializeCommonInstanceReferenceModule(this->parametricMap->getCommonInstanceReference(), slice2frame);
 
@@ -82,7 +79,7 @@ int ParametricMapObject::initializeVolumeGeometry() {
 
     MultiframeObject::initializeVolumeGeometryFromITK(caster->GetOutput());
   } else {
-
+    MultiframeObject::initializeVolumeGeometryFromDICOM(parametricMap->getFunctionalGroups());
   }
   return EXIT_SUCCESS;
 }
@@ -98,7 +95,25 @@ int ParametricMapObject::updateMetaDataFromDICOM(std::vector<DcmDataset *> dcmLi
   return EXIT_SUCCESS;
 }
 
-int ParametricMapObject::createParametricMap() {
+int ParametricMapObject::initializeEquipmentInfo() {
+  if(sourceRepresentationType == ITK_REPR){
+    enhancedEquipmentInfoModule = IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER,
+                                                                              QIICR_DEVICE_SERIAL_NUMBER,
+                                                                              QIICR_MANUFACTURER_MODEL_NAME,
+                                                                              QIICR_SOFTWARE_VERSIONS);
+    /*
+    enhancedEquipmentInfoModule.m_Manufacturer = QIICR_MANUFACTURER;
+    enhancedEquipmentInfoModule.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
+    enhancedEquipmentInfoModule.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
+    enhancedEquipmentInfoModule.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
+    */
+
+  } else { // DICOM_REPR
+  }
+  return EXIT_SUCCESS;
+}
+
+int ParametricMapObject::createDICOMParametricMap() {
 
   // create Parametric map object
 
@@ -110,10 +125,9 @@ int ParametricMapObject::createParametricMap() {
                                                                     metaDataJson["InstanceNumber"].asCString(),
                                                                     volumeGeometry.extent[1],
                                                                     volumeGeometry.extent[0],
-                                                                    equipmentInfoModule,
+                                                                    enhancedEquipmentInfoModule,
                                                                     contentIdentificationMacro,
                                                                     "VOLUME", "QUANTITY",
-
                                                                     DPMTypes::CQ_RESEARCH);
   // TODO: look into the following, check with @che85 on the purpose of this line!
   if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
@@ -140,6 +154,54 @@ int ParametricMapObject::createParametricMap() {
   return EXIT_SUCCESS;
 }
 
+int ParametricMapObject::createITKParametricMap() {
+
+  initializeVolumeGeometry();
+
+  // Initialize the image
+  itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
+
+  DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
+  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    throw -1;
+  }
+
+  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
+  DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
+
+  createITKImageFromFrames(fgInterface, frames);
+  return EXIT_SUCCESS;
+}
+
+int ParametricMapObject::createITKImageFromFrames(FGInterface &fgInterface,
+                                                  DPMParametricMapIOD::Frames<Float32PixelType> frames) {
+  for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
+    bool isPerFrame;
+
+    FGPlanePosPatient *planposfg =
+      OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+    assert(planposfg);
+
+    FGFrameContent *fracon =
+      OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
+    assert(fracon);
+
+    Float32PixelType *frame = frames.getFrame(frameId);
+    Float32ITKImageType::IndexType index;
+    // initialize slice with the frame content
+    for(int row=0;row<volumeGeometry.extent[1];row++){
+      index[1] = row;
+      index[2] = frameId;
+      for(int col=0;col<volumeGeometry.extent[0];col++){
+        unsigned pixelPosition = row*volumeGeometry.extent[0] + col;
+        index[0] = col;
+        itkImage->SetPixel(index, frame[pixelPosition]);
+      }
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
 int ParametricMapObject::initializeCompositeContext() {
   // TODO: should this be done in the parent?
   if(derivationDcmDatasets.size()){
@@ -162,7 +224,7 @@ int ParametricMapObject::initializeCompositeContext() {
                                      OFTrue, // Patient
                                      OFTrue, // Study
                                      OFTrue, // Frame of reference
-                                     OFTrue)); // Series
+                                     OFFalse)); // Series
 
   } else {
     // TODO: once we support passing of composite context in metadata, propagate it
@@ -211,8 +273,8 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("MeasurementUnitsCode")){
     CodeSequenceMacro& unitsCodeDcmtk = realWorldValueMappingItem->getMeasurementUnitsCode();
     unitsCodeDcmtk.set(metaDataJson["MeasurementUnitsCode"]["CodeValue"].asCString(),
-                         metaDataJson["MeasurementUnitsCode"]["CodingSchemeDesignator"].asCString(),
-                         metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
+                       metaDataJson["MeasurementUnitsCode"]["CodingSchemeDesignator"].asCString(),
+                       metaDataJson["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     cout << "Measurements units initialized to " <<
          dcmqi::Helper::codeSequenceMacroToString(unitsCodeDcmtk);
 
@@ -223,16 +285,13 @@ int ParametricMapObject::initializeRWVMFG() {
   /*
   if(metaDataJson.isMember("QuantityValueCode")){
     ContentItemMacro* item = initializeContentItemMacro(CodeSequenceMacro("G-C1C6", "SRT", "Quantity"),
-                                                                dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
+      dcmqi::Helper::jsonToCodeSequenceMacro(metaDataJson["QuantityValueCode"]));
     realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(item);
   }*/
 
   ContentItemMacro* quantity = new ContentItemMacro;
   CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
-  CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-      metaDataJson["QuantityValueCode"]["CodeValue"].asCString(),
-      metaDataJson["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
-      metaDataJson["QuantityValueCode"]["CodeMeaning"].asCString());
+  CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("QuantityValueCode");
 
   if (!quantity || !qSpec || !qCodeName)
   {
@@ -255,10 +314,7 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("MeasurementMethodCode")){
     ContentItemMacro* measureMethod = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaDataJson["MeasurementMethodCode"]["CodeValue"].asCString(),
-        metaDataJson["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaDataJson["MeasurementMethodCode"]["CodeMeaning"].asCString());
+    CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("MeasurementMethodCode");
 
     if (!measureMethod || !qSpec || !qCodeName)
     {
@@ -282,14 +338,11 @@ int ParametricMapObject::initializeRWVMFG() {
   if(metaDataJson.isMember("ModelFittingMethodCode")){
     ContentItemMacro* fittingMethod = new ContentItemMacro;
     CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
-    CodeSequenceMacro* qSpec = new CodeSequenceMacro(
-        metaDataJson["ModelFittingMethodCode"]["CodeValue"].asCString(),
-        metaDataJson["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
-        metaDataJson["ModelFittingMethodCode"]["CodeMeaning"].asCString());
+    CodeSequenceMacro* qSpec = createCodeSequenceFromMetadata("ModelFittingMethodCode");
 
     if (!fittingMethod || !qSpec || !qCodeName)
     {
-      return NULL;
+      return EXIT_FAILURE;
     }
 
     fittingMethod->getEntireConceptNameCodeSequence().push_back(qCodeName);
@@ -325,8 +378,18 @@ int ParametricMapObject::initializeRWVMFG() {
   return EXIT_SUCCESS;
 }
 
+CodeSequenceMacro *ParametricMapObject::createCodeSequenceFromMetadata(const string &codeName) const {
+  return new CodeSequenceMacro(
+        metaDataJson[codeName]["CodeValue"].asCString(),
+        metaDataJson[codeName]["CodingSchemeDesignator"].asCString(),
+        metaDataJson[codeName]["CodeMeaning"].asCString());
+}
+
 
 int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
+
+  sourceRepresentationType = DICOM_REPR;
+  dcmRepresentation = sourceDataset;
 
   DcmRLEDecoderRegistration::registerCodecs();
 
@@ -340,76 +403,31 @@ int ParametricMapObject::initializeFromDICOM(DcmDataset * sourceDataset) {
 
   parametricMap = *OFget<DPMParametricMapIOD*>(&result);
 
-  initializeVolumeGeometryFromDICOM(parametricMap, sourceDataset);
-
-  // Initialize the image
-  itkImage = volumeGeometry.getITKRepresentation<Float32ITKImageType>();
-
-  DPMParametricMapIOD::FramesType obj = parametricMap->getFrames();
-  if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
-    throw -1;
-  }
-
-  DPMParametricMapIOD::Frames<Float32PixelType> frames = *OFget<DPMParametricMapIOD::Frames<Float32PixelType> >(&obj);
-
-  FGInterface &fgInterface = parametricMap->getFunctionalGroups();
-  for(int frameId=0;frameId<volumeGeometry.extent[2];frameId++){
-
-    Float32PixelType *frame = frames.getFrame(frameId);
-
-    bool isPerFrame;
-
-    FGPlanePosPatient *planposfg =
-      OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-    assert(planposfg);
-
-    FGFrameContent *fracon =
-      OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
-    assert(fracon);
-
-    // populate meta information needed for Slicer ScalarVolumeNode initialization
-    {
-    }
-
-    Float32ITKImageType::IndexType index;
-    // initialize slice with the frame content
-    for(int row=0;row<volumeGeometry.extent[1];row++){
-      index[1] = row;
-      index[2] = frameId;
-      for(int col=0;col<volumeGeometry.extent[0];col++){
-        unsigned pixelPosition = row*volumeGeometry.extent[0] + col;
-        index[0] = col;
-        itkImage->SetPixel(index, frame[pixelPosition]);
-      }
-    }
-  }
-
-  initializeMetaDataFromDICOM(parametricMap);
+  initializeMetaDataFromDICOM();
+  createITKParametricMap();
 
   return EXIT_SUCCESS;
 }
 
-template <typename T>
-void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
-  // TODO: move shared information retrieval to parent class
+void ParametricMapObject::initializeMetaDataFromDICOM() {
 
   OFString temp;
-  doc->getSeries().getSeriesDescription(temp);
+  parametricMap->getSeries().getSeriesDescription(temp);
   metaDataJson["SeriesDescription"] = temp.c_str();
 
-  doc->getSeries().getSeriesNumber(temp);
+  parametricMap->getSeries().getSeriesNumber(temp);
   metaDataJson["SeriesNumber"] = temp.c_str();
 
-  doc->getIODGeneralImageModule().getInstanceNumber(temp);
+  parametricMap->getIODGeneralImageModule().getInstanceNumber(temp);
   metaDataJson["InstanceNumber"] = temp.c_str();
 
   using namespace dcmqi;
 
-  doc->getSeries().getBodyPartExamined(temp);
+  parametricMap->getSeries().getBodyPartExamined(temp);
   metaDataJson["BodyPartExamined"] = temp.c_str();
 
-  if (doc->getNumberOfFrames() > 0) {
-    FGInterface& fg = doc->getFunctionalGroups();
+  if (parametricMap->getNumberOfFrames() > 0) {
+    FGInterface& fg = parametricMap->getFunctionalGroups();
     FGRealWorldValueMapping* rw = OFstatic_cast(FGRealWorldValueMapping*,
                                                 fg.get(0, DcmFGTypes::EFG_REALWORLDVALUEMAPPING));
     if (rw->getRealWorldValueMapping().size() > 0) {
@@ -476,7 +494,19 @@ void ParametricMapObject::initializeMetaDataFromDICOM(T doc) {
   }
 }
 
+bool ParametricMapObject::isDerivationFGRequired(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame) {
+  // if there is a derivation item for at least one frame, DerivationImageSequence must be present for every frame.
+  unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
+  for (unsigned long sliceNumber=0;sliceNumber<nSlices; sliceNumber++) {
+    if(!slice2frame[sliceNumber].empty()){
+      return true;
+    }
+  }
+  return false;
+}
+
 int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame){
+
   FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
   FGFrameContent* fgfc = new FGFrameContent();
   FGDerivationImage* fgder = new FGDerivationImage();
@@ -484,16 +514,7 @@ int ParametricMapObject::initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DI
 
   unsigned nSlices = itkImage->GetLargestPossibleRegion().GetSize()[2];
 
-  // if there is a derivation item for at least one frame, DerivationImageSequence must be present
-  //   for every frame.
-  bool derivationFGRequired = false;
-  for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
-    if(!slice2frame[sliceNumber].empty()){
-      derivationFGRequired = true;
-      break;
-    }
-  }
-
+  bool derivationFGRequired = isDerivationFGRequired(slice2frame);
   for (unsigned long sliceNumber = 0;sliceNumber < nSlices; sliceNumber++) {
 
     perFrameFGs.push_back(fgppp);

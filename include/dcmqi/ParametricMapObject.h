@@ -12,7 +12,9 @@
 #include <dcmtk/dcmfg/fgrealworldvaluemapping.h>
 #include <dcmtk/dcmpmap/dpmparametricmapiod.h>
 #include <dcmtk/dcmdata/dcrledrg.h>
+
 #include <itkCastImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 #include "MultiframeObject.h"
 
@@ -46,8 +48,7 @@ public:
 
   int initializeFromDICOM(DcmDataset * sourceDataset);
 
-  template <typename T>
-  void initializeMetaDataFromDICOM(T doc);
+  void initializeMetaDataFromDICOM();
 
   Float32ITKImageType::Pointer getITKRepresentation() const {
     return itkImage;
@@ -58,14 +59,19 @@ protected:
       Float32ToDummyCasterType;
   typedef itk::MinimumMaximumImageCalculator<Float32ITKImageType> MinMaxCalculatorType;
 
+  int initializeEquipmentInfo();
   int initializeVolumeGeometry();
-  int createParametricMap();
+  int createDICOMParametricMap();
+  int createITKParametricMap();
+  int createITKImageFromFrames(FGInterface&, DPMParametricMapIOD::Frames<Float32PixelType>);
   int initializeCompositeContext();
   int initializeFrameAnatomyFG();
   int initializeRWVMFG();
   int initializeFrames(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >&);
 
-    // Functional groups initialization
+  bool isDerivationFGRequired(vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> >& slice2frame);
+
+  IODEnhGeneralEquipmentModule::EquipmentInfo enhancedEquipmentInfoModule;
 
   // Functional groups specific to PM:
   //  - Shared
@@ -79,6 +85,7 @@ protected:
 
 private:
   DPMParametricMapIOD* parametricMap;
+  CodeSequenceMacro *createCodeSequenceFromMetadata(const string &codeName) const;
 };
 
 

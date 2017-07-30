@@ -3,7 +3,6 @@
 //
 
 #include <dcmqi/Helper.h>
-#include "dcmqi/QIICRConstants.h"
 #include "dcmqi/MultiframeObject.h"
 
 int MultiframeObject::initializeFromDICOM(std::vector<DcmDataset *> sourceDataset) {
@@ -13,22 +12,6 @@ int MultiframeObject::initializeFromDICOM(std::vector<DcmDataset *> sourceDatase
 int MultiframeObject::initializeMetaDataFromString(const std::string &metaDataStr) {
   std::istringstream metaDataStream(metaDataStr);
   metaDataStream >> metaDataJson;
-  return EXIT_SUCCESS;
-}
-
-int MultiframeObject::initializeEquipmentInfo() {
-  if(sourceRepresentationType == ITK_REPR){
-    equipmentInfoModule = IODEnhGeneralEquipmentModule::EquipmentInfo(QIICR_MANUFACTURER, QIICR_DEVICE_SERIAL_NUMBER,
-                                                                      QIICR_MANUFACTURER_MODEL_NAME, QIICR_SOFTWARE_VERSIONS);
-    /*
-    equipmentInfoModule.m_Manufacturer = QIICR_MANUFACTURER;
-    equipmentInfoModule.m_DeviceSerialNumber = QIICR_DEVICE_SERIAL_NUMBER;
-    equipmentInfoModule.m_ManufacturerModelName = QIICR_MANUFACTURER_MODEL_NAME;
-    equipmentInfoModule.m_SoftwareVersions = QIICR_SOFTWARE_VERSIONS;
-    */
-
-  } else { // DICOM_REPR
-  }
   return EXIT_SUCCESS;
 }
 
@@ -68,6 +51,63 @@ int MultiframeObject::initializeVolumeGeometryFromITK(DummyImageType::Pointer im
   directions = image->GetDirection();
   extent = image->GetLargestPossibleRegion().GetSize();
   origin = image->GetOrigin();
+
+  volumeGeometry.setSpacing(spacing);
+  volumeGeometry.setOrigin(origin);
+  volumeGeometry.setExtent(extent);
+  volumeGeometry.setDirections(directions);
+
+  return EXIT_SUCCESS;
+}
+
+int MultiframeObject::initializeVolumeGeometryFromDICOM(FGInterface &fgInterface) {
+  SpacingType spacing;
+  PointType origin;
+  DirectionType directions;
+  SizeType extent;
+
+  if (getImageDirections(fgInterface, directions)) {
+    cerr << "Failed to get image directions" << endl;
+    throw -1;
+  }
+
+  double computedSliceSpacing, computedVolumeExtent;
+  vnl_vector<double> sliceDirection(3);
+  sliceDirection[0] = directions[0][2];
+  sliceDirection[1] = directions[1][2];
+  sliceDirection[2] = directions[2][2];
+  if (computeVolumeExtent(fgInterface, sliceDirection, origin, computedSliceSpacing, computedVolumeExtent)) {
+    cerr << "Failed to compute origin and/or slice spacing!" << endl;
+    throw -1;
+  }
+
+  if (getDeclaredImageSpacing(fgInterface, spacing)) {
+    cerr << "Failed to get image spacing from DICOM!" << endl;
+    throw -1;
+  }
+
+  const double tolerance = 1e-5;
+  if(!spacing[2]){
+    spacing[2] = computedSliceSpacing;
+  } else if(fabs(spacing[2]-computedSliceSpacing)>tolerance){
+    cerr << "WARNING: Declared slice spacing is significantly different from the one declared in DICOM!" <<
+         " Declared = " << spacing[2] << " Computed = " << computedSliceSpacing << endl;
+  }
+
+  OFString str;
+  if(dcmRepresentation->findAndGetOFString(DCM_Rows, str).good())
+    extent[1] = atoi(str.c_str());
+  if(dcmRepresentation->findAndGetOFString(DCM_Columns, str).good())
+    extent[0] = atoi(str.c_str());
+
+  cout << "computed extent: " << computedVolumeExtent << "/" << spacing[2] << endl;
+
+  // difference between the origins of the first and last frames, divide by SpacingBetweenSlices
+  // (which must be declared for meaningful interpretation of the SEG geometry, as amended in CP-1427), and add 1.
+  // see also: https://github.com/QIICR/dcmqi/issues/275
+  extent[2] = round(computedVolumeExtent/spacing[2] + 1);
+
+  cout << "Extent:" << extent << endl;
 
   volumeGeometry.setSpacing(spacing);
   volumeGeometry.setOrigin(origin);
@@ -145,41 +185,38 @@ ContentItemMacro* MultiframeObject::initializeContentItemMacro(CodeSequenceMacro
 // populates slice2frame vector that maps each of the volume slices to the set of frames that
 // are considered as derivation dataset
 // TODO: this function assumes that all of the derivation datasets are images, which is probably ok
-int MultiframeObject::mapVolumeSlicesToDICOMFrames(ImageVolumeGeometry& volume,
-                                                   const vector<DcmDataset*> dcmDatasets,
+int MultiframeObject::mapVolumeSlicesToDICOMFrames(const vector<DcmDataset*> dcmDatasets,
                                                    vector<set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> > &slice2frame){
-  slice2frame.resize(volume.extent[2]);
+  slice2frame.resize(volumeGeometry.extent[2]);
 
-  for(int d=0;d<dcmDatasets.size();d++){
+  for(vector<DcmDataset* >::const_iterator it=dcmDatasets.begin();it!=dcmDatasets.end();++it) {
     Uint32 numFrames;
-    DcmDataset* dcm = dcmDatasets[d];
+    DcmDataset* dcm = *it;
     if(dcm->findAndGetUint32(DCM_NumberOfFrames, numFrames).good()){
       // this is a multiframe object
       for(int f=0;f<numFrames;f++){
-        dcmqi::DICOMFrame frame(dcm,f+1);
-        vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-
-        for(int s=0;s<intersectingSlices.size();s++) {
-          slice2frame[s].insert(frame);
-          if (!s)
-            this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
-        }
+        findIntersectingSlicesAndAddDerivationSeriesInstance(slice2frame, dcm, f+1);
       }
     } else {
-      dcmqi::DICOMFrame frame(dcm);
-      vector<int> intersectingSlices = findIntersectingSlices(volume, frame);
-
-      for(int s=0;s<intersectingSlices.size();s++) {
-        slice2frame[s].insert(frame);
-        if (!s)
-          this->insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
-      }
+      findIntersectingSlicesAndAddDerivationSeriesInstance(slice2frame, dcm);
     }
   }
-
   return EXIT_SUCCESS;
 }
 
+int MultiframeObject::findIntersectingSlicesAndAddDerivationSeriesInstance(
+  vector<set<dcmqi::DICOMFrame, dcmqi::DICOMFrame_compare> > &slice2frame, DcmDataset *dcm, int frameNo) {
+  dcmqi::DICOMFrame frame(dcm, frameNo);
+  vector<int> intersectingSlices = findIntersectingSlices(volumeGeometry, frame);
+
+  if(intersectingSlices.size())
+    insertDerivationSeriesInstance(frame.getSeriesUID(), frame.getInstanceUID());
+
+  for(int s=0;s<intersectingSlices.size();s++) {
+    slice2frame[s].insert(frame);
+  }
+  return EXIT_SUCCESS;
+}
 
 int MultiframeObject::addDerivationItemToDerivationFG(FGDerivationImage* fgder, set<dcmqi::DICOMFrame,dcmqi::DICOMFrame_compare> derivationFrames,
                                                          CodeSequenceMacro purposeOfReferenceCode,
@@ -299,28 +336,15 @@ int MultiframeObject::getImageDirections(FGInterface& fgInterface, DirectionType
     cerr << "Plane Orientation (Patient) is missing, cannot parse input " << endl;
     return EXIT_FAILURE;
   }
-  OFString orientStr;
-  for(int i=0;i<3;i++){
-    if(planorfg->getImageOrientationPatient(orientStr, i).good()){
-      rowDirection[i] = atof(orientStr.c_str());
-    } else {
-      cerr << "Failed to get orientation " << i << endl;
-      return EXIT_FAILURE;
-    }
+
+  if(planorfg->getImageOrientationPatient(rowDirection[0], rowDirection[1], rowDirection[2],
+                                          colDirection[0], colDirection[1], colDirection[2]).bad()){
+    cerr << "Failed to get orientation " << endl;
+    return EXIT_FAILURE;
   }
-  for(int i=3;i<6;i++){
-    if(planorfg->getImageOrientationPatient(orientStr, i).good()){
-      colDirection[i-3] = atof(orientStr.c_str());
-    } else {
-      cerr << "Failed to get orientation " << i << endl;
-      return EXIT_FAILURE;
-    }
-  }
+
   vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, colDirection);
   sliceDirection.normalize();
-
-  cout << "Row direction: " << rowDirection << endl;
-  cout << "Col direction: " << colDirection << endl;
 
   for(int i=0;i<3;i++){
     dir[i][0] = rowDirection[i];
@@ -328,13 +352,15 @@ int MultiframeObject::getImageDirections(FGInterface& fgInterface, DirectionType
     dir[i][2] = sliceDirection[i];
   }
 
-  cout << "Z direction: " << sliceDirection << endl;
+  cout << "Row direction: " << rowDirection << endl;
+  cout << "Col direction: " << colDirection << endl;
+  cout << "Z direction  : " << sliceDirection << endl;
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<double> &sliceDirection,
-                                          PointType &imageOrigin, double &sliceSpacing, double &sliceExtent) {
+                                          PointType &imageOrigin, double &sliceSpacing, double &volumeExtent) {
   // Size
   // Rows/Columns can be read directly from the respective attributes
   // For number of slices, consider that all segments must have the same number of frames.
@@ -349,24 +375,11 @@ int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<d
 
   sliceSpacing = 0;
 
-  unsigned numFrames = fgInterface.getNumberOfFrames();
-
   // Determine ordering of the frames, keep mapping from ImagePositionPatient string
   //   to the distance, and keep track (just out of curiosity) how many frames overlap
-  vnl_vector<double> refOrigin(3);
-  {
-    OFBool isPerFrame;
-    FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
-                                                 fgInterface.get(0, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-    for(int j=0;j<3;j++){
-      OFString planposStr;
-      if(planposfg->getImagePositionPatient(planposStr, j).good()){
-        refOrigin[j] = atof(planposStr.c_str());
-      } else {
-        cerr << "Failed to read patient position" << endl;
-      }
-    }
-  }
+  vnl_vector<double> refOrigin = getFrameOrigin(fgInterface, 0);
+
+  unsigned numFrames = fgInterface.getNumberOfFrames();
 
   for(size_t frameId=0;frameId<numFrames;frameId++){
     OFBool isPerFrame;
@@ -383,46 +396,30 @@ int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<d
       return EXIT_FAILURE;
     }
 
-    vnl_vector<double> sOrigin;
-    OFString sOriginStr = "";
-    sOrigin.set_size(3);
-    for(int j=0;j<3;j++){
-      OFString planposStr;
-      if(planposfg->getImagePositionPatient(planposStr, j).good()){
-        sOrigin[j] = atof(planposStr.c_str());
-        sOriginStr += planposStr;
-        if(j<2)
-          sOriginStr+='/';
-      } else {
-        cerr << "Failed to read patient position" << endl;
-        return EXIT_FAILURE;
-      }
-    }
+    vnl_vector<double> sOrigin(3);
+    sOrigin = getFrameOrigin(planposfg);
+    std::ostringstream sstream;
+    sstream << sOrigin[0] << "/" << sOrigin[1] << "/" << sOrigin[2];
+    OFString sOriginStr = sstream.str().c_str();
 
     // check if this frame has already been encountered
     if(originStr2distance.find(sOriginStr) == originStr2distance.end()){
-      vnl_vector<double> difference;
-      difference.set_size(3);
+      vnl_vector<double> difference(3);
       difference[0] = sOrigin[0]-refOrigin[0];
       difference[1] = sOrigin[1]-refOrigin[1];
       difference[2] = sOrigin[2]-refOrigin[2];
-      double dist = dot_product(difference,sliceDirection);
+
+      double dist = dot_product(difference, sliceDirection);
       frame2overlap[sOriginStr] = 1;
       originStr2distance[sOriginStr] = dist;
       assert(originStr2distance.find(sOriginStr) != originStr2distance.end());
       originDistances.push_back(dist);
 
-      if(frameId==0){
+      if(frameId == 0 || dist < minDistance){
         minDistance = dist;
         imageOrigin[0] = sOrigin[0];
         imageOrigin[1] = sOrigin[1];
         imageOrigin[2] = sOrigin[2];
-      }
-      else if(dist<minDistance){
-        imageOrigin[0] = sOrigin[0];
-        imageOrigin[1] = sOrigin[1];
-        imageOrigin[2] = sOrigin[2];
-        minDistance = dist;
       }
     } else {
       frame2overlap[sOriginStr]++;
@@ -448,9 +445,10 @@ int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<d
     for(size_t i=1;i<originDistances.size(); i++){
       float dist1 = fabs(originDistances[i-1]-originDistances[i]);
       float delta = sliceSpacing-dist1;
+//      cout << "Spacing between frame " << i-1 << " and " << i << ": " << dist1 << endl;
     }
 
-    sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
+    volumeExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
     unsigned overlappingFramesCnt = 0;
     for(map<OFString, unsigned>::const_iterator it=frame2overlap.begin();
         it!=frame2overlap.end();++it){
@@ -465,6 +463,22 @@ int MultiframeObject::computeVolumeExtent(FGInterface& fgInterface, vnl_vector<d
   }
 
   return EXIT_SUCCESS;
+}
+
+vnl_vector<double> MultiframeObject::getFrameOrigin(FGInterface &fgInterface, int frameId) const {
+  OFBool isPerFrame;
+  FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+                                               fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+  return getFrameOrigin(planposfg);
+}
+
+vnl_vector<double> MultiframeObject::getFrameOrigin(FGPlanePosPatient *planposfg) const {
+  vnl_vector<double> origin(3);
+  if(!planposfg->getImagePositionPatient(origin[0], origin[1], origin[2]).good()){
+    cerr << "Failed to read patient position" << endl;
+    throw -1;
+  }
+  return origin;
 }
 
 int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingType &spacing){
@@ -490,7 +504,6 @@ int MultiframeObject::getDeclaredImageSpacing(FGInterface &fgInterface, SpacingT
   }
   return EXIT_SUCCESS;
 }
-
 
 int MultiframeObject::initializeSeriesSpecificAttributes(IODGeneralSeriesModule& generalSeriesModule,
                                                          IODGeneralImageModule& generalImageModule){
