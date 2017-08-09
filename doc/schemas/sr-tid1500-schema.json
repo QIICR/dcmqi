@@ -7,7 +7,7 @@
     "measurementModifier": {
       "type": "object",
       "properties": {
-        "modifierType": {
+        "modifier": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
         },
         "modifierValue": {
@@ -22,7 +22,9 @@
         "derivationParameter": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
         },
-        "derivationParameterValue": "float",
+        "derivationParameterValue": {
+          "type": "string"
+        },
         "derivationParameterUnits": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
         }
@@ -49,7 +51,7 @@
         "measurementModifiers": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/measurementModifiers"
+            "$ref": "#/definitions/measurementModifier"
           }
         },
 

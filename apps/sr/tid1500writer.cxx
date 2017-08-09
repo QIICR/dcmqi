@@ -213,13 +213,13 @@ int main(int argc, char** argv){
 
       if(measurement.isMember("measurementModifiers"))
         for(Json::ArrayIndex k=0;k<measurement["measurementModifiers"].size();k++)
-          CHECK_COND(measurements.getMeasurement().addModifier(json2cev(measurement["measurementModifiers"][k]["modifierType"]),json2cev(measurement["measurementModifiers"][k]["modifierValue"])));
+          CHECK_COND(measurements.getMeasurement().addModifier(json2cev(measurement["measurementModifiers"][k]["modifier"]),json2cev(measurement["measurementModifiers"][k]["modifierValue"])));
 
       if(measurement.isMember("measurementDerivationParameters")){
         for(Json::ArrayIndex k=0;k<measurement["measurementDerivationParameters"].size();k++){
           Json::Value derivationItem = measurement["measurementDerivationParameters"][k];
           DSRCodedEntryValue derivationParameter =
-            json2cev(measurement["derivationParameter"][k]["derivation"]);
+            json2cev(measurement["measurementDerivationParameters"][k]["derivationParameter"]);
 
           CMR_SRNumericMeasurementValue derivationParameterValue =
             CMR_SRNumericMeasurementValue(derivationItem["derivationParameterValue"].asCString(),
