@@ -194,7 +194,7 @@ int main(int argc, char** argv){
 
     CHECK_COND(measurements.setFinding(json2cev(measurementGroup["Finding"])));
     if(measurementGroup.isMember("FindingSite"))
-      CHECK_COND(measurements.setFindingSite(json2cev(measurementGroup["FindingSite"])));
+      CHECK_COND(measurements.addFindingSite(json2cev(measurementGroup["FindingSite"])));
 
     if(measurementGroup.isMember("MeasurementMethod"))
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
@@ -205,11 +205,30 @@ int main(int argc, char** argv){
       // TODO - add measurement method and derivation!
       const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), json2cev(measurement["units"]));
 
+      CHECK_COND(measurements.addMeasurement(json2cev(measurement["quantity"]), numValue));
+
       if(measurement.isMember("derivationModifier")){
-          measurements.addMeasurement(json2cev(measurement["quantity"]), numValue, DSRCodedEntryValue(), json2cev(measurement["derivationModifier"]));
-      } else {
-        CHECK_COND(measurements.addMeasurement(json2cev(measurement["quantity"]), numValue));
+          CHECK_COND(measurements.getMeasurement().setDerivation(json2cev(measurement["derivationModifier"])));
       }
+
+      if(measurement.isMember("measurementModifiers"))
+        for(Json::ArrayIndex k=0;k<measurement["measurementModifiers"].size();k++)
+          CHECK_COND(measurements.getMeasurement().addModifier(json2cev(measurement["measurementModifiers"][k]["modifierType"]),json2cev(measurement["measurementModifiers"][k]["modifierValue"])));
+
+      if(measurement.isMember("measurementDerivationParameters")){
+        for(Json::ArrayIndex k=0;k<measurement["measurementDerivationParameters"].size();k++){
+          Json::Value derivationItem = measurement["measurementDerivationParameters"][k];
+          DSRCodedEntryValue derivationParameter =
+            json2cev(measurement["derivationParameter"][k]["derivation"]);
+
+          CMR_SRNumericMeasurementValue derivationParameterValue =
+            CMR_SRNumericMeasurementValue(derivationItem["derivationParameterValue"].asCString(),
+            json2cev(derivationItem["derivationParameterUnits"]));
+
+          CHECK_COND(measurements.getMeasurement().addDerivationParameter(json2cev(derivationItem["derivationParameter"]), derivationParameterValue));
+        }
+      }
+
     }
   }
 
