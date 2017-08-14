@@ -29,6 +29,7 @@
 #include "dcmqi/QIICRUIDs.h"
 #include "dcmqi/internal/VersionConfigure.h"
 #include "dcmqi/Helper.h"
+#include "dcmqi/TID1500Reader.h"
 
 using namespace std;
 
@@ -50,109 +51,6 @@ bool isCompositeEvidence(OFString& sopClassUID) {
   return false;
 }
 
-Json::Value DSRCodedEntryValue2CodeSequence(const DSRCodedEntryValue &value) {
-  Json::Value codeSequence;
-  codeSequence["CodeValue"] = value.getCodeValue().c_str();
-  codeSequence["CodeMeaning"] = value.getCodeMeaning().c_str();
-  codeSequence["CodingSchemeDesignator"] = value.getCodingSchemeDesignator().c_str();
-  return codeSequence;
-}
-
-Json::Value getMeasurements(DSRDocument &doc) {
-  Json::Value measurements(Json::arrayValue);
-  DSRDocumentTree &st = doc.getTree();
-
-  DSRDocumentTreeNodeCursor cursor;
-  st.getCursorToRootNode(cursor);
-  if(st.gotoNamedChildNode(CODE_DCM_ImagingMeasurements)) {
-    size_t nnid = st.gotoNamedChildNode(CODE_DCM_MeasurementGroup);
-    do {
-      if (nnid) {
-        Json::Value measurement;
-        if (st.gotoNamedChildNode(CODE_NCIt_ActivitySession)) {
-          // TODO: think about it
-          cout << "Activity Session: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["activitySession"] = st.getCurrentContentItem().getStringValue().c_str();
-        }
-        st.gotoNode(nnid);
-
-        if (st.gotoNamedChildNode(CODE_UMLS_TimePoint)) {
-          // TODO: think about it
-          cout << "Time Point: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["timePoint"] = st.getCurrentContentItem().getStringValue().c_str();
-        }
-        st.gotoNode(nnid);
-
-        if (st.gotoNamedChildNode(CODE_SRT_MeasurementMethod)) {
-          measurement["measurementMethod"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
-        }
-        st.gotoNode(nnid);
-
-        if (st.gotoNamedChildNode(CODE_DCM_ReferencedSegment)) {
-          DSRImageReferenceValue referenceImage = st.getCurrentContentItem().getImageReference();
-          OFVector<Uint16> items;
-          referenceImage.getSegmentList().getItems(items);
-          cout << "Reference Segment: " << items[0] << endl;
-          measurement["ReferencedSegment"] = items[0];
-          if (!referenceImage.getSOPInstanceUID().empty()){
-            measurement["segmentationSOPInstanceUID"] = referenceImage.getSOPInstanceUID().c_str();
-          }
-        }
-        st.gotoNode(nnid);
-        if (st.gotoNamedChildNode(CODE_DCM_SourceSeriesForSegmentation)) {
-          cout << "SourceSeriesForImageSegmentation: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["SourceSeriesForImageSegmentation"] = st.getCurrentContentItem().getStringValue().c_str();
-        }
-        st.gotoNode(nnid);
-        if (st.gotoNamedChildNode(CODE_DCM_TrackingIdentifier)) {
-          cout << "TrackingIdentifier: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["TrackingIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
-        }
-        st.gotoNode(nnid);
-        if (st.gotoNamedChildNode(CODE_DCM_TrackingUniqueIdentifier)) {
-          cout << "TrackingUniqueIdentifier: " << st.getCurrentContentItem().getStringValue().c_str() << endl;
-          measurement["TrackingUniqueIdentifier"] = st.getCurrentContentItem().getStringValue().c_str();
-        }
-        st.gotoNode(nnid);
-
-        if (st.gotoNamedChildNode(CODE_DCM_Finding)) {
-          measurement["Finding"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
-        }
-        st.gotoNode(nnid);
-        if (st.gotoNamedChildNode(CODE_SRT_FindingSite)) {
-          measurement["FindingSite"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
-        }
-        st.gotoNode(nnid);
-        st.gotoChild();
-
-        Json::Value measurementItems(Json::arrayValue);
-        while (st.gotoNext()){
-          if (st.getCurrentContentItem().getNumericValuePtr() != NULL) {
-            DSRNumericMeasurementValue measurementValue = st.getCurrentContentItem().getNumericValue();
-
-            Json::Value localMeasurement;
-            localMeasurement["value"] = measurementValue.getNumericValue().c_str();
-            localMeasurement["units"] = DSRCodedEntryValue2CodeSequence(measurementValue.getMeasurementUnit());
-            localMeasurement["quantity"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getConceptName());
-
-            if(st.gotoNamedChildNode(CODE_DCM_Derivation)){
-              localMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(st.getCurrentContentItem().getCodeValue());
-              st.gotoParent();
-            }
-            measurementItems.append(localMeasurement);
-          }
-        }
-        measurement["measurementItems"] = measurementItems;
-        measurements.append(measurement);
-      }
-      st.gotoNode(nnid);
-      nnid = st.gotoNextNamedNode(CODE_DCM_MeasurementGroup);
-    } while (nnid);
-  }
-  return measurements;
-}
-
-
 int main(int argc, char** argv){
   std::cout << dcmqi_INFO << std::endl;
 
@@ -166,13 +64,14 @@ int main(int argc, char** argv){
 
   DcmFileFormat sliceFF;
   CHECK_COND(sliceFF.loadFile(inputSRFileName.c_str()));
-  DcmDataset* dataset = sliceFF.getDataset();
+  DcmDataset& dataset = *sliceFF.getDataset();
 
-  TID1500_MeasurementReport report(CMR_CID7021::ImagingMeasurementReport);
+  /* then, read the SR document from the DICOM dataset */
   DSRDocument doc;
-
-  CHECK_COND(doc.read(*dataset));
-
+  if (doc.read(dataset).good()) {
+    TID1500Reader reader(doc.getTree());
+    metaRoot["Measurements"] = reader.getMeasurements();
+  }
 
   OFString temp;
   doc.getSeriesDescription(temp);
@@ -181,8 +80,6 @@ int main(int argc, char** argv){
   metaRoot["SeriesNumber"] = temp.c_str();
   doc.getInstanceNumber(temp);
   metaRoot["InstanceNumber"] = temp.c_str();
-
-  cout << "Number of verifying observers: " << doc.getNumberOfVerifyingObservers() << endl;
 
   OFString observerName, observingDateTime, organizationName;
   if (doc.getNumberOfVerifyingObservers() != 0) {
@@ -218,9 +115,7 @@ int main(int argc, char** argv){
     metaRoot["imageLibrary"] = imageLibraryUIDs;
   if (!compositeContextUIDs.empty())
     metaRoot["compositeContext"] = compositeContextUIDs;
-
-  metaRoot["Measurements"] = getMeasurements(doc);
-
+  
   ofstream outputFile;
 
   outputFile.open(metaDataFileName.c_str());

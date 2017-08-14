@@ -72,7 +72,20 @@
                 "CodingSchemeDesignator": "99TEST",
                 "CodeMeaning": "Top secret filter"
               }
+            },
+            {
+              "modifier": {
+                "CodeValue": "A.13b",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Preprocessing operation b"
+              },
+              "modifierValue": {
+                "CodeValue": "A.14b",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Top secret filter b"
+              }
             }
+ 
           ],
 
           "measurementDerivationParameters": [
@@ -87,6 +100,32 @@
                 "CodeValue": "A.16",
                 "CodingSchemeDesignator": "99TEST",
                 "CodeMeaning": "Cats"
+              }
+            },
+            {
+              "derivationParameter": {
+                "CodeValue": "A.17",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Parameter B"
+              },
+              "derivationParameterValue": "2",
+              "derivationParameterUnits": {
+                "CodeValue": "A.18",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elephants"
+              }
+             },
+             {
+              "derivationParameter": {
+                "CodeValue": "A.19",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Parameter Z"
+              },
+              "derivationParameterValue": "1",
+              "derivationParameterUnits": {
+                "CodeValue": "A.20",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Apples"
               }
             }
           ]
