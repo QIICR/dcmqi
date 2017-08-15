@@ -62,11 +62,12 @@ int main(int argc, char** argv){
 
   Json::Value metaRoot;
 
+  // first read the dataset
   DcmFileFormat sliceFF;
   CHECK_COND(sliceFF.loadFile(inputSRFileName.c_str()));
   DcmDataset& dataset = *sliceFF.getDataset();
 
-  /* then, read the SR document from the DICOM dataset */
+  // then, read the SR document from the DICOM dataset
   DSRDocument doc;
   if (doc.read(dataset).good()) {
     TID1500Reader reader(doc.getTree());
@@ -103,10 +104,8 @@ int main(int argc, char** argv){
     evidenceList.getSOPClassUID(sopClassUID);
     evidenceList.getSOPInstanceUID(sopInstanceUID).c_str();
     if (isCompositeEvidence(sopClassUID)) {
-//      cout << "add composite" << endl;
       compositeContextUIDs.append(sopInstanceUID.c_str());
     }else {
-//      cout << "add image library" << endl;
       imageLibraryUIDs.append(sopInstanceUID.c_str());
     }
     cond = evidenceList.gotoNextItem();

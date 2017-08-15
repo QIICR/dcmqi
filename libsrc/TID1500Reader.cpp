@@ -11,7 +11,7 @@ Json::Value DSRCodedEntryValue2CodeSequence(const DSRCodedEntryValue &value) {
 
 TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
   : DSRDocumentTree(tree) {
-    /* check for expected template identification */
+    // check for expected template identification
     if (!compareTemplateIdentification("1500", "DCMR"))
       CERR << "warning: template identification \"TID 1500 (DCMR)\" not found" << OFendl;
 
@@ -20,6 +20,7 @@ TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
 Json::Value TID1500Reader::getMeasurements() {
   Json::Value measurements(Json::arrayValue);
 
+  // These modifiers are expected to be defined at the level of measurement group
   std::map<std::string, DSRCodedEntryValue> string2code;
   string2code["activitySession"] = CODE_NCIt_ActivitySession;
   string2code["timePoint"] = CODE_UMLS_TimePoint;
@@ -29,13 +30,13 @@ Json::Value TID1500Reader::getMeasurements() {
   string2code["Finding"] = CODE_DCM_Finding;
   string2code["FindingSite"] = CODE_SRT_FindingSite;
 
-  /* iterate over the document tree and print the measurements */
+  // iterate over the document tree and read the measurements
   if (gotoNamedChildNode(CODE_DCM_ImagingMeasurements)) {
     if (gotoNamedChildNode(CODE_DCM_MeasurementGroup)) {
       do {
-        // Caveat: consider only the first measurement group!
+        // Caveat: we consider only the first measurement group!
         Json::Value measurementGroup;
-        /* remember cursor to current content item (as a starting point) */
+        // remember cursor to current content item (as a starting point)
         const DSRDocumentTreeNodeCursor groupCursor(getCursor());
         for(std::map<std::string, DSRCodedEntryValue>::const_iterator mIt=string2code.begin();
             mIt!=string2code.end();++mIt){
@@ -46,13 +47,13 @@ Json::Value TID1500Reader::getMeasurements() {
 
         initSegmentationContentItems(groupCursor, measurementGroup);
 
-        /* details on measurement value(s) */
+        // details on measurement value(s)
         Json::Value measurementItems(Json::arrayValue);
         DSRDocumentTreeNodeCursor cursor(groupCursor);
         if (cursor.gotoChild()) {
           size_t counter = 0;
           //COUT << "- Measurements:" << OFendl;
-          /* iterate over all direct child nodes */
+          // iterate over all direct child nodes
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
             /* and check for numeric measurement value content items */
@@ -77,12 +78,12 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
                                           DSRDocumentTreeNodeCursor cursor)
 {
   Json::Value contentValue;
-  /* try to go to the given content item */
+  // try to go to the given content item
   if (gotoNamedChildNode(conceptName, cursor)) {
     const DSRDocumentTreeNode *node = cursor.getNode();
     if (node != NULL) {
       //COUT << "- " << conceptName.getCodeMeaning() << ": ";
-      /* use appropriate value for output */
+      // use appropriate value for output
       switch (node->getValueType()) {
         case VT_Text:
           contentValue = OFstatic_cast(
@@ -130,12 +131,12 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
   singleMeasurement["units"] = DSRCodedEntryValue2CodeSequence(numNode.getMeasurementUnit());
   singleMeasurement["quantity"] = DSRCodedEntryValue2CodeSequence(numNode.getConceptName());
 
-  /* check for any modifiers */
+  // check for any modifiers
   if (cursor.gotoChild()) {
     Json::Value measurementModifiers(Json::arrayValue);
     Json::Value derivationParameters(Json::arrayValue);
 
-    /* iterate over all direct child nodes */
+    // iterate over all direct child nodes
     do {
       const DSRDocumentTreeNode *node = cursor.getNode();
       if (node != NULL) {
@@ -193,13 +194,13 @@ size_t TID1500Reader::gotoNamedChildNode(const DSRCodedEntryValue &conceptName,
                           DSRDocumentTreeNodeCursor &cursor)
 {
   size_t nodeID = 0;
-  /* goto the first child node */
+  // goto the first child node
   if (conceptName.isValid() && cursor.gotoChild()) {
     const DSRDocumentTreeNode *node;
-    /* iterate over all nodes on this level */
+    // iterate over all nodes on this level
     do {
       node = cursor.getNode();
-      /* and check for the desired concept name */
+      // and check for the desired concept name 
       if ((node != NULL) && (node->getConceptName() == conceptName))
         nodeID = node->getNodeID();
     } while ((nodeID == 0) && cursor.gotoNext());
