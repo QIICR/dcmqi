@@ -146,9 +146,13 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
           // There is only one "Derivation" concept modifier (row 8 in TID1419)
           //  http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1419
           // so it has the special treatment
-          if (node->getConceptName() == CODE_DCM_Derivation){
+          if (node->getConceptName() == CODE_DCM_Derivation) {
             singleMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
+          } else if (node->getConceptName() == CODE_SRT_FindingSite) {
+            CERR << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
+          } else if (node->getConceptName() == CODE_SRT_MeasurementMethod) {
+            CERR << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else {
             // Otherwise, assume that modifier corresponds to row 6.
             // NB: as a consequence, this means other types of concept modifiers must be factored out

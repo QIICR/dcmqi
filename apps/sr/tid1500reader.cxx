@@ -82,7 +82,7 @@ int main(int argc, char** argv){
   metaRoot["InstanceNumber"] = temp.c_str();
 
   OFString observerName, observingDateTime, organizationName;
-  if (doc.getNumberOfVerifyingObservers() != 0) {
+  if (doc.hasVerifyingObservers()) {
     doc.getVerifyingObserver(1, observingDateTime, observerName, organizationName);
     metaRoot["observerContext"]["ObserverType"] = "PERSON";
     metaRoot["observerContext"]["PersonObserverName"] = observerName.c_str();
