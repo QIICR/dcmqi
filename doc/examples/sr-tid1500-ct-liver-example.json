@@ -59,7 +59,76 @@
             "CodeValue": "R-00317",
             "CodingSchemeDesignator": "SRT",
             "CodeMeaning": "Mean"
-          }
+          },
+          "measurementModifiers": [
+            {
+              "modifier": {
+                "CodeValue": "A.13",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Preprocessing operation"
+              },
+              "modifierValue": {
+                "CodeValue": "A.14",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Top secret filter"
+              }
+            },
+            {
+              "modifier": {
+                "CodeValue": "A.13b",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Preprocessing operation b"
+              },
+              "modifierValue": {
+                "CodeValue": "A.14b",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Top secret filter b"
+              }
+            }
+ 
+          ],
+
+          "measurementDerivationParameters": [
+            {
+              "derivationParameter": {
+                "CodeValue": "A.15",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Parameter A"
+              },
+              "derivationParameterValue": "9.91",
+              "derivationParameterUnits": {
+                "CodeValue": "A.16",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Cats"
+              }
+            },
+            {
+              "derivationParameter": {
+                "CodeValue": "A.17",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Parameter B"
+              },
+              "derivationParameterValue": "2",
+              "derivationParameterUnits": {
+                "CodeValue": "A.18",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elephants"
+              }
+             },
+             {
+              "derivationParameter": {
+                "CodeValue": "A.19",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Parameter Z"
+              },
+              "derivationParameterValue": "1",
+              "derivationParameterUnits": {
+                "CodeValue": "A.20",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Apples"
+              }
+            }
+          ]
         },
         {
           "value": "-778",

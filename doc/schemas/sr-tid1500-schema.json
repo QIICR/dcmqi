@@ -3,6 +3,34 @@
   "id": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/sr-tid1500-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
+
+    "measurementModifier": {
+      "type": "object",
+      "properties": {
+        "modifier": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        },
+        "modifierValue": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        }
+      }
+    },
+
+    "measurementDerivationParameter": {
+      "type": "object",
+      "properties": {
+        "derivationParameter": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        },
+        "derivationParameterValue": {
+          "type": "string"
+        },
+        "derivationParameterUnits": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        }
+      }
+    },
+
     "measurementItem": {
       "type": "object",
       "additionalProperties": false,
@@ -18,7 +46,22 @@
         },
         "derivationModifier": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        },
+
+        "measurementModifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/measurementModifier"
+          }
+        },
+
+        "measurementDerivationParameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/measurementDerivationParameter"
+          }
         }
+
       }
     },
     "MeasurementGroup": {
