@@ -27,6 +27,7 @@ Json::Value TID1500Reader::getMeasurements() {
   string2code["measurementMethod"] = CODE_SRT_MeasurementMethod;
   string2code["SourceSeriesForImageSegmentation"] = CODE_DCM_SourceSeriesForSegmentation;
   string2code["TrackingIdentifier"] = CODE_DCM_TrackingIdentifier;
+  string2code["TrackingUniqueIdentifier"] = CODE_DCM_TrackingUniqueIdentifier;
   string2code["Finding"] = CODE_DCM_Finding;
   string2code["FindingSite"] = CODE_SRT_FindingSite;
 
@@ -200,7 +201,7 @@ size_t TID1500Reader::gotoNamedChildNode(const DSRCodedEntryValue &conceptName,
     // iterate over all nodes on this level
     do {
       node = cursor.getNode();
-      // and check for the desired concept name 
+      // and check for the desired concept name
       if ((node != NULL) && (node->getConceptName() == conceptName))
         nodeID = node->getNodeID();
     } while ((nodeID == 0) && cursor.gotoNext());
