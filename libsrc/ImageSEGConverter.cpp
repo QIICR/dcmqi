@@ -345,7 +345,7 @@ namespace dcmqi {
               DerivationImageItem *derimgItem;
               CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
 
-              cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+              //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
               OFVector<SourceImageItem*> srcimgItems;
               CHECK_COND(derimgItem->addSourceImageItems(siVector,

@@ -304,7 +304,7 @@ namespace dcmqi {
           return NULL;
         }
 
-        cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+        //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
         OFVector<SourceImageItem*> srcimgItems;
         CHECK_COND(derimgItem->addSourceImageItems(siVector,
