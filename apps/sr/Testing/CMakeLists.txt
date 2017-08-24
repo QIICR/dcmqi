@@ -22,6 +22,16 @@ dcmqi_add_test(
   )
 
 dcmqi_add_test(
+  NAME ${WRITER_MODULE_NAME}_nan
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
+    --inputMetadata ${EXAMPLES}/sr-tid1500-example-nan.json
+    --inputImageLibraryDirectory ${DICOM_DIR}
+    --inputCompositeContextDirectory ${CMAKE_SOURCE_DIR}/data/sr-example
+    --outputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-example-nan.dcm
+  )
+
+dcmqi_add_test(
   NAME ${WRITER_MODULE_NAME}_example
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
