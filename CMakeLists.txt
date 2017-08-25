@@ -201,6 +201,15 @@ if(NOT DCMQI_USE_GIT_PROTOCOL)
   set(git_protocol "http")
 endif()
 
+# macOS rpath
+if(NOT DEFINED CMAKE_MACOSX_RPATH)
+  set(CMAKE_MACOSX_RPATH 1)
+endif()
+mark_as_superbuild(
+  VARS CMAKE_MACOSX_RPATH:BOOL
+  ALL_PROJECTS
+  )
+
 #-----------------------------------------------------------------------------
 # Dependencies
 #
