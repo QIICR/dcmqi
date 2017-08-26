@@ -649,7 +649,7 @@ namespace dcmqi {
               segmentAttributes->setAnatomicRegionSequence(anatomyMacro.getAnatomicRegion());
           }
           if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
-              segmentAttributes->setAnatomicRegionModifierSequence(anatomyMacro.getAnatomicRegionModifier()[0]);
+              segmentAttributes->setAnatomicRegionModifierSequence(*(anatomyMacro.getAnatomicRegionModifier()[0]));
           }
         }
       }
