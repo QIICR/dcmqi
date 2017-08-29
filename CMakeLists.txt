@@ -1,10 +1,18 @@
 cmake_minimum_required(VERSION 3.5.0)
 
-if(NOT DCMQI_CMAKE_CXX_STANDARD)
-  set(DCMQI_CMAKE_CXX_STANDARD 98)
+#-----------------------------------------------------------------------------
+# C++ standard
+#
+set(_msg "Setting C++ standard")
+message(STATUS "${_msg}")
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 98)
 endif()
-set(CMAKE_CXX_STANDARD ${DCMQI_CMAKE_CXX_STANDARD})
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+message(STATUS "${_msg} - C++${CMAKE_CXX_STANDARD}")
 
+#-----------------------------------------------------------------------------
 set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #-----------------------------------------------------------------------------
