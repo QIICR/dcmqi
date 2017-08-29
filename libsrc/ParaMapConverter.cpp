@@ -46,8 +46,9 @@ namespace dcmqi {
                                                                       metaInfo.getInstanceNumber().c_str(),
                                                                       inputSize[1], inputSize[0], eq, contentID,
                                                                       imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
-    if (OFCondition* pCondition = OFget<OFCondition>(&obj))
+    if (OFget<OFCondition>(&obj)){
       return NULL;
+    }
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
@@ -442,7 +443,7 @@ namespace dcmqi {
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
-    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+    if (OFget<OFCondition>(&result)) {
       throw -1;
     }
 
@@ -510,7 +511,7 @@ namespace dcmqi {
     populateMetaInformationFromDICOM(pmapDataset, metaInfo);
 
     DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
-    if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    if (OFget<OFCondition>(&obj)) {
       throw -1;
     }
 
@@ -551,7 +552,7 @@ namespace dcmqi {
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
-                                         const JSONParametricMapMetaInformationHandler &metaInfo,
+                                         const JSONParametricMapMetaInformationHandler &itkNotUsed(metaInfo),
                                          const unsigned long frameNo, OFVector<FGBase*> groups)
   {
     FloatImageType::RegionType sliceRegion;

@@ -52,7 +52,7 @@ Json::Value TID1500Reader::getMeasurements() {
         Json::Value measurementItems(Json::arrayValue);
         DSRDocumentTreeNodeCursor cursor(groupCursor);
         if (cursor.gotoChild()) {
-          size_t counter = 0;
+          //size_t counter = 0;
           //COUT << "- Measurements:" << OFendl;
           // iterate over all direct child nodes
           do {
