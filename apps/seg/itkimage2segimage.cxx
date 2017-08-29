@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
     vector<int> fileOrder(segImageFiles.size());
     fill(fileOrder.begin(), fileOrder.end(), -1);
     vector<ShortImageType::Pointer> segmentationsReordered(segImageFiles.size());
-    for(int filePosition=0;filePosition<segImageFiles.size();filePosition++){
-      for(int mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
-        string mappingItem = metaRoot["segmentAttributesFileMapping"][mappingPosition].asCString();
+    for(size_t filePosition=0;filePosition<segImageFiles.size();filePosition++){
+      for(size_t mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
+        string mappingItem = metaRoot["segmentAttributesFileMapping"][static_cast<int>(mappingPosition)].asCString();
         size_t foundPos = segImageFiles[filePosition].rfind(mappingItem);
         if(foundPos != std::string::npos){
           fileOrder[filePosition] = mappingPosition;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
       }
     }
     cout << "Order of input ITK images updated as shown below based on the segmentAttributesFileMapping attribute:" << endl;
-    for(int i=0;i<segImageFiles.size();i++){
+    for(size_t i=0;i<segImageFiles.size();i++){
       cout << " image " << i << " moved to position " << fileOrder[i] << endl;
       segmentationsReordered[fileOrder[i]] = segmentations[i];
     }
