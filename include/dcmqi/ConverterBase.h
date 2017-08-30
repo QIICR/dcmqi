@@ -217,10 +217,10 @@ namespace dcmqi {
 
         sliceSpacing = fabs(originDistances[0]-originDistances[1]);
 
-        for(size_t i=1;i<originDistances.size(); i++){
-          float dist1 = fabs(originDistances[i-1]-originDistances[i]);
-          float delta = sliceSpacing-dist1;
-        }
+        // for(size_t i=1;i<originDistances.size(); i++){
+          // float dist1 = fabs(originDistances[i-1]-originDistances[i]);
+          // float delta = sliceSpacing-dist1;
+        // }
 
         sliceExtent = fabs(originDistances[0]-originDistances[originDistances.size()-1]);
         unsigned overlappingFramesCnt = 0;
