@@ -5,6 +5,8 @@ if(NOT DCMQI_CMAKE_CXX_STANDARD)
 endif()
 set(CMAKE_CXX_STANDARD ${DCMQI_CMAKE_CXX_STANDARD})
 
+set(CMAKE_POSITION_INDEPENDENT_CODE 1)
+
 set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #-----------------------------------------------------------------------------
