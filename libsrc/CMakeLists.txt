@@ -35,10 +35,14 @@ set(SRCS
 
 
 if(DCMQI_BUILTIN_JSONCPP)
+  if(DCMQI_USE_JSONCPP_1x)
+    set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp-1.x)
+  else()
+    set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp-0.x)
+  endif()
   list(APPEND ADDITIONAL_SRCS
-    ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
+    ${JsonCpp_INCLUDE_DIR}/jsoncpp.cpp
     )
-  set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp)
 endif()
 
 set(lib_name dcmqi)
