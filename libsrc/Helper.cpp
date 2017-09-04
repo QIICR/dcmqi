@@ -2,6 +2,9 @@
 // DCMQI includes
 #include "dcmqi/Helper.h"
 
+// DCMTK includes
+#include <dcmtk/ofstd/oflist.h>
+
 namespace dcmqi {
 
   bool Helper::isUndefinedOrPathDoesNotExist(const string &var, const string &humanReadableName) {
@@ -57,7 +60,7 @@ namespace dcmqi {
 #endif
     cout << "Searching recursively " << directory << " for DICOM files" << endl;
     if(OFStandard::searchDirectoryRecursively(directory.c_str(), fileList)) {
-      for(OFIterator<OFString> fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
+      for(OFListIterator(OFString) fileListIterator=fileList.begin(); fileListIterator!=fileList.end(); fileListIterator++) {
         dicomImageFiles.push_back((*fileListIterator).c_str());
       }
     }
