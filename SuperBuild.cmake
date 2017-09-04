@@ -100,9 +100,9 @@ ExternalProject_Add(${proj}
 # version will be at least 3.1.
 #
 if(CMAKE_CONFIGURATION_TYPES)
-  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${proj}-prefix/src/${proj}-stamp/${CMAKE_CFG_INTDIR}/${proj}-build")
+  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LC}-prefix/src/${proj}-stamp/${CMAKE_CFG_INTDIR}/${proj}-build")
 else()
-  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${proj}-prefix/src/${proj}-stamp/${proj}-build")
+  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LC}-prefix/src/${proj}-stamp/${proj}-build")
 endif()
 ExternalProject_Add_Step(${proj} forcebuild
   COMMAND ${CMAKE_COMMAND} -E remove ${BUILD_STAMP_FILE}

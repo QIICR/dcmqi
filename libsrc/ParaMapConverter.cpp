@@ -46,8 +46,9 @@ namespace dcmqi {
                                                                       metaInfo.getInstanceNumber().c_str(),
                                                                       inputSize[1], inputSize[0], eq, contentID,
                                                                       imageFlavor, pixContrast, DPMTypes::CQ_RESEARCH);
-    if (OFCondition* pCondition = OFget<OFCondition>(&obj))
+    if (OFget<OFCondition>(&obj)){
       return NULL;
+    }
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
@@ -205,7 +206,7 @@ namespace dcmqi {
     }
 
     if(metaInfo.metaInfoRoot.isMember("SourceImageDiffusionBValues")){
-      for(int bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
+      for(size_t bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
         ContentItemMacro* bval = new ContentItemMacro;
         CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "seconds per square millimeter");
         CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx1", "99QIICR", "Source image diffusion b-value");
@@ -218,7 +219,7 @@ namespace dcmqi {
         bval->setValueType(ContentItemMacro::VT_NUMERIC);
         bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
         bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
-        if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][bvalId].asCString()).bad())
+        if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][static_cast<int>(bvalId)].asCString()).bad())
           cout << "Failed to insert the value!" << endl;;
         realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
         cout << bval->toString() << endl;
@@ -240,9 +241,9 @@ namespace dcmqi {
       cast->Update();
       slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
       cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
-      for(int i=0;i<slice2derimg.size();i++){
+      for(size_t i=0;i<slice2derimg.size();i++){
         cout << "  Slice " << i << ": ";
-        for(int j=0;j<slice2derimg[i].size();j++){
+        for(size_t j=0;j<slice2derimg[i].size();j++){
           cout << slice2derimg[i][j] << " ";
           hasDerivationImages = true;
         }
@@ -442,7 +443,7 @@ namespace dcmqi {
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
-    if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
+    if (OFget<OFCondition>(&result)) {
       throw -1;
     }
 
@@ -510,13 +511,13 @@ namespace dcmqi {
     populateMetaInformationFromDICOM(pmapDataset, metaInfo);
 
     DPMParametricMapIOD::FramesType obj = pMapDoc->getFrames();
-    if (OFCondition* pCondition = OFget<OFCondition>(&obj)) {
+    if (OFget<OFCondition>(&obj)) {
       throw -1;
     }
 
     DPMParametricMapIOD::Frames<FloatPixelType> frames = *OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&obj);
 
-    for(int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
+    for(unsigned int frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
 
       FloatPixelType *frame = frames.getFrame(frameId);
 
@@ -536,10 +537,10 @@ namespace dcmqi {
 
       FloatImageType::IndexType index;
       // initialize slice with the frame content
-      for(int row=0;row<imageSize[1];row++){
+      for(unsigned int row=0;row<imageSize[1];row++){
         index[1] = row;
         index[2] = frameId;
-        for(int col=0;col<imageSize[0];col++){
+        for(unsigned int col=0;col<imageSize[0];col++){
           unsigned pixelPosition = row*imageSize[0] + col;
           index[0] = col;
           pmImage->SetPixel(index, frame[pixelPosition]);
@@ -551,7 +552,7 @@ namespace dcmqi {
   }
 
   OFCondition ParaMapConverter::addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
-                                         const JSONParametricMapMetaInformationHandler &metaInfo,
+                                         const JSONParametricMapMetaInformationHandler &itkNotUsed(metaInfo),
                                          const unsigned long frameNo, OFVector<FGBase*> groups)
   {
     FloatImageType::RegionType sliceRegion;
@@ -651,7 +652,7 @@ namespace dcmqi {
         item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
         metaInfo.setRealWorldValueSlope(slope);
 
-        for(int quantIdx=0; quantIdx<item->getEntireQuantityDefinitionSequence().size(); quantIdx++) {
+        for(unsigned int quantIdx=0; quantIdx<item->getEntireQuantityDefinitionSequence().size(); quantIdx++) {
           ContentItemMacro* macro = item->getEntireQuantityDefinitionSequence()[quantIdx];
           CodeSequenceMacro* codeSequence= macro->getConceptNameCodeSequence();
           if (codeSequence != NULL) {
