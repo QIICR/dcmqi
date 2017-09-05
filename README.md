@@ -49,7 +49,7 @@ You can communicate you feedback, feature requests, comments or problem reports 
 
 To acknowledge dcmqi in an academic paper, please cite
 
-> Herz C, Fillion-Robin JC, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A. (2017) _dcmqi: an open source library for standardized communication of quantitative image analysis results using DICOM_. *Cancer Research* (in press) [[PDF](https://www.dropbox.com/s/qbj0n8an30upmk7/Herz2017-CancerResearch.pdf?raw=1)]
+> Herz C, Fillion-Robin JC, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A. (2017) _dcmqi: an open source library for standardized communication of quantitative image analysis results using DICOM_. *Cancer Research* (in press) [[PDF](https://dash.harvard.edu/bitstream/handle/1/33812776/Herz-dcmqi-2017.pdf?sequence=1)]
 
 If you like dcmqi, please give the dcmqi repository [a star on github](https://help.github.com/articles/about-stars/). This is an easy way to show thanks and it can help us qualify for useful services that are only open to widely recognized open projects.
 
