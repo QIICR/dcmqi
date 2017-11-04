@@ -85,7 +85,7 @@
                 "CodeMeaning": "Top secret filter b"
               }
             }
- 
+
           ],
 
           "measurementDerivationParameters": [
@@ -128,6 +128,35 @@
                 "CodeMeaning": "Apples"
               }
             }
+          ],
+          "measurementPopulationDescription": "Elves of the Black Forest",
+          "measurementNumProperties": [
+            {
+              "numProperty": {
+                "CodeValue": "1234",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elf average weight"
+              },
+              "numPropertyValue": "10",
+              "numPropertyUnits": {
+                "CodeValue": "kg",
+                "CodingSchemeDesignator": "UCUM",
+                "CodeMeaning": "kilogram"
+              }
+            },
+            {
+              "numProperty": {
+                "CodeValue": "1235",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elf average height"
+              },
+              "numPropertyValue": "11",
+              "numPropertyUnits": {
+                "CodeValue": "cm",
+                "CodingSchemeDesignator": "UCUM",
+                "CodeMeaning": "centimeter"
+              }
+            }
           ]
         },
         {
@@ -146,7 +175,36 @@
             "CodeValue": "R-404FB",
             "CodingSchemeDesignator": "SRT",
             "CodeMeaning": "Minimum"
-          }
+          },
+          "measurementPopulationDescription": "Elves of the Black Forest 2",
+          "measurementNumProperties": [
+            {
+              "numProperty": {
+                "CodeValue": "1234",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elf average weight"
+              },
+              "numPropertyValue": "20",
+              "numPropertyUnits": {
+                "CodeValue": "kg",
+                "CodingSchemeDesignator": "UCUM",
+                "CodeMeaning": "kilogram"
+              }
+            },
+            {
+              "numProperty": {
+                "CodeValue": "1235",
+                "CodingSchemeDesignator": "99TEST",
+                "CodeMeaning": "Elf average height"
+              },
+              "numPropertyValue": "21",
+              "numPropertyUnits": {
+                "CodeValue": "cm",
+                "CodingSchemeDesignator": "UCUM",
+                "CodeMeaning": "centimeter"
+              }
+            }
+          ]
         },
         {
           "value": "221",

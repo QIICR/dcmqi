@@ -16,6 +16,18 @@
       }
     },
 
+    "measurementNumProperty": {
+      "type": "object",
+      "properties": {
+        "numProperty": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        },
+        "numPropertyValue": {
+          "type": "number"
+        }
+      }
+    },
+
     "measurementDerivationParameter": {
       "type": "object",
       "properties": {
@@ -60,6 +72,17 @@
           "items": {
             "$ref": "#/definitions/measurementDerivationParameter"
           }
+        },
+
+        "measurementNumProperties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/measurementNumProperty"
+          }
+        },
+
+        "measurementPopulationDescription": {
+          "type": "string"
         }
 
       }
