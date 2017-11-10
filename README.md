@@ -59,4 +59,4 @@ This work is supported primarily by the National Institutes of Health, National 
 
 1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) _DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research._ *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
 
-2. Herz C, Fillion-Robin JC, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A. (2017) _dcmqi: an open source library for standardized communication of quantitative image analysis results using DICOM_. *Cancer Research* (in press) [[PDF](https://dash.harvard.edu/bitstream/handle/1/33812776/Herz-dcmqi-2017.pdf)]
+2. Herz C, Fillion-Robin J-C, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A.  _dcmqi: An Open Source Library for Standardized Communication of Quantitative Image Analysis Results Using DICOM_. *Cancer Research*. 2017;77(21):e87–e90 http://cancerres.aacrjournals.org/content/77/21/e87.
