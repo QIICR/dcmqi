@@ -134,8 +134,11 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
 
   // check for any modifiers
   if (cursor.gotoChild()) {
+
     Json::Value measurementModifiers(Json::arrayValue);
     Json::Value derivationParameters(Json::arrayValue);
+    Json::Value populationDescription;
+    Json::Value measurementNumProperties(Json::arrayValue);
 
     // iterate over all direct child nodes
     do {
@@ -178,6 +181,20 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
           derivationParameter["derivationParameterValue"] = OFstatic_cast(const DSRNumTreeNode *, node)->getNumericValue().c_str();
           derivationParameters.append(derivationParameter);
         }
+
+        else if (node->getRelationshipType() == RT_hasProperties && (node->getValueType() == VT_Text)) {
+          if (node->getConceptName() == DSRCodedEntryValue("121405", "DCM", "Population description")) {
+            populationDescription = OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
+          }
+        }
+
+        else if (node->getRelationshipType() == RT_hasProperties && (node->getValueType() == VT_Num)) {
+          Json::Value measurementNumProperty;
+          measurementNumProperty["numProperty"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
+          measurementNumProperty["numPropertyUnits"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(const DSRNumTreeNode *, node)->getValue().getMeasurementUnit());
+          measurementNumProperty["numPropertyValue"] = OFstatic_cast(const DSRNumTreeNode *, node)->getNumericValue().c_str();
+          measurementNumProperties.append(measurementNumProperty);
+        }
       }
     } while (cursor.gotoNext());
 
@@ -185,6 +202,12 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
       singleMeasurement["measurementModifiers"] = measurementModifiers;
     if(derivationParameters.size())
       singleMeasurement["measurementDerivationParameters"] = derivationParameters;
+    if(populationDescription != 0){
+      singleMeasurement["measurementPopulationDescription"] = populationDescription;
+    }
+    if(measurementNumProperties != "")
+      singleMeasurement["measurementNumProperties"] = measurementNumProperties;
+
   }
 
   return singleMeasurement;

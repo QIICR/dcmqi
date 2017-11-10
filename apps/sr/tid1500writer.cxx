@@ -12,6 +12,8 @@
 #include <dcmtk/dcmsr/codes/dcm.h>
 #include <dcmtk/dcmsr/codes/srt.h>
 #include <dcmtk/dcmsr/cmr/tid1500.h>
+#include <dcmtk/dcmsr/dsrnumtn.h>
+#include <dcmtk/dcmsr/dsrtextn.h>
 
 #include <dcmtk/dcmdata/dcdeftag.h>
 
@@ -160,6 +162,11 @@ int main(int argc, char** argv){
 
   std::cout << "Total measurement groups: " << metaRoot["Measurements"].size() << std::endl;
 
+  // Store measurementNumProperty and measurementPopulationDescription items to be added
+  //   to the document in a separate iteration over the individual measurement items.
+  // Store empty Json::Value if not applicable
+  std::vector<Json::Value> measurementNumProperties, measurementPopulationDescriptions;
+
   for(Json::ArrayIndex i=0;i<metaRoot["Measurements"].size();i++){
     Json::Value measurementGroup = metaRoot["Measurements"][i];
 
@@ -229,6 +236,18 @@ int main(int argc, char** argv){
         }
       }
 
+      if(measurement.isMember("measurementNumProperties")){
+        measurementNumProperties.push_back(measurement["measurementNumProperties"]);
+      } else {
+        measurementNumProperties.push_back(Json::Value());
+      }
+
+      if(measurement.isMember("measurementPopulationDescription")){
+        measurementPopulationDescriptions.push_back(measurement["measurementPopulationDescription"]);
+      } else {
+        measurementPopulationDescriptions.push_back(Json::Value());
+      }
+
     }
   }
 
@@ -257,6 +276,61 @@ int main(int argc, char** argv){
           nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
         }
       }
+    }
+  }
+
+  // add measurement properties manually, since they cannot be added via
+  // template-specific API
+  {
+    DSRDocumentTree &st = doc.getTree();
+    size_t nnid   = st.gotoAnnotatedNode("TID 1419 - Row 5");
+    unsigned measurementID = 0;
+    while(nnid){
+      Json::Value thisMeasurementNumProperties = measurementNumProperties[measurementID];
+      Json::Value thisMeasurementPopulationDescription = measurementPopulationDescriptions[measurementID];
+
+      if(!thisMeasurementPopulationDescription.empty()){
+        DSRTextTreeNode* node = new DSRTextTreeNode(
+          DSRCodingSchemeIdentificationList::RT_hasProperties);
+        node->setConceptName(DSRCodedEntryValue("121405", "DCM", "Population description"));
+        node->setValue(thisMeasurementPopulationDescription.asCString());
+
+        if(st.addContentItem(node,
+          DSRCodingSchemeIdentificationList::AM_belowCurrent).good()){
+          st.goUp();
+        } else {
+          delete node;
+        }
+
+        //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
+        //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population")
+      }
+
+      if(!thisMeasurementNumProperties.empty()){
+        for(int measurementNumPropertyID=0;measurementNumPropertyID<thisMeasurementNumProperties.size();measurementNumPropertyID++){
+          Json::Value propertyConcept = thisMeasurementNumProperties[measurementNumPropertyID]["numProperty"];
+          Json::Value propertyValue = thisMeasurementNumProperties[measurementNumPropertyID]["numPropertyValue"];
+          Json::Value propertyUnits = thisMeasurementNumProperties[measurementNumPropertyID]["numPropertyUnits"];
+          //std::cout << "Setting value to " << propertyValue.asCString() << endl;
+          DSRNumTreeNode* node = new DSRNumTreeNode(
+            DSRCodingSchemeIdentificationList::RT_hasProperties);
+          node->setValue(propertyValue.asCString(), DSRCodedEntryValue(propertyUnits["CodeValue"].asCString(), propertyUnits["CodingSchemeDesignator"].asCString(), propertyUnits["CodeMeaning"].asCString()));
+          node->setConceptName(DSRCodedEntryValue(propertyConcept["CodeValue"].asCString(), propertyConcept["CodingSchemeDesignator"].asCString(), propertyConcept["CodeMeaning"].asCString()));
+          node->setMeasurementUnit(DSRCodedEntryValue(propertyUnits["CodeValue"].asCString(), propertyUnits["CodingSchemeDesignator"].asCString(), propertyUnits["CodeMeaning"].asCString()));
+
+          if(st.addContentItem(node,
+            DSRCodingSchemeIdentificationList::AM_belowCurrent).good()){
+            st.goUp();
+          } else {
+            delete node;
+          }
+
+        }
+      }
+      //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
+      //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
+      nnid = st.gotoNextAnnotatedNode("TID 1419 - Row 5");
+      measurementID++;
     }
   }
 
