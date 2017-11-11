@@ -183,7 +183,7 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
         }
 
         else if (node->getRelationshipType() == RT_hasProperties && (node->getValueType() == VT_Text)) {
-          if (node->getConceptName() == DSRCodedEntryValue("121405", "DCM", "Population description")) {
+          if (node->getConceptName() == CODE_DCM_PopulationDescription) {
             populationDescription = OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
           }
         }
