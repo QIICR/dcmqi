@@ -292,14 +292,12 @@ int main(int argc, char** argv){
       if(!thisMeasurementPopulationDescription.empty()){
         DSRTextTreeNode* node = new DSRTextTreeNode(
           DSRCodingSchemeIdentificationList::RT_hasProperties);
-        node->setConceptName(DSRCodedEntryValue("121405", "DCM", "Population description"));
+        node->setConceptName(CODE_DCM_PopulationDescription);
         node->setValue(thisMeasurementPopulationDescription.asCString());
 
         if(st.addContentItem(node,
-          DSRCodingSchemeIdentificationList::AM_belowCurrent).good()){
+          DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
           st.goUp();
-        } else {
-          delete node;
         }
 
         //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
@@ -319,10 +317,8 @@ int main(int argc, char** argv){
           node->setMeasurementUnit(DSRCodedEntryValue(propertyUnits["CodeValue"].asCString(), propertyUnits["CodingSchemeDesignator"].asCString(), propertyUnits["CodeMeaning"].asCString()));
 
           if(st.addContentItem(node,
-            DSRCodingSchemeIdentificationList::AM_belowCurrent).good()){
+            DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
             st.goUp();
-          } else {
-            delete node;
           }
 
         }
