@@ -149,10 +149,10 @@
       ]
     },
     {
-      "CodeValue": "xxx099",
+      "CodeValue": "113289",
       "CodeMeaning": "Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -177,10 +177,10 @@
       ]
     },
     {
-      "CodeValue": "xxx100",
+      "CodeValue": "113290",
       "CodeMeaning": "Mono-exponential Apparent Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -205,10 +205,10 @@
       ]
     },
     {
-      "CodeValue": "xxx101",
+      "CodeValue": "113291",
       "CodeMeaning": "Slow Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -233,10 +233,10 @@
       ]
     },
     {
-      "CodeValue": "xxx102",
+      "CodeValue": "113292",
       "CodeMeaning": "Fast Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -261,10 +261,10 @@
       ]
     },
     {
-      "CodeValue": "xxx103",
+      "CodeValue": "113293",
       "CodeMeaning": "Fast Diffusion Coefficient Fraction",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -274,10 +274,10 @@
       ]
     },
     {
-      "CodeValue": "xxx104",
+      "CodeValue": "113294",
       "CodeMeaning": "Kurtosis Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -302,10 +302,10 @@
       ]
     },
     {
-      "CodeValue": "xxx105",
+      "CodeValue": "113295",
       "CodeMeaning": "Gamma Distribution Scale Parameter",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -315,10 +315,10 @@
       ]
     },
     {
-      "CodeValue": "xxx106",
+      "CodeValue": "113296",
       "CodeMeaning": "Gamma Distribution Shape Parameter",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -328,10 +328,10 @@
       ]
     },
     {
-      "CodeValue": "xxx107",
+      "CodeValue": "113297",
       "CodeMeaning": "Gamma Distribution Mode",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -341,10 +341,10 @@
       ]
     },
     {
-      "CodeValue": "xxx108",
+      "CodeValue": "113298",
       "CodeMeaning": "Distributed Diffusion Coefficient",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -369,10 +369,10 @@
       ]
     },
     {
-      "CodeValue": "xxx109",
+      "CodeValue": "113299",
       "CodeMeaning": "Anomalous Exponent Parameter",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn3",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7272",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
@@ -382,10 +382,10 @@
       ]
     },
     {
-      "CodeValue": "xxx110",
+      "CodeValue": "113288",
       "CodeMeaning": "Volume Ratio",
-      "CodingSchemeDesignator": "99DCMCP1665",
-      "cid": "nnn2",
+      "CodingSchemeDesignator": "DCM",
+      "cid": "7271",
       "MeasurementUnitsCode": [
         {
           "CodingSchemeDesignator": "UCUM",
