@@ -160,6 +160,9 @@
     "measurementMethod": {
       "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
     },
+    "addProcedureReported": {
+      "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+    },
     "VerificationFlag": {
       "allOf": [
         {

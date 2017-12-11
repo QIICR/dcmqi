@@ -17,6 +17,29 @@ TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
 
 }
 
+void TID1500Reader::setCursorToRoot(){
+  DSRDocumentTreeNodeCursor cursor(getCursor());
+  //std::cout << "Reading procedure code: " << cursor.getNode()->getNodeID() << std::endl;
+  for(;;){
+    if(cursor.goUp()==1)
+      std::cout << "went up: " << cursor.getNode()->getNodeID() << std::endl;
+    else
+      break;
+    }
+}
+
+Json::Value TID1500Reader::getProcedureReported(){
+  Json::Value codeSequence;
+  if (gotoNamedChildNode(CODE_DCM_ProcedureReported)){
+    DSRDocumentTreeNodeCursor cursor(getCursor());
+    const DSRDocumentTreeNode *node = cursor.getNode();
+    codeSequence = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
+    const DSRCodeTreeNode *, node)->getValue());
+    cursor.gotoParent();
+  }
+  return codeSequence;
+}
+
 Json::Value TID1500Reader::getMeasurements() {
   Json::Value measurements(Json::arrayValue);
 
@@ -30,6 +53,9 @@ Json::Value TID1500Reader::getMeasurements() {
   string2code["TrackingUniqueIdentifier"] = CODE_DCM_TrackingUniqueIdentifier;
   string2code["Finding"] = CODE_DCM_Finding;
   string2code["FindingSite"] = CODE_SRT_FindingSite;
+
+  const DSRDocumentTreeNodeCursor cursor(getCursor());
+  std::cout << "Cursor node ID before iterating over measurements: " << cursor.getNode()->getNodeID() << std::endl;
 
   // iterate over the document tree and read the measurements
   if (gotoNamedChildNode(CODE_DCM_ImagingMeasurements)) {
