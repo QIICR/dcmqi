@@ -103,7 +103,7 @@ dcmqi_add_test(
   COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${EXAMPLES}/sr-tid1500-ct-liver-example.json
     ${MODULE_TEMP_DIR}/sr-tid1500-ct-liver-example.json
-      "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext']"
+      "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext','procedureReported']"
   TEST_DEPENDS
     ${READER_MODULE_NAME}_ct-liver
   )

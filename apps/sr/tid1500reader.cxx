@@ -74,17 +74,15 @@ int main(int argc, char** argv){
 
     Json::Value procedureCode;
     procedureCode = reader.getProcedureReported();
-    if(procedureCode.isMember("CodeValue"))
+    if(procedureCode.isMember("CodeValue")){
       metaRoot["procedureReported"] = procedureCode;
+    }
 
     //DSRDocumentTreeNodeCursor rootCursor;
     //if(doc.getTree().getCursorToRootNode(rootCursor) == 1)
     //  std::cout << "Have root node: " << rootCursor.getNode()->getNodeID() << std::endl;
 
     metaRoot["Measurements"] = reader.getMeasurements();
-
-    reader.setCursorToRoot();
-
   }
 
   OFString temp;

@@ -32,7 +32,6 @@ class TID1500Reader
 
     Json::Value getProcedureReported();
     Json::Value getMeasurements();
-    void setCursorToRoot();
     Json::Value getSingleMeasurement(const DSRNumTreeNode &numNode,
                                      DSRDocumentTreeNodeCursor cursor);
     Json::Value getContentItem(const DSRCodedEntryValue &conceptName,
