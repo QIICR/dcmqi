@@ -11,8 +11,9 @@ class MeasurementReport(object):
   JSON export of this).
   """
 
-  def __init__(self, seriesNumber, compositeContext, dicomSourceFileList, timePoint):
-    self.SeriesDescription = "Measurements"
+  def __init__(self, seriesNumber, compositeContext, dicomSourceFileList, timePoint, 
+               seriesDescription = "Measurements"):
+    self.SeriesDescription = str(seriesDescription)
     self.SeriesNumber = str(seriesNumber)
     self.InstanceNumber = "1"
 

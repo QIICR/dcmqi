@@ -7,10 +7,11 @@ class MeasurementGroup(object):
   """
 
   def __init__(self, 
-               trackingIdentifier, referencedSegment, 
+               trackingIdentifier, trackingUniqueIdentifier, referencedSegment, 
                sourceSeriesInstanceUID, segmentationSOPInstanceUID,
                finding, findingSite):
     self.TrackingIdentifier = trackingIdentifier
+    self.TrackingUniqueIdentifier = trackingUniqueIdentifier
     self.ReferencedSegment = referencedSegment
     self.SourceSeriesForImageSegmentation = sourceSeriesInstanceUID
     self.segmentationSOPInstanceUID = segmentationSOPInstanceUID
