@@ -71,6 +71,17 @@ int main(int argc, char** argv){
   DSRDocument doc;
   if (doc.read(dataset).good()) {
     TID1500Reader reader(doc.getTree());
+
+    Json::Value procedureCode;
+    procedureCode = reader.getProcedureReported();
+    if(procedureCode.isMember("CodeValue")){
+      metaRoot["procedureReported"] = procedureCode;
+    }
+
+    //DSRDocumentTreeNodeCursor rootCursor;
+    //if(doc.getTree().getCursorToRootNode(rootCursor) == 1)
+    //  std::cout << "Have root node: " << rootCursor.getNode()->getNodeID() << std::endl;
+
     metaRoot["Measurements"] = reader.getMeasurements();
   }
 
@@ -114,7 +125,7 @@ int main(int argc, char** argv){
     metaRoot["imageLibrary"] = imageLibraryUIDs;
   if (!compositeContextUIDs.empty())
     metaRoot["compositeContext"] = compositeContextUIDs;
-  
+
   ofstream outputFile;
 
   outputFile.open(metaDataFileName.c_str());

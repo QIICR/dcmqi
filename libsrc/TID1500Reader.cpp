@@ -17,6 +17,17 @@ TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
 
 }
 
+Json::Value TID1500Reader::getProcedureReported(){
+  Json::Value codeSequence;
+  if (gotoNamedNode(CODE_DCM_ProcedureReported)){
+    DSRDocumentTreeNodeCursor cursor(getCursor());
+    const DSRDocumentTreeNode *node = cursor.getNode();
+    codeSequence = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
+    const DSRCodeTreeNode *, node)->getValue());
+  }
+  return codeSequence;
+}
+
 Json::Value TID1500Reader::getMeasurements() {
   Json::Value measurements(Json::arrayValue);
 
@@ -31,8 +42,10 @@ Json::Value TID1500Reader::getMeasurements() {
   string2code["Finding"] = CODE_DCM_Finding;
   string2code["FindingSite"] = CODE_SRT_FindingSite;
 
+  const DSRDocumentTreeNodeCursor cursor(getCursor());
+
   // iterate over the document tree and read the measurements
-  if (gotoNamedChildNode(CODE_DCM_ImagingMeasurements)) {
+  if (gotoNamedNode(CODE_DCM_ImagingMeasurements)) {
     if (gotoNamedChildNode(CODE_DCM_MeasurementGroup)) {
       do {
         // Caveat: we consider only the first measurement group!

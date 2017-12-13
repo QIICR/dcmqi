@@ -30,6 +30,7 @@ class TID1500Reader
   public:
     TID1500Reader(const DSRDocumentTree &tree);
 
+    Json::Value getProcedureReported();
     Json::Value getMeasurements();
     Json::Value getSingleMeasurement(const DSRNumTreeNode &numNode,
                                      DSRDocumentTreeNodeCursor cursor);

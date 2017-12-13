@@ -153,7 +153,11 @@ int main(int argc, char** argv){
   // see duscussion here for improved handling, should be factored out in the
   // future, and handled by the upper-level application layers:
   // https://github.com/QIICR/dcmqi/issues/30
-  CHECK_COND(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")));
+  if(metaRoot.isMember("procedureReported")){
+    CHECK_COND(report.addProcedureReported(json2cev(metaRoot["procedureReported"])));
+  } else {
+    CHECK_COND(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")));
+  }
 
   if(!report.isValid()){
     cerr << "Report invalid!" << endl;
