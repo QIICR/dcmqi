@@ -2,7 +2,7 @@ import json
 
 from .measurementGroup import MeasurementGroup
 from .measurementItem import MeasurementItem
-from .findings import GenericFindingStruct
+from .codeSequences import CodeSequence
 
 class MeasurementReport(object):
   """
@@ -12,7 +12,7 @@ class MeasurementReport(object):
   """
 
   def __init__(self, seriesNumber, compositeContext, dicomSourceFileList, timePoint, 
-               seriesDescription = "Measurements"):
+               seriesDescription = "Measurements", procedureReported = None):
     self.SeriesDescription = str(seriesDescription)
     self.SeriesNumber = str(seriesNumber)
     self.InstanceNumber = "1"
@@ -25,6 +25,9 @@ class MeasurementReport(object):
       "ObserverType": "PERSON",
       "PersonObserverName": "Reader01"
     }
+
+    if procedureReported:
+      self.procedureReported = procedureReported
 
     self.VerificationFlag = "VERIFIED"
     self.CompletionFlag = "COMPLETE"
@@ -65,7 +68,7 @@ class MeasurementReport(object):
       if (isinstance(obj, MeasurementReport) or 
           isinstance(obj, MeasurementGroup) or
           isinstance(obj, MeasurementItem) or
-          isinstance(obj, GenericFindingStruct)):
+          isinstance(obj, CodeSequence)):
         return obj.__dict__
       else:
         return super(MyEncoder, self).default(obj)

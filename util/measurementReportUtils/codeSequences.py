@@ -1,5 +1,5 @@
 
-class GenericFindingStruct(object):
+class CodeSequence(object):
 
   def __init__(self, codeMeaning, codingSchemeDesignator, codeValue):
     self.CodeValue = codeValue
@@ -7,7 +7,7 @@ class GenericFindingStruct(object):
     self.CodeMeaning = codeMeaning
 
 
-class Finding(GenericFindingStruct):
+class Finding(CodeSequence):
 
   def __init__(self, segmentedStructure):
     if segmentedStructure == "NormalROI_PZ_1":
@@ -19,10 +19,10 @@ class Finding(GenericFindingStruct):
     elif segmentedStructure == "WholeGland":
       super().__init__("Entire Gland", "SRT", "T-F6078")
     else:
-      raise ValueError("Segmented Structure Type {} is not supported yet. Build your own Finding object using GenericFindingStruct".format(segmentedStructure))
+      raise ValueError("Segmented Structure Type {} is not supported yet. Build your own Finding code sequence using the class CodeSequence".format(segmentedStructure))
   
 
-class FindingSite(GenericFindingStruct):
+class FindingSite(CodeSequence):
   
   def __init__(self, segmentedStructure):
     if segmentedStructure == "NormalROI_PZ_1":
@@ -34,7 +34,14 @@ class FindingSite(GenericFindingStruct):
     elif segmentedStructure == "WholeGland":
       super().__init__("Prostate", "SRT", "T-9200B")
     else:
-      raise ValueError("Segmented Structure Type {} is not supported yet. Build your own FindingSite object using GenericFindingStruct".format(segmentedStructure))
+      raise ValueError("Segmented Structure Type {} is not supported yet. Build your own FindingSite code sequence using the class CodeSequence".format(segmentedStructure))
 
 
+class ProcedureReported(CodeSequence):
+
+  def __init__(self, codeMeaning):
+    if codeMeaning == "Multiparametric MRI of prostate":
+      super().__init__("Multiparametric MRI of prostate", "DCM", "126021")
+    else:
+      raise ValueError("Procedure Type {} is not supported yet. Build your own ProcedureReported code sequence using the class CodeSequence".format(codeMeaning))
 

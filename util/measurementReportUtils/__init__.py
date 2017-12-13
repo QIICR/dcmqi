@@ -3,5 +3,5 @@
 from .measurementReport import MeasurementReport
 from .measurementGroup import MeasurementGroup
 from .measurementItem import VolumeMeasurementItem, MeanADCMeasurementItem
-from .findings import Finding, FindingSite
+from .codeSequences import CodeSequence, Finding, FindingSite, ProcedureReported
 
