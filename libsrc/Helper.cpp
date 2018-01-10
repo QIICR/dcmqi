@@ -74,6 +74,11 @@ namespace dcmqi {
     for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
       if(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()).good()){
         DcmDataset* currentDataset = sliceFF->getAndRemoveDataset();
+        if(!currentDataset->tagExistsWithValue(DCM_PixelData)){
+          std::cerr << "Source DICOM file does not contain PixelData, skipping: " << std::endl
+             << "  >>>   " << dicomImageFiles[dcmFileNumber] << std::endl;
+          continue;
+        };
         currentDataset->findAndGetOFString(DCM_SOPInstanceUID, sopInstanceUID);
         bool exists = false;
         for(size_t i=0;i<dcmDatasets.size();i++) {
