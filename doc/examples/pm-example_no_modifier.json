@@ -1,0 +1,29 @@
+{
+  "SeriesDescription": "Parametric map",
+  "SeriesNumber": "300",
+  "InstanceNumber": "1",
+  "BodyPartExamined": "Prostate",
+  "AnatomicRegionSequence": {
+    "CodeValue": "T-92000",
+    "CodingSchemeDesignator": "SRT",
+    "CodeMeaning": "Prostate"
+  },
+  "QuantityValueCode": {
+    "CodeValue": "126312",
+    "CodingSchemeDesignator": "DCM",
+    "CodeMeaning": "Ktrans"
+  },
+  "DerivationCode": {
+    "CodeValue": "126312",
+    "CodingSchemeDesignator": "DCM",
+    "CodeMeaning": "Ktrans"
+  },
+  "MeasurementUnitsCode": {
+    "CodeValue": "/min",
+    "CodingSchemeDesignator": "UCUM",
+    "CodeMeaning": "/min"
+  },
+  "DerivationDescription": "",
+  "RealWorldValueSlope": 1,
+  "FrameLaterality": "U"
+}

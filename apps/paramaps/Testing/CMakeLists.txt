@@ -56,6 +56,16 @@ dcmqi_add_test(
   )
 
 dcmqi_add_test(
+  NAME ${itk2dcm}_makeParametricMapNoModifier
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+  --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example_no_modifier.json
+  --inputImage ${BASELINE}/pm-example-3slices-256x256.nrrd
+  --inputDICOMList ${BASELINE}/pm-example-slice.dcm
+  --outputDICOM ${MODULE_TEMP_DIR}/paramap-3slices-256x256.dcm
+)
+
+dcmqi_add_test(
   NAME ${itk2dcm}_makeParametricMapNoDerImg252x255
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
