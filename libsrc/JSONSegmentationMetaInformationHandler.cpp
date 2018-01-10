@@ -170,37 +170,39 @@ namespace dcmqi {
         if (!segmentDescription.isNull()) {
           segmentAttribute->setSegmentDescription(segmentDescription.asString());
         }
-        Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
-        if (!elem.isNull()) {
-            segmentAttribute->setSegmentedPropertyCategoryCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
-                                                                       elem.get("CodingSchemeDesignator",
-                                                                                "SRT").asString(),
-                                                                       elem.get("CodeMeaning", "Tissue").asString());
+
+        if (segment.isMember("SegmentedPropertyCategoryCodeSequence")) {
+          Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
+          segmentAttribute->setSegmentedPropertyCategoryCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
+                                                                     elem.get("CodingSchemeDesignator",
+                                                                              "SRT").asString(),
+                                                                     elem.get("CodeMeaning", "Tissue").asString());
         }
-        elem = segment["SegmentedPropertyTypeCodeSequence"];
-        if (!elem.isNull()) {
-            segmentAttribute->setSegmentedPropertyTypeCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
-                                                                   elem.get("CodingSchemeDesignator", "SRT").asString(),
-                                                                   elem.get("CodeMeaning", "Tissue").asString());
+
+        if (segment.isMember("SegmentedPropertyTypeCodeSequence")) {
+          Json::Value elem = segment["SegmentedPropertyTypeCodeSequence"];
+          segmentAttribute->setSegmentedPropertyTypeCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
+                                                                 elem.get("CodingSchemeDesignator", "SRT").asString(),
+                                                                 elem.get("CodeMeaning", "Tissue").asString());
         }
-        elem = segment["SegmentedPropertyTypeModifierCodeSequence"];
-        if (!elem.isNull()) {
-            segmentAttribute->setSegmentedPropertyTypeModifierCodeSequence(elem.get("CodeValue", "").asString(),
-                                                                           elem.get("CodingSchemeDesignator",
-                                                                                    "").asString(),
-                                                                           elem.get("CodeMeaning", "").asString());
+        if (segment.isMember("SegmentedPropertyTypeModifierCodeSequence")) {
+          Json::Value elem = segment["SegmentedPropertyTypeModifierCodeSequence"];
+          segmentAttribute->setSegmentedPropertyTypeModifierCodeSequence(elem.get("CodeValue", "").asString(),
+                                                                         elem.get("CodingSchemeDesignator",
+                                                                                  "").asString(),
+                                                                         elem.get("CodeMeaning", "").asString());
         }
-        elem = segment["AnatomicRegionSequence"];
-        if (!elem.isNull()) {
-            segmentAttribute->setAnatomicRegionSequence(elem.get("CodeValue", "").asString(),
-                                                        elem.get("CodingSchemeDesignator", "").asString(),
-                                                        elem.get("CodeMeaning", "").asString());
+        if (segment.isMember("AnatomicRegionSequence")) {
+          Json::Value elem = segment["AnatomicRegionSequence"];
+          segmentAttribute->setAnatomicRegionSequence(elem.get("CodeValue", "").asString(),
+                                                      elem.get("CodingSchemeDesignator", "").asString(),
+                                                      elem.get("CodeMeaning", "").asString());
         }
-        elem = segment["AnatomicRegionModifierSequence"];
-        if (!elem.isNull()) {
-            segmentAttribute->setAnatomicRegionModifierSequence(elem.get("CodeValue", "").asString(),
-                                                                elem.get("CodingSchemeDesignator", "").asString(),
-                                                                elem.get("CodeMeaning", "").asString());
+        if (segment.isMember("AnatomicRegionModifierSequence")) {
+          Json::Value elem = segment["AnatomicRegionModifierSequence"];
+          segmentAttribute->setAnatomicRegionModifierSequence(elem.get("CodeValue", "").asString(),
+                                                              elem.get("CodingSchemeDesignator", "").asString(),
+                                                              elem.get("CodeMeaning", "").asString());
         }
         segmentAttribute->setSegmentAlgorithmName(segment.get("SegmentAlgorithmName", "").asString());
         segmentAttribute->setSegmentAlgorithmType(segment.get("SegmentAlgorithmType", "SEMIAUTOMATIC").asString());

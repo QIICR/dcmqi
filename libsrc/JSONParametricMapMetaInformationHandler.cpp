@@ -122,36 +122,36 @@ namespace dcmqi {
       this->derivationDescription = this->metaInfoRoot.get("DerivationDescription", "").asString();
       this->frameLaterality = this->metaInfoRoot.get("FrameLaterality", "U").asString();
 
-      Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
-      if (!elem.isNull()) {
+      if (this->metaInfoRoot.isMember("QuantityValueCode")) {
+        Json::Value elem = this->metaInfoRoot["QuantityValueCode"];
         this->setQuantityValueCode(elem.get("CodeValue", "").asString(),
                                    elem.get("CodingSchemeDesignator", "").asString(),
                                    elem.get("CodeMeaning", "").asString());
       }
 
-      elem = this->metaInfoRoot["MeasurementUnitsCode"];
-      if (!elem.isNull()) {
+      if (this->metaInfoRoot.isMember("MeasurementUnitsCode")) {
+        Json::Value elem  = this->metaInfoRoot["MeasurementUnitsCode"];
         this->setMeasurementUnitsCode(elem.get("CodeValue", "").asString(),
                                       elem.get("CodingSchemeDesignator", "").asString(),
                                       elem.get("CodeMeaning", "").asString());
       }
 
-      elem = this->metaInfoRoot["MeasurementMethodCode"];
-      if (!elem.isNull()) {
+      if (this->metaInfoRoot.isMember("MeasurementMethodCode")) {
+        Json::Value elem  = this->metaInfoRoot["MeasurementMethodCode"];
         this->setMeasurementMethodCode(elem.get("CodeValue", "").asString(),
                                        elem.get("CodingSchemeDesignator", "").asString(),
                                        elem.get("CodeMeaning", "").asString());
       }
 
-      elem = this->metaInfoRoot["AnatomicRegionSequence"];
-      if (!elem.isNull()) {
-          this->setAnatomicRegionSequence(elem.get("CodeValue", "").asString(),
+      if (this->metaInfoRoot.isMember("AnatomicRegionSequence")) {
+        Json::Value elem  = this->metaInfoRoot["AnatomicRegionSequence"];
+        this->setAnatomicRegionSequence(elem.get("CodeValue", "").asString(),
                                           elem.get("CodingSchemeDesignator", "").asString(),
                                           elem.get("CodeMeaning", "").asString());
       }
 
-      elem = this->metaInfoRoot["DerivationCode"];
-      if (!elem.isNull()) {
+      if (this->metaInfoRoot.isMember("DerivationCode")) {
+        Json::Value elem  = this->metaInfoRoot["DerivationCode"];
         this->setDerivationCode(elem.get("CodeValue", "").asString(),
                                 elem.get("CodingSchemeDesignator", "").asString(),
                                 elem.get("CodeMeaning", "").asString());
