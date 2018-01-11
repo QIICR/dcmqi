@@ -61,3 +61,23 @@ This work is supported primarily by the National Institutes of Health, National 
 
 2. Herz C, Fillion-Robin J-C, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A.  _dcmqi: An Open Source Library for Standardized Communication of Quantitative Image Analysis Results Using DICOM_. *Cancer Research*. 2017;77(21):e87–e90 http://cancerres.aacrjournals.org/content/77/21/e87.
 
+# maintainers: how to make a release ?
+
+1. Check that tests pass on all platforms
+
+2. Edit `CMakeLists.txt` and update `DCMQI_VERSION_*` variables
+
+3. Commit changes using message like `cmake: Set DCMQI version to 1.0.7`
+
+4. Create corresponding tag:
+
+  ```
+  git tag -s -m "vX.Y.Z" vX.Y.Z master
+  ```
+
+5. Push tag and master (in that order) to trigger the release build and upload
+
+  ```
+  git push origin vX.Y.Z
+  git push origin master
+  ```
