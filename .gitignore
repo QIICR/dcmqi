@@ -35,3 +35,7 @@ CMakeLists.txt.user*
 __pycache__/
 *.py[cod]
 *$py.class
+
+# VSCode             #
+######################
+.vscode
