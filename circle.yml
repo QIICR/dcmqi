@@ -61,5 +61,6 @@ deployment:
         && docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS \
         && docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
         || echo "skipping docker push"
-      - ci_addons publish_github_release qiicr/dcmqi \
+      - |
+        ci_addons publish_github_release qiicr/dcmqi \
            --release-packages "build/dcmqi-build/dcmqi-*-linux.tar.gz"
