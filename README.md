@@ -1,9 +1,8 @@
-
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi) [![codecov](https://codecov.io/gh/QIICR/dcmqi/branch/master/graph/badge.svg)](https://codecov.io/gh/QIICR/dcmqi) [![Join the chat at https://gitter.im/QIICR/dcmqi](https://badges.gitter.im/QIICR/dcmqi.svg)](https://gitter.im/QIICR/dcmqi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 
-| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.0.5.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.0.5) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
+| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.0.9.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.0.5) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
 |--------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 
 |              | Linux                                                                                                  | macOS                                                                                                | Windows                                                                                                                             |
