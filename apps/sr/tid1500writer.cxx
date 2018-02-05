@@ -169,7 +169,8 @@ int main(int argc, char** argv){
   // Store measurementNumProperty and measurementPopulationDescription items to be added
   //   to the document in a separate iteration over the individual measurement items.
   // Store empty Json::Value if not applicable
-  std::vector<Json::Value> measurementNumProperties, measurementPopulationDescriptions;
+  std::vector<Json::Value> measurementNumProperties, measurementPopulationDescriptions,
+    measurementAlgorithmIdentifications;
 
   for(Json::ArrayIndex i=0;i<metaRoot["Measurements"].size();i++){
     Json::Value measurementGroup = metaRoot["Measurements"][i];
@@ -252,6 +253,12 @@ int main(int argc, char** argv){
         measurementPopulationDescriptions.push_back(Json::Value());
       }
 
+      if(measurement.isMember("measurementAlgorithmIdentification")){
+        measurementAlgorithmIdentifications.push_back(measurement["measurementAlgorithmIdentification"]);
+      } else {
+        measurementAlgorithmIdentifications.push_back(Json::Value());
+      }
+
     }
   }
 
@@ -292,6 +299,7 @@ int main(int argc, char** argv){
     while(nnid){
       Json::Value thisMeasurementNumProperties = measurementNumProperties[measurementID];
       Json::Value thisMeasurementPopulationDescription = measurementPopulationDescriptions[measurementID];
+      Json::Value thisMeasurementAlgorithmIdentification = measurementAlgorithmIdentifications[measurementID];
 
       if(!thisMeasurementPopulationDescription.empty()){
         DSRTextTreeNode* node = new DSRTextTreeNode(
@@ -327,6 +335,29 @@ int main(int argc, char** argv){
 
         }
       }
+
+      if(!thisMeasurementAlgorithmIdentification.empty()){
+        Json::Value algorithmName = thisMeasurementAlgorithmIdentification["AlgorithmName"];
+        Json::Value algorithmVersion = thisMeasurementAlgorithmIdentification["AlgorithmVersion"];
+
+        DSRTextTreeNode* nameNode = new DSRTextTreeNode(DSRCodingSchemeIdentificationList::RT_hasConceptMod);
+
+        nameNode->setValue(algorithmName.asCString());
+        nameNode->setConceptName(DSRCodedEntryValue("111001", "DCM", "Algorithm Name"));
+        if(!st.addContentItem(nameNode, DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
+          std::cerr << "Fatal error: Failed to add algorithm name node" << std::endl;
+        }
+
+        DSRTextTreeNode* versionNode = new DSRTextTreeNode(DSRCodingSchemeIdentificationList::RT_hasConceptMod);
+        versionNode->setValue(algorithmVersion.asCString());
+        versionNode->setConceptName(DSRCodedEntryValue("111003", "DCM", "Algorithm Version"));
+        if(!st.addContentItem(versionNode, DSRCodingSchemeIdentificationList::AM_afterCurrent, OFTrue).good()){
+          std::cerr << "Fatal error: Failed to add algorithm version node" << std::endl;
+        }
+
+        st.goUp();
+      }
+
       //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
       //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
       nnid = st.gotoNextAnnotatedNode("TID 1419 - Row 5");

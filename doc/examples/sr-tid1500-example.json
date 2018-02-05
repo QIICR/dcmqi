@@ -65,6 +65,10 @@
             "CodeValue": "R-00317",
             "CodingSchemeDesignator": "SRT",
             "CodeMeaning": "Mean"
+          },
+          "measurementAlgorithmIdentification": {
+            "AlgorithmName": "3D Slicer Editor effect",
+            "AlgorithmVersion": "4.6"
           }
         }
       ]
