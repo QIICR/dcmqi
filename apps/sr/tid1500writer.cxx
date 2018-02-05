@@ -302,13 +302,11 @@ int main(int argc, char** argv){
       Json::Value thisMeasurementAlgorithmIdentification = measurementAlgorithmIdentifications[measurementID];
 
       if(!thisMeasurementPopulationDescription.empty()){
-        DSRTextTreeNode* node = new DSRTextTreeNode(
-          DSRCodingSchemeIdentificationList::RT_hasProperties);
+        DSRTextTreeNode* node = new DSRTextTreeNode(DSRTypes::RT_hasProperties);
         node->setConceptName(CODE_DCM_PopulationDescription);
         node->setValue(thisMeasurementPopulationDescription.asCString());
 
-        if(st.addContentItem(node,
-          DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
+        if(st.addContentItem(node, DSRTypes::AM_belowCurrent, OFTrue).good()){
           st.goUp();
         }
 
@@ -323,13 +321,12 @@ int main(int argc, char** argv){
           Json::Value propertyUnits = thisMeasurementNumProperties[measurementNumPropertyID]["numPropertyUnits"];
           //std::cout << "Setting value to " << propertyValue.asCString() << endl;
           DSRNumTreeNode* node = new DSRNumTreeNode(
-            DSRCodingSchemeIdentificationList::RT_hasProperties);
+            DSRTypes::RT_hasProperties);
           node->setValue(propertyValue.asCString(), DSRCodedEntryValue(propertyUnits["CodeValue"].asCString(), propertyUnits["CodingSchemeDesignator"].asCString(), propertyUnits["CodeMeaning"].asCString()));
           node->setConceptName(DSRCodedEntryValue(propertyConcept["CodeValue"].asCString(), propertyConcept["CodingSchemeDesignator"].asCString(), propertyConcept["CodeMeaning"].asCString()));
           node->setMeasurementUnit(DSRCodedEntryValue(propertyUnits["CodeValue"].asCString(), propertyUnits["CodingSchemeDesignator"].asCString(), propertyUnits["CodeMeaning"].asCString()));
 
-          if(st.addContentItem(node,
-            DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
+          if(st.addContentItem(node, DSRTypes::AM_belowCurrent, OFTrue).good()){
             st.goUp();
           }
 
@@ -340,18 +337,18 @@ int main(int argc, char** argv){
         Json::Value algorithmName = thisMeasurementAlgorithmIdentification["AlgorithmName"];
         Json::Value algorithmVersion = thisMeasurementAlgorithmIdentification["AlgorithmVersion"];
 
-        DSRTextTreeNode* nameNode = new DSRTextTreeNode(DSRCodingSchemeIdentificationList::RT_hasConceptMod);
+        DSRTextTreeNode* nameNode = new DSRTextTreeNode(DSRTypes::RT_hasConceptMod);
 
         nameNode->setValue(algorithmName.asCString());
-        nameNode->setConceptName(DSRCodedEntryValue("111001", "DCM", "Algorithm Name"));
-        if(!st.addContentItem(nameNode, DSRCodingSchemeIdentificationList::AM_belowCurrent, OFTrue).good()){
+        nameNode->setConceptName(CODE_DCM_AlgorithmName);
+        if(!st.addContentItem(nameNode, DSRTypes::AM_belowCurrent, OFTrue).good()){
           std::cerr << "Fatal error: Failed to add algorithm name node" << std::endl;
         }
 
-        DSRTextTreeNode* versionNode = new DSRTextTreeNode(DSRCodingSchemeIdentificationList::RT_hasConceptMod);
+        DSRTextTreeNode* versionNode = new DSRTextTreeNode(DSRTypes::RT_hasConceptMod);
         versionNode->setValue(algorithmVersion.asCString());
-        versionNode->setConceptName(DSRCodedEntryValue("111003", "DCM", "Algorithm Version"));
-        if(!st.addContentItem(versionNode, DSRCodingSchemeIdentificationList::AM_afterCurrent, OFTrue).good()){
+        versionNode->setConceptName(CODE_DCM_AlgorithmVersion);
+        if(!st.addContentItem(versionNode, DSRTypes::AM_afterCurrent, OFTrue).good()){
           std::cerr << "Fatal error: Failed to add algorithm version node" << std::endl;
         }
 
