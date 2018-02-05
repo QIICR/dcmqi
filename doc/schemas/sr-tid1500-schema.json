@@ -86,6 +86,24 @@
 
         "measurementPopulationDescription": {
           "type": "string"
+        },
+
+        "measurementAlgorithmIdentification": {
+          "type": "object",
+          "properties": {
+            "AlgorithmName": {
+              "type": "string"
+            },
+            "AlgorithmVersion": {
+              "type": "string"
+            },
+            "AlgorithmParameters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
 
       }
