@@ -23,5 +23,5 @@ json2 = json.loads(open(sys.argv[2],'r').read())
                                      ignore_value_of_keys=ignoredKeys)
 
 if not check:
-  print stack
+  print(stack)
   sys.exit(1)

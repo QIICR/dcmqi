@@ -180,20 +180,21 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
             measurementModifier["modifierValue"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
             measurementModifiers.append(measurementModifier);
-          } else if ((node->getRelationshipType() == RT_hasConceptMod) && (node->getValueType() == VT_Text)) {
-            if (node->getConceptName() == CODE_DCM_AlgorithmName) {
-              singleMeasurement["measurementAlgorithmIdentification"] = Json::Value();
-              singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmName"] =
-                OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
-            }
-            // This node must show up after algorithm name! (and this is required, since
-            //   the order is significant in the template)
-            if (node->getConceptName() == CODE_DCM_AlgorithmVersion) {
-              singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmVersion"] =
-                OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
-            }
+          }
+        } else if ((node->getRelationshipType() == RT_hasConceptMod) && (node->getValueType() == VT_Text)) {
+          if (node->getConceptName() == CODE_DCM_AlgorithmName) {
+            singleMeasurement["measurementAlgorithmIdentification"] = Json::Value();
+            singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmName"] =
+              OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
+          }
+          // This node must show up after algorithm name! (and this is required, since
+          //   the order is significant in the template)
+          if (node->getConceptName() == CODE_DCM_AlgorithmVersion) {
+            singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmVersion"] =
+              OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
           }
         }
+
         // TID1419 is extensible, and thus it is possible incoming document will have other "INFERRED FROM" items,
         //   in which case this heuristic will break.
         // R-INFERRED FROM are not handled
