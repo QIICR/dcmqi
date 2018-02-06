@@ -339,6 +339,7 @@ endif()
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${CMAKE_BINARY_DIR};${PROJECT_NAME};RuntimeLibraries;/")
 
 if(DEFINED Slicer_DIR)
+  include(${Slicer_EXTENSION_GENERATE_CONFIG})
   include(${Slicer_EXTENSION_CPACK})
 else()
   if(EXISTS "${DCMTK_DIR}/cmake_install.cmake")
