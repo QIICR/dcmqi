@@ -17,6 +17,8 @@
 
 #include <dcmtk/dcmdata/dcdeftag.h>
 
+#include <dcmtk/dcmsr/codes/dcm.h>
+
 // STD includes
 #include <iostream>
 #include <exception>
@@ -117,36 +119,24 @@ int main(int argc, char** argv){
 
   if(metaRoot.isMember("imageLibrary")){
     for(Json::ArrayIndex i=0;i<metaRoot["imageLibrary"].size();i++){
+
       DcmFileFormat ff;
       OFString dicomFilePath;
 
-      // Not sure what is a safe way to combine path components ...
       if(imageLibraryDataDir.size())
         OFStandard::combineDirAndFilename(dicomFilePath,imageLibraryDataDir.c_str(),metaRoot["imageLibrary"][i].asCString());
       else
         dicomFilePath = metaRoot["imageLibrary"][i].asCString();
 
-      cout << "Loading " << dicomFilePath << endl;
       CHECK_COND(ff.loadFile(dicomFilePath));
 
-
-      if(i==0){
-        DcmDataset imageLibGroupDataset;
-        const DcmTagKey commonTagsToCopy[] =   {DCM_SOPClassUID,DCM_Modality,DCM_StudyDate,DCM_Columns,DCM_Rows,DCM_PixelSpacing,DCM_BodyPartExamined,DCM_ImageOrientationPatient};
-        for(size_t t=0;t<STATIC_ARRAY_SIZE(commonTagsToCopy);t++){
-          ff.getDataset()->findAndInsertCopyOfElement(commonTagsToCopy[t],&imageLibGroupDataset);
-        }
-        CHECK_COND(report.getImageLibrary().addImageEntryDescriptors(imageLibGroupDataset));
-      }
-
-      DcmDataset imageEntryDataset;
-      const DcmTagKey imageTagsToCopy[] = {DCM_Modality,DCM_SOPClassUID,DCM_SOPInstanceUID,DCM_ImagePositionPatient};
-      for(size_t t=0;t<STATIC_ARRAY_SIZE(imageTagsToCopy);t++)
-        ff.getDataset()->findAndInsertCopyOfElement(imageTagsToCopy[t],&imageEntryDataset);
-      CHECK_COND(report.getImageLibrary().addImageEntry(imageEntryDataset,TID1600_ImageLibrary::withAllDescriptors));
-
+      CHECK_COND(report.getImageLibrary().addImageEntry(*ff.getDataset(),
+        TID1600_ImageLibrary::withAllDescriptors));
     }
   }
+
+  // This call will factor out all of the common entries at the group level
+  CHECK_COND(report.getImageLibrary().moveCommonImageDescriptorsToImageGroups());
 
   // TODO
   //  - this is a very narrow procedure code

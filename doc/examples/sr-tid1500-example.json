@@ -12,7 +12,8 @@
 
   "imageLibrary": [
     "01.dcm",
-    "02.dcm"
+    "02.dcm",
+    "03.dcm"
   ],
 
   "observerContext": {
