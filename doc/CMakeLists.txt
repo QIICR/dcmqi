@@ -1,5 +1,4 @@
 find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
-find_package(PythonInterp REQUIRED)
 
 file(GLOB_RECURSE json_files
   *.json

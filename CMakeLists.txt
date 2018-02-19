@@ -17,6 +17,15 @@ set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #-----------------------------------------------------------------------------
+# Testing
+#
+include(CTest)
+mark_as_superbuild(BUILD_TESTING)
+
+set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
+mark_as_superbuild(TEMP_DIR:PATH)
+
+#-----------------------------------------------------------------------------
 # Superbuild
 #
 set(CMAKE_MODULE_PATH "${DCMQI_CMAKE_DIR}" ${CMAKE_MODULE_PATH})
@@ -244,6 +253,12 @@ mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
 mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
 mark_as_superbuild(DCMQI_BUILTIN_JSONCPP:BOOL)
 
+# Python 2.7
+if(BUILD_TESTING)
+  find_package(PythonInterp 2.7 REQUIRED)
+  mark_as_superbuild(PYTHON_EXECUTABLE)
+endif()
+
 #-----------------------------------------------------------------------------
 # Superbuild script
 #
@@ -261,12 +276,6 @@ find_package(DCMTK NO_MODULE REQUIRED)
 
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
-
-#-----------------------------------------------------------------------------
-# Testing
-#
-include(CTest)
-set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
 #-----------------------------------------------------------------------------
 # DCMQI library, applications and tests
