@@ -20,8 +20,6 @@ environment:
     secure: 3+wBc5SxNqx3XjsY3EZ7afvQbLAWWcw30SPGK7q+QPA=
 before_build:
   # Install tools required to run DCMQI "doc" tests
-  - npm install nomnom -g
-  - npm install jsonlint -g
   - npm install ajv-cli -g
   # Display infos
   - cmake --version
