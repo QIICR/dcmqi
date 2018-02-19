@@ -38,7 +38,7 @@ namespace dcmqi {
 
     // import Patient, Study and Frame of Reference; do not import Series
     // attributes
-    CHECK_COND(segdoc->import(*dcmDatasets[0], OFTrue, OFTrue, OFTrue, OFFalse));
+    CHECK_COND(segdoc->importHierarchy(*dcmDatasets[0], OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
     char dimUID[128];

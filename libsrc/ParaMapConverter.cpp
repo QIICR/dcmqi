@@ -59,7 +59,7 @@ namespace dcmqi {
     if (srcDataset)
       // import Patient, Study and Frame of Reference; do not import Series
       // attributes
-      CHECK_COND(pMapDoc->import(*srcDataset, OFTrue, OFTrue, OFTrue, OFFalse));
+      CHECK_COND(pMapDoc->importHierarchy(*srcDataset, OFTrue, OFTrue, OFTrue, OFFalse));
 
     /* Initialize dimension module */
     char dimUID[128];
@@ -117,7 +117,7 @@ namespace dcmqi {
     }
     CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
-    FGIdentityPixelValueTransformation idTransFG;
+    FGPixelValueTransformation idTransFG;
     // Rescale Intercept, Rescale Slope, Rescale Type are missing here
     CHECK_COND(pMapDoc->addForAllFrames(idTransFG));
 

@@ -50,6 +50,15 @@ set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QIICR/dcmqi/mast
 set(EXTENSION_BUILD_SUBDIRECTORY "dcmqi-build")
 
 #-----------------------------------------------------------------------------
+# Testing
+#
+include(CTest)
+mark_as_superbuild(BUILD_TESTING)
+
+set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
+mark_as_superbuild(TEMP_DIR:PATH)
+
+#-----------------------------------------------------------------------------
 # Set a default build type if none was specified
 #
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -244,6 +253,12 @@ mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
 mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
 mark_as_superbuild(DCMQI_BUILTIN_JSONCPP:BOOL)
 
+# Python 2.7
+if(BUILD_TESTING)
+  find_package(PythonInterp 2.7 REQUIRED)
+  mark_as_superbuild(PYTHON_EXECUTABLE)
+endif()
+
 #-----------------------------------------------------------------------------
 # Superbuild script
 #
@@ -261,12 +276,6 @@ find_package(DCMTK NO_MODULE REQUIRED)
 
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
-
-#-----------------------------------------------------------------------------
-# Testing
-#
-include(CTest)
-set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
 #-----------------------------------------------------------------------------
 # DCMQI library, applications and tests

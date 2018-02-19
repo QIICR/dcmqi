@@ -46,7 +46,7 @@ prereq.build_dicom3tools: prereq.pull_dockcross
 	&& ( $(TMP)/dockcross make -j$(grep -c processor /proc/cpuinfo) World > /dev/null 2>&1 )\
 	|| echo "Reusing "
 
-# Download and install "ajv" and "jsonlint" tools
+# Download and install "ajv" 
 prereq.install_npm_packages: prereq.pull_dockcross
 	mkdir -p $(ROOT_DIR)/$(BUILD_DIR)
 	# If needed, download node
@@ -56,12 +56,12 @@ prereq.install_npm_packages: prereq.pull_dockcross
 	tar xf node-v6.9.5-linux-x64.tar.xz || true
 	# Install tools required to run DCMQI "doc" tests
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:$$PATH && sudo npm install jsonlint -g && sudo npm install ajv-cli -g"
+	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:$$PATH && sudo npm install ajv-cli -g"
 
 # Configure, build and package
 dcmqi.generate_package: prereq.pull_dockcross
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross cmake -B$(BUILD_DIR) -H. -GNinja -DCMAKE_BUILD_TYPE:STRING=Release && \
+	$(TMP)/dockcross cmake -B$(BUILD_DIR) -H. -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:FILEPATH=/opt/python/cp27-cp27mu/bin/python && \
 	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:/work/build/$(dicom3tools_version)/appsrc/dcfile:$$PATH && ninja -C$(BUILD_DIR) -v" && \
 	$(TMP)/dockcross ninja -C$(BUILD_DIR)/dcmqi-build package
 
