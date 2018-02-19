@@ -17,15 +17,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(DCMQI_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #-----------------------------------------------------------------------------
-# Testing
-#
-include(CTest)
-mark_as_superbuild(BUILD_TESTING)
-
-set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
-mark_as_superbuild(TEMP_DIR:PATH)
-
-#-----------------------------------------------------------------------------
 # Superbuild
 #
 set(CMAKE_MODULE_PATH "${DCMQI_CMAKE_DIR}" ${CMAKE_MODULE_PATH})
@@ -57,6 +48,15 @@ set(EXTENSION_DESCRIPTION "dcmqi (DICOM (dcm) for Quantitative Imaging (qi)) is 
 set(EXTENSION_ICONURL "https://raw.githubusercontent.com/QIICR/dcmqi/master/dcmqi.png")
 set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QIICR/dcmqi/master/Design/DataFlow-001.png")
 set(EXTENSION_BUILD_SUBDIRECTORY "dcmqi-build")
+
+#-----------------------------------------------------------------------------
+# Testing
+#
+include(CTest)
+mark_as_superbuild(BUILD_TESTING)
+
+set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
+mark_as_superbuild(TEMP_DIR:PATH)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
