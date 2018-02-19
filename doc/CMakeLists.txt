@@ -1,5 +1,3 @@
-
-find_program(JSONLINT_EXECUTABLE NAMES jsonlint.cmd jsonlint)
 find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
 
 file(GLOB_RECURSE json_files
@@ -34,13 +32,9 @@ list(REMOVE_ITEM json_schema_files ${json_common_schema_files})
 foreach(json_file ${json_files})
   get_filename_component(json_name ${json_file} NAME_WE)
   set(testname jsonlint_${json_name})
-  if(JSONLINT_EXECUTABLE)
-    add_test(NAME ${testname}
-      COMMAND ${JSONLINT_EXECUTABLE} ${json_file})
-    set_property(TEST ${testname} PROPERTY LABELS jsonlint)
-  else()
-    message(STATUS "Skipping '${testname}' test: jsonlint executable not found")
-  endif()
+  add_test(NAME ${testname}
+    COMMAND python -c "import json; json.load(open(\'${json_file}\'))")
+  set_property(TEST ${testname} PROPERTY LABELS jsonlint)
 endforeach()
 
 #-----------------------------------------------------------------------------
