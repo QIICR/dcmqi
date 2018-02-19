@@ -1,4 +1,5 @@
 find_program(AJV_EXECUTABLE NAMES ajv.cmd ajv)
+find_package(PythonInterp REQUIRED)
 
 file(GLOB_RECURSE json_files
   *.json
@@ -32,9 +33,13 @@ list(REMOVE_ITEM json_schema_files ${json_common_schema_files})
 foreach(json_file ${json_files})
   get_filename_component(json_name ${json_file} NAME_WE)
   set(testname jsonlint_${json_name})
-  add_test(NAME ${testname}
-    COMMAND python -c "import json; json.load(open(\'${json_file}\'))")
-  set_property(TEST ${testname} PROPERTY LABELS jsonlint)
+  if(PYTHON_EXECUTABLE)
+    add_test(NAME ${testname}
+      COMMAND ${PYTHON_EXECUTABLE} -c "import json; json.load(open(\'${json_file}\'))")
+    set_property(TEST ${testname} PROPERTY LABELS jsonlint)
+  else()
+    message(STATUS "Skipping '${testname}' test: python executable not found")
+  endif()
 endforeach()
 
 #-----------------------------------------------------------------------------
