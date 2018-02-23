@@ -31,16 +31,6 @@ dcmqi_add_test(
   )
 
 dcmqi_add_test(
-  NAME ${itk2dcm}_makeSEG_24x38x3
-  MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${itk2dcm}>
-    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
-    --inputImageList ${BASELINE}/24x38x3/nrrd/label.nrrd
-    --inputDICOMDirectory ${BASELINE}/24x38x3/image
-    --outputDICOM ${MODULE_TEMP_DIR}/24x38x3_seg.dcm
-  )
-
-dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND $<TARGET_FILE:${itk2dcm}>
@@ -120,21 +110,6 @@ dcmqi_add_test(
   )
 
 dcmqi_add_test(
-  NAME ${dcm2itk}_makeNRRD_24x38x3
-  MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${dcm2itk}Test>
-    --compare ${BASELINE}/24x38x3/nrrd/label.nrrd
-    ${MODULE_TEMP_DIR}/24x38x3-1.nrrd
-    ${dcm2itk}Test
-    --inputDICOM ${MODULE_TEMP_DIR}/24x38x3_seg.dcm
-    --outputDirectory ${MODULE_TEMP_DIR}
-    --outputType nrrd
-    --prefix 24x38x3
-  TEST_DEPENDS
-    ${itk2dcm}_makeSEG_24x38x3
-  )
-
-dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
@@ -184,3 +159,37 @@ dcmqi_add_test(
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD_multiple_segment_files
   )
+
+
+
+set(TEST_SEG_SIZES 24x38x3 23x38x3)
+
+foreach(seg_size ${TEST_SEG_SIZES})
+
+  dcmqi_add_test(
+    NAME ${itk2dcm}_makeSEG_${seg_size}
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${itk2dcm}>
+      --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+      --inputImageList ${BASELINE}/${seg_size}/nrrd/label.nrrd
+      --inputDICOMDirectory ${BASELINE}/${seg_size}/image
+      --outputDICOM ${MODULE_TEMP_DIR}/${seg_size}_seg.dcm
+    )
+
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_${seg_size}
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${dcm2itk}Test>
+      --compare ${BASELINE}/${seg_size}/nrrd/label.nrrd
+      ${MODULE_TEMP_DIR}/${seg_size}-1.nrrd
+      ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/${seg_size}_seg.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --outputType nrrd
+      --prefix ${seg_size}
+    TEST_DEPENDS
+      ${itk2dcm}_makeSEG_${seg_size}
+    )
+
+endforeach()
+
