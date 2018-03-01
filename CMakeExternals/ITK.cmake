@@ -25,28 +25,35 @@ endif()
 
 if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
-  set(revision_tag "stripped-down")
-  if(${proj}_REVISION_TAG)
-    set(revision_tag ${${proj}_REVISION_TAG})
-  endif()
+  ExternalProject_SetIfNotDefined(
+    ${proj}_GIT_REPOSITORY
+    "${EP_GIT_PROTOCOL}://github.com/fedorov/ITK-dcmqi.git"
+    QUIET
+    )
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_REVISION_TAG
+    "stripped-down"
+    QUIET
+    )
 
   set(location_args )
   if(${proj}_URL)
     set(location_args URL ${${proj}_URL})
-  elseif(${proj}_GIT_REPOSITORY)
-    set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
-                      GIT_TAG ${revision_tag})
   else()
-    set(location_args GIT_REPOSITORY "${git_protocol}://github.com/fedorov/ITK-dcmqi.git"
-                      GIT_TAG ${revision_tag})
+    set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
+                      GIT_TAG ${${proj}_REVISION_TAG})
   endif()
 
   set(ep_project_include_arg)
 
+  set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
+  set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
+
   ExternalProject_Add(${proj}
     ${${proj}_EXTERNAL_PROJECT_ARGS}
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
-    BINARY_DIR ${proj}-build
+    SOURCE_DIR ${EP_SOURCE_DIR}
+    BINARY_DIR ${EP_BINARY_DIR}
     ${location_args}
     INSTALL_COMMAND ""
     CMAKE_CACHE_ARGS
@@ -83,9 +90,6 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INCLUDE_DIR}
       -DZLIB_LIBRARY:FILEPATH=${ZLIB_LIBRARY}
       ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
-    USES_TERMINAL_DOWNLOAD 1
-    USES_TERMINAL_CONFIGURE 1
-    USES_TERMINAL_BUILD 1
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )

@@ -25,20 +25,25 @@ if(DEFINED DCMTK_DIR AND NOT EXISTS ${DCMTK_DIR})
 endif()
 
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  set(revision_tag "DCMTK-3.6.3")
-  if(${proj}_REVISION_TAG)
-    set(revision_tag ${${proj}_REVISION_TAG})
-  endif()
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_GIT_REPOSITORY
+    "${EP_GIT_PROTOCOL}://git.dcmtk.org/dcmtk.git"
+    QUIET
+    )
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_REVISION_TAG
+    "DCMTK-3.6.3"
+    QUIET
+    )
 
   set(location_args )
   if(${proj}_URL)
     set(location_args URL ${${proj}_URL})
-  elseif(${proj}_GIT_REPOSITORY)
-    set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
-                      GIT_TAG ${revision_tag})
   else()
-    set(location_args GIT_REPOSITORY "${git_protocol}://git.dcmtk.org/dcmtk.git"
-                      GIT_TAG ${revision_tag})
+    set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
+                      GIT_TAG ${${proj}_REVISION_TAG})
   endif()
 
   set(ep_project_include_arg)
@@ -66,10 +71,13 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     endif()
   endif()
 
+  set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
+  set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
+
   ExternalProject_Add(${proj}
     ${${proj}_EXTERNAL_PROJECT_ARGS}
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
-    BINARY_DIR ${proj}-build
+    SOURCE_DIR ${EP_SOURCE_DIR}
+    BINARY_DIR ${EP_BINARY_DIR}
     ${location_args}
     INSTALL_COMMAND ""
     CMAKE_ARGS
@@ -91,9 +99,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
       -DDCMTK_ENABLE_BUILTIN_DICTIONARY:BOOL=ON
       -DDCMTK_ENABLE_PRIVATE_TAGS:BOOL=ON
-    USES_TERMINAL_DOWNLOAD 1
-    USES_TERMINAL_CONFIGURE 1
-    USES_TERMINAL_BUILD 1
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )

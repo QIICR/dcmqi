@@ -83,30 +83,10 @@ ExternalProject_Add(${proj}
   SOURCE_DIR ${DCMQI_SOURCE_DIR}
   BINARY_DIR ${DCMQI_BINARY_DIR}/${PROJECT_NAME_LC}-build
   PREFIX ${PROJECT_NAME_LC}-prefix
-  USES_TERMINAL_CONFIGURE 1
-  USES_TERMINAL_BUILD 1
   INSTALL_COMMAND ""
   DEPENDS
     ${DCMQI_DEPENDENCIES}
   STEP_TARGETS configure
   )
 
-# This custom external project step forces the build and later
-# steps to run whenever a top level build is done...
-#
-# BUILD_ALWAYS flag is available in CMake 3.1 that allows force build
-# of external projects without this workaround. Remove this workaround
-# and use the CMake flag instead, when DCMQI's required minimum CMake
-# version will be at least 3.1.
-#
-if(CMAKE_CONFIGURATION_TYPES)
-  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LC}-prefix/src/${proj}-stamp/${CMAKE_CFG_INTDIR}/${proj}-build")
-else()
-  set(BUILD_STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LC}-prefix/src/${proj}-stamp/${proj}-build")
-endif()
-ExternalProject_Add_Step(${proj} forcebuild
-  COMMAND ${CMAKE_COMMAND} -E remove ${BUILD_STAMP_FILE}
-  COMMENT "Forcing build step for '${proj}'"
-  DEPENDEES build
-  ALWAYS 1
-  )
+ExternalProject_AlwaysConfigure(${proj})
