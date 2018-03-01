@@ -215,14 +215,6 @@ mark_as_superbuild(
 #-----------------------------------------------------------------------------
 # Other options
 
-# Git protocol option
-option(DCMQI_USE_GIT_PROTOCOL "If behind a firewall turn this OFF to use http instead." ON)
-mark_as_advanced(DCMQI_USE_GIT_PROTOCOL)
-set(git_protocol "git")
-if(NOT DCMQI_USE_GIT_PROTOCOL)
-  set(git_protocol "http")
-endif()
-
 # macOS rpath
 if(NOT DEFINED CMAKE_MACOSX_RPATH)
   set(CMAKE_MACOSX_RPATH 1)

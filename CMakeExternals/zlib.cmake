@@ -20,9 +20,18 @@ if(DEFINED ZLIB_ROOT AND NOT EXISTS ${ZLIB_ROOT})
 endif()
 
 if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
-  if(NOT DEFINED git_protocol)
-    set(git_protocol "git")
-  endif()
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_GIT_REPOSITORY
+    "${EP_GIT_PROTOCOL}://github.com/commontk/zlib.git"
+    QUIET
+    )
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_REVISION_TAG
+    "66a753054b356da85e1838a081aa94287226823e"
+    QUIET
+    )
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
@@ -30,8 +39,8 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    GIT_REPOSITORY "${git_protocol}://github.com/commontk/zlib.git"
-    GIT_TAG "66a753054b356da85e1838a081aa94287226823e"
+    GIT_REPOSITORY "${${proj}_GIT_REPOSITORY}"
+    GIT_TAG "${${proj}_REVISION_TAG}"
     SOURCE_DIR ${EP_SOURCE_DIR}
     BINARY_DIR ${EP_BINARY_DIR}
     INSTALL_DIR ${EP_INSTALL_DIR}
@@ -42,10 +51,6 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DCMAKE_C_FLAGS:STRING=${ep_common_c_flags}
       -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    USES_TERMINAL_DOWNLOAD 1
-    USES_TERMINAL_CONFIGURE 1
-    USES_TERMINAL_BUILD 1
-    USES_TERMINAL_INSTALL 1
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )

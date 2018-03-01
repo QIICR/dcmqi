@@ -26,16 +26,27 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
       )
   endif()
 
-  if(NOT DEFINED git_protocol)
-    set(git_protocol "git")
-  endif()
+  ExternalProject_SetIfNotDefined(
+    ${proj}_GIT_REPOSITORY
+    "${EP_GIT_PROTOCOL}://github.com/Slicer/SlicerExecutionModel.git"
+    QUIET
+    )
+
+  ExternalProject_SetIfNotDefined(
+    ${proj}_REVISION_TAG
+    "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
+    QUIET
+    )
+
+  set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
+  set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    GIT_REPOSITORY "${git_protocol}://github.com/Slicer/SlicerExecutionModel.git"
-    GIT_TAG "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
-    BINARY_DIR ${proj}-build
+    GIT_REPOSITORY "${${proj}_GIT_REPOSITORY}"
+    GIT_TAG "${${proj}_REVISION_TAG}"
+    SOURCE_DIR ${EP_SOURCE_DIR}
+    BINARY_DIR ${EP_BINARY_DIR}
     CMAKE_CACHE_ARGS
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
       -DCMAKE_CXX_FLAGS:STRING=${ep_common_cxx_flags}
@@ -58,9 +69,6 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
       -DSlicerExecutionModel_DEFAULT_CLI_INSTALL_ARCHIVE_DESTINATION:STRING=${DCMQI_INSTALL_LIB_DIR}
       -DSlicerExecutionModel_DEFAULT_CLI_TARGETS_FOLDER_PREFIX:STRING=Module-
       ${EXTERNAL_PROJECT_OPTIONAL_ARGS}
-    USES_TERMINAL_DOWNLOAD 1
-    USES_TERMINAL_CONFIGURE 1
-    USES_TERMINAL_BUILD 1
     INSTALL_COMMAND ""
     DEPENDS
       ${${proj}_DEPENDENCIES}
