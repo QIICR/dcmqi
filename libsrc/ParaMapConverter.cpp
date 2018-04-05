@@ -188,7 +188,7 @@ namespace dcmqi {
 
     if(metaInfo.metaInfoRoot.isMember("ModelFittingMethodCode")){
       ContentItemMacro* fittingMethod = new ContentItemMacro;
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx2", "99QIICR", "Model fitting method");
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodeValue"].asCString(),
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
@@ -209,7 +209,7 @@ namespace dcmqi {
       for(size_t bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
         ContentItemMacro* bval = new ContentItemMacro;
         CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "seconds per square millimeter");
-        CodeSequenceMacro* qCodeName = new CodeSequenceMacro("DWMPxxxxx1", "99QIICR", "Source image diffusion b-value");
+        CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113240", "DCM", "Source image diffusion b-value");
 
         if (!bval || !bvalUnits || !qCodeName)
         {
