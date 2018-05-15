@@ -44,7 +44,7 @@ namespace dcmqi {
       metainfoStream >> this->metaInfoRoot;
       this->contentCreatorName = this->metaInfoRoot.get("ContentCreatorName", "Reader1").asString();
       this->coordinatingCenterName =  this->metaInfoRoot.get("ClinicalTrialCoordinatingCenterName", "").asString();
-      this->clinicalTrialSeriesID = this->metaInfoRoot.get("SessionID", "Session1").asString();
+      this->clinicalTrialSeriesID = this->metaInfoRoot.get("ClinicalTrialSeriesID", "Session1").asString();
       this->clinicalTrialTimePointID = this->metaInfoRoot.get("ClinicalTrialTimePointID", "1").asString();
       this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
       this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
