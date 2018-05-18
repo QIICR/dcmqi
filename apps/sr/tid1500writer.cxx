@@ -207,7 +207,10 @@ int main(int argc, char** argv){
       // TODO - add measurement method and derivation!
       const CMR_TID1411_in_TID1500::MeasurementValue numValue(measurement["value"].asCString(), json2cev(measurement["units"]));
 
-      CHECK_COND(measurements.addMeasurement(json2cev(measurement["quantity"]), numValue));
+      if(!measurements.addMeasurement(json2cev(measurement["quantity"]), numValue).good()){
+        std::cerr << "WARNING: Skipping measurement with the value of " << measurement["value"].asCString() << std::endl;
+        continue;
+      }
 
       if(measurement.isMember("derivationModifier")){
           CHECK_COND(measurements.getMeasurement().setDerivation(json2cev(measurement["derivationModifier"])));

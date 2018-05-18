@@ -1,0 +1,91 @@
+{
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/sr-tid1500-schema.json#",
+
+  "SeriesDescription": "Measurements",
+  "SeriesNumber": "1001",
+  "InstanceNumber": "1",
+
+  "compositeContext": [
+    "rwvm.dcm",
+    "seg.dcm"
+  ],
+
+  "imageLibrary": [
+    "01.dcm",
+    "02.dcm"
+  ],
+
+  "observerContext": {
+    "ObserverType": "PERSON",
+    "PersonObserverName": "Reader1"
+  },
+
+  "VerificationFlag": "VERIFIED",
+  "CompletionFlag": "COMPLETE",
+
+  "activitySession": "1",
+  "timePoint": "1",
+
+  "Measurements": [
+    {
+      "TrackingIdentifier": "Measurements group 1",
+      "ReferencedSegment": 1,
+      "SourceSeriesForImageSegmentation": "1.3.6.1.4.1.14519.5.2.1.2744.7002.261560220703676715130542397405",
+      "segmentationSOPInstanceUID": "1.2.276.0.7230010.3.1.4.8323329.18591.1440001312.777033",
+      "rwvmMapUsedForMeasurement": "1.2.276.0.7230010.3.1.4.8323329.18215.1440001297.928457",
+      "MeasurementMethod": {
+        "CodeValue": "126401",
+        "CodingSchemeDesignator": "DCM",
+        "CodeMeaning": "SUV body weight calculation method"
+      },
+      "Finding": {
+        "CodeValue": "M-80003",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Neoplasm, Primary"
+      },
+      "FindingSite": {
+        "CodeValue": "T-00317",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "pharyngeal tonsil (adenoid)"
+      },
+      "measurementItems": [
+        {
+          "value": "nan",
+          "quantity": {
+            "CodeValue": "126401",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "SUVbw"
+          },
+          "units": {
+            "CodeValue": "{SUVbw}g/ml",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Standardized Uptake Value body weight"
+          },
+          "derivationModifier": {
+            "CodeValue": "R-00317",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Mean"
+          }
+        },
+        {
+          "value": "1.23",
+          "quantity": {
+            "CodeValue": "126401",
+            "CodingSchemeDesignator": "DCM",
+            "CodeMeaning": "SUVbw"
+          },
+          "units": {
+            "CodeValue": "{SUVbw}g/ml",
+            "CodingSchemeDesignator": "UCUM",
+            "CodeMeaning": "Standardized Uptake Value body weight"
+          },
+          "derivationModifier": {
+            "CodeValue": "R-00317",
+            "CodingSchemeDesignator": "SRT",
+            "CodeMeaning": "Mean"
+          }
+        }
+      ]
+    }
+  ]
+}
