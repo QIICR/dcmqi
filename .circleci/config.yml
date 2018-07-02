@@ -1,0 +1,46 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: install cmake
+          command: |
+            mkdir -p /home/circleci/dependencies &&
+            cd /home/circleci/dependencies &&
+            sudo apt-get remove cmake &&
+            wget --no-check-certificate           https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz &&
+            tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz &&
+            sudo cp -r cmake-3.6.0-rc4-Linux-x86_64/* /usr &&
+            cmake --version
+      - run:
+          name: build dcmqi
+          command: cd ~/project/docker && make dcmqi
+      - run:
+          name: test dcmqi
+          command: |
+            cd ~/project/docker &&
+            make dcmqi.test &&
+            mkdir ~/junit &&
+            pip install lxml==3.6.4 &&
+            python ../util/junit/convert.py ../build/dcmqi-build/ ../util/junit/conv.xsl > ~/junit/BaseTest.xml
+      - store_test_results:
+          path: ~/junit
+      - run:
+          name: install scikit-ci-addons
+          command: pip install -U "scikit-ci-addons>=0.18.0"
+      - run:
+          name: publish docker image
+          command: |
+            [ "$DOCKER_EMAIL" != "" ] && \
+            docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS && \
+            docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+            || echo "skipping docker push"
+      - run:
+          name: publish binary package on GitHub
+          command: |
+            ci_addons publish_github_release qiicr/dcmqi \
+            --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
+            --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
+            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
