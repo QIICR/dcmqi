@@ -274,6 +274,7 @@ namespace dcmqi {
       vector<vector<int> > slice2derimg(numLabelSlices);
       vector<bool> slice2derimgPresent(numLabelSlices, false);
 
+      int slicesMapped = 0;
       for(size_t i=0;i<dcmDatasets.size();i++){
         OFString ippStr;
         ShortImageType::PointType ippPoint;
@@ -289,10 +290,11 @@ namespace dcmqi {
           continue;
         }
         slice2derimg[ippIndex[2]].push_back(i);
+        if(slice2derimgPresent[ippIndex[2]] == false)
+          slicesMapped++;
         slice2derimgPresent[ippIndex[2]] = true;
       }
-      cout << count_if(slice2derimgPresent.begin(), slice2derimgPresent.end(), [](bool f){return f;}) 
-         << " of " << slice2derimgPresent.size() << " slices mapped to source DICOM images" << endl;
+      cout << slicesMapped << " of " << slice2derimgPresent.size() << " slices mapped to source DICOM images" << endl;
       return slice2derimg;
     }
 
