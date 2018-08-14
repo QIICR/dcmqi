@@ -2,6 +2,7 @@
 #define DCMQI_CONVERTERBASE_H
 
 // STD includes
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -271,6 +272,9 @@ namespace dcmqi {
       // Assume that orientation of the segmentation is the same as the source series
       unsigned numLabelSlices = labelImage->GetLargestPossibleRegion().GetSize()[2];
       vector<vector<int> > slice2derimg(numLabelSlices);
+      vector<bool> slice2derimgPresent(numLabelSlices, false);
+
+      int slicesMapped = 0;
       for(size_t i=0;i<dcmDatasets.size();i++){
         OFString ippStr;
         ShortImageType::PointType ippPoint;
@@ -280,13 +284,17 @@ namespace dcmqi {
           ippPoint[j] = atof(ippStr.c_str());
         }
         if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
-          //cout << "image position: " << ippPoint << endl;
-          //cerr << "ippIndex: " << ippIndex << endl;
+          cout << "image position: " << ippPoint << endl;
+          cerr << "ippIndex: " << ippIndex << endl;
           // if certain DICOM instance does not map to a label slice, just skip it
           continue;
         }
         slice2derimg[ippIndex[2]].push_back(i);
+        if(slice2derimgPresent[ippIndex[2]] == false)
+          slicesMapped++;
+        slice2derimgPresent[ippIndex[2]] = true;
       }
+      cout << slicesMapped << " of " << slice2derimgPresent.size() << " slices mapped to source DICOM images" << endl;
       return slice2derimg;
     }
 

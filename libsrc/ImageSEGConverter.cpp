@@ -11,7 +11,7 @@ namespace dcmqi {
                                                           bool skipEmptySlices) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
-    cout << "Input image size: " << inputSize << endl;
+    //cout << "Input image size: " << inputSize << endl;
 
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
@@ -56,7 +56,7 @@ namespace dcmqi {
     {
       ShortImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
-      cout << "Directions: " << labelDirMatrix << endl;
+      //cout << "Directions: " << labelDirMatrix << endl;
 
       FGPlaneOrientationPatient *planor =
           FGPlaneOrientationPatient::createMinimal(
@@ -129,7 +129,7 @@ namespace dcmqi {
 
     for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
-      cout << "Processing input label " << segmentations[segFileNumber] << endl;
+      //cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
       LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
       l2lm->SetInput(segmentations[segFileNumber]);
