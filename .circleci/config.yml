@@ -5,31 +5,25 @@ jobs:
     steps:
       - checkout
       - run:
+          name: install sckit-ci-addons
+          command: pip install -U "scikit-ci-addons>=0.22.0"
+      - run:
           name: install cmake
           command: |
-            mkdir -p /home/circleci/dependencies &&
-            cd /home/circleci/dependencies &&
-            sudo apt-get remove cmake &&
-            wget --no-check-certificate           https://cmake.org/files/v3.6/cmake-3.6.0-rc4-Linux-x86_64.tar.gz &&
-            tar zxf cmake-3.6.0-rc4-Linux-x86_64.tar.gz &&
-            sudo cp -r cmake-3.6.0-rc4-Linux-x86_64/* /usr &&
-            cmake --version
+            ci_addons circle/install_cmake 3.7.0
       - run:
           name: build dcmqi
-          command: cd ~/project/docker && make dcmqi
+          command: cd docker && make dcmqi
       - run:
           name: test dcmqi
+          command: cd docker && make dcmqi.test
+      - run:
+          name: output CTest results in JUnit format
           command: |
-            cd ~/project/docker &&
-            make dcmqi.test &&
-            mkdir ~/junit &&
-            pip install lxml==3.6.4 &&
-            python ../util/junit/convert.py ../build/dcmqi-build/ ../util/junit/conv.xsl > ~/junit/BaseTest.xml
+            mkdir ~/junit
+            ci_addons ctest_junit_formatter ~/project/build/dcmqi-build/ > ~/junit/BaseTest.xml
       - store_test_results:
           path: ~/junit
-      - run:
-          name: install scikit-ci-addons
-          command: pip install -U "scikit-ci-addons>=0.18.0"
       - run:
           name: publish docker image
           command: |
