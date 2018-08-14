@@ -1,6 +1,7 @@
 branches:
  only:
- - master
+  - master
+  - /^v[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$/
 
 language: c++
 os:
@@ -44,15 +45,17 @@ script:
   cd /Users/travis/build/QIICR/dcmqi-build/dcmqi-build
   ninja package
 deploy:
+  # deploy-master
   - provider: script
     script: cd /Users/travis/build/QIICR/dcmqi && ci_addons publish_github_release qiicr/dcmqi --prerelease-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
     skip_cleanup: true
     on:
-      repo: QIICR/dcmqi
+      repo: ${TRAVIS_REPO_SLUG}
       branch: master
+  # deploy-release
   - provider: script
     script: cd /Users/travis/build/QIICR/dcmqi && ci_addons publish_github_release qiicr/dcmqi --release-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz"
     skip_cleanup: true
     on:
-      repo: QIICR/dcmqi
+      repo: ${TRAVIS_REPO_SLUG}
       tags: true
