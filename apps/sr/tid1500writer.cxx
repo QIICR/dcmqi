@@ -253,6 +253,19 @@ int main(int argc, char** argv){
       }
 
     }
+
+    if(measurementGroup.isMember("qualitativeEvaluations")){
+      for(Json::ArrayIndex k=0;k<measurementGroup["qualitativeEvaluations"].size();k++){
+        Json::Value evaluation = measurementGroup["qualitativeEvaluations"][k];
+        if(evaluation["conceptValue"].type() == Json::stringValue){
+          measurements.addQualitativeEvaluation(json2cev(evaluation["conceptCode"]),
+            evaluation["conceptValue"].asString().c_str());
+        } else {
+          measurements.addQualitativeEvaluation(json2cev(evaluation["conceptCode"]),
+            json2cev(evaluation["conceptValue"]));
+        }
+      }
+    }
   }
 
  if(!report.isValid()){
@@ -389,6 +402,7 @@ int main(int argc, char** argv){
   bool compositeContextInitialized = false;
   if(metaRoot.isMember("compositeContext")){
     for(Json::ArrayIndex i=0;i<metaRoot["compositeContext"].size();i++){
+      cout << "Adding to compositeContext: " << metaRoot["compositeContext"][i].asString() << endl;
       ccFileFormat = addFileToEvidence(doc,compositeContextDataDir,metaRoot["compositeContext"][i].asString());
       compositeContextInitialized = true;
     }

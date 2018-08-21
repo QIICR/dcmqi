@@ -51,6 +51,16 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-ct-liver-example.dcm
   )
 
+  dcmqi_add_test(
+    NAME ${WRITER_MODULE_NAME}_qualitative
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
+      --inputMetadata ${EXAMPLES}/sr-tid1500-qualitative.json
+      --inputImageLibraryDirectory ${DICOM_DIR}
+      --inputCompositeContextDirectory ${CMAKE_SOURCE_DIR}/data/sr-example
+      --outputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-qualitative.dcm
+    )
+
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
