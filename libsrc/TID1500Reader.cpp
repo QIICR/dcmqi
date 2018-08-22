@@ -42,6 +42,12 @@ Json::Value TID1500Reader::getMeasurements() {
   string2code["Finding"] = CODE_DCM_Finding;
   string2code["FindingSite"] = CODE_SRT_FindingSite;
 
+  std::vector<DSRCodedEntryValue> knownConcepts;
+  for(std::map<std::string, DSRCodedEntryValue>::const_iterator mIt=string2code.begin();
+        mIt!=string2code.end();++mIt){
+    knownConcepts.push_back(mIt->second);
+  }
+
   const DSRDocumentTreeNodeCursor cursor(getCursor());
 
   // iterate over the document tree and read the measurements
@@ -63,7 +69,9 @@ Json::Value TID1500Reader::getMeasurements() {
 
         // details on measurement value(s)
         Json::Value measurementItems(Json::arrayValue);
+        Json::Value qualitativeEvaluations(Json::arrayValue);
         DSRDocumentTreeNodeCursor cursor(groupCursor);
+
         if (cursor.gotoChild()) {
           //size_t counter = 0;
           //COUT << "- Measurements:" << OFendl;
@@ -76,10 +84,32 @@ Json::Value TID1500Reader::getMeasurements() {
               //printMeasurement(*OFstatic_cast(const DSRNumTreeNode *, node), cursor);
               Json::Value singleMeasurement = getSingleMeasurement(*OFstatic_cast(const DSRNumTreeNode *, node), cursor);
               measurementItems.append(singleMeasurement);
+            } else if (( node != NULL) && (node->getValueType() == VT_Text)) {
+              // check if the concept assigned to this item is not in the list of concepts
+              // that can be encountered otherwise (same for the below)
+              // If not, then conclude this is a qualitative evaluation item
+
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+                Json::Value singleQualitativeEvaluation;
+                singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
+                singleQualitativeEvaluation["conceptValue"] = OFstatic_cast(
+                const DSRTextTreeNode *, node)->getValue().c_str();
+                qualitativeEvaluations.append(singleQualitativeEvaluation);
+              }
+            } else if (( node != NULL) && (node->getValueType() == VT_Code)) {
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+                Json::Value singleQualitativeEvaluation;
+                singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
+                singleQualitativeEvaluation["conceptValue"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
+                const DSRCodeTreeNode *, node)->getValue());
+                qualitativeEvaluations.append(singleQualitativeEvaluation);
+              }
             }
           } while (cursor.gotoNext());
 
           measurementGroup["measurementItems"] = measurementItems;
+          if(qualitativeEvaluations.size())
+            measurementGroup["qualitativeEvaluations"] = qualitativeEvaluations;
           measurements.append(measurementGroup);
         }
       } while (gotoNextNamedNode(CODE_DCM_MeasurementGroup, OFFalse /*searchIntoSub*/));
