@@ -51,6 +51,16 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-ct-liver-example.dcm
   )
 
+  dcmqi_add_test(
+    NAME ${WRITER_MODULE_NAME}_qualitative
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${WRITER_MODULE_NAME}>
+      --inputMetadata ${EXAMPLES}/sr-tid1500-qualitative.json
+      --inputImageLibraryDirectory ${DICOM_DIR}
+      --inputCompositeContextDirectory ${CMAKE_SOURCE_DIR}/data/sr-example
+      --outputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-qualitative.dcm
+    )
+
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
@@ -103,6 +113,15 @@ dcmqi_add_test(
     ${WRITER_MODULE_NAME}_ct-liver
   )
 
+dcmqi_add_test(
+  NAME ${READER_MODULE_NAME}_qualitative
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${READER_MODULE_NAME}>
+    --inputDICOM ${MODULE_TEMP_DIR}/sr-tid1500-qualitative.dcm
+    --outputMetadata ${MODULE_TEMP_DIR}/sr-tid1500-qualitative.json
+  TEST_DEPENDS
+    ${WRITER_MODULE_NAME}_qualitative
+  )
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME tid1500)

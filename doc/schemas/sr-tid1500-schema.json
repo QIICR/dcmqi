@@ -108,6 +108,22 @@
 
       }
     },
+    "qualitativeEvaluationItem":{
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "conceptCode": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
+        },
+        "conceptValue": {
+          "oneOf": [
+            { "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence" },
+            { "type": "string" }
+          ]
+        }
+      }
+    },
+
     "MeasurementGroup": {
       "type": "object",
       "additionalProperties": false,
@@ -144,6 +160,12 @@
           "minItems": 1,
           "items": {
             "$ref": "#/definitions/measurementItem"
+          }
+        },
+        "qualitativeEvaluations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qualitativeEvaluationItem"
           }
         }
       }

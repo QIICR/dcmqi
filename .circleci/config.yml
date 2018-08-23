@@ -14,6 +14,7 @@ jobs:
       - run:
           name: build dcmqi
           command: cd docker && make dcmqi
+          no_output_timeout: 20m
       - run:
           name: test dcmqi
           command: cd docker && make dcmqi.test
