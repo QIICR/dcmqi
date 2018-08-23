@@ -38,4 +38,5 @@ jobs:
             ci_addons publish_github_release qiicr/dcmqi \
             --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
-            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
+            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
+            --exit-success-if-missing-token
