@@ -47,7 +47,7 @@ script:
 deploy:
   # deploy-master
   - provider: script
-    script: cd /Users/travis/build/QIICR/dcmqi && ci_addons publish_github_release qiicr/dcmqi --prerelease-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
+    script: travis_wait 30 cd /Users/travis/build/QIICR/dcmqi && ci_addons publish_github_release qiicr/dcmqi --prerelease-packages "/Users/travis/build/QIICR/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
     skip_cleanup: true
     on:
       repo: ${TRAVIS_REPO_SLUG}
