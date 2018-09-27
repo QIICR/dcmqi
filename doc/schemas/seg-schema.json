@@ -168,6 +168,12 @@
             },
             "RecommendedDisplayCIELabValue": {
               "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/CIELab"
+            },
+            "TrackingIdentifier": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/UT"
+            },
+            "TrackingUniqueIdentifier": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/UI"
             }
           }
         }

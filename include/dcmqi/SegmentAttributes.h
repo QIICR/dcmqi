@@ -53,6 +53,12 @@ namespace dcmqi {
     CodeSequenceMacro* getSegmentedPropertyTypeModifierCodeSequence() const { return segmentedPropertyTypeModifierCodeSequence; }
     CodeSequenceMacro* getAnatomicRegionModifierSequence() const { return anatomicRegionModifierSequence; }
 
+    string getTrackingIdentifier() const { return trackingIdentifier; }
+    string getTrackingUniqueIdentifier() const { return trackingUniqueIdentifier; }
+
+    void setTrackingIdentifier(const string& trackingIdentifier);
+    void setTrackingUniqueIdentifier(const string& trackingUniqueIdentifier);
+
     void PrintSelf();
 
   private:
@@ -66,6 +72,9 @@ namespace dcmqi {
     CodeSequenceMacro* segmentedPropertyCategoryCodeSequence;
     CodeSequenceMacro* segmentedPropertyTypeCodeSequence;
     CodeSequenceMacro* segmentedPropertyTypeModifierCodeSequence;
+
+    string trackingIdentifier;
+    string trackingUniqueIdentifier;
   };
 
 }

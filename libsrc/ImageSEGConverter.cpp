@@ -236,6 +236,12 @@ namespace dcmqi {
         if(segmentAttributes->getSegmentDescription().length() > 0)
           segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
 
+        if(segmentAttributes->getTrackingIdentifier().length() > 0)
+          segment->setTrackingID(segmentAttributes->getTrackingIdentifier().c_str());
+
+        if(segmentAttributes->getTrackingUniqueIdentifier().length() > 0)
+          segment->setTrackingUID(segmentAttributes->getTrackingUniqueIdentifier().c_str());
+
         CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifierCodeSequence();
         if (typeModifierCode != NULL) {
           OFVector<CodeSequenceMacro*>& modifiersVector = segment->getSegmentedPropertyTypeModifierCode();
@@ -630,9 +636,20 @@ namespace dcmqi {
               segmentAttributes->setSegmentAlgorithmName(segmentAlgorithmName.c_str());
           }
 
-          OFString segmentDescription;
+          OFString segmentDescription, trackingIdentifier, trackingUniqueIdentifier;
+
           segment->getSegmentDescription(segmentDescription);
           segmentAttributes->setSegmentDescription(segmentDescription.c_str());
+
+          segment->getTrackingID(trackingIdentifier);
+          segment->getTrackingUID(trackingUniqueIdentifier);
+
+          if (trackingIdentifier.length() > 0) {
+              segmentAttributes->setTrackingIdentifier(trackingIdentifier.c_str());
+          }
+          if (trackingUniqueIdentifier.length() > 0) {
+              segmentAttributes->setTrackingUniqueIdentifier(trackingUniqueIdentifier.c_str());
+          }
 
           segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
           segmentAttributes->setSegmentedPropertyCategoryCodeSequence(segment->getSegmentedPropertyCategoryCode());

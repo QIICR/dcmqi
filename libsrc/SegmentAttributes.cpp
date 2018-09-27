@@ -23,6 +23,8 @@ namespace dcmqi {
     this->segmentedPropertyCategoryCodeSequence = NULL;
     this->segmentedPropertyTypeCodeSequence = NULL;
     this->segmentedPropertyTypeModifierCodeSequence = NULL;
+    this->trackingIdentifier = "";
+    this->trackingUniqueIdentifier = "";
   }
 
   SegmentAttributes::~SegmentAttributes() {
@@ -106,6 +108,14 @@ namespace dcmqi {
 
   void SegmentAttributes::setAnatomicRegionModifierSequence(const CodeSequenceMacro &codeSequence) {
     this->anatomicRegionModifierSequence = new CodeSequenceMacro(codeSequence);
+  }
+
+  void SegmentAttributes::setTrackingIdentifier(const string &trackingIdentifier) {
+    this->trackingIdentifier = trackingIdentifier;
+  }
+
+  void SegmentAttributes::setTrackingUniqueIdentifier(const string &trackingUniqueIdentifier) {
+    this->trackingUniqueIdentifier = trackingUniqueIdentifier;
   }
 
   void SegmentAttributes::PrintSelf() {

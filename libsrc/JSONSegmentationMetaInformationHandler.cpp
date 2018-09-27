@@ -125,6 +125,12 @@ namespace dcmqi {
           segment["AnatomicRegionModifierSequence"] = codeSequence2Json(
                   segmentAttributes->getAnatomicRegionModifierSequence());
 
+        if (segmentAttributes->getTrackingIdentifier() != "")
+          segment["TrackingIdentifier"] = segmentAttributes->getTrackingIdentifier();
+
+        if (segmentAttributes->getTrackingUniqueIdentifier() != "")
+          segment["TrackingUniqueIdentifier"] = segmentAttributes->getTrackingUniqueIdentifier();
+
         Json::Value rgb(Json::arrayValue);
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[0]);
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[1]);
@@ -213,6 +219,17 @@ namespace dcmqi {
             rgb[index] = rgbArray[index].asInt();
           segmentAttribute->setRecommendedDisplayRGBValue(rgb);
         }
+
+        if(segment.isMember("TrackingIdentifier")) {
+          Json::Value elem = segment["TrackingIdentifier"];
+          segmentAttribute->setTrackingIdentifier(elem.asString());
+        }
+
+        if(segment.isMember("TrackingUniqueIdentifier")) {
+          Json::Value elem = segment["TrackingUniqueIdentifier"];
+          segmentAttribute->setTrackingUniqueIdentifier(elem.asString());
+        }
+
       }
       segmentsAttributesMappingList.push_back(labelID2SegmentAttributes);
     }
