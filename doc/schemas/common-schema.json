@@ -37,6 +37,13 @@
       "minimum" : 0,
       "maximum": 2E+16
     },
+    "UT": {
+      "type": "string"
+    },
+    "UI": {
+      "type": "string",
+      "pattern": "[0-9\\.]*"
+    },
     "RGB": {
       "type": "array",
       "items": {
