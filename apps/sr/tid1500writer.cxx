@@ -195,8 +195,14 @@ int main(int argc, char** argv){
     CHECK_COND(measurements.setReferencedSegment(segment));
 
     CHECK_COND(measurements.setFinding(json2cev(measurementGroup["Finding"])));
-    if(measurementGroup.isMember("FindingSite"))
-      CHECK_COND(measurements.addFindingSite(json2cev(measurementGroup["FindingSite"])));
+    if(measurementGroup.isMember("FindingSite")){
+      if(measurementGroup.isMember("Laterality")){
+        CHECK_COND(measurements.addFindingSite(json2cev(measurementGroup["FindingSite"]),
+                                               json2cev(measurementGroup["Laterality"])));
+      } else {
+        CHECK_COND(measurements.addFindingSite(json2cev(measurementGroup["FindingSite"])));
+      }
+    }
 
     if(measurementGroup.isMember("MeasurementMethod"))
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
