@@ -78,6 +78,15 @@ Json::Value TID1500Reader::getMeasurements() {
           // iterate over all direct child nodes
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
+
+            if(node->getConceptName() == CODE_SRT_FindingSite){
+              // check if Laterality is present
+              DSRDocumentTreeNodeCursor tempCursor(cursor);
+              Json::Value laterality = getContentItem(CODE_SRT_Laterality, tempCursor);
+              if(laterality!=Json::nullValue)
+                measurementGroup["Laterality"] = laterality;
+            }
+
             /* and check for numeric measurement value content items */
             if ((node != NULL) && (node->getValueType() == VT_Num)) {
               //COUT << "  #" << (++counter) << " ";
@@ -126,7 +135,7 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
   if (gotoNamedChildNode(conceptName, cursor)) {
     const DSRDocumentTreeNode *node = cursor.getNode();
     if (node != NULL) {
-      //COUT << "- " << conceptName.getCodeMeaning() << ": ";
+      //COUT << "  - " << conceptName.getCodeMeaning() << ": ";
       // use appropriate value for output
       switch (node->getValueType()) {
         case VT_Text:

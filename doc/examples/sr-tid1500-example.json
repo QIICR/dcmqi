@@ -49,6 +49,11 @@
         "CodingSchemeDesignator": "SRT",
         "CodeMeaning": "pharyngeal tonsil (adenoid)"
       },
+      "Laterality": {
+        "CodeValue": "G-A101",
+        "CodingSchemeDesignator": "SRT",
+        "CodeMeaning": "Left"
+      },
       "measurementItems": [
         {
           "value": "1.96",
