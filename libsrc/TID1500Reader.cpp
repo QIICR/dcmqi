@@ -81,8 +81,7 @@ Json::Value TID1500Reader::getMeasurements() {
 
             if(node->getConceptName() == CODE_SRT_FindingSite){
               // check if Laterality is present
-              DSRDocumentTreeNodeCursor tempCursor(cursor);
-              Json::Value laterality = getContentItem(CODE_SRT_Laterality, tempCursor);
+              Json::Value laterality = getContentItem(CODE_SRT_Laterality, cursor);
               if(laterality!=Json::nullValue)
                 measurementGroup["Laterality"] = laterality;
             }
