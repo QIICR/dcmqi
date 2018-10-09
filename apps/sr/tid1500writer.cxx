@@ -105,11 +105,26 @@ int main(int argc, char** argv){
   CHECK_COND(report.setLanguage(DSRCodedEntryValue("eng", "RFC5646", "English")));
 
   /* set details on the observation context */
-  string observerType = metaRoot["observerContext"]["ObserverType"].asCString();
+  Json::Value observerContext = metaRoot["observerContext"];
+  string observerType = observerContext["ObserverType"].asCString();
   if(observerType == "PERSON"){
-    CHECK_COND(report.getObservationContext().addPersonObserver(metaRoot["observerContext"]["PersonObserverName"].asCString(), ""));
+    CHECK_COND(report.getObservationContext().addPersonObserver(observerContext["PersonObserverName"].asCString(), ""));
   } else if(observerType == "DEVICE"){
-    CHECK_COND(report.getObservationContext().addDeviceObserver(metaRoot["observerContext"]["DeviceObserverUID"].asCString()));
+    std::string deviceUID;
+    if(observerContext.isMember("DeviceObserverUID"))
+      deviceUID = observerContext["DeviceObserverUID"].asString();
+    else {
+      char uid[100];
+      dcmGenerateUniqueIdentifier(uid, QIICR_INSTANCE_UID_ROOT);
+      deviceUID = std::string(uid);
+    }
+    CHECK_COND(report.getObservationContext().addDeviceObserver(
+      deviceUID.c_str(),
+      observerContext.get("DeviceObserverName","").asCString(),
+      observerContext.get("DeviceObserverManufacturer","").asCString(),
+      observerContext.get("DeviceObserverModelName","").asCString(),
+      observerContext.get("DeviceObserverSerialNumber","").asCString()
+      ));
   }
 
   // Image library must be present, even if empty

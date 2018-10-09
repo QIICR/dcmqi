@@ -78,6 +78,9 @@ int main(int argc, char** argv){
       metaRoot["procedureReported"] = procedureCode;
     }
 
+    Json::Value observerContext = reader.getObserverContext();
+    metaRoot["observerContext"] = observerContext;
+
     //DSRDocumentTreeNodeCursor rootCursor;
     //if(doc.getTree().getCursorToRootNode(rootCursor) == 1)
     //  std::cout << "Have root node: " << rootCursor.getNode()->getNodeID() << std::endl;
@@ -92,13 +95,6 @@ int main(int argc, char** argv){
   metaRoot["SeriesNumber"] = temp.c_str();
   doc.getInstanceNumber(temp);
   metaRoot["InstanceNumber"] = temp.c_str();
-
-  OFString observerName, observingDateTime, organizationName;
-  if (doc.hasVerifyingObservers()) {
-    doc.getVerifyingObserver(1, observingDateTime, observerName, organizationName);
-    metaRoot["observerContext"]["ObserverType"] = "PERSON";
-    metaRoot["observerContext"]["PersonObserverName"] = observerName.c_str();
-  }
 
   metaRoot["VerificationFlag"] = DSRTypes::verificationFlagToEnumeratedValue(doc.getVerificationFlag());
   metaRoot["CompletionFlag"] = DSRTypes::completionFlagToEnumeratedValue(doc.getCompletionFlag());

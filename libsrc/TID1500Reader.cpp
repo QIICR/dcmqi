@@ -1,5 +1,10 @@
 #include "dcmqi/TID1500Reader.h"
 
+DSRCodedEntryValue json2cev(Json::Value& j){
+  return DSRCodedEntryValue(j["CodeValue"].asCString(),
+    j["CodingSchemeDesignator"].asCString(),
+    j["CodeMeaning"].asCString());
+}
 
 Json::Value DSRCodedEntryValue2CodeSequence(const DSRCodedEntryValue &value) {
   Json::Value codeSequence;
@@ -26,6 +31,38 @@ Json::Value TID1500Reader::getProcedureReported(){
     const DSRCodeTreeNode *, node)->getValue());
   }
   return codeSequence;
+}
+
+Json::Value TID1500Reader::getObserverContext(){
+  Json::Value observerContext;
+  DSRDocumentTreeNodeCursor rootCursor;
+  getCursorToRootNode(rootCursor);
+  Json::Value observerType = getContentItem(CODE_DCM_ObserverType, rootCursor);
+  if(observerType == Json::nullValue){
+    std::cout << "Observer context not initialized!" << std::endl;
+    return Json::nullValue;
+  }
+  if(json2cev(observerType) == CODE_DCM_Person){
+    observerContext["ObserverType"] = "PERSON";
+    Json::Value value = getContentItem(CODE_DCM_PersonObserverName, rootCursor);
+    if(value!=Json::nullValue)
+      observerContext["PersonObserverName"] = value;
+  } else if(json2cev(observerType) == CODE_DCM_Device){
+    observerContext["ObserverType"] = "DEVICE";
+    Json::Value value = getContentItem(CODE_DCM_DeviceObserverUID, rootCursor);
+    if(value!=Json::nullValue)
+      observerContext["DeviceObserverUID"] = value;
+    value = getContentItem(CODE_DCM_DeviceObserverName, rootCursor);
+    if(value!=Json::nullValue)
+      observerContext["DeviceObserverName"] = value;
+    value = getContentItem(CODE_DCM_DeviceObserverManufacturer, rootCursor);
+    if(value!=Json::nullValue)
+      observerContext["DeviceObserverManufacturer"] = value;
+    value = getContentItem(CODE_DCM_DeviceObserverSerialNumber, rootCursor);
+      if(value!=Json::nullValue)
+        observerContext["DeviceObserverSerialNumber"] = value;
+  }
+  return observerContext;
 }
 
 Json::Value TID1500Reader::getMeasurements() {

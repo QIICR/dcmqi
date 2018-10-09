@@ -16,11 +16,13 @@
   ],
 
   "observerContext": {
-    "ObserverType": "PERSON",
-    "PersonObserverName": "Reader1"
+    "ObserverType": "DEVICE",
+    "DeviceObserverName": "SecretSauceGenerator",
+    "DeviceObserverManufacturer": "The friends of friends",
+    "DeviceObserverUID": "1.2.3.4"
   },
 
-  "VerificationFlag": "VERIFIED",
+  "VerificationFlag": "UNVERIFIED",
   "CompletionFlag": "COMPLETE",
 
   "activitySession": "1",

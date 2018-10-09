@@ -50,10 +50,21 @@
               "enum": [
                 "DEVICE"
               ]
+            },
+            "DeviceObserverName": {
+              "$ref": "#/definitions/TEXT"
+            },
+            "DeviceObserverManufacturer": {
+              "$ref": "#/definitions/TEXT"
+            },
+            "DeviceObserverModelName": {
+              "$ref": "#/definitions/TEXT"
+            },
+            "DeviceObserverSerialNumber": {
+              "$ref": "#/definitions/TEXT"
             }
           },
           "required": [
-            "DeviceObserverUID",
             "ObserverType"
           ]
         }
