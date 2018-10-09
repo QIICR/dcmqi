@@ -96,13 +96,6 @@ int main(int argc, char** argv){
   doc.getInstanceNumber(temp);
   metaRoot["InstanceNumber"] = temp.c_str();
 
-  OFString observerName, observingDateTime, organizationName;
-  if (doc.hasVerifyingObservers()) {
-    doc.getVerifyingObserver(1, observingDateTime, observerName, organizationName);
-    metaRoot["observerContext"]["ObserverType"] = "PERSON";
-    metaRoot["observerContext"]["PersonObserverName"] = observerName.c_str();
-  }
-
   metaRoot["VerificationFlag"] = DSRTypes::verificationFlagToEnumeratedValue(doc.getVerificationFlag());
   metaRoot["CompletionFlag"] = DSRTypes::completionFlagToEnumeratedValue(doc.getCompletionFlag());
 
