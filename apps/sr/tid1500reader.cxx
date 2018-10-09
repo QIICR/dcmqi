@@ -78,6 +78,9 @@ int main(int argc, char** argv){
       metaRoot["procedureReported"] = procedureCode;
     }
 
+    Json::Value observerContext = reader.getObserverContext();
+    metaRoot["observerContext"] = observerContext;
+
     //DSRDocumentTreeNodeCursor rootCursor;
     //if(doc.getTree().getCursorToRootNode(rootCursor) == 1)
     //  std::cout << "Have root node: " << rootCursor.getNode()->getNodeID() << std::endl;
