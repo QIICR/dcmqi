@@ -22,7 +22,7 @@
     "DeviceObserverUID": "1.2.3.4"
   },
 
-  "VerificationFlag": "VERIFIED",
+  "VerificationFlag": "UNVERIFIED",
   "CompletionFlag": "COMPLETE",
 
   "activitySession": "1",
