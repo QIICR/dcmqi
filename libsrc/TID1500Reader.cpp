@@ -85,6 +85,11 @@ Json::Value TID1500Reader::getMeasurements() {
     knownConcepts.push_back(mIt->second);
   }
 
+  std::vector<DSRCodedEntryValue> algorithmIdentificationConcepts;
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmName);
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmVersion);
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmParameters);
+
   const DSRDocumentTreeNodeCursor cursor(getCursor());
 
   // iterate over the document tree and read the measurements
@@ -100,6 +105,22 @@ Json::Value TID1500Reader::getMeasurements() {
           Json::Value value = getContentItem(mIt->second, groupCursor);
           if(value!=Json::nullValue)
             measurementGroup[mIt->first] = value;
+        }
+
+        // NB: only the first AlgorithmParameters item is considered
+        {
+          Json::Value algorithmName = getContentItem(CODE_DCM_AlgorithmName, groupCursor);
+          Json::Value algorithmVersion = getContentItem(CODE_DCM_AlgorithmVersion, groupCursor);
+          Json::Value algorithmParameters = getContentItem(CODE_DCM_AlgorithmParameters, groupCursor);
+          if(algorithmName!=Json::nullValue){
+            if(algorithmVersion == Json::nullValue){
+              std::cerr << "ERROR: AlgorithmName is present, but AlgorithmVersion is not!" << std::endl;              
+            }
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmName"] = algorithmName;
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmVersion"] = algorithmVersion;
+          }
+          if(algorithmParameters!=Json::nullValue)
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"] = algorithmParameters;
         }
 
         initSegmentationContentItems(groupCursor, measurementGroup);
@@ -197,7 +218,7 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
           const DSRPNameTreeNode *, node)->getValue().c_str();
           break;
         default:
-          COUT << "Error: failed to find content item" << OFendl;
+          COUT << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
       }
     }
   }

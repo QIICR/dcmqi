@@ -174,8 +174,8 @@ int main(int argc, char** argv){
   // Store measurementNumProperty and measurementPopulationDescription items to be added
   //   to the document in a separate iteration over the individual measurement items.
   // Store empty Json::Value if not applicable
-  std::vector<Json::Value> measurementNumProperties, measurementPopulationDescriptions,
-    measurementAlgorithmIdentifications;
+  std::vector<Json::Value> measurementNumProperties, measurementPopulationDescriptions;
+  std::vector<Json::Value> measurementGroupAlgorithmIdentification;
 
   for(Json::ArrayIndex i=0;i<metaRoot["Measurements"].size();i++){
     Json::Value measurementGroup = metaRoot["Measurements"][i];
@@ -221,6 +221,12 @@ int main(int argc, char** argv){
 
     if(measurementGroup.isMember("MeasurementMethod"))
       CHECK_COND(measurements.setMeasurementMethod(json2cev(measurementGroup["MeasurementMethod"])));
+
+    if(measurementGroup.isMember("measurementAlgorithmIdentification")){
+      measurementGroupAlgorithmIdentification.push_back(measurementGroup["measurementAlgorithmIdentification"]);
+    } else {
+      measurementGroupAlgorithmIdentification.push_back(Json::Value());
+    }
 
     // TODO - handle conditional items!
     for(Json::ArrayIndex j=0;j<measurementGroup["measurementItems"].size();j++){
@@ -278,9 +284,7 @@ int main(int argc, char** argv){
           for(Json::ArrayIndex parameterId=0;parameterId<parametersJSON.size();parameterId++)
             CHECK_COND(measurementAlgorithm.addParameter(parametersJSON[parameterId].asCString()));
         }
-        measurementAlgorithmIdentifications.push_back(Json::Value());
       }
-
     }
 
     if(measurementGroup.isMember("qualitativeEvaluations")){
@@ -322,6 +326,41 @@ int main(int argc, char** argv){
           nnid = st.gotoNextAnnotatedNode("TID 1601 - Row 1");
         }
       }
+    }
+  }
+
+  // add Algorithm identification at the group level - note this is not in the standard,
+  // CP pending
+  {
+    DSRDocumentTree &st = doc.getTree();
+    size_t nnid   = st.gotoAnnotatedNode("TID 1411 - Row 3");
+    unsigned measurementID = 0;
+    while(nnid){
+      Json::Value thisGroupAlgorithmIdentification = measurementGroupAlgorithmIdentification[measurementID];
+
+      if(!thisGroupAlgorithmIdentification.empty()){
+        DSRTextTreeNode* node = new DSRTextTreeNode(DSRTypes::RT_hasConceptMod);
+        node->setConceptName(CODE_DCM_AlgorithmName);
+        node->setValue(thisGroupAlgorithmIdentification["AlgorithmName"].asCString());
+        CHECK_COND(st.addContentItem(node, DSRTypes::AM_afterCurrent, OFTrue));
+
+        node = new DSRTextTreeNode(DSRTypes::RT_hasConceptMod);
+        node->setConceptName(CODE_DCM_AlgorithmVersion);
+        node->setValue(thisGroupAlgorithmIdentification["AlgorithmVersion"].asCString());
+        CHECK_COND(st.addContentItem(node, DSRTypes::AM_afterCurrent, OFTrue));
+
+        if(thisGroupAlgorithmIdentification.isMember("AlgorithmParameters")){
+          for(Json::ArrayIndex k=0;k<thisGroupAlgorithmIdentification["AlgorithmParameters"].size();k++){
+            node = new DSRTextTreeNode(DSRTypes::RT_hasConceptMod);
+            node->setConceptName(CODE_DCM_AlgorithmParameters);
+            node->setValue(thisGroupAlgorithmIdentification["AlgorithmParameters"][k].asCString());
+            CHECK_COND(st.addContentItem(node, DSRTypes::AM_afterCurrent, OFTrue));
+          }
+        }
+
+      }
+      nnid = st.gotoNextAnnotatedNode("TID 1411 - Row 3");
+      measurementID++;
     }
   }
 

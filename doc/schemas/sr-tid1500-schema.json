@@ -143,6 +143,9 @@
         "Laterality": {
           "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/codeSequence"
         },
+        "measurementAlgorithmIdentification": {
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/sr-common-schema.json#/definitions/measurementAlgorithmIdentification"
+        },
         "measurementItems": {
           "type": "array",
           "minItems": 1,
