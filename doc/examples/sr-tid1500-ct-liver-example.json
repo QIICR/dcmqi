@@ -44,6 +44,11 @@
         "CodingSchemeDesignator": "SRT",
         "CodeMeaning": "Liver"
       },
+      "measurementAlgorithmIdentification": {
+        "AlgorithmName": "3D Slicer Editor effect (group level)",
+        "AlgorithmVersion": "4.6 (group level)",
+        "AlgorithmParameters": ["gamma: 2 (group level)"]
+      },
       "measurementItems": [
         {
           "value": "37.3289",
@@ -56,6 +61,11 @@
             "CodeValue": "[hnsf'U]",
             "CodingSchemeDesignator": "UCUM",
             "CodeMeaning": "Hounsfield unit"
+          },
+          "measurementAlgorithmIdentification": {
+            "AlgorithmName": "3D Slicer Editor effect (measurement level)",
+            "AlgorithmVersion": "4.6 (measurement level)",
+            "AlgorithmParameters": ["gamma: 2 (measurement level)"]
           },
           "derivationModifier": {
             "CodeValue": "R-00317",

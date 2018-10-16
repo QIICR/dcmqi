@@ -114,13 +114,15 @@ Json::Value TID1500Reader::getMeasurements() {
           Json::Value algorithmParameters = getContentItem(CODE_DCM_AlgorithmParameters, groupCursor);
           if(algorithmName!=Json::nullValue){
             if(algorithmVersion == Json::nullValue){
-              std::cerr << "ERROR: AlgorithmName is present, but AlgorithmVersion is not!" << std::endl;              
+              std::cerr << "ERROR: AlgorithmName is present, but AlgorithmVersion is not!" << std::endl;
             }
             measurementGroup["measurementAlgorithmIdentification"]["AlgorithmName"] = algorithmName;
             measurementGroup["measurementAlgorithmIdentification"]["AlgorithmVersion"] = algorithmVersion;
           }
-          if(algorithmParameters!=Json::nullValue)
-            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"] = algorithmParameters;
+          if(algorithmParameters!=Json::nullValue){
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"] = Json::arrayValue;
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"].append(algorithmParameters);
+          }
         }
 
         initSegmentationContentItems(groupCursor, measurementGroup);
