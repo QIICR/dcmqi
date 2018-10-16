@@ -89,23 +89,8 @@
         },
 
         "measurementAlgorithmIdentification": {
-          "type": "object",
-          "properties": {
-            "AlgorithmName": {
-              "type": "string"
-            },
-            "AlgorithmVersion": {
-              "type": "string"
-            },
-            "AlgorithmParameters": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
+          "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/sr-common-schema.json#/definitions/measurementAlgorithmIdentification"
         }
-
       }
     },
     "qualitativeEvaluationItem":{

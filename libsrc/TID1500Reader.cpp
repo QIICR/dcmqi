@@ -268,6 +268,11 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
             singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmVersion"] =
               OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
           }
+          if (node->getConceptName() == CODE_DCM_AlgorithmParameters) {
+            if(!singleMeasurement["measurementAlgorithmIdentification"].isMember("AlgorithmParameters"))
+              singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmParameters"] = Json::arrayValue;
+            singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmParameters"].append(OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str());
+          }
         }
 
         // TID1419 is extensible, and thus it is possible incoming document will have other "INFERRED FROM" items,

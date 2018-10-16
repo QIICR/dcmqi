@@ -267,9 +267,17 @@ int main(int argc, char** argv){
         measurementPopulationDescriptions.push_back(Json::Value());
       }
 
+
       if(measurement.isMember("measurementAlgorithmIdentification")){
-        measurementAlgorithmIdentifications.push_back(measurement["measurementAlgorithmIdentification"]);
-      } else {
+        // TODO: add constraints to the schema - name and version both required if group is present!
+        TID4019_AlgorithmIdentification &measurementAlgorithm = measurements.getMeasurement().getAlgorithmIdentification();
+        measurementAlgorithm.setIdentification(measurement["measurementAlgorithmIdentification"]["AlgorithmName"].asCString(),
+                                               measurement["measurementAlgorithmIdentification"]["AlgorithmVersion"].asCString());
+        if(measurement["measurementAlgorithmIdentification"].isMember("AlgorithmParameters")){
+          Json::Value parametersJSON = measurement["measurementAlgorithmIdentification"]["AlgorithmParameters"];
+          for(Json::ArrayIndex parameterId=0;parameterId<parametersJSON.size();parameterId++)
+            CHECK_COND(measurementAlgorithm.addParameter(parametersJSON[parameterId].asCString()));
+        }
         measurementAlgorithmIdentifications.push_back(Json::Value());
       }
 
@@ -326,7 +334,7 @@ int main(int argc, char** argv){
     while(nnid){
       Json::Value thisMeasurementNumProperties = measurementNumProperties[measurementID];
       Json::Value thisMeasurementPopulationDescription = measurementPopulationDescriptions[measurementID];
-      Json::Value thisMeasurementAlgorithmIdentification = measurementAlgorithmIdentifications[measurementID];
+      //Json::Value thisMeasurementAlgorithmIdentification = measurementAlgorithmIdentifications[measurementID];
 
       if(!thisMeasurementPopulationDescription.empty()){
         DSRTextTreeNode* node = new DSRTextTreeNode(DSRTypes::RT_hasProperties);
@@ -360,6 +368,7 @@ int main(int argc, char** argv){
         }
       }
 
+      /*
       if(!thisMeasurementAlgorithmIdentification.empty()){
         Json::Value algorithmName = thisMeasurementAlgorithmIdentification["AlgorithmName"];
         Json::Value algorithmVersion = thisMeasurementAlgorithmIdentification["AlgorithmVersion"];
@@ -380,7 +389,7 @@ int main(int argc, char** argv){
         }
 
         st.goUp();
-      }
+      }*/
 
       //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
       //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
