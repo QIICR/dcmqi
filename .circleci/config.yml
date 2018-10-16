@@ -8,6 +8,9 @@ jobs:
           name: install sckit-ci-addons
           command: pip install -U "scikit-ci-addons>=0.22.0"
       - run:
+          name: install jsondiff
+          command: pip install jsondiff
+      - run:
           name: install cmake
           command: |
             ci_addons circle/install_cmake 3.7.0
