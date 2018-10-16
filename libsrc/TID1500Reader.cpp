@@ -157,7 +157,8 @@ Json::Value TID1500Reader::getMeasurements() {
               // that can be encountered otherwise (same for the below)
               // If not, then conclude this is a qualitative evaluation item
 
-              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
+              find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end()){
                 Json::Value singleQualitativeEvaluation;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = OFstatic_cast(
@@ -165,7 +166,8 @@ Json::Value TID1500Reader::getMeasurements() {
                 qualitativeEvaluations.append(singleQualitativeEvaluation);
               }
             } else if (( node != NULL) && (node->getValueType() == VT_Code)) {
-              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
+              find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end() ){
                 Json::Value singleQualitativeEvaluation;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
@@ -254,7 +256,7 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
 
     Json::Value measurementModifiers(Json::arrayValue);
     Json::Value derivationParameters(Json::arrayValue);
-    Json::Value populationDescription;
+    Json::Value populationDescription = Json::nullValue;
     Json::Value measurementNumProperties(Json::arrayValue);
 
     // iterate over all direct child nodes
@@ -337,10 +339,10 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
       singleMeasurement["measurementModifiers"] = measurementModifiers;
     if(derivationParameters.size())
       singleMeasurement["measurementDerivationParameters"] = derivationParameters;
-    if(populationDescription != 0){
+    if(populationDescription != Json::nullValue){
       singleMeasurement["measurementPopulationDescription"] = populationDescription;
     }
-    if(measurementNumProperties != "")
+    if(measurementNumProperties.size())
       singleMeasurement["measurementNumProperties"] = measurementNumProperties;
 
   }
