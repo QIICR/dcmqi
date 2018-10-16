@@ -190,6 +190,12 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
           contentValue = OFstatic_cast(
           const DSRImageTreeNode *, node)->getValue().getSOPInstanceUID().c_str();
           break;
+        case VT_PName:
+          // TODO: investigate why roundtrip JSON test didn't detect that
+          //  observer name was not recovered!
+          contentValue = OFstatic_cast(
+          const DSRPNameTreeNode *, node)->getValue().c_str();
+          break;
         default:
           COUT << "Error: failed to find content item" << OFendl;
       }
