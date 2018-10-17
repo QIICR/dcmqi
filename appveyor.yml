@@ -50,6 +50,7 @@ before_build:
   - 7z x C:\SlicerExecutionModel-dcmqi.zip -oC:\SlicerExecutionModel\SlicerExecutionModel-build
   # Install package required to automatically create or update GitHub releases
   - pip install -U "scikit-ci-addons>=0.18.0"
+  - pip install jsondiff
   # Configure project
   - |
     mkdir c:\dcmqi\dcmqi-build

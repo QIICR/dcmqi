@@ -54,6 +54,11 @@
         "CodingSchemeDesignator": "SRT",
         "CodeMeaning": "Left"
       },
+      "measurementAlgorithmIdentification": {
+        "AlgorithmName": "3D Slicer Editor effect (group level)",
+        "AlgorithmVersion": "4.6 (group level)",
+        "AlgorithmParameters": ["gamma: 2 (group level)"]
+      },
       "measurementItems": [
         {
           "value": "1.96",
@@ -74,7 +79,8 @@
           },
           "measurementAlgorithmIdentification": {
             "AlgorithmName": "3D Slicer Editor effect",
-            "AlgorithmVersion": "4.6"
+            "AlgorithmVersion": "4.6",
+            "AlgorithmParameters": ["gamma: 2"]
           }
         }
       ]

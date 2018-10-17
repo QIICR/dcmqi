@@ -9,6 +9,7 @@
 #include "dcmtk/dcmsr/dsrnumtn.h"
 #include "dcmtk/dcmsr/dsrtextn.h"
 #include "dcmtk/dcmsr/dsruidtn.h"
+#include "dcmtk/dcmsr/dsrpnmtn.h"
 
 #include "dcmtk/dcmsr/codes/dcm.h"
 #include "dcmtk/dcmsr/codes/ncit.h"

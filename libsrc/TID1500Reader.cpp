@@ -85,6 +85,11 @@ Json::Value TID1500Reader::getMeasurements() {
     knownConcepts.push_back(mIt->second);
   }
 
+  std::vector<DSRCodedEntryValue> algorithmIdentificationConcepts;
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmName);
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmVersion);
+  algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmParameters);
+
   const DSRDocumentTreeNodeCursor cursor(getCursor());
 
   // iterate over the document tree and read the measurements
@@ -100,6 +105,24 @@ Json::Value TID1500Reader::getMeasurements() {
           Json::Value value = getContentItem(mIt->second, groupCursor);
           if(value!=Json::nullValue)
             measurementGroup[mIt->first] = value;
+        }
+
+        // NB: only the first AlgorithmParameters item is considered
+        {
+          Json::Value algorithmName = getContentItem(CODE_DCM_AlgorithmName, groupCursor);
+          Json::Value algorithmVersion = getContentItem(CODE_DCM_AlgorithmVersion, groupCursor);
+          Json::Value algorithmParameters = getContentItem(CODE_DCM_AlgorithmParameters, groupCursor);
+          if(algorithmName!=Json::nullValue){
+            if(algorithmVersion == Json::nullValue){
+              std::cerr << "ERROR: AlgorithmName is present, but AlgorithmVersion is not!" << std::endl;
+            }
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmName"] = algorithmName;
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmVersion"] = algorithmVersion;
+          }
+          if(algorithmParameters!=Json::nullValue){
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"] = Json::arrayValue;
+            measurementGroup["measurementAlgorithmIdentification"]["AlgorithmParameters"].append(algorithmParameters);
+          }
         }
 
         initSegmentationContentItems(groupCursor, measurementGroup);
@@ -134,7 +157,8 @@ Json::Value TID1500Reader::getMeasurements() {
               // that can be encountered otherwise (same for the below)
               // If not, then conclude this is a qualitative evaluation item
 
-              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
+              find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end()){
                 Json::Value singleQualitativeEvaluation;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = OFstatic_cast(
@@ -142,7 +166,8 @@ Json::Value TID1500Reader::getMeasurements() {
                 qualitativeEvaluations.append(singleQualitativeEvaluation);
               }
             } else if (( node != NULL) && (node->getValueType() == VT_Code)) {
-              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end()){
+              if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
+              find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end() ){
                 Json::Value singleQualitativeEvaluation;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
@@ -190,8 +215,14 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
           contentValue = OFstatic_cast(
           const DSRImageTreeNode *, node)->getValue().getSOPInstanceUID().c_str();
           break;
+        case VT_PName:
+          // TODO: investigate why roundtrip JSON test didn't detect that
+          //  observer name was not recovered!
+          contentValue = OFstatic_cast(
+          const DSRPNameTreeNode *, node)->getValue().c_str();
+          break;
         default:
-          COUT << "Error: failed to find content item" << OFendl;
+          COUT << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
       }
     }
   }
@@ -225,7 +256,7 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
 
     Json::Value measurementModifiers(Json::arrayValue);
     Json::Value derivationParameters(Json::arrayValue);
-    Json::Value populationDescription;
+    Json::Value populationDescription = Json::nullValue;
     Json::Value measurementNumProperties(Json::arrayValue);
 
     // iterate over all direct child nodes
@@ -268,6 +299,11 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
             singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmVersion"] =
               OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str();
           }
+          if (node->getConceptName() == CODE_DCM_AlgorithmParameters) {
+            if(!singleMeasurement["measurementAlgorithmIdentification"].isMember("AlgorithmParameters"))
+              singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmParameters"] = Json::arrayValue;
+            singleMeasurement["measurementAlgorithmIdentification"]["AlgorithmParameters"].append(OFstatic_cast(const DSRTextTreeNode *, node)->getValue().c_str());
+          }
         }
 
         // TID1419 is extensible, and thus it is possible incoming document will have other "INFERRED FROM" items,
@@ -303,10 +339,10 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
       singleMeasurement["measurementModifiers"] = measurementModifiers;
     if(derivationParameters.size())
       singleMeasurement["measurementDerivationParameters"] = derivationParameters;
-    if(populationDescription != 0){
+    if(populationDescription != Json::nullValue){
       singleMeasurement["measurementPopulationDescription"] = populationDescription;
     }
-    if(measurementNumProperties != "")
+    if(measurementNumProperties.size())
       singleMeasurement["measurementNumProperties"] = measurementNumProperties;
 
   }
