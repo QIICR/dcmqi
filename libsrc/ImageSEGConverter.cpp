@@ -241,6 +241,11 @@ namespace dcmqi {
 
         if(segmentAttributes->getTrackingUniqueIdentifier().length() > 0)
           segment->setTrackingUID(segmentAttributes->getTrackingUniqueIdentifier().c_str());
+        else {
+          char dimUID[128];
+          dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
+          segment->setTrackingUID(dimUID);
+        }
 
         CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifierCodeSequence();
         if (typeModifierCode != NULL) {
