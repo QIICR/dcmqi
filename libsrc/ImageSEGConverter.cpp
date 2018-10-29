@@ -238,6 +238,8 @@ namespace dcmqi {
 
         if(segmentAttributes->getTrackingIdentifier().length() > 0)
           segment->setTrackingID(segmentAttributes->getTrackingIdentifier().c_str());
+        else
+          segment->setTrackingID(segmentLabel);
 
         if(segmentAttributes->getTrackingUniqueIdentifier().length() > 0)
           segment->setTrackingUID(segmentAttributes->getTrackingUniqueIdentifier().c_str());
