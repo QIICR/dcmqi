@@ -39,7 +39,7 @@ namespace dcmqi {
     this->frameLaterality = value;
   };
 
-  void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const float& value) {
+  void JSONParametricMapMetaInformationHandler::setRealWorldValueSlope(const string& value) {
     this->realWorldValueSlope = value;
   };
 
@@ -116,7 +116,7 @@ namespace dcmqi {
       this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
       this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
       this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
-      this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", 1.0).asFloat();
+      this->realWorldValueSlope = this->metaInfoRoot.get("RealWorldValueSlope", "1.0").asString();
       this->realWorldValueIntercept = this->metaInfoRoot.get("RealWorldValueIntercept", "0").asString();
       this->derivedPixelContrast = this->metaInfoRoot.get("DerivedPixelContrast", "").asString();
       this->derivationDescription = this->metaInfoRoot.get("DerivationDescription", "").asString();

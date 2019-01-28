@@ -17,7 +17,7 @@ namespace dcmqi {
     ~JSONParametricMapMetaInformationHandler();
 
     void setFrameLaterality(const string& value);
-    void setRealWorldValueSlope(const float& value);
+    void setRealWorldValueSlope(const string& value);
     void setRealWorldValueIntercept(const string& value);
     void setDerivedPixelContrast(const string& value);
     void setDerivationDescription(const string& value);
@@ -38,7 +38,7 @@ namespace dcmqi {
 
     string getFrameLaterality() const { return frameLaterality; }
     string getDerivationDescription() const { return derivationDescription; }
-    float getRealWorldValueSlope() const { return realWorldValueSlope; }
+    string getRealWorldValueSlope() const { return realWorldValueSlope; }
     string getRealWorldValueIntercept() const { return realWorldValueIntercept; }
     string getDerivedPixelContrast() const { return derivedPixelContrast; }
     short getFirstValueMapped() const { return firstValueMapped; }
@@ -55,7 +55,7 @@ namespace dcmqi {
     virtual bool write(string filename);
   protected:
 
-    float realWorldValueSlope;
+    string realWorldValueSlope;
     string realWorldValueIntercept;
     string derivationDescription;
     string derivedPixelContrast;
