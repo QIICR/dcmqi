@@ -133,7 +133,7 @@ namespace dcmqi {
       return NULL;
     }
 
-    realWorldValueMappingItem->setRealWorldValueSlope(metaInfo.getRealWorldValueSlope());
+    realWorldValueMappingItem->setRealWorldValueSlope(atof(metaInfo.getRealWorldValueSlope().c_str()));
     realWorldValueMappingItem->setRealWorldValueIntercept(atof(metaInfo.getRealWorldValueIntercept().c_str()));
 
     realWorldValueMappingItem->setRealWorldValueFirstValueMappedSigned(metaInfo.getFirstValueMapped());
@@ -646,11 +646,11 @@ namespace dcmqi {
         FGRealWorldValueMapping::RWVMItem *item = rw->getRealWorldValueMapping()[0];
         metaInfo.setMeasurementUnitsCode(item->getMeasurementUnitsCode());
 
-        Float64 slope;
+        OFString slope;
         // TODO: replace the following call by following getter once it is available
 //        item->getRealWorldValueSlope(slope);
-        item->getData().findAndGetFloat64(DCM_RealWorldValueSlope, slope);
-        metaInfo.setRealWorldValueSlope(slope);
+        item->getData().findAndGetOFString(DCM_RealWorldValueSlope, slope);
+        metaInfo.setRealWorldValueSlope(slope.c_str());
 
         for(unsigned int quantIdx=0; quantIdx<item->getEntireQuantityDefinitionSequence().size(); quantIdx++) {
           ContentItemMacro* macro = item->getEntireQuantityDefinitionSequence()[quantIdx];
@@ -685,7 +685,7 @@ namespace dcmqi {
       }
 
       FGDerivationImage* derivationImage = OFstatic_cast(FGDerivationImage*, fg.get(0, DcmFGTypes::EFG_DERIVATIONIMAGE));
-      
+
       if(derivationImage){
         OFVector<DerivationImageItem*>& derivationImageItems = derivationImage->getDerivationImageItems();
         if(derivationImageItems.size()>0){
