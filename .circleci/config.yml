@@ -1,4 +1,12 @@
 version: 2
+
+references:
+
+  no_filters: &no_filters
+    filters:
+      tags:
+        only: /.*/
+
 jobs:
   build:
     machine: true
@@ -35,6 +43,20 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS && \
             docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
             || echo "skipping docker push"
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - build/dcmqi-build
+
+  deploy-master:
+    docker:
+      - image: circleci/python:3.7.0-stretch
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: install sckit-ci-addons
+          command: pip install -U "scikit-ci-addons>=0.22.0"
       - run:
           name: publish binary package on GitHub
           command: |
@@ -43,3 +65,40 @@ jobs:
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
             --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
             --exit-success-if-missing-token
+
+  deploy-release:
+    docker:
+      - image: circleci/python:3.7.0-stretch
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: install sckit-ci-addons
+          command: pip install -U "scikit-ci-addons>=0.22.0"
+      - run:
+          name: publish binary package on GitHub
+          command: |
+            ci_addons publish_github_release qiicr/dcmqi \
+            --release-packages "build/dcmqi-build/dcmqi-*-linux.tar.gz"
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build:
+          <<: *no_filters
+      - deploy-master:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
+      - deploy-release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              ignore: /.*/
