@@ -316,6 +316,16 @@ if(NOT Slicer_DIR)
   # Configure 'DCMQIConfig.cmake'
   include(CMakePackageConfigHelpers)
 
+  set(path_vars
+    CONFIG_DIR_CONFIG
+    DCMTK_DIR_CONFIG
+    )
+  if(DCMQI_BUILD_APPS)
+    list(APPEND
+      SlicerExecutionModel_DIR_CONFIG
+      )
+  endif()
+
   # For a build tree
   set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
   set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
@@ -329,9 +339,7 @@ if(NOT Slicer_DIR)
       ${_config}
       INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
       PATH_VARS
-        CONFIG_DIR_CONFIG
-        DCMTK_DIR_CONFIG
-        SlicerExecutionModel_DIR_CONFIG
+        ${path_vars}
       NO_CHECK_REQUIRED_COMPONENTS_MACRO
   )
 
