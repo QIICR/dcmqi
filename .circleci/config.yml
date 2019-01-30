@@ -56,7 +56,10 @@ jobs:
           at: ./
       - run:
           name: install sckit-ci-addons
-          command: pip install -U "scikit-ci-addons>=0.22.0"
+          command: |
+            python -m venv ../venv
+            . ../venv/bin/activate
+            pip install -U "scikit-ci-addons>=0.22.0"
       - run:
           name: publish binary package on GitHub
           command: |
@@ -74,7 +77,10 @@ jobs:
           at: ./
       - run:
           name: install sckit-ci-addons
-          command: pip install -U "scikit-ci-addons>=0.22.0"
+          command: |
+            python -m venv ../venv
+            . ../venv/bin/activate
+            pip install -U "scikit-ci-addons>=0.22.0"
       - run:
           name: publish binary package on GitHub
           command: |
