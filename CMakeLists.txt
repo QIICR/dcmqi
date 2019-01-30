@@ -321,7 +321,7 @@ if(NOT Slicer_DIR)
     DCMTK_DIR_CONFIG
     )
   if(DCMQI_BUILD_APPS)
-    list(APPEND
+    list(APPEND path_vars
       SlicerExecutionModel_DIR_CONFIG
       )
   endif()
@@ -332,6 +332,7 @@ if(NOT Slicer_DIR)
   set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
   set(${PROJECT_NAME}_CONFIG_CODE "####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
   set(${PROJECT_NAME}_CONFIG_CODE "find_package(DCMTK NO_MODULE REQUIRED)\n")
+  set(${PROJECT_NAME}_CONFIG_CODE "set(DCMQI_BUILD_APPS ${DCMQI_BUILD_APPS})\n")
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}##################################################")
   set(_config ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake)
   configure_package_config_file(
