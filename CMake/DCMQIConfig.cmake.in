@@ -1,11 +1,14 @@
 @PACKAGE_INIT@
 
 set_and_check(DCMTK_DIR "@PACKAGE_DCMTK_DIR_CONFIG@")
-set_and_check(SlicerExecutionModel_DIR "@PACKAGE_SlicerExecutionModel_DIR_CONFIG@")
 set_and_check(DCMQI_CONFIG_DIR "@PACKAGE_CONFIG_DIR_CONFIG@")
 set_and_check(DCMQI_TARGETS "@PACKAGE_CONFIG_DIR_CONFIG@/DCMQITargets.cmake")
 
 @DCMQI_CONFIG_CODE@
+
+if(DCMQI_BUILD_APPS)
+  set_and_check(SlicerExecutionModel_DIR "@PACKAGE_SlicerExecutionModel_DIR_CONFIG@")
+endif()
 
 if(NOT DCMQI_TARGETS_IMPORTED)
   set(DCMQI_TARGETS_IMPORTED 1)
