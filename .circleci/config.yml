@@ -52,6 +52,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.0-stretch
     steps:
+      - checkout
       - attach_workspace:
           at: ./
       - run:
@@ -74,6 +75,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.0-stretch
     steps:
+      - checkout
       - attach_workspace:
           at: ./
       - run:
