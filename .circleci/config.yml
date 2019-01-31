@@ -2,10 +2,12 @@ version: 2
 
 references:
 
-  no_filters: &no_filters
+  build_job_filters: &build_job_filters
     filters:
       tags:
-        only: /.*/
+        ignore:
+          - latest
+          - latest-tmp
 
 jobs:
   build:
@@ -96,7 +98,7 @@ workflows:
   build-test-deploy:
     jobs:
       - build:
-          <<: *no_filters
+          <<: *build_job_filters
       - deploy-master:
           requires:
             - build
