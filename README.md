@@ -2,7 +2,7 @@
 
 
 
-| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.2.0.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.2.0) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
+| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.2.1.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.2.1) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
 |--------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 
 |              | Linux                                                                                                  | macOS                                                                                                | Windows                                                                                                                             |
@@ -59,4 +59,3 @@ This work is supported primarily by the National Institutes of Health, National 
 1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) _DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research._ *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
 
 2. Herz C, Fillion-Robin J-C, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A.  _dcmqi: An Open Source Library for Standardized Communication of Quantitative Image Analysis Results Using DICOM_. *Cancer Research*. 2017;77(21):e87–e90 http://cancerres.aacrjournals.org/content/77/21/e87.
-
