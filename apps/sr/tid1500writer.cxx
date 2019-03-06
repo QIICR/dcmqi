@@ -503,10 +503,12 @@ int main(int argc, char** argv){
   CHECK_COND(doc.write(*dataset));
 
   if(compositeContextInitialized){
-    cout << "Composite Context initialized" << endl;
     DcmModuleHelpers::copyPatientModule(*ccFileFormat.getDataset(),*dataset);
     DcmModuleHelpers::copyPatientStudyModule(*ccFileFormat.getDataset(),*dataset);
     DcmModuleHelpers::copyGeneralStudyModule(*ccFileFormat.getDataset(),*dataset);
+    cout << "Composite Context has been initialized" << endl;
+  } else {
+    cerr << "WARNING: Composite context not initialized! Patient, Study and General Study modules were NOT propagated!" << endl;
   }
 
   CHECK_COND(ff.saveFile(outputFileName.c_str(), EXS_LittleEndianExplicit));
