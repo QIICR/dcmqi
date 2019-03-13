@@ -102,6 +102,7 @@ namespace dcmqi {
         SegmentAttributes* segmentAttributes = mIt->second;
         segment["labelID"] = segmentAttributes->getLabelID();
         segment["SegmentDescription"] = segmentAttributes->getSegmentDescription();
+        segment["SegmentLabel"] = segmentAttributes->getSegmentLabel();
         segment["SegmentAlgorithmType"] = segmentAttributes->getSegmentAlgorithmType();
         if (segmentAttributes->getSegmentAlgorithmName().length() > 0)
           segment["SegmentAlgorithmName"] = segmentAttributes->getSegmentAlgorithmName();
@@ -175,6 +176,11 @@ namespace dcmqi {
         Json::Value segmentDescription = segment["SegmentDescription"];
         if (!segmentDescription.isNull()) {
           segmentAttribute->setSegmentDescription(segmentDescription.asString());
+        }
+
+        Json::Value segmentLabel = segment["SegmentLabel"];
+        if (!segmentLabel.isNull()) {
+          segmentAttribute->setSegmentLabel(segmentLabel.asString());
         }
 
         if (segment.isMember("SegmentedPropertyCategoryCodeSequence")) {

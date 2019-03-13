@@ -112,6 +112,9 @@
             "SegmentDescription": {
               "type": "string"
             },
+            "SegmentLabel": {
+              "$ref": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/common-schema.json#/definitions/LO"
+            },
             "SegmentedPropertyCategoryCodeSequence": {
               "allOf": [
                 {

@@ -230,7 +230,13 @@ namespace dcmqi {
         CodeSequenceMacro* categoryCode = segmentAttributes->getSegmentedPropertyCategoryCodeSequence();
         assert(typeCode != NULL && categoryCode!= NULL);
         OFString segmentLabel;
-        CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
+
+        if(segmentAttributes->getSegmentLabel().length() > 0){
+          cout << "Populating segment label to " << segmentAttributes->getSegmentLabel() << endl;
+          segmentLabel = segmentAttributes->getSegmentLabel().c_str();
+        } else
+          CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
+
         CHECK_COND(DcmSegment::create(segment, segmentLabel, *categoryCode, *typeCode, algoType, algoName.c_str()));
 
         if(segmentAttributes->getSegmentDescription().length() > 0)
@@ -636,10 +642,13 @@ namespace dcmqi {
               segmentAttributes->setSegmentAlgorithmName(segmentAlgorithmName.c_str());
           }
 
-          OFString segmentDescription, trackingIdentifier, trackingUniqueIdentifier;
+          OFString segmentDescription, segmentLabel, trackingIdentifier, trackingUniqueIdentifier;
 
           segment->getSegmentDescription(segmentDescription);
           segmentAttributes->setSegmentDescription(segmentDescription.c_str());
+
+          segment->getSegmentLabel(segmentLabel);
+          segmentAttributes->setSegmentLabel(segmentLabel.c_str());
 
           segment->getTrackingID(trackingIdentifier);
           segment->getTrackingUID(trackingUniqueIdentifier);
