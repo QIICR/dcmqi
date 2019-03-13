@@ -48,6 +48,10 @@ namespace dcmqi {
     this->segmentDescription = segmentDescription;
   }
 
+  void SegmentAttributes::setSegmentLabel(const string &segmentLabel) {
+    this->segmentLabel = segmentLabel;
+  }
+
   void SegmentAttributes::setSegmentAlgorithmType(const string& algorithmType) {
     this->segmentAlgorithmType = algorithmType;
   }

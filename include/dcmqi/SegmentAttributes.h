@@ -24,6 +24,7 @@ namespace dcmqi {
 
     void setLabelID(unsigned labelID);
     void setSegmentDescription(const string &segmentDescription);
+    void setSegmentLabel(const string &segmentDescription);
     void setSegmentAlgorithmType(const string& algorithmType);
     void setSegmentAlgorithmName(const string& algorithmName);
     void setRecommendedDisplayRGBValue(const unsigned& r, const unsigned& g, const unsigned& b);
@@ -43,6 +44,7 @@ namespace dcmqi {
 
     unsigned int getLabelID() const { return labelID; }
     string getSegmentDescription() const { return segmentDescription; }
+    string getSegmentLabel() const { return segmentLabel; }
     string getSegmentAlgorithmType() const { return segmentAlgorithmType; }
     string getSegmentAlgorithmName() const { return segmentAlgorithmName; }
     unsigned* getRecommendedDisplayRGBValue() { return recommendedDisplayRGBValue; }
@@ -64,6 +66,7 @@ namespace dcmqi {
   private:
     unsigned labelID;
     string segmentDescription;
+    string segmentLabel;
     string segmentAlgorithmType;
     string segmentAlgorithmName;
     unsigned recommendedDisplayRGBValue[3];
