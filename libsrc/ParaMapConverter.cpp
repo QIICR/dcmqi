@@ -220,7 +220,7 @@ namespace dcmqi {
         bval->getEntireConceptNameCodeSequence().push_back(qCodeName);
         bval->getEntireMeasurementUnitsCodeSequence().push_back(bvalUnits);
         if(bval->setNumericValue(metaInfo.metaInfoRoot["SourceImageDiffusionBValues"][static_cast<int>(bvalId)].asCString()).bad())
-          cout << "Failed to insert the value!" << endl;;
+          cout << "ERROR: Failed to insert the value!" << endl;;
         realWorldValueMappingItem->getEntireQuantityDefinitionSequence().push_back(bval);
         cout << bval->toString() << endl;
       }
@@ -301,8 +301,8 @@ namespace dcmqi {
                                                    metaInfo.getDerivationDescription().c_str(),
                                                    derimgItem));
         } else {
-          cerr << "DerivationCode must be specified in the input metadata!" << endl;
-          return NULL;
+          cerr << "ERROR: DerivationCode must be specified in the input metadata!" << endl;
+          throw -1;
         }
 
         //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
@@ -453,7 +453,7 @@ namespace dcmqi {
     FGInterface &fgInterface = pMapDoc->getFunctionalGroups();
     FloatImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
-      cerr << "Failed to get image directions" << endl;
+      cerr << "ERROR: Failed to get image directions" << endl;
       throw -1;
     }
 
@@ -466,14 +466,14 @@ namespace dcmqi {
 
     FloatImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
-      cerr << "Failed to compute origin and/or slice spacing!" << endl;
+      cerr << "ERROR: Failed to compute origin and/or slice spacing!" << endl;
       throw -1;
     }
 
     FloatImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
-      cerr << "Failed to get image spacing from DICOM!" << endl;
+      cerr << "ERROR: Failed to get image spacing from DICOM!" << endl;
       throw -1;
     }
 
@@ -616,7 +616,7 @@ namespace dcmqi {
 
     OFvariant<OFCondition,DPMParametricMapIOD*> result = DPMParametricMapIOD::loadDataset(*pmapDataset);
     if (OFCondition* pCondition = OFget<OFCondition>(&result)) {
-      cerr << "Failed to load parametric map! " << pCondition->text() << endl;
+      cerr << "ERROR: Failed to load parametric map! " << pCondition->text() << endl;
       throw -1;
     }
     DPMParametricMapIOD* pMapDoc = *OFget<DPMParametricMapIOD*>(&result);

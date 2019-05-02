@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   vector<DcmDataset*> dcmDatasets = helper::loadDatasets(dicomImageFileList);
 
   if(dcmDatasets.empty()){
-    cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;
+    cerr << "ERROR: no DICOM could be loaded from the specified list/directory" << endl;
     return EXIT_FAILURE;
   }
 
@@ -44,15 +44,21 @@ int main(int argc, char *argv[])
   std::string metadata( (std::istreambuf_iterator<char>(metainfoStream) ),
                         (std::istreambuf_iterator<char>()));
 
-  DcmDataset* result = dcmqi::ParaMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
+  try {
+    DcmDataset* result = dcmqi::ParaMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
 
-  if (result == NULL) {
+    if (result == NULL) {
+      std::cerr << "ERROR: Conversion failed." << std::endl;
+      return EXIT_FAILURE;
+    } else {
+      DcmFileFormat segdocFF(result);
+      CHECK_COND(segdocFF.saveFile(outputParaMapFileName.c_str(), EXS_LittleEndianExplicit));
+
+      COUT << "Saved parametric map as " << outputParaMapFileName << endl;
+      return EXIT_SUCCESS;
+    }
+  } catch (int e) {
+    std::cerr << "Fatal error encountered." << std::endl;
     return EXIT_FAILURE;
-  } else {
-    DcmFileFormat segdocFF(result);
-    CHECK_COND(segdocFF.saveFile(outputParaMapFileName.c_str(), EXS_LittleEndianExplicit));
-
-    COUT << "Saved parametric map as " << outputParaMapFileName << endl;
-    return EXIT_SUCCESS;
   }
 }

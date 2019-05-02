@@ -91,26 +91,31 @@ int main(int argc, char *argv[])
     segmentations = segmentationsReordered;
   }
 
-  DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+  try {
+    DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
-  if (result == NULL){
-    return EXIT_FAILURE;
-  } else {
-    DcmFileFormat segdocFF(result);
-    bool compress = false;
-    if(compress){
-      CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
+    if (result == NULL){
+      std::cerr << "ERROR: Conversion failed." << std::endl;
+      return EXIT_FAILURE;
     } else {
-      CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
+      DcmFileFormat segdocFF(result);
+      bool compress = false;
+      if(compress){
+        CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
+      } else {
+        CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
+      }
+
+      COUT << "Saved segmentation as " << outputSEGFileName << endl;
     }
 
-    COUT << "Saved segmentation as " << outputSEGFileName << endl;
+    for(size_t i=0;i<dcmDatasets.size();i++) {
+      delete dcmDatasets[i];
+    }
+    if (result != NULL)
+      delete result;
+    return EXIT_SUCCESS;
+  } catch (int e) {
+    std::cerr << "Fatal error encountered." << std::endl;
   }
-
-  for(size_t i=0;i<dcmDatasets.size();i++) {
-    delete dcmDatasets[i];
-  }
-  if (result != NULL)
-    delete result;
-  return EXIT_SUCCESS;
 }
