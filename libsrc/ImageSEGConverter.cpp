@@ -470,7 +470,7 @@ namespace dcmqi {
     DcmSegmentation *segdoc = NULL;
     OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
     if(!segdoc){
-      cerr << "Failed to load seg! " << cond.text() << endl;
+      cerr << "ERROR: Failed to load segmentation dataset! " << cond.text() << endl;
       throw -1;
     }
 
@@ -478,7 +478,7 @@ namespace dcmqi {
     FGInterface &fgInterface = segdoc->getFunctionalGroups();
     ShortImageType::DirectionType direction;
     if(getImageDirections(fgInterface, direction)){
-      cerr << "Failed to get image directions" << endl;
+      cerr << "ERROR: Failed to get image directions!" << endl;
       throw -1;
     }
 
@@ -491,19 +491,19 @@ namespace dcmqi {
 
     ShortImageType::PointType imageOrigin;
     if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
-      cerr << "Failed to compute origin and/or slice spacing!" << endl;
+      cerr << "ERROR: Failed to compute origin and/or slice spacing!" << endl;
       throw -1;
     }
 
     ShortImageType::SpacingType imageSpacing;
     imageSpacing.Fill(0);
     if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
-      cerr << "Failed to get image spacing from DICOM!" << endl;
+      cerr << "ERROR: Failed to get image spacing from DICOM!" << endl;
       throw -1;
     }
 
     if(!imageSpacing[2]){
-      cerr << "FATAL ERROR: No sufficient information to derive slice spacing! Unable to interpret the data." << endl;
+      cerr << "ERROR: No sufficient information to derive slice spacing! Unable to interpret the data." << endl;
       throw -1;
     }
 
@@ -565,14 +565,14 @@ namespace dcmqi {
 
       Uint16 segmentId = -1;
       if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
-        cerr << "Failed to get seg number!";
+        cerr << "ERROR: Failed to get ReferencedSegmentNumber!";
         throw -1;
       }
 
       // WARNING: this is needed only for David's example, which numbers
       // (incorrectly!) segments starting from 0, should start from 1
       if(segmentId == 0){
-        cerr << "Segment numbers should start from 1!" << endl;
+        cerr << "ERROR: ReferencedSegmentNumber value of 0 was encountered. Segment numbers and references to segment numbers should both start from 1!" << endl;
         throw -1;
       }
 
@@ -632,7 +632,7 @@ namespace dcmqi {
           segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);
 
           if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
-            cerr << "AlgorithmType is not valid with value " << readableAlgorithmType << endl;
+            cerr << "ERROR: AlgorithmType is not valid with value " << readableAlgorithmType << endl;
             throw -1;
           }
           if (algorithmType != DcmSegTypes::SAT_MANUAL) {

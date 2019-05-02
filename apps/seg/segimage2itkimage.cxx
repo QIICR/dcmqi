@@ -13,7 +13,7 @@ typedef dcmqi::Helper helper;
 int main(int argc, char *argv[])
 {
   std::cout << dcmqi_INFO << std::endl;
-  
+
   PARSE_ARGS;
 
   if(helper::isUndefinedOrPathDoesNotExist(inputSEGFileName, "Input DICOM file")
@@ -24,33 +24,36 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
+  try {
+    pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
 
-  string outputPrefix = prefix.empty() ? "" : prefix + "-";
+    string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
-  string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
+    string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
 
-  for(map<unsigned,ShortImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
-    typedef itk::ImageFileWriter<ShortImageType> WriterType;
-    stringstream imageFileNameSStream;
+    for(map<unsigned,ShortImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
+      typedef itk::ImageFileWriter<ShortImageType> WriterType;
+      stringstream imageFileNameSStream;
 
-    imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
+      imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
 
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(imageFileNameSStream.str().c_str());
-    writer->SetInput(sI->second);
-    writer->SetUseCompression(1);
-    writer->Update();
+      WriterType::Pointer writer = WriterType::New();
+      writer->SetFileName(imageFileNameSStream.str().c_str());
+      writer->SetInput(sI->second);
+      writer->SetUseCompression(1);
+      writer->Update();
+    }
+
+    stringstream jsonOutput;
+    jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
+
+    ofstream outputFile;
+    outputFile.open(jsonOutput.str().c_str());
+    outputFile << result.second;
+    outputFile.close();
+
+    return EXIT_SUCCESS;
+  } catch (int e) {
+    std::cerr << "Fatal error encountered." << std::endl;
   }
-
-  stringstream jsonOutput;
-  jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
-
-  ofstream outputFile;
-  outputFile.open(jsonOutput.str().c_str());
-  outputFile << result.second;
-  outputFile.close();
-
-  return EXIT_SUCCESS;
-
 }
