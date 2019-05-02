@@ -25,27 +25,32 @@ int main(int argc, char *argv[])
   CHECK_COND(sliceFF.loadFile(inputFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 
-  pair <FloatImageType::Pointer, string> result =  dcmqi::ParaMapConverter::paramap2itkimage(dataset);
+  try {
+    pair <FloatImageType::Pointer, string> result =  dcmqi::ParaMapConverter::paramap2itkimage(dataset);
 
-  string fileExtension = helper::getFileExtensionFromType(outputType);
+    string fileExtension = helper::getFileExtensionFromType(outputType);
 
-  typedef itk::ImageFileWriter<FloatImageType> WriterType;
-  string outputPrefix = prefix.empty() ? "" : prefix + "-";
-  WriterType::Pointer writer = WriterType::New();
-  stringstream imageFileNameSStream;
-  imageFileNameSStream << outputDirName << "/" << outputPrefix << "pmap" << fileExtension;
-  writer->SetFileName(imageFileNameSStream.str().c_str());
-  writer->SetInput(result.first);
-  writer->SetUseCompression(1);
-  writer->Update();
+    typedef itk::ImageFileWriter<FloatImageType> WriterType;
+    string outputPrefix = prefix.empty() ? "" : prefix + "-";
+    WriterType::Pointer writer = WriterType::New();
+    stringstream imageFileNameSStream;
+    imageFileNameSStream << outputDirName << "/" << outputPrefix << "pmap" << fileExtension;
+    writer->SetFileName(imageFileNameSStream.str().c_str());
+    writer->SetInput(result.first);
+    writer->SetUseCompression(1);
+    writer->Update();
 
-  stringstream jsonOutput;
-  jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
+    stringstream jsonOutput;
+    jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
 
-  ofstream outputFile;
-  outputFile.open(jsonOutput.str().c_str());
-  outputFile << result.second;
-  outputFile.close();
+    ofstream outputFile;
+    outputFile.open(jsonOutput.str().c_str());
+    outputFile << result.second;
+    outputFile.close();
 
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
+  } catch (int e) {
+    std::cerr << "Fatal error encountered." << std::endl;
+    return EXIT_FAILURE;
+  }
 }

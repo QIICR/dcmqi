@@ -55,5 +55,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
   } catch (int e) {
     std::cerr << "Fatal error encountered." << std::endl;
+    return EXIT_FAILURE;
   }
 }

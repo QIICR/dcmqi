@@ -52,8 +52,10 @@ namespace dcmqi {
       this->bodyPartExamined = this->metaInfoRoot.get("BodyPartExamined", "").asString();
 
       this->readSegmentAttributes();
-    } catch (exception &e) {
-      cout << e.what() << '\n';
+    } catch (exception& e) {
+      cerr << "ERROR: JSON parameter file could not be parsed!" << std::endl;
+      cerr << "You can validate the JSON file here: http://qiicr.org/dcmqi/#/validators" << std::endl;
+      cerr << "Exception details (probably not very useful): " << e.what() << endl;
       throw JSONReadErrorException();
     }
   }

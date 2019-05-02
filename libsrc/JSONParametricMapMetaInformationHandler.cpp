@@ -112,6 +112,7 @@ namespace dcmqi {
     try {
       istringstream metainfoStream(this->jsonInput);
       metainfoStream >> this->metaInfoRoot;
+      //std::cout << this->metaInfoRoot.asString() << std::endl;
       this->seriesDescription = this->metaInfoRoot.get("SeriesDescription", "Segmentation").asString();
       this->seriesNumber = this->metaInfoRoot.get("SeriesNumber", "300").asString();
       this->instanceNumber = this->metaInfoRoot.get("InstanceNumber", "1").asString();
@@ -158,7 +159,9 @@ namespace dcmqi {
       }
 
     } catch (exception& e) {
-      cout << e.what() << endl;
+      cerr << "ERROR: JSON parameter file could not be parsed!" << std::endl;
+      cerr << "You can validate the JSON file here: http://qiicr.org/dcmqi/#/validators" << std::endl;
+      cerr << "Exception details (probably not very useful): " << e.what() << endl;
       throw JSONReadErrorException();
     }
   }
