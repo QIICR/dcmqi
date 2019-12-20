@@ -816,6 +816,282 @@
           },
           {
             "recommendedDisplayRGBValue": [
+              200,
+              200,
+              235
+            ],
+            "CodeMeaning": "Gray Matter",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "gray matter",
+            "3dSlicerIntegerLabel": 13,
+            "cid": "7153",
+            "UMLSConceptUID": "C1300312",
+            "CodeValue": "T-A0096",
+            "contextGroupName": "CNSSegmentationTypes",
+            "SNOMEDCTConceptID": "389081007"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              250,
+              250,
+              210
+            ],
+            "CodeMeaning": "White Matter",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "white matter",
+            "3dSlicerIntegerLabel": 14,
+            "cid": "7153",
+            "UMLSConceptUID": "C1300311",
+            "CodeValue": "T-A0095",
+            "contextGroupName": "CNSSegmentationTypes",
+            "SNOMEDCTConceptID": "389080008"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              221,
+              130,
+              101
+            ],
+            "CodeMeaning": "Liver",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "liver",
+            "3dSlicerIntegerLabel": 216,
+            "cid": "4030,7154",
+            "UMLSConceptUID": "C0023884",
+            "CodeValue": "T-62000",
+            "contextGroupName": "CT,MRandPETAnatomyImaged,AbdominalSegmentationTypes",
+            "SNOMEDCTConceptID": "10200004"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              196,
+              172,
+              68
+            ],
+            "CodeMeaning": "Maxilla",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "maxilla",
+            "3dSlicerIntegerLabel": 152,
+            "cid": "4028,4031",
+            "UMLSConceptUID": "C0024947",
+            "CodeValue": "T-11170",
+            "contextGroupName": "CraniofacialAnatomicRegions,CommonAnatomicRegions",
+            "SNOMEDCTConceptID": "70925003",
+            "Modifier": [
+              {
+                "CodeMeaning": "Right",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205090",
+                "CodeValue": "G-A100",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "24028007"
+              },
+              {
+                "CodeMeaning": "Left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205091",
+                "CodeValue": "G-A101",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "7771000"
+              },
+              {
+                "CodeMeaning": "Right and left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0238767",
+                "CodeValue": "G-A102",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              145,
+              92,
+              109
+            ],
+            "CodeMeaning": "Midbrain",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "midbrain",
+            "3dSlicerIntegerLabel": 69,
+            "cid": "7153",
+            "UMLSConceptUID": "C0025462",
+            "CodeValue": "T-A5100",
+            "contextGroupName": "CNSSegmentationTypes",
+            "SNOMEDCTConceptID": "61962009"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              255,
+              245,
+              217
+            ],
+            "CodeMeaning": "Pleura",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "pleura",
+            "3dSlicerIntegerLabel": 179,
+            "cid": "7155",
+            "UMLSConceptUID": "C0032225",
+            "CodeValue": "T-29000",
+            "contextGroupName": "ThoracicSegmentationTypes",
+            "SNOMEDCTConceptID": "3120008",
+            "Modifier": [
+              {
+                "CodeMeaning": "Right",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205090",
+                "CodeValue": "G-A100",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "24028007"
+              },
+              {
+                "CodeMeaning": "Left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205091",
+                "CodeValue": "G-A101",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "7771000"
+              },
+              {
+                "CodeMeaning": "Right and left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0238767",
+                "CodeValue": "G-A102",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              253,
+              232,
+              158
+            ],
+            "CodeMeaning": "Rib",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "ribs",
+            "3dSlicerIntegerLabel": 201,
+            "cid": "4031,6114,7155",
+            "UMLSConceptUID": "C0035561",
+            "CodeValue": "T-11300",
+            "contextGroupName": "CommonAnatomicRegions,OsseousAnatomyFindingorFeature,ThoracicSegmentationTypes",
+            "SNOMEDCTConceptID": "113197003",
+            "Modifier": [
+              {
+                "CodeMeaning": "Right",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205090",
+                "CodeValue": "G-A100",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "24028007"
+              },
+              {
+                "CodeMeaning": "Left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205091",
+                "CodeValue": "G-A101",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "7771000"
+              },
+              {
+                "CodeMeaning": "Right and left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0238767",
+                "CodeValue": "G-A102",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              157,
+              108,
+              162
+            ],
+            "CodeMeaning": "Spleen",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "spleen",
+            "3dSlicerIntegerLabel": 220,
+            "cid": "4030,7154",
+            "UMLSConceptUID": "C0037993",
+            "CodeValue": "T-C3000",
+            "contextGroupName": "CT,MRandPETAnatomyImaged,AbdominalSegmentationTypes",
+            "SNOMEDCTConceptID": "78961009"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              68,
+              131,
+              98
+            ],
+            "CodeMeaning": "Telencephalon",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "telencephalon",
+            "3dSlicerIntegerLabel": 40,
+            "cid": "7153",
+            "UMLSConceptUID": "C0039452",
+            "CodeValue": "T-A0103",
+            "contextGroupName": "CNSSegmentationTypes",
+            "SNOMEDCTConceptID": "11628009"
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              240,
+              210,
+              35
+            ],
+            "CodeMeaning": "Vagus nerve",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "vagus nerve",
+            "3dSlicerIntegerLabel": 283,
+            "cid": "7167",
+            "UMLSConceptUID": "C0042276",
+            "CodeValue": "T-A8640",
+            "contextGroupName": "PeripheralNervousSystemSegmentationTypes",
+            "SNOMEDCTConceptID": "88882009",
+            "Modifier": [
+              {
+                "CodeMeaning": "Right",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205090",
+                "CodeValue": "G-A100",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "24028007"
+              },
+              {
+                "CodeMeaning": "Left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0205091",
+                "CodeValue": "G-A101",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "7771000"
+              },
+              {
+                "CodeMeaning": "Right and left",
+                "CodingSchemeDesignator": "SRT",
+                "cid": "244",
+                "UMLSConceptUID": "C0238767",
+                "CodeValue": "G-A102",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "51440002"
+              }
+            ]
+          },
+          {
+            "recommendedDisplayRGBValue": [
               255,
               255,
               207
@@ -1034,22 +1310,10 @@
             "CodingSchemeDesignator": "SRT",
             "UMLSConceptUID": "C0012144",
             "CodeValue": "T-A0102",
-            "Modifier": [
-              {
-                "recommendedDisplayRGBValue": [
-                  69,
-                  110,
-                  53
-                ],
-                "cid": "244",
-                "CodingSchemeDesignator": "SRT",
-                "3dSlicerLabel": "diencephalon",
-                "CodeValue": "G-A100",
-                "UMLSConceptUID": "C0205090",
-                "CodeMeaning": "Right",
-                "contextGroupName": "Laterality",
-                "SNOMEDCTConceptID": "24028007"
-              }
+            "recommendedDisplayRGBValue": [
+              69,
+              110,
+              53
             ],
             "SNOMEDCTConceptID": "87563008"
           },
@@ -2758,6 +3022,60 @@
               }
             ],
             "SNOMEDCTConceptID": "24924006"
+          },
+          {
+            "contextGroupName": "Craniofacial Anatomic Regions",
+            "cid": "4028",
+            "CodeMeaning": "Occipital bone",
+            "CodingSchemeDesignator": "SRT",
+            "UMLSConceptUID": "C0028784",
+            "CodeValue": "T-11140",
+            "Modifier": [
+              {
+                "recommendedDisplayRGBValue": [
+                  182,
+                  166,
+                  110
+                ],
+                "cid": "244",
+                "CodingSchemeDesignator": "SRT",
+                "3dSlicerLabel": "right occipital bone",
+                "CodeValue": "G-A100",
+                "UMLSConceptUID": "C0205090",
+                "CodeMeaning": "Right",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "24028007"
+              },
+              {
+                "recommendedDisplayRGBValue": [
+                  229,
+                  204,
+                  109
+                ],
+                "cid": "244",
+                "CodingSchemeDesignator": "SRT",
+                "3dSlicerLabel": "left occipital bone",
+                "CodeValue": "G-A101",
+                "UMLSConceptUID": "C0205091",
+                "CodeMeaning": "Left",
+                "contextGroupName": "Laterality",
+                "SNOMEDCTConceptID": "7771000"
+              }
+            ]
+          },
+          {
+            "recommendedDisplayRGBValue": [
+              255,
+              237,
+              145
+            ],
+            "cid": "4028",
+            "CodingSchemeDesignator": "SRT",
+            "3dSlicerLabel": "vomer bone",
+            "CodeValue": "T-21342",
+            "UMLSConceptUID": "C0242403",
+            "CodeMeaning": "Vomer bone",
+            "contextGroupName": "Craniofacial Anatomic Regions"
           },
           {
             "contextGroupName": "CNS Tissue Segmentation Types",
