@@ -34,7 +34,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "29f9de10c2e8576147f16475b156bba98d14ba7d"
+    "0f2de2313a00f9360bdf33399a2f37ee5e65c429"
     QUIET
     )
 
