@@ -18,7 +18,7 @@ TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
   : DSRDocumentTree(tree) {
     // check for expected template identification
     if (!compareTemplateIdentification("1500", "DCMR"))
-      CERR << "warning: template identification \"TID 1500 (DCMR)\" not found" << OFendl;
+      std::cerr << "warning: template identification \"TID 1500 (DCMR)\" not found" << OFendl;
 
 }
 
@@ -222,7 +222,7 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
           const DSRPNameTreeNode *, node)->getValue().c_str();
           break;
         default:
-          COUT << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
+          std::cout << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
       }
     }
   }
@@ -274,9 +274,9 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
             singleMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
           } else if (node->getConceptName() == CODE_SRT_FindingSite) {
-            CERR << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
+            std::cerr << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else if (node->getConceptName() == CODE_SRT_MeasurementMethod) {
-            CERR << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
+            std::cerr << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else if (node->getValueType() == VT_Code) {
             // Otherwise, assume that modifier corresponds to row 6.
             // NB: as a consequence, this means other types of concept modifiers must be factored out
