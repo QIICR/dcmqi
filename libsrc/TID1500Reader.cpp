@@ -84,6 +84,8 @@ Json::Value TID1500Reader::getMeasurements() {
         mIt!=string2code.end();++mIt){
     knownConcepts.push_back(mIt->second);
   }
+  knownConcepts.push_back(CODE_SRT_MeasurementMethod);
+  knownConcepts.push_back(CODE_SCT_FindingSite);
 
   std::vector<DSRCodedEntryValue> algorithmIdentificationConcepts;
   algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmName);
@@ -139,9 +141,12 @@ Json::Value TID1500Reader::getMeasurements() {
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
 
-            if(node->getConceptName() == CODE_SCT_FindingSite){
-              // check if Laterality is present
-              Json::Value laterality = getContentItem(CODE_SCT_Laterality, cursor);
+            {
+              Json::Value laterality = Json::nullValue;
+              if(node->getConceptName() == CODE_SCT_FindingSite)
+                laterality = getContentItem(CODE_SCT_Laterality, cursor);
+              else if(node->getConceptName() == CODE_SRT_FindingSite)
+                laterality = getContentItem(CODE_SRT_Laterality, cursor);
               if(laterality!=Json::nullValue)
                 measurementGroup["Laterality"] = laterality;
             }
@@ -274,9 +279,9 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
           if (node->getConceptName() == CODE_DCM_Derivation) {
             singleMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
-          } else if (node->getConceptName() == CODE_SCT_FindingSite) {
+          } else if (node->getConceptName() == CODE_SCT_FindingSite || node->getConceptName() == CODE_SRT_FindingSite) {
             std::cerr << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
-          } else if (node->getConceptName() == CODE_SCT_MeasurementMethod) {
+          } else if (node->getConceptName() == CODE_SCT_MeasurementMethod || node->getConceptName() == CODE_SRT_MeasurementMethod) {
             std::cerr << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else if (node->getValueType() == VT_Code) {
             // Otherwise, assume that modifier corresponds to row 6.
