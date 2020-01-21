@@ -72,12 +72,12 @@ Json::Value TID1500Reader::getMeasurements() {
   std::map<std::string, DSRCodedEntryValue> string2code;
   string2code["activitySession"] = CODE_NCIt_ActivitySession;
   string2code["timePoint"] = CODE_UMLS_TimePoint;
-  string2code["measurementMethod"] = CODE_SRT_MeasurementMethod;
+  string2code["measurementMethod"] = CODE_SCT_MeasurementMethod;
   string2code["SourceSeriesForImageSegmentation"] = CODE_DCM_SourceSeriesForSegmentation;
   string2code["TrackingIdentifier"] = CODE_DCM_TrackingIdentifier;
   string2code["TrackingUniqueIdentifier"] = CODE_DCM_TrackingUniqueIdentifier;
   string2code["Finding"] = CODE_DCM_Finding;
-  string2code["FindingSite"] = CODE_SRT_FindingSite;
+  string2code["FindingSite"] = CODE_SCT_FindingSite;
 
   std::vector<DSRCodedEntryValue> knownConcepts;
   for(std::map<std::string, DSRCodedEntryValue>::const_iterator mIt=string2code.begin();
@@ -139,9 +139,9 @@ Json::Value TID1500Reader::getMeasurements() {
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
 
-            if(node->getConceptName() == CODE_SRT_FindingSite){
+            if(node->getConceptName() == CODE_SCT_FindingSite){
               // check if Laterality is present
-              Json::Value laterality = getContentItem(CODE_SRT_Laterality, cursor);
+              Json::Value laterality = getContentItem(CODE_SCT_Laterality, cursor);
               if(laterality!=Json::nullValue)
                 measurementGroup["Laterality"] = laterality;
             }
@@ -160,6 +160,7 @@ Json::Value TID1500Reader::getMeasurements() {
               if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
               find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end()){
                 Json::Value singleQualitativeEvaluation;
+                std::cout << "Found concept that is not known, and as such is qualitative: " << node->getConceptName() << std::endl;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = OFstatic_cast(
                 const DSRTextTreeNode *, node)->getValue().c_str();
@@ -273,9 +274,9 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
           if (node->getConceptName() == CODE_DCM_Derivation) {
             singleMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
-          } else if (node->getConceptName() == CODE_SRT_FindingSite) {
+          } else if (node->getConceptName() == CODE_SCT_FindingSite) {
             std::cerr << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
-          } else if (node->getConceptName() == CODE_SRT_MeasurementMethod) {
+          } else if (node->getConceptName() == CODE_SCT_MeasurementMethod) {
             std::cerr << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else if (node->getValueType() == VT_Code) {
             // Otherwise, assume that modifier corresponds to row 6.
