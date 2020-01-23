@@ -18,7 +18,7 @@ TID1500Reader::TID1500Reader(const DSRDocumentTree &tree)
   : DSRDocumentTree(tree) {
     // check for expected template identification
     if (!compareTemplateIdentification("1500", "DCMR"))
-      CERR << "warning: template identification \"TID 1500 (DCMR)\" not found" << OFendl;
+      std::cerr << "warning: template identification \"TID 1500 (DCMR)\" not found" << OFendl;
 
 }
 
@@ -72,18 +72,20 @@ Json::Value TID1500Reader::getMeasurements() {
   std::map<std::string, DSRCodedEntryValue> string2code;
   string2code["activitySession"] = CODE_NCIt_ActivitySession;
   string2code["timePoint"] = CODE_UMLS_TimePoint;
-  string2code["measurementMethod"] = CODE_SRT_MeasurementMethod;
+  string2code["measurementMethod"] = CODE_SCT_MeasurementMethod;
   string2code["SourceSeriesForImageSegmentation"] = CODE_DCM_SourceSeriesForSegmentation;
   string2code["TrackingIdentifier"] = CODE_DCM_TrackingIdentifier;
   string2code["TrackingUniqueIdentifier"] = CODE_DCM_TrackingUniqueIdentifier;
   string2code["Finding"] = CODE_DCM_Finding;
-  string2code["FindingSite"] = CODE_SRT_FindingSite;
+  string2code["FindingSite"] = CODE_SCT_FindingSite;
 
   std::vector<DSRCodedEntryValue> knownConcepts;
   for(std::map<std::string, DSRCodedEntryValue>::const_iterator mIt=string2code.begin();
         mIt!=string2code.end();++mIt){
     knownConcepts.push_back(mIt->second);
   }
+  knownConcepts.push_back(CODE_SRT_MeasurementMethod);
+  knownConcepts.push_back(CODE_SCT_FindingSite);
 
   std::vector<DSRCodedEntryValue> algorithmIdentificationConcepts;
   algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmName);
@@ -139,9 +141,12 @@ Json::Value TID1500Reader::getMeasurements() {
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
 
-            if(node->getConceptName() == CODE_SRT_FindingSite){
-              // check if Laterality is present
-              Json::Value laterality = getContentItem(CODE_SRT_Laterality, cursor);
+            {
+              Json::Value laterality = Json::nullValue;
+              if(node->getConceptName() == CODE_SCT_FindingSite)
+                laterality = getContentItem(CODE_SCT_Laterality, cursor);
+              else if(node->getConceptName() == CODE_SRT_FindingSite)
+                laterality = getContentItem(CODE_SRT_Laterality, cursor);
               if(laterality!=Json::nullValue)
                 measurementGroup["Laterality"] = laterality;
             }
@@ -160,6 +165,7 @@ Json::Value TID1500Reader::getMeasurements() {
               if(find(knownConcepts.begin(), knownConcepts.end(), node->getConceptName()) == knownConcepts.end() &&
               find(algorithmIdentificationConcepts.begin(), algorithmIdentificationConcepts.end(), node->getConceptName()) == algorithmIdentificationConcepts.end()){
                 Json::Value singleQualitativeEvaluation;
+                std::cout << "Found concept that is not known, and as such is qualitative: " << node->getConceptName() << std::endl;
                 singleQualitativeEvaluation["conceptCode"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
                 singleQualitativeEvaluation["conceptValue"] = OFstatic_cast(
                 const DSRTextTreeNode *, node)->getValue().c_str();
@@ -222,7 +228,7 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
           const DSRPNameTreeNode *, node)->getValue().c_str();
           break;
         default:
-          COUT << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
+          std::cout << "Error: failed to find content item for " << conceptName.getCodeMeaning() << OFendl;
       }
     }
   }
@@ -273,10 +279,10 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
           if (node->getConceptName() == CODE_DCM_Derivation) {
             singleMeasurement["derivationModifier"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(
             const DSRCodeTreeNode *, node)->getValue());
-          } else if (node->getConceptName() == CODE_SRT_FindingSite) {
-            CERR << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
-          } else if (node->getConceptName() == CODE_SRT_MeasurementMethod) {
-            CERR << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
+          } else if (node->getConceptName() == CODE_SCT_FindingSite || node->getConceptName() == CODE_SRT_FindingSite) {
+            std::cerr << "Warning: For now, FindingSite modifier is interpreted only at the MeasurementGroup level." << OFendl;
+          } else if (node->getConceptName() == CODE_SCT_MeasurementMethod || node->getConceptName() == CODE_SRT_MeasurementMethod) {
+            std::cerr << "Warning: For now, Measurement Method modifier is interpreted only at the MeasurementGroup level." << OFendl;
           } else if (node->getValueType() == VT_Code) {
             // Otherwise, assume that modifier corresponds to row 6.
             // NB: as a consequence, this means other types of concept modifiers must be factored out

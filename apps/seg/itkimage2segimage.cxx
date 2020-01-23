@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
       }
 
-      COUT << "Saved segmentation as " << outputSEGFileName << endl;
+      std::cout << "Saved segmentation as " << outputSEGFileName << endl;
     }
 
     for(size_t i=0;i<dcmDatasets.size();i++) {

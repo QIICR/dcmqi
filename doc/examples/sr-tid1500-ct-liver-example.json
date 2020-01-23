@@ -35,13 +35,13 @@
       "SourceSeriesForImageSegmentation": "1.2.392.200103.20080913.113635.1.2009.6.22.21.43.10.23430.1",
       "segmentationSOPInstanceUID": "1.2.276.0.7230010.3.1.4.0.42154.1458337731.665796",
       "Finding": {
-        "CodeValue": "T-D0060",
-        "CodingSchemeDesignator": "SRT",
+        "CodeValue": "113343008",
+        "CodingSchemeDesignator": "SCT",
         "CodeMeaning": "Organ"
       },
       "FindingSite": {
-        "CodeValue": "T-62000",
-        "CodingSchemeDesignator": "SRT",
+        "CodeValue": "10200004",
+        "CodingSchemeDesignator": "SCT",
         "CodeMeaning": "Liver"
       },
       "measurementAlgorithmIdentification": {
@@ -68,8 +68,8 @@
             "AlgorithmParameters": ["gamma: 2 (measurement level)"]
           },
           "derivationModifier": {
-            "CodeValue": "R-00317",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "373098007",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Mean"
           },
           "measurementModifiers": [
@@ -184,8 +184,8 @@
             "CodeMeaning": "Hounsfield unit"
           },
           "derivationModifier": {
-            "CodeValue": "R-404FB",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "255605001",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Minimum"
           },
           "measurementPopulationDescription": "Elves of the Black Forest 2",
@@ -231,8 +231,8 @@
             "CodeMeaning": "Hounsfield unit"
           },
           "derivationModifier": {
-            "CodeValue": "G-A437",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "56851009",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Maximum"
           }
         },
@@ -249,16 +249,16 @@
             "CodeMeaning": "Hounsfield unit"
           },
           "derivationModifier": {
-            "CodeValue": "R-10047",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "386136009",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Standard Deviation"
           }
         },
         {
           "value": "70361.9",
           "quantity": {
-            "CodeValue": "G-D705",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "118565006",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Volume"
           },
           "units": {
@@ -270,8 +270,8 @@
         {
           "value": "70.3619",
           "quantity": {
-            "CodeValue": "G-D705",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "118565006",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Volume"
           },
           "units": {
