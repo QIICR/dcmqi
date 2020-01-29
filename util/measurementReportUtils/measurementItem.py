@@ -22,8 +22,8 @@ class VolumeMeasurementItem(MeasurementItem):
   def __init__(self, value):
     super().__init__(value)
     self.quantity = {
-      "CodeValue": "G-D705", 
-      "CodingSchemeDesignator": "SRT", 
+      "CodeValue": "118565006", 
+      "CodingSchemeDesignator": "SCT", 
       "CodeMeaning": "Volume"
     }
     self.units = {
@@ -47,7 +47,7 @@ class MeanADCMeasurementItem(MeasurementItem):
       "CodeMeaning": "um2/s"
     }
     self.derivationModifier = {
-      "CodeValue": "R-00317",
-      "CodingSchemeDesignator": "SRT",
+      "CodeValue": "373098007",
+      "CodingSchemeDesignator": "SCT",
       "CodeMeaning": "Mean"
     }

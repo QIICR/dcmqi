@@ -187,16 +187,16 @@ namespace dcmqi {
 
         if (segment.isMember("SegmentedPropertyCategoryCodeSequence")) {
           Json::Value elem = segment["SegmentedPropertyCategoryCodeSequence"];
-          segmentAttribute->setSegmentedPropertyCategoryCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
+          segmentAttribute->setSegmentedPropertyCategoryCodeSequence(elem.get("CodeValue", "85756007").asString(),
                                                                      elem.get("CodingSchemeDesignator",
-                                                                              "SRT").asString(),
+                                                                              "SCT").asString(),
                                                                      elem.get("CodeMeaning", "Tissue").asString());
         }
 
         if (segment.isMember("SegmentedPropertyTypeCodeSequence")) {
           Json::Value elem = segment["SegmentedPropertyTypeCodeSequence"];
-          segmentAttribute->setSegmentedPropertyTypeCodeSequence(elem.get("CodeValue", "T-D0050").asString(),
-                                                                 elem.get("CodingSchemeDesignator", "SRT").asString(),
+          segmentAttribute->setSegmentedPropertyTypeCodeSequence(elem.get("CodeValue", "85756007").asString(),
+                                                                 elem.get("CodingSchemeDesignator", "SCT").asString(),
                                                                  elem.get("CodeMeaning", "Tissue").asString());
         }
         if (segment.isMember("SegmentedPropertyTypeModifierCodeSequence")) {

@@ -11,13 +11,13 @@ class Finding(CodeSequence):
 
   def __init__(self, segmentedStructure):
     if segmentedStructure == "NormalROI_PZ_1":
-      super().__init__("Normal", "SRT", "G-A460")
+      super().__init__("Normal", "SCT", "17621005")
     elif segmentedStructure == "PeripheralZone":
-      super().__init__("Entire", "SRT", "R-404A4")
+      super().__init__("Entire", "SCT", "R-404A4")
     elif segmentedStructure == "TumorROI_PZ_1":
-      super().__init__("Abnormal", "SRT", "R-42037")
+      super().__init__("Abnormal", "SCT", "263654008")
     elif segmentedStructure == "WholeGland":
-      super().__init__("Entire Gland", "SRT", "T-F6078")
+      super().__init__("Entire Gland", "SCT", "T-F6078")
     else:
       raise ValueError("Segmented Structure Type {} is not supported yet. Build your own Finding code sequence using the class CodeSequence".format(segmentedStructure))
   
@@ -26,13 +26,13 @@ class FindingSite(CodeSequence):
   
   def __init__(self, segmentedStructure):
     if segmentedStructure == "NormalROI_PZ_1":
-      super().__init__("Peripheral zone of the prostate", "SRT", "T-D05E4")
+      super().__init__("Peripheral zone of the prostate", "SCT", "T-D05E4")
     elif segmentedStructure == "PeripheralZone":
-      super().__init__("Peripheral zone of the prostate", "SRT", "T-D05E4")
+      super().__init__("Peripheral zone of the prostate", "SCT", "T-D05E4")
     elif segmentedStructure == "TumorROI_PZ_1":
-      super().__init__("Peripheral zone of the prostate", "SRT", "T-D05E4")
+      super().__init__("Peripheral zone of the prostate", "SCT", "T-D05E4")
     elif segmentedStructure == "WholeGland":
-      super().__init__("Prostate", "SRT", "T-9200B")
+      super().__init__("Prostate", "SCT", "T-9200B")
     else:
       raise ValueError("Segmented Structure Type {} is not supported yet. Build your own FindingSite code sequence using the class CodeSequence".format(segmentedStructure))
 

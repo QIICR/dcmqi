@@ -113,7 +113,7 @@ namespace dcmqi {
           metaInfo.metaInfoRoot["AnatomicRegionSequence"]["CodingSchemeDesignator"].asCString(),
           metaInfo.metaInfoRoot["AnatomicRegionSequence"]["CodeMeaning"].asCString());
     } else {
-      frameAnaFG.getAnatomy().getAnatomicRegion().set("T-D0050", "SRT", "Tissue");
+      frameAnaFG.getAnatomy().getAnatomicRegion().set("85756007", "SCT", "Tissue");
     }
     CHECK_COND(pMapDoc->addForAllFrames(frameAnaFG));
 
@@ -150,7 +150,7 @@ namespace dcmqi {
     realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
     ContentItemMacro* quantity = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C1C6", "SRT", "Quantity");
+    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("246205007", "SCT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
       metaInfo.metaInfoRoot["QuantityValueCode"]["CodeValue"].asCString(),
       metaInfo.metaInfoRoot["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
@@ -169,7 +169,7 @@ namespace dcmqi {
     // initialize optional items, if available
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SRT", "Measurement Method");
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SCT", "Measurement Method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeValue"].asCString(),
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),

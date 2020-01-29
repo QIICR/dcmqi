@@ -10,7 +10,7 @@
 #include <dcmtk/dcmiod/modhelp.h>
 
 #include <dcmtk/dcmsr/codes/dcm.h>
-#include <dcmtk/dcmsr/codes/srt.h>
+#include <dcmtk/dcmsr/codes/sct.h>
 #include <dcmtk/dcmsr/codes/umls.h>
 #include <dcmtk/dcmsr/codes/ncit.h>
 #include <dcmtk/dcmsr/cmr/tid1500.h>

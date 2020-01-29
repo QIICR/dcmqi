@@ -39,13 +39,13 @@
         "CodeMeaning": "SUV body weight calculation method"
       },
       "Finding": {
-        "CodeValue": "M-80003",
-        "CodingSchemeDesignator": "SRT",
+        "CodeValue": "86049000",
+        "CodingSchemeDesignator": "SCT",
         "CodeMeaning": "Neoplasm, Primary"
       },
       "FindingSite": {
         "CodeValue": "T-00317",
-        "CodingSchemeDesignator": "SRT",
+        "CodingSchemeDesignator": "SCT",
         "CodeMeaning": "pharyngeal tonsil (adenoid)"
       },
       "measurementItems": [
@@ -62,8 +62,8 @@
             "CodeMeaning": "Standardized Uptake Value body weight"
           },
           "derivationModifier": {
-            "CodeValue": "R-00317",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "373098007",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Mean"
           }
         },
@@ -80,8 +80,8 @@
             "CodeMeaning": "Standardized Uptake Value body weight"
           },
           "derivationModifier": {
-            "CodeValue": "R-00317",
-            "CodingSchemeDesignator": "SRT",
+            "CodeValue": "373098007",
+            "CodingSchemeDesignator": "SCT",
             "CodeMeaning": "Mean"
           }
         }
