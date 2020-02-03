@@ -81,7 +81,7 @@ def ShowReplaceMent(find_text, rep_text, text):
     return output
 
 
-dict = _snomed_dict.mapping['SRT']
+dict = _snomed_dict.mapping["SCT"]
 details = []
 
 # recursive_file_find(folder, all_files, "(.*\\.cpp$)|(.*\\.h$)|(.*\\.json$)")
@@ -91,15 +91,15 @@ for f, jj in zip(all_files, range(1, len(all_files))):
     if len(f_content) == 0:
         continue
 
-    [f_content, x] = ReplaceQuotedText("SRT", "SCT", f_content)
+    [f_content, x] = ReplaceQuotedText("SCT", "SCT", f_content)
     details = x
     [f_content, x] = FindAndReplace(",\s*SRT\s*,", ",SCT,", f_content)
     details.extend(x)
-    [f_content, x] = FindAndReplace(" SRT ", " SCT ", f_content)
+    [f_content, x] = FindAndReplace("SCT", " SCT ", f_content)
     details.extend(x)
-    [f_content, x] = FindAndReplace("_SRT_", "_SCT_", f_content)
+    [f_content, x] = FindAndReplace("_SCT_", "_SCT_", f_content)
     details.extend(x)
-    [f_content, x] = FindAndReplace("srt.h", "sct.h", f_content)
+    [f_content, x] = FindAndReplace("sct.h", "sct.h", f_content)
     details.extend(x)
 
     for srt_code, sct_code in dict.items():

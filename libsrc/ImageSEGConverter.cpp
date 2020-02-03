@@ -2,6 +2,9 @@
 // DCMQI includes
 #include "dcmqi/ImageSEGConverter.h"
 
+//DCMTK includes
+#include <dcmtk/dcmsr/codes/dcm.h>
+
 
 namespace dcmqi {
 
@@ -355,13 +358,16 @@ namespace dcmqi {
             if(siVector.size()>0){
 
               DerivationImageItem *derimgItem;
-              CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro("113076","DCM","Segmentation"),"",derimgItem));
+			  DSRBasicCodedEntry code_seg=CODE_DCM_Segmentation_113076;
+              CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
+				  code_seg.CodeMeaning),"",derimgItem));
 
               //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
-
+			  DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
               OFVector<SourceImageItem*> srcimgItems;
               CHECK_COND(derimgItem->addSourceImageItems(siVector,
-                                                       CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                       CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
+														   code.CodeMeaning),
                                                        srcimgItems));
 
               if(1){

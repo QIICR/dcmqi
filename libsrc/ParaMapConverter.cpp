@@ -7,6 +7,11 @@
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/ImageSEGConverter.h"
 
+// DCMTK includes
+#include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/dcmsr/codes/sct.h>
+#include <dcmtk/dcmsr/codes/ucum.h>
+
 using namespace std;
 
 namespace dcmqi {
@@ -150,7 +155,7 @@ namespace dcmqi {
     realWorldValueMappingItem->setLUTExplanation(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeMeaning"].asCString());
     realWorldValueMappingItem->setLUTLabel(metaInfo.metaInfoRoot["MeasurementUnitsCode"]["CodeValue"].asCString());
     ContentItemMacro* quantity = new ContentItemMacro;
-    CodeSequenceMacro* qCodeName = new CodeSequenceMacro("246205007", "SCT", "Quantity");
+	CodeSequenceMacro* qCodeName = new CodeSequenceMacro("246205007", "SCT", "Quantity");
     CodeSequenceMacro* qSpec = new CodeSequenceMacro(
       metaInfo.metaInfoRoot["QuantityValueCode"]["CodeValue"].asCString(),
       metaInfo.metaInfoRoot["QuantityValueCode"]["CodingSchemeDesignator"].asCString(),
@@ -169,6 +174,7 @@ namespace dcmqi {
     // initialize optional items, if available
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
+	  
       CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SCT", "Measurement Method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeValue"].asCString(),
@@ -188,7 +194,9 @@ namespace dcmqi {
 
     if(metaInfo.metaInfoRoot.isMember("ModelFittingMethodCode")){
       ContentItemMacro* fittingMethod = new ContentItemMacro;
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113241", "DCM", "Model fitting method");
+	  DSRBasicCodedEntry code_mfm = CODE_DCM_ModelFittingMethod;
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro(code_mfm.CodeValue, code_mfm.CodingSchemeDesignator,
+		  code_mfm.CodeMeaning);
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodeValue"].asCString(),
         metaInfo.metaInfoRoot["ModelFittingMethodCode"]["CodingSchemeDesignator"].asCString(),
@@ -209,7 +217,9 @@ namespace dcmqi {
       for(size_t bvalId=0;bvalId<metaInfo.metaInfoRoot["SourceImageDiffusionBValues"].size();bvalId++){
         ContentItemMacro* bval = new ContentItemMacro;
         CodeSequenceMacro* bvalUnits = new CodeSequenceMacro("s/mm2", "UCUM", "seconds per square millimeter");
-        CodeSequenceMacro* qCodeName = new CodeSequenceMacro("113240", "DCM", "Source image diffusion b-value");
+		DSRBasicCodedEntry code = CODE_DCM_SourceImageDiffusionBValue;
+        CodeSequenceMacro* qCodeName = new CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
+			code.CodeMeaning);
 
         if (!bval || !bvalUnits || !qCodeName)
         {
@@ -292,7 +302,9 @@ namespace dcmqi {
         DerivationImageItem *derimgItem;
 
         // TODO: I know David will not like this ...
-        CodeSequenceMacro derivationCode = CodeSequenceMacro("110001","DCM","Image Processing");
+		DSRBasicCodedEntry code = CODE_DCM_ImageProcessing;
+        CodeSequenceMacro derivationCode = CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
+			code.CodeMeaning);
 
         // Mandatory, defined in CID 7203
         // http://dicom.nema.org/medical/dicom/current/output/chtml/part16/sect_CID_7203.html
@@ -308,8 +320,10 @@ namespace dcmqi {
         //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 
         OFVector<SourceImageItem*> srcimgItems;
+		DSRBasicCodedEntry code_src_img = CODE_DCM_SourceImageForImageProcessingOperation;
+
         CHECK_COND(derimgItem->addSourceImageItems(siVector,
-                                                 CodeSequenceMacro("121322","DCM","Source image for image processing operation"),
+                                                 CodeSequenceMacro(code_src_img.CodeValue, code_src_img.CodingSchemeDesignator,code_src_img.CodeMeaning),
                                                  srcimgItems));
 
         {
