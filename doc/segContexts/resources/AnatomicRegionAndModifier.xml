@@ -22,7 +22,7 @@
   <AnatomicRegion SNOMEDCTConceptID="113345001" UMLSConceptUID="C0000726" cid="7154" codeMeaning="Abdomen" codeValue="113345001" codingScheme="SCT" contextGroupName="Abdominal Organ Segmentation Types" />
   <AnatomicRegion SNOMEDCTConceptID="416949008" UMLSConceptUID="C1508499" cid="4031" codeMeaning="Abdomen and Pelvis" codeValue="416949008" codingScheme="SCT" contextGroupName="Common Anatomic Regions" />
   <AnatomicRegion SNOMEDCTConceptID="7832008" UMLSConceptUID="C0003484" cid="7154" codeMeaning="Abdominal aorta" codeValue="7832008" codingScheme="SCT" contextGroupName="Abdominal Organ Segmentation Types" />
-  <AnatomicRegion SNOMEDCTConceptID="360524005" UMLSConceptUID="C1283352" cid="4030" codeMeaning="Abdominal aorta and its branches" codeValue="T-41070" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
+  <AnatomicRegion SNOMEDCTConceptID="360524005" UMLSConceptUID="C1283352" cid="4030" codeMeaning="Abdominal aorta and its branches" codeValue="7832008" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
   <AnatomicRegion SNOMEDCTConceptID="52731004" UMLSConceptUID="C0230168" cid="7154" codeMeaning="Abdominal cavity" codeValue="52731004" codingScheme="SCT" contextGroupName="Abdominal Organ Segmentation Types" />
   <AnatomicRegion SNOMEDCTConceptID="195879000" UMLSConceptUID="C1279385" cid="7154" codeMeaning="Abdominal wall muscle" codeValue="195879000" codingScheme="SCT" contextGroupName="Abdominal Organ Segmentation Types" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12111" codeMeaning="Accessory Renal Artery" codeValue="85383006" codingScheme="SCT" contextGroupName="Abdominal Arteries (lateral)">
@@ -141,7 +141,7 @@
   <AnatomicRegion SNOMEDCTConceptID="72107004" UMLSConceptUID="C0004526" cid="6117" codeMeaning="Azygos vein" codeValue="72107004" codingScheme="SCT" contextGroupName="Vascular Anatomy" />
   <AnatomicRegion SNOMEDCTConceptID="128981007" UMLSConceptUID="C1289790" cid="3010" codeMeaning="Baffle" codeValue="128981007" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12106" codeMeaning="Basilar Artery" codeValue="59011009" codingScheme="SCT" contextGroupName="Intracranial Cerebral Vessels (unilateral)" />
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12108" codeMeaning="Basilic vein" codeValue="T-48052" codingScheme="SCT" contextGroupName="Upper Extremity Veins">
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12108" codeMeaning="Basilic vein" codeValue="19715009" codingScheme="SCT" contextGroupName="Upper Extremity Veins">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -293,7 +293,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="362047009" UMLSConceptUID="C1284333" cid="4030" codeMeaning="Circle of Willis" codeValue="T-45526" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
+  <AnatomicRegion SNOMEDCTConceptID="362047009" UMLSConceptUID="C1284333" cid="4030" codeMeaning="Circle of Willis" codeValue="11279006" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
   <AnatomicRegion SNOMEDCTConceptID="57396003" UMLSConceptUID="C0226037" cid="3015" codeMeaning="Circumflex Coronary Artery" codeValue="57396003" codingScheme="SCT" contextGroupName="Coronary Arteries" />
   <AnatomicRegion SNOMEDCTConceptID="51299004" UMLSConceptUID="C0008913" cid="7155" codeMeaning="Clavicle" codeValue="51299004" codingScheme="SCT" contextGroupName="Thoracic Tissue Segmentation Types">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
@@ -307,7 +307,7 @@
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
   <AnatomicRegion SNOMEDCTConceptID="71854001" UMLSConceptUID="C0009368" cid="4031" codeMeaning="Colon" codeValue="71854001" codingScheme="SCT" contextGroupName="Common Anatomic Regions" />
-  <AnatomicRegion SNOMEDCTConceptID="69524004" UMLSConceptUID="C0018817" cid="3010" codeMeaning="Common atrium" codeValue="D4-31320" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
+  <AnatomicRegion SNOMEDCTConceptID="69524004" UMLSConceptUID="C0018817" cid="3010" codeMeaning="Common atrium" codeValue="253276007" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="32062004" UMLSConceptUID="C0162859" cid="6117" codeMeaning="Common carotid artery" codeValue="32062004" codingScheme="SCT" contextGroupName="Vascular Anatomy">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
@@ -357,7 +357,7 @@
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
   <AnatomicRegion SNOMEDCTConceptID="25238003" UMLSConceptUID="C0010268" cid="7167" codeMeaning="Cranial nerve" codeValue="25238003" codingScheme="SCT" contextGroupName="Peripheral Nervous System Segmentation Types" />
-  <AnatomicRegion SNOMEDCTConceptID="244391007" UMLSConceptUID="C1280180" cid="4030" codeMeaning="Cranial venous system" codeValue="T-A0193" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
+  <AnatomicRegion SNOMEDCTConceptID="244391007" UMLSConceptUID="C1280180" cid="4030" codeMeaning="Cranial venous system" codeValue="128320002" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12107" codeMeaning="Deep Palmar Arch of Radial Artery" codeValue="10119003" codingScheme="SCT" contextGroupName="Upper Extremity Arteries">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
@@ -386,7 +386,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12109" codeMeaning="Dorsalis Pedis Artery" codeValue="T-47741" codingScheme="SCT" contextGroupName="Lower Extremity Arteries">
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12109" codeMeaning="Dorsalis Pedis Artery" codeValue="86547008" codingScheme="SCT" contextGroupName="Lower Extremity Arteries">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -439,7 +439,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="244878003" UMLSConceptUID="C0224353" cid="6116" codeMeaning="External intercostal muscle" codeValue="T-1416B" codingScheme="SCT" contextGroupName="Muscular Anatomy">
+  <AnatomicRegion SNOMEDCTConceptID="244878003" UMLSConceptUID="C0224353" cid="6116" codeMeaning="External intercostal muscle" codeValue="53967007" codingScheme="SCT" contextGroupName="Muscular Anatomy">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -632,7 +632,7 @@
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
   <AnatomicRegion SNOMEDCTConceptID="34516001" UMLSConceptUID="C0020885" cid="4031" codeMeaning="Ileum" codeValue="34516001" codingScheme="SCT" contextGroupName="Common Anatomic Regions" />
-  <AnatomicRegion SNOMEDCTConceptID="314322004" UMLSConceptUID="C1282078" cid="4030" codeMeaning="Iliac arterial system" codeValue="T-41040" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
+  <AnatomicRegion SNOMEDCTConceptID="314322004" UMLSConceptUID="C1282078" cid="4030" codeMeaning="Iliac arterial system" codeValue="299716001" codingScheme="SCT" contextGroupName="CT, MR and PET Anatomy Imaged" />
   <AnatomicRegion SNOMEDCTConceptID="10293006" UMLSConceptUID="C0020887" cid="3010" codeMeaning="Iliac artery" codeValue="10293006" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="57651003" UMLSConceptUID="C0224302" cid="6116" codeMeaning="Iliocostalis muscle" codeValue="57651003" codingScheme="SCT" contextGroupName="Muscular Anatomy">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
@@ -644,7 +644,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="60477001" UMLSConceptUID="C1267462" cid="3010" codeMeaning="Inferior cardiac vein" codeValue="T-48470" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
+  <AnatomicRegion SNOMEDCTConceptID="60477001" UMLSConceptUID="C1267462" cid="3010" codeMeaning="Inferior cardiac vein" codeValue="195416006" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="67701001" UMLSConceptUID="C0152393" cid="7153" codeMeaning="Inferior cerebellar peduncle" codeValue="67701001" codingScheme="SCT" contextGroupName="CNS Tissue Segmentation Types">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
@@ -725,7 +725,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12105" codeMeaning="Internal Carotid Artery C6 segment" codeValue="R-102BC" codingScheme="SCT" contextGroupName="Intracranial Cerebral Vessels">
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12105" codeMeaning="Internal Carotid Artery C6 segment" codeValue="698348000" codingScheme="SCT" contextGroupName="Intracranial Cerebral Vessels">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -745,7 +745,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="244890001" UMLSConceptUID="C0224355" cid="6116" codeMeaning="Internal intercostal muscle" codeValue="T-14183" codingScheme="SCT" contextGroupName="Muscular Anatomy">
+  <AnatomicRegion SNOMEDCTConceptID="244890001" UMLSConceptUID="C0224355" cid="6116" codeMeaning="Internal intercostal muscle" codeValue="41313007" codingScheme="SCT" contextGroupName="Muscular Anatomy">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -797,7 +797,7 @@
   </AnatomicRegion>
   <AnatomicRegion SNOMEDCTConceptID="14742008" UMLSConceptUID="C0021851" cid="4040" codeMeaning="Large intestine" codeValue="14742008" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions" />
   <AnatomicRegion SNOMEDCTConceptID="4596009" UMLSConceptUID="C0023078" cid="4040" codeMeaning="Larynx" codeValue="4596009" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions" />
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12110" codeMeaning="Lateral calf perforator" codeValue="T-49423" codingScheme="SCT" contextGroupName="Lower Extremity Veins">
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12110" codeMeaning="Lateral calf perforator" codeValue="714754004" codingScheme="SCT" contextGroupName="Lower Extremity Veins">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -823,11 +823,11 @@
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12112" codeMeaning="Left Branch of Hepatic Artery" codeValue="21807003" codingScheme="SCT" contextGroupName="Abdominal Arteries (unilateral)" />
   <AnatomicRegion SNOMEDCTConceptID="113270003" UMLSConceptUID="C0226448" cid="3010" codeMeaning="Left femoral artery" codeValue="113270003" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Left Hepatic Vein" codeValue="273202007" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Left Main Branch of Portal Vein" codeValue="T-4881F" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Left Main Branch of Portal Vein" codeValue="70253006" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
   <AnatomicRegion SNOMEDCTConceptID="75245000" UMLSConceptUID="C0225630" cid="6113" codeMeaning="Left main bronchus" codeValue="75245000" codingScheme="SCT" contextGroupName="Mediastinum Anatomy Finding or Feature" />
   <AnatomicRegion SNOMEDCTConceptID="3227004" UMLSConceptUID="C0226031" cid="3014" codeMeaning="Left Main Coronary Artery" codeValue="3227004" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
   <AnatomicRegion SNOMEDCTConceptID="76862008" UMLSConceptUID="C0226030" cid="3014" codeMeaning="Left Main Coronary Artery Ostium" codeValue="76862008" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
-  <AnatomicRegion SNOMEDCTConceptID="56322004" UMLSConceptUID="C0278433" cid="3014" codeMeaning="Left Posterior Descending Artery" codeValue="T-43126" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
+  <AnatomicRegion SNOMEDCTConceptID="56322004" UMLSConceptUID="C0278433" cid="3014" codeMeaning="Left Posterior Descending Artery" codeValue="91760001" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
   <AnatomicRegion SNOMEDCTConceptID="91760001" UMLSConceptUID="C0524440" cid="3015" codeMeaning="Left Posterior Descending Circumflex Coronary Artery" codeValue="91760001" codingScheme="SCT" contextGroupName="Coronary Arteries" />
   <AnatomicRegion SNOMEDCTConceptID="57823005" UMLSConceptUID="C0278432" cid="3015" codeMeaning="Left Posterolateral Circumflex Coronary Artery" codeValue="57823005" codingScheme="SCT" contextGroupName="Coronary Arteries" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="3829" codeMeaning="Left pulmonary artery" codeValue="50408007" codingScheme="SCT" contextGroupName="Pulmonary Arteries" />
@@ -1270,7 +1270,7 @@
   <AnatomicRegion SNOMEDCTConceptID="56789007" UMLSConceptUID="C0226045" cid="3014" codeMeaning="Right Coronary Artery Ostium" codeValue="56789007" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
   <AnatomicRegion SNOMEDCTConceptID="69833005" UMLSConceptUID="C0226447" cid="3010" codeMeaning="Right femoral artery" codeValue="69833005" codingScheme="SCT" contextGroupName="Cardiovascular Anatomic Locations" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Right Hepatic Vein" codeValue="272998002" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Right Main Branch of Portal Vein" codeValue="T-4882A" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Right Main Branch of Portal Vein" codeValue="73931004" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
   <AnatomicRegion SNOMEDCTConceptID="70074004" UMLSConceptUID="C0225608" cid="6113" codeMeaning="Right main bronchus" codeValue="70074004" codingScheme="SCT" contextGroupName="Mediastinum Anatomy Finding or Feature" />
   <AnatomicRegion SNOMEDCTConceptID="12800002" UMLSConceptUID="C0226048" cid="3014" codeMeaning="Right posterior AV Coronary Artery" codeValue="12800002" codingScheme="SCT" contextGroupName="Coronary Artery Segments" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="3829" codeMeaning="Right pulmonary artery" codeValue="78480002" codingScheme="SCT" contextGroupName="Pulmonary Arteries" />
@@ -1373,7 +1373,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="44300000" UMLSConceptUID="C1267072" cid="6114" codeMeaning="Spine" codeValue="T-11500" codingScheme="SCT" contextGroupName="Osseous Anatomy Finding or Feature" />
+  <AnatomicRegion SNOMEDCTConceptID="44300000" UMLSConceptUID="C1267072" cid="6114" codeMeaning="Spine" codeValue="421060004" codingScheme="SCT" contextGroupName="Osseous Anatomy Finding or Feature" />
   <AnatomicRegion SNOMEDCTConceptID="78961009" UMLSConceptUID="C0037993" cid="7154" codeMeaning="Spleen" codeValue="78961009" codingScheme="SCT" contextGroupName="Abdominal Organ Segmentation Types">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
@@ -1546,7 +1546,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12110" codeMeaning="Thigh perforator" codeValue="T-4942C" codingScheme="SCT" contextGroupName="Lower Extremity Veins">
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12110" codeMeaning="Thigh perforator" codeValue="714759009" codingScheme="SCT" contextGroupName="Lower Extremity Veins">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -1586,7 +1586,7 @@
   <AnatomicRegion SNOMEDCTConceptID="44567001" UMLSConceptUID="C0040578" cid="7155" codeMeaning="Trachea" codeValue="44567001" codingScheme="SCT" contextGroupName="Thoracic Tissue Segmentation Types" />
   <AnatomicRegion SNOMEDCTConceptID="110726009" UMLSConceptUID="C1268276" cid="4040" codeMeaning="Trachea and bronchus" codeValue="110726009" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions" />
   <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Transjugular Intrahepatic Portosystemic Shunt" codeValue="397423009" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
-  <AnatomicRegion SNOMEDCTConceptID="244933000" UMLSConceptUID="C0224359" cid="6116" codeMeaning="Transversus thoracis" codeValue="T-141A5" codingScheme="SCT" contextGroupName="Muscular Anatomy">
+  <AnatomicRegion SNOMEDCTConceptID="244933000" UMLSConceptUID="C0224359" cid="6116" codeMeaning="Transversus thoracis" codeValue="88454005" codingScheme="SCT" contextGroupName="Muscular Anatomy">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
@@ -1615,7 +1615,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Umbilical Vein" codeValue="T-48817" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
+  <AnatomicRegion SNOMEDCTConceptID="" UMLSConceptUID="" cid="12114" codeMeaning="Umbilical Vein" codeValue="284639000" codingScheme="SCT" contextGroupName="Abdominal Veins (unilateral)" />
   <AnatomicRegion SNOMEDCTConceptID="26230003" UMLSConceptUID="C0228271" cid="7153" codeMeaning="Uncinate fasciculus" codeValue="26230003" codingScheme="SCT" contextGroupName="CNS Tissue Segmentation Types">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
@@ -1636,7 +1636,7 @@
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="51440002" UMLSConceptUID="C0238767" cid="244" codeMeaning="Right and left" codeValue="51440002" codingScheme="SCT" contextGroupName="Laterality" />
   </AnatomicRegion>
-  <AnatomicRegion SNOMEDCTConceptID="17571003" UMLSConceptUID="C0729865" cid="4040" codeMeaning="Upper urinary tract" codeValue="T-70010" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions" />
+  <AnatomicRegion SNOMEDCTConceptID="17571003" UMLSConceptUID="C0729865" cid="4040" codeMeaning="Upper urinary tract" codeValue="431491007" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions" />
   <AnatomicRegion SNOMEDCTConceptID="87953007" UMLSConceptUID="C0041951" cid="4040" codeMeaning="Ureter" codeValue="87953007" codingScheme="SCT" contextGroupName="Endoscopy Anatomic Regions">
     <Modifier SNOMEDCTConceptID="24028007" UMLSConceptUID="C0205090" cid="244" codeMeaning="Right" codeValue="24028007" codingScheme="SCT" contextGroupName="Laterality" />
     <Modifier SNOMEDCTConceptID="7771000" UMLSConceptUID="C0205091" cid="244" codeMeaning="Left" codeValue="7771000" codingScheme="SCT" contextGroupName="Laterality" />

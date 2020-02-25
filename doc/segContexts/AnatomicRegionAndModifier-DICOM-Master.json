@@ -202,7 +202,7 @@
         "SNOMEDCTConceptID": "7832008"
       },
       {
-        "CodeValue": "T-41070",
+        "CodeValue": "7832008",
         "cid": "4030",
         "UMLSConceptUID": "C1283352",
         "CodeMeaning": "Abdominal aorta and its branches",
@@ -1154,7 +1154,7 @@
         "SNOMEDCTConceptID": ""
       },
       {
-        "CodeValue": "T-48052",
+        "CodeValue": "19715009",
         "cid": "12108",
         "UMLSConceptUID": "",
         "CodeMeaning": "Basilic vein",
@@ -2354,7 +2354,7 @@
         ]
       },
       {
-        "CodeValue": "T-45526",
+        "CodeValue": "11279006",
         "cid": "4030",
         "UMLSConceptUID": "C1284333",
         "CodeMeaning": "Circle of Willis",
@@ -2466,7 +2466,7 @@
         "SNOMEDCTConceptID": "71854001"
       },
       {
-        "CodeValue": "D4-31320",
+        "CodeValue": "253276007",
         "cid": "3010",
         "UMLSConceptUID": "C0018817",
         "CodeMeaning": "Common atrium",
@@ -2867,7 +2867,7 @@
         "SNOMEDCTConceptID": "25238003"
       },
       {
-        "CodeValue": "T-A0193",
+        "CodeValue": "128320002",
         "cid": "4030",
         "UMLSConceptUID": "C1280180",
         "CodeMeaning": "Cranial venous system",
@@ -3100,7 +3100,7 @@
         ]
       },
       {
-        "CodeValue": "T-47741",
+        "CodeValue": "86547008",
         "cid": "12109",
         "UMLSConceptUID": "",
         "CodeMeaning": "Dorsalis Pedis Artery",
@@ -3514,7 +3514,7 @@
         ]
       },
       {
-        "CodeValue": "T-1416B",
+        "CodeValue": "53967007",
         "cid": "6116",
         "UMLSConceptUID": "C0224353",
         "CodeMeaning": "External intercostal muscle",
@@ -5006,7 +5006,7 @@
         "SNOMEDCTConceptID": "34516001"
       },
       {
-        "CodeValue": "T-41040",
+        "CodeValue": "299716001",
         "cid": "4030",
         "UMLSConceptUID": "C1282078",
         "CodeMeaning": "Iliac arterial system",
@@ -5100,7 +5100,7 @@
         ]
       },
       {
-        "CodeValue": "T-48470",
+        "CodeValue": "195416006",
         "cid": "3010",
         "UMLSConceptUID": "C1267462",
         "CodeMeaning": "Inferior cardiac vein",
@@ -5731,7 +5731,7 @@
         ]
       },
       {
-        "CodeValue": "R-102BC",
+        "CodeValue": "698348000",
         "cid": "12105",
         "UMLSConceptUID": "",
         "CodeMeaning": "Internal Carotid Artery C6 segment",
@@ -5883,7 +5883,7 @@
         ]
       },
       {
-        "CodeValue": "T-14183",
+        "CodeValue": "41313007",
         "cid": "6116",
         "UMLSConceptUID": "C0224355",
         "CodeMeaning": "Internal intercostal muscle",
@@ -6288,7 +6288,7 @@
         "SNOMEDCTConceptID": "4596009"
       },
       {
-        "CodeValue": "T-49423",
+        "CodeValue": "714754004",
         "cid": "12110",
         "UMLSConceptUID": "",
         "CodeMeaning": "Lateral calf perforator",
@@ -6494,7 +6494,7 @@
         "SNOMEDCTConceptID": ""
       },
       {
-        "CodeValue": "T-4881F",
+        "CodeValue": "70253006",
         "cid": "12114",
         "UMLSConceptUID": "",
         "CodeMeaning": "Left Main Branch of Portal Vein",
@@ -6530,7 +6530,7 @@
         "SNOMEDCTConceptID": "76862008"
       },
       {
-        "CodeValue": "T-43126",
+        "CodeValue": "91760001",
         "cid": "3014",
         "UMLSConceptUID": "C0278433",
         "CodeMeaning": "Left Posterior Descending Artery",
@@ -10027,7 +10027,7 @@
         "SNOMEDCTConceptID": ""
       },
       {
-        "CodeValue": "T-4882A",
+        "CodeValue": "73931004",
         "cid": "12114",
         "UMLSConceptUID": "",
         "CodeMeaning": "Right Main Branch of Portal Vein",
@@ -10849,7 +10849,7 @@
         ]
       },
       {
-        "CodeValue": "T-11500",
+        "CodeValue": "421060004",
         "cid": "6114",
         "UMLSConceptUID": "C1267072",
         "CodeMeaning": "Spine",
@@ -12189,7 +12189,7 @@
         ]
       },
       {
-        "CodeValue": "T-4942C",
+        "CodeValue": "714759009",
         "cid": "12110",
         "UMLSConceptUID": "",
         "CodeMeaning": "Thigh perforator",
@@ -12514,7 +12514,7 @@
         "SNOMEDCTConceptID": ""
       },
       {
-        "CodeValue": "T-141A5",
+        "CodeValue": "88454005",
         "cid": "6116",
         "UMLSConceptUID": "C0224359",
         "CodeMeaning": "Transversus thoracis",
@@ -12740,7 +12740,7 @@
         ]
       },
       {
-        "CodeValue": "T-48817",
+        "CodeValue": "284639000",
         "cid": "12114",
         "UMLSConceptUID": "",
         "CodeMeaning": "Umbilical Vein",
@@ -12901,7 +12901,7 @@
         ]
       },
       {
-        "CodeValue": "T-70010",
+        "CodeValue": "431491007",
         "cid": "4040",
         "UMLSConceptUID": "C0729865",
         "CodeMeaning": "Upper urinary tract",

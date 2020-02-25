@@ -39,7 +39,7 @@
             "3dSlicerLabel": "artery",
             "cid": "7166",
             "UMLSConceptUID": "C0555806",
-            "CodeValue": "T-41066",
+            "CodeValue": "51114001",
             "contextGroupName": "Common Tissue Segmentation Types",
             "SNOMEDCTConceptID": "275989006",
             "3dSlicerIntegerLabel": 17
@@ -231,7 +231,7 @@
             "3dSlicerLabel": "organ",
             "cid": "7166",
             "UMLSConceptUID": "C1285092",
-            "CodeValue": "T-1A310",
+            "CodeValue": "113343008",
             "contextGroupName": "Common Tissue Segmentation Types",
             "SNOMEDCTConceptID": "2861001",
             "3dSlicerIntegerLabel": 6
@@ -295,7 +295,7 @@
             "3dSlicerLabel": "vein",
             "cid": "7166",
             "UMLSConceptUID": "C0447146",
-            "CodeValue": "T-4806E",
+            "CodeValue": "29092000",
             "contextGroupName": "Common Tissue Segmentation Types",
             "SNOMEDCTConceptID": "181378009",
             "3dSlicerIntegerLabel": 16

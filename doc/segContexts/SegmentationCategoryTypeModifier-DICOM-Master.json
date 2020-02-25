@@ -2489,7 +2489,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "6114",
             "UMLSConceptUID": "C1267072",
-            "CodeValue": "T-11500",
+            "CodeValue": "421060004",
             "contextGroupName": "OsseousAnatomyFindingorFeature",
             "SNOMEDCTConceptID": "44300000"
           },
@@ -3772,7 +3772,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "6116",
             "UMLSConceptUID": "C0224353",
-            "CodeValue": "T-1416B",
+            "CodeValue": "53967007",
             "contextGroupName": "MuscularAnatomy",
             "SNOMEDCTConceptID": "244878003"
           },
@@ -3859,7 +3859,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "6116",
             "UMLSConceptUID": "C0224355",
-            "CodeValue": "T-14183",
+            "CodeValue": "41313007",
             "contextGroupName": "MuscularAnatomy",
             "SNOMEDCTConceptID": "244890001"
           },
@@ -3868,7 +3868,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "6116",
             "UMLSConceptUID": "C0224359",
-            "CodeValue": "T-141A5",
+            "CodeValue": "88454005",
             "contextGroupName": "MuscularAnatomy",
             "SNOMEDCTConceptID": "244933000"
           },
@@ -5934,7 +5934,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "3014",
             "UMLSConceptUID": "C0278433",
-            "CodeValue": "T-43126",
+            "CodeValue": "91760001",
             "contextGroupName": "CoronaryArterySegments",
             "SNOMEDCTConceptID": "56322004",
             "paired": "N"
@@ -6693,7 +6693,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "4030",
             "UMLSConceptUID": "C1284333",
-            "CodeValue": "T-45526",
+            "CodeValue": "11279006",
             "contextGroupName": "CT,MRandPETAnatomyImaged",
             "SNOMEDCTConceptID": "362047009"
           },
@@ -8091,7 +8091,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "3010",
             "UMLSConceptUID": "C0226661",
-            "CodeValue": "T-48440",
+            "CodeValue": "194996006",
             "contextGroupName": "CardiovascularAnatomicLocations",
             "SNOMEDCTConceptID": "43967001",
             "paired": "U"
@@ -8101,7 +8101,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "3010",
             "UMLSConceptUID": "C1267462",
-            "CodeValue": "T-48470",
+            "CodeValue": "195416006",
             "contextGroupName": "CardiovascularAnatomicLocations",
             "SNOMEDCTConceptID": "60477001"
           },
@@ -8381,7 +8381,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "3010",
             "UMLSConceptUID": "C1267489",
-            "CodeValue": "T-48817",
+            "CodeValue": "284639000",
             "contextGroupName": "CardiovascularAnatomicLocations",
             "SNOMEDCTConceptID": "61660003"
           },
@@ -8706,7 +8706,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "4",
             "UMLSConceptUID": "C0226896",
-            "CodeValue": "T-51000",
+            "CodeValue": "123851003",
             "contextGroupName": "AnatomicRegion",
             "SNOMEDCTConceptID": "21082005",
             "paired": "U"
@@ -9759,7 +9759,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "4031",
             "UMLSConceptUID": "C1278980",
-            "CodeValue": "T-9200B",
+            "CodeValue": "41216001",
             "contextGroupName": "CommonAnatomicRegions",
             "SNOMEDCTConceptID": "181422007"
           },
@@ -10147,7 +10147,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "4030",
             "UMLSConceptUID": "C1280180",
-            "CodeValue": "T-A0193",
+            "CodeValue": "128320002",
             "contextGroupName": "CT,MRandPETAnatomyImaged",
             "SNOMEDCTConceptID": "244391007"
           },
@@ -12510,7 +12510,7 @@
             "CodingSchemeDesignator": "SCT",
             "cid": "4",
             "UMLSConceptUID": "C0013443",
-            "CodeValue": "T-AB000",
+            "CodeValue": "117590005",
             "contextGroupName": "AnatomicRegion",
             "SNOMEDCTConceptID": "1910005",
             "paired": "Y",
