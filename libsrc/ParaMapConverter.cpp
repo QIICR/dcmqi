@@ -175,7 +175,7 @@ namespace dcmqi {
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
 	  
-      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("G-C306", "SCT", "Measurement Method");
+      CodeSequenceMacro* qCodeName = new CodeSequenceMacro("370129005", "SCT", "Measurement Method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeValue"].asCString(),
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodingSchemeDesignator"].asCString(),

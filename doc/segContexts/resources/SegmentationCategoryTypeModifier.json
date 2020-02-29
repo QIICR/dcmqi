@@ -13823,7 +13823,7 @@
             "SNOMEDCTConceptID": "77720000"
           }, 
           {
-            "codeValue": "A-10044", 
+            "codeValue": "111102", 
             "codingScheme": "SCT", 
             "UMLSConceptUID": "C0454169", 
             "cid": "6040", 

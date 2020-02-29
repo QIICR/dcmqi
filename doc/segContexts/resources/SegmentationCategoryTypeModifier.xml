@@ -1746,7 +1746,7 @@
     <Type codingScheme="SCT" codeValue="118378005" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="118378005" UMLSConceptUID="C1289799" codeMeaning="Cardiac Pacemaker" />
     <Type codingScheme="SCT" codeValue="19923001" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="19923001" UMLSConceptUID="C0085590" codeMeaning="Catheter" />
     <Type codingScheme="SCT" codeValue="77720000" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="77720000" UMLSConceptUID="C0175722" codeMeaning="Clip" />
-    <Type codingScheme="SCT" codeValue="A-10044" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="129461008" UMLSConceptUID="C0454169" codeMeaning="Collimator" />
+    <Type codingScheme="SCT" codeValue="111102" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="129461008" UMLSConceptUID="C0454169" codeMeaning="Collimator" />
     <Type codingScheme="SCT" codeValue="129460009" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="129460009" UMLSConceptUID="C1268544" codeMeaning="Compression paddle" />
     <Type codingScheme="SCT" codeValue="7140000" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="7140000" UMLSConceptUID="C0009924" codeMeaning="Contrast agent" />
     <Type codingScheme="SCT" codeValue="129467007" cid="6040" contextGroupName="Non-Lesion Object Type" SNOMEDCTConceptID="129467007" UMLSConceptUID="C1268548" codeMeaning="ID Plate" />

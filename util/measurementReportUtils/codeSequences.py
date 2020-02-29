@@ -13,7 +13,7 @@ class Finding(CodeSequence):
     if segmentedStructure == "NormalROI_PZ_1":
       super().__init__("Normal", "SCT", "17621005")
     elif segmentedStructure == "PeripheralZone":
-      super().__init__("Entire", "SCT", "R-404A4")
+      super().__init__("Entire", "SCT", "255503000")
     elif segmentedStructure == "TumorROI_PZ_1":
       super().__init__("Abnormal", "SCT", "263654008")
     elif segmentedStructure == "WholeGland":
