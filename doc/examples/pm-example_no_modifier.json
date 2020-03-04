@@ -4,8 +4,8 @@
   "InstanceNumber": "1",
   "BodyPartExamined": "Prostate",
   "AnatomicRegionSequence": {
-    "CodeValue": "T-92000",
-    "CodingSchemeDesignator": "SRT",
+    "CodeValue": "41216001",
+    "CodingSchemeDesignator": "SCT",
     "CodeMeaning": "Prostate"
   },
   "QuantityValueCode": {

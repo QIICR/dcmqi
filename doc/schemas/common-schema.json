@@ -69,8 +69,8 @@
       "additionalProperties": false,
       "required" : ["CodeValue","CodingSchemeDesignator","CodeMeaning"],
       "properties" : {
-        "CodeValue" : { "$ref": "#/definitions/SH", "default" : "T-D0050"},
-        "CodingSchemeDesignator" : { "$ref": "#/definitions/SH", "default" : "SRT"},
+        "CodeValue" : { "$ref": "#/definitions/SH", "default" : "85756007"},
+        "CodingSchemeDesignator" : { "$ref": "#/definitions/SH", "default" : "SCT"},
         "CodeMeaning" : { "$ref": "#/definitions/LO", "default" : "Tissue"}
       }
     },

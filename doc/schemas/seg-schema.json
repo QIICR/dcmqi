@@ -122,8 +122,8 @@
                 }
               ],
               "default": {
-                "CodeValue": "T-D0050",
-                "CodingSchemeDesignator": "SRT",
+                "CodeValue": "85756007",
+                "CodingSchemeDesignator": "SCT",
                 "CodeMeaning": "Tissue"
               }
             },
@@ -134,8 +134,8 @@
                 }
               ],
               "default": {
-                "CodeValue": "T-D0050",
-                "CodingSchemeDesignator": "SRT",
+                "CodeValue": "85756007",
+                "CodingSchemeDesignator": "SCT",
                 "CodeMeaning": "Tissue"
               }
             },

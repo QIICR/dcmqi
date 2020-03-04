@@ -10,7 +10,7 @@
 #include <dcmtk/dcmiod/modhelp.h>
 
 #include <dcmtk/dcmsr/codes/dcm.h>
-#include <dcmtk/dcmsr/codes/srt.h>
+#include <dcmtk/dcmsr/codes/sct.h>
 #include <dcmtk/dcmsr/cmr/tid1500.h>
 #include <dcmtk/dcmsr/dsrnumtn.h>
 #include <dcmtk/dcmsr/dsrtextn.h>
@@ -161,7 +161,7 @@ int main(int argc, char** argv){
   if(metaRoot.isMember("procedureReported")){
     CHECK_COND(report.addProcedureReported(json2cev(metaRoot["procedureReported"])));
   } else {
-    CHECK_COND(report.addProcedureReported(DSRCodedEntryValue("P0-0099A", "SRT", "Imaging procedure")));
+    CHECK_COND(report.addProcedureReported(DSRCodedEntryValue("363679005", "SCT", "Imaging procedure")));
   }
 
   if(!report.isValid()){
@@ -384,8 +384,8 @@ int main(int argc, char** argv){
           st.goUp();
         }
 
-        //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
-        //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population")
+        //node->setConceptName(DSRCodedEntryValue("373099004", "SCT", "Mean Value of population"));
+        //node->setValue("10", DSRCodedEntryValue("373099004", "SCT", "Mean Value of population")
       }
 
       if(!thisMeasurementNumProperties.empty()){
@@ -430,8 +430,8 @@ int main(int argc, char** argv){
         st.goUp();
       }*/
 
-      //node->setConceptName(DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
-      //node->setValue("10", DSRCodedEntryValue("R-00319", "SRT", "Mean Value of population"));
+      //node->setConceptName(DSRCodedEntryValue("373099004", "SCT", "Mean Value of population"));
+      //node->setValue("10", DSRCodedEntryValue("373099004", "SCT", "Mean Value of population"));
       nnid = st.gotoNextAnnotatedNode("TID 1419 - Row 5");
       measurementID++;
     }

@@ -28,8 +28,8 @@
   },
   "SourceImageDiffusionBValues": ["0","1400"],
   "AnatomicRegionSequence": {
-    "CodeValue": "T-9200B",
-    "CodingSchemeDesignator": "SRT",
+    "CodeValue": "41216001",
+    "CodingSchemeDesignator": "SCT",
     "CodeMeaning": "Prostate"
   },
   "FrameLaterality" : "U",

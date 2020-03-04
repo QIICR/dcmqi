@@ -85,7 +85,7 @@ Json::Value TID1500Reader::getMeasurements() {
     knownConcepts.push_back(mIt->second);
   }
   knownConcepts.push_back(CODE_SRT_MeasurementMethod);
-  knownConcepts.push_back(CODE_SCT_FindingSite);
+  knownConcepts.push_back(CODE_SRT_FindingSite);
 
   std::vector<DSRCodedEntryValue> algorithmIdentificationConcepts;
   algorithmIdentificationConcepts.push_back(CODE_DCM_AlgorithmName);

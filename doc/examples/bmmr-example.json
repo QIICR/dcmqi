@@ -17,18 +17,18 @@
         "SegmentAlgorithmName": "Pre-contrast manual VOI",
         "SegmentDescription": "Breast segmentation",
         "SegmentedPropertyCategoryCodeSequence": {
-          "CodeValue": "T-D000A",
-          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "123037004",
+          "CodingSchemeDesignator": "SCT",
           "CodeMeaning": "Anatomical Structure"
         },
         "SegmentedPropertyTypeCodeSequence": {
-          "CodeValue": "T-04000",
-          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "76752008",
+          "CodingSchemeDesignator": "SCT",
           "CodeMeaning": "Breast"
         },
         "SegmentedPropertyTypeModifierCodeSequence": {
-          "CodeValue": "G-A102",
-          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "51440002",
+          "CodingSchemeDesignator": "SCT",
           "CodeMeaning": "Right and left"
         },
         "recommendedDisplayRGBValue": [

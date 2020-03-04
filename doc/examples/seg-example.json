@@ -15,13 +15,13 @@
         "labelID": 1,
         "SegmentDescription": "Liver Segmentation",
         "SegmentedPropertyCategoryCodeSequence": {
-          "CodeValue": "T-D0050",
-          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "85756007",
+          "CodingSchemeDesignator": "SCT",
           "CodeMeaning": "Tissue"
         },
         "SegmentedPropertyTypeCodeSequence": {
-          "CodeValue": "T-62000",
-          "CodingSchemeDesignator": "SRT",
+          "CodeValue": "10200004",
+          "CodingSchemeDesignator": "SCT",
           "CodeMeaning": "Liver"
         },
         "SegmentAlgorithmType": "SEMIAUTOMATIC",
