@@ -1,4 +1,5 @@
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi) [![codecov](https://codecov.io/gh/QIICR/dcmqi/branch/master/graph/badge.svg)](https://codecov.io/gh/QIICR/dcmqi) [![Join the chat at https://gitter.im/QIICR/dcmqi](https://badges.gitter.im/QIICR/dcmqi.svg)](https://gitter.im/QIICR/dcmqi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FQIICR%2Fdcmqi.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FQIICR%2Fdcmqi?ref=badge_shield)
 
 
 
@@ -34,6 +35,9 @@ dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
 dcmqi is distributed under [3-clause BSD license](https://github.com/QIICR/dcmqi/blob/master/LICENSE.txt).
 
 Our goal is to support and encourage adoption of the DICOM standard in both academic and research tools. We will be happy to hear about your usage of dcmqi, but you don't have to report back to us.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FQIICR%2Fdcmqi.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FQIICR%2Fdcmqi?ref=badge_large)
 
 # Support
 
