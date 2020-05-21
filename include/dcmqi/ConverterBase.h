@@ -254,9 +254,10 @@ namespace dcmqi {
       pixelMeasures->getPixelSpacing(spacing[1], 1);
 
       Float64 spacingFloat;
-      if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && spacingFloat != 0){
+      float epsilon = 1.e-5;
+      if(pixelMeasures->getSpacingBetweenSlices(spacingFloat,0).good() && fabs(spacingFloat) > epsilon){
         spacing[2] = spacingFloat;
-      } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && spacingFloat != 0){
+      } else if(pixelMeasures->getSliceThickness(spacingFloat,0).good() && fabs(spacingFloat) > epsilon){
         // SliceThickness can be carried forward from the source images, and may not be what we need
         // As an example, this ePAD example has 1.25 carried from CT, but true computed thickness is 1!
         cerr << "WARNING: SliceThickness is present and is " << spacingFloat << ". using it!" << endl;
@@ -301,6 +302,5 @@ namespace dcmqi {
   };
 
 }
-
 
 #endif //DCMQI_CONVERTERBASE_H
