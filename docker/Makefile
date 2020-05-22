@@ -17,7 +17,7 @@ TMP = /tmp
 # Shell
 SHELL = /bin/bash
 
-dicom3tools_version=dicom3tools_1.00.snapshot.20160721064406
+dicom3tools_version=dicom3tools_1.00.snapshot.20200512090031
 
 #
 # Targets
@@ -36,8 +36,8 @@ prereq.build_dicom3tools: prereq.pull_dockcross
 	mkdir -p $(ROOT_DIR)/$(BUILD_DIR)
 	cd $(ROOT_DIR)/$(BUILD_DIR) \
 	&& [ ! -e $(dicom3tools_version) ] \
-	&& wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270310/dicom3tools_1.00.snapshot.20160721064406.tar.bz2 -O dicom3tools.tar.bz2 \
-	&& tar xjf dicom3tools.tar.bz2 \
+	&& wget --no-check-certificate  https://github.com/QIICR/dicom3tools/releases/download/20200512090031/dicom3tools_winexe_1.00.snapshot.20200512090031.zip -O dicom3tools.zip \
+	&& tar xjf dicom3tools.zip \
 	&& cd $(dicom3tools_version)/ \
 	&& $(TMP)/dockcross ./Configure \
 	&& $(TMP)/dockcross imake -I./config -DUseQIICRID \
