@@ -31,9 +31,7 @@
           130,
           101
         ]
-      }
-    ],
-    [
+      },
       {
         "labelID": 2,
         "SegmentDescription": "Anatomical Structure",
@@ -53,9 +51,7 @@
           202,
           134
         ]
-      }
-    ],
-    [
+      },
       {
         "labelID": 3,
         "SegmentDescription": "Anatomical Structure",
