@@ -40,14 +40,14 @@
         },
         "DerivationCodes": {
           "type": "array",
-          "minItems": 0,
+          "minItems": 1,
           "items": {
             "$ref": "#/definitions/DerivationDefinition"
           }
         },
         "MeasurementMethodCodes": {
           "type": "array",
-          "minItems": 0,
+          "minItems": 1,
           "items": {
             "$ref": "#/definitions/MeasurementMethodDefinition"
           }
@@ -146,6 +146,7 @@
     },
     "QuantityDefinitions": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "$ref": "#/definitions/QuantityDefinition"
       }

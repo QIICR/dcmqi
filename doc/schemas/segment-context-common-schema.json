@@ -57,6 +57,7 @@
         "SNOMEDCTConceptID": {"type": "string"},
         "Modifier": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "$ref": "#/definitions/ModifierDefinition"
           }
@@ -88,6 +89,7 @@
         "showAnatomy": {"type": "boolean"},
         "Type": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "$ref": "#/definitions/TypeDefinition"
           }
@@ -117,6 +119,7 @@
         "SNOMEDCTConceptID": {"type": "string"},
         "Modifier": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "$ref": "#/definitions/ModifierDefinition"
           }

@@ -59,6 +59,15 @@ int main(int argc, char *argv[])
   Json::Value metaRoot;
   istringstream metainfoisstream(metadata);
   metainfoisstream >> metaRoot;
+
+  if(metaRoot.isMember("segmentAttributes")){
+    if(metaRoot["segmentAttributes"].size() != segImageFiles.size()){
+      cerr << "Error: number of items in the \"segmentAttributes\" metadata array should match the number of input segmentation files!" << endl;
+      cerr << "segmentAttributes has: " << metaRoot["segmentAttributes"].size() << " items, the are " << segImageFiles.size() << " input segmentation files!" << endl;
+      return EXIT_FAILURE;
+    }
+  }
+
   if(metaRoot.isMember("segmentAttributesFileMapping")){
     if(metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()){
       cerr << "Number of files in segmentAttributesFileMapping should match the number of entries in segmentAttributes!" << endl;

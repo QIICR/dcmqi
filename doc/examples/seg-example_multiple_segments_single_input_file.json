@@ -1,0 +1,77 @@
+{
+  "@schema": "https://raw.githubusercontent.com/qiicr/dcmqi/master/doc/schemas/seg-schema.json#",
+
+  "ContentCreatorName": "Doe^John",
+  "ClinicalTrialSeriesID": "Session1",
+  "ClinicalTrialTimePointID": "1",
+  "ClinicalTrialCoordinatingCenterName": "BWH",
+  "SeriesDescription": "Segmentation",
+  "SeriesNumber": "300",
+  "InstanceNumber": "1",
+
+  "segmentAttributes": [
+    [
+      {
+        "labelID": 1,
+        "SegmentDescription": "Liver Segmentation",
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeValue": "85756007",
+          "CodingSchemeDesignator": "SCT",
+          "CodeMeaning": "Tissue"
+        },
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeValue": "10200004",
+          "CodingSchemeDesignator": "SCT",
+          "CodeMeaning": "Liver"
+        },
+        "SegmentAlgorithmType": "SEMIAUTOMATIC",
+        "SegmentAlgorithmName": "SlicerEditor",
+        "recommendedDisplayRGBValue": [
+          221,
+          130,
+          101
+        ]
+      },
+      {
+        "labelID": 2,
+        "SegmentDescription": "Anatomical Structure",
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeMeaning": "Thoracic spine",
+          "CodingSchemeDesignator": "SCT",
+          "CodeValue": "122495006"
+        },
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeMeaning": "Anatomical Structure",
+          "CodingSchemeDesignator": "SCT",
+          "CodeValue": "123037004"
+        },
+        "SegmentAlgorithmType": "MANUAL",
+        "recommendedDisplayRGBValue": [
+          226,
+          202,
+          134
+        ]
+      },
+      {
+        "labelID": 3,
+        "SegmentDescription": "Anatomical Structure",
+        "SegmentedPropertyCategoryCodeSequence": {
+          "CodeMeaning": "Anatomical Structure",
+          "CodingSchemeDesignator": "SCT",
+          "CodeValue": "123037004"
+        },
+        "SegmentedPropertyTypeCodeSequence": {
+          "CodeMeaning": "Heart",
+          "CodingSchemeDesignator": "SCT",
+          "CodeValue": "80891009"
+        },
+        "SegmentAlgorithmType": "MANUAL",
+        "recommendedDisplayRGBValue": [
+          206,
+          110,
+          84
+        ]
+      }
+    ]
+  ]
+}
