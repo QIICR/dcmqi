@@ -61,8 +61,9 @@ int main(int argc, char *argv[])
   metainfoisstream >> metaRoot;
 
   if(metaRoot.isMember("segmentAttributes")){
-    if(metaRoot["segmentAttrubutes"].size() != segImageFiles.size()){
+    if(metaRoot["segmentAttributes"].size() != segImageFiles.size()){
       cerr << "Error: number of items in the \"segmentAttributes\" metadata array should match the number of input segmentation files!" << endl;
+      cerr << "segmentAttributes has: " << metaRoot["segmentAttributes"].size() << " items, the are " << segImageFiles.size() << " input segmentation files!" << endl;
       return EXIT_FAILURE;
     }
   }
