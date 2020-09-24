@@ -33,7 +33,7 @@ dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
 
 dcmqi is distributed under [3-clause BSD license](https://github.com/QIICR/dcmqi/blob/master/LICENSE.txt).
 
-Our goal is to support and encourage adoption of the DICOM standard in both academic and research tools. We will be happy to hear about your usage of dcmqi, but you don't have to report back to us.
+Our goal is to support and encourage adoption of the DICOM standard in both academic and commercial tools. We will be happy to hear about your usage of dcmqi, but you don't have to report back to us.
 
 # Support
 
