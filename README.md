@@ -41,8 +41,6 @@ You can communicate you feedback, feature requests, comments or problem reports 
 * [submit issue](https://github.com/QIICR/dcmqi/issues/new) on dcmqi bug tracker
 * post a question to [dcmqi google
   group](https://groups.google.com/forum/#!forum/dcmqi)
-* send email to [Andrey Fedorov](http://fedorov.github.io)
-* leave comments in the [dcmqi user guide](https://qiicr.gitbook.io/dcmqi-guide/)
 
 # Acknowledgments
 
