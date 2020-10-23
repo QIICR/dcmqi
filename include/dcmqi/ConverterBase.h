@@ -202,6 +202,8 @@ namespace dcmqi {
         }
       }
 
+      cout << "Total frames: " << numFrames << endl;
+
       // it IS possible to have a segmentation object containing just one frame!
       if(numFrames>1){
         // WARNING: this should be improved further. Spacing should be calculated for
@@ -231,11 +233,17 @@ namespace dcmqi {
               overlappingFramesCnt++;
         }
 
-        cout << "Total frames: " << numFrames << endl;
         cout << "Total frames with unique IPP: " << originDistances.size() << endl;
         cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
-        cout << "Origin: " << imageOrigin << endl;
       }
+      else{
+        // Single frame has zero extent
+        sliceExtent = 0.0;
+        // set spacing to a valid value, it is overwritten by the actual thickness,
+        // if specified in the file
+        sliceSpacing = 1.0;
+      }
+      cout << "Origin: " << imageOrigin << endl;
 
       return 0;
     }
