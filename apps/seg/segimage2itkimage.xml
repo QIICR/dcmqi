@@ -57,6 +57,15 @@
       <element>img</element>
     </string-enumeration>
 
+    <boolean>
+      <name>verbose</name>
+      <label>Verbose</label>
+      <channel>input</channel>
+      <longflag>verbose</longflag>
+      <default>false</default>
+      <description>Display more verbose output, useful for troubleshooting.</description>
+    </boolean>
+
   </parameters>
 
 </executable>

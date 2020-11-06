@@ -6,6 +6,8 @@
 #include "dcmqi/ImageSEGConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
+// DCMTK includes
+#include <dcmtk/oflog/configrt.h>
 
 typedef dcmqi::Helper helper;
 
@@ -15,6 +17,11 @@ int main(int argc, char *argv[])
   std::cout << dcmqi_INFO << std::endl;
 
   PARSE_ARGS;
+
+  if (verbose) {
+    // Display DCMTK debug, warning, and error logs in the console
+    dcmtk::log4cplus::BasicConfigurator::doConfigure();
+  }
 
   if(helper::isUndefinedOrPathDoesNotExist(inputSEGFileName, "Input DICOM file")
      || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
