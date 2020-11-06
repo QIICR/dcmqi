@@ -6,6 +6,9 @@
 #include "dcmqi/ImageSEGConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
+// DCMTK includes
+#include <dcmtk/oflog/configrt.h>
+
 typedef dcmqi::Helper helper;
 
 int main(int argc, char *argv[])
@@ -33,6 +36,13 @@ int main(int argc, char *argv[])
     reader->Update();
     ShortImageType::Pointer labelImage = reader->GetOutput();
     segmentations.push_back(labelImage);
+  }
+
+  if (verbose) {
+    // Display DCMTK debug, warning, and error logs in the console
+    // For some reason, this code has no effect if it is called too early (e.g., directly after PARSE_ARGS)
+    // therefore we call it here.
+    dcmtk::log4cplus::BasicConfigurator::doConfigure();
   }
 
   if(dicomDirectory.size()){
@@ -126,5 +136,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
   } catch (int e) {
     std::cerr << "Fatal error encountered." << std::endl;
+    return EXIT_FAILURE;
   }
 }
