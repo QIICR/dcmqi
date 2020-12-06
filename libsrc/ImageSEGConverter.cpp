@@ -4,6 +4,7 @@
 
 //DCMTK includes
 #include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/dcmiod/cielabutil.h>
 
 
 namespace dcmqi {
@@ -270,13 +271,12 @@ namespace dcmqi {
         }
 
         unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
-        unsigned cielabScaled[3];
-        float cielab[3], ciexyz[3];
+        double rgbDouble[3] = {double(rgb[0])/256., double(rgb[1])/256., double(rgb[2])/256.};
+        double cielab[3];
 
-        Helper::getCIEXYZFromRGB(&rgb[0],&ciexyz[0]);
-        Helper::getCIELabFromCIEXYZ(&ciexyz[0],&cielab[0]);
-        Helper::getIntegerScaledCIELabFromCIELab(&cielab[0],&cielabScaled[0]);
-        CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielabScaled[0],cielabScaled[1],cielabScaled[2]));
+        IODCIELabUtil::rgb2DicomLab(cielab[0], cielab[1], cielab[2], rgbDouble[0], rgbDouble[1], rgbDouble[2]);
+
+        CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielab[0],cielab[1],cielab[2]));
 
         Uint16 segmentNumber;
         CHECK_COND(segdoc->addSegment(segment, segmentNumber /* returns logical segment number */));
@@ -612,9 +612,7 @@ namespace dcmqi {
 
         // get CIELab color for the segment
         Uint16 ciedcm[3];
-        unsigned cielabScaled[3];
-        float cielab[3], ciexyz[3];
-        unsigned rgb[3];
+        double rgb[3];
         if(segment->getRecommendedDisplayCIELabValue(
             ciedcm[0], ciedcm[1], ciedcm[2]
         ).bad()) {
@@ -626,13 +624,26 @@ namespace dcmqi {
           cerr << "Failed to get CIELab values - initializing to default " <<
           ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << endl;
         }
-        cielabScaled[0] = unsigned(ciedcm[0]);
-        cielabScaled[1] = unsigned(ciedcm[1]);
-        cielabScaled[2] = unsigned(ciedcm[2]);
 
-        dcmqi::Helper::getCIELabFromIntegerScaledCIELab(&cielabScaled[0],&cielab[0]);
-        dcmqi::Helper::getCIEXYZFromCIELab(&cielab[0],&ciexyz[0]);
-        dcmqi::Helper::getRGBFromCIEXYZ(&ciexyz[0],&rgb[0]);
+        /* Debug CIELab 2 RGB conversion
+        double lab[3];
+
+        cout << "DICOM Lab " << ciedcm[0] << ", " << ciedcm[1] << ", " << ciedcm[2] << endl;
+
+        IODCIELabUtil::dicomlab2Lab(lab[0], lab[1], lab[2], ciedcm[0], ciedcm[1], ciedcm[2]);
+
+        cout << "Lab " << ciedcm[0] << ", " << ciedcm[1] << ", " << ciedcm[2] << endl;
+
+        IODCIELabUtil::lab2Rgb(rgb[0], rgb[1], rgb[2], lab[0], lab[1], lab[2]);
+
+        cout << "RGB " << unsigned(rgb[0]*256) << ", " << unsigned(rgb[1]*256) << ", " << unsigned(rgb[2]*256) << endl;
+        */
+
+        IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
+
+        rgb[0] = unsigned(rgb[0]*256);
+        rgb[1] = unsigned(rgb[1]*256);
+        rgb[2] = unsigned(rgb[2]*256);
 
         SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
