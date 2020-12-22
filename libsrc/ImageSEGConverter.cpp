@@ -467,6 +467,15 @@ namespace dcmqi {
       segdoc->getGeneralImage().setContentTime(contentTime.c_str());
     }
 
+    {
+      string segmentsOverlap;
+      if(segmentations.size() == 1)
+        segmentsOverlap = "NO";
+      else
+        segmentsOverlap = "UNDEFINED";
+      CHECK_COND(segdocDataset.putAndInsertString(DCM_SegmentsOverlap, segmentsOverlap.c_str()));
+    }
+
     return new DcmDataset(segdocDataset);
   }
 
