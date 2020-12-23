@@ -1,6 +1,8 @@
 
 // DCMQI includes
 #include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/ColorUtilities.h"
+
 
 //DCMTK includes
 #include <dcmtk/dcmsr/codes/dcm.h>
@@ -271,10 +273,10 @@ namespace dcmqi {
         }
 
         unsigned* rgb = segmentAttributes->getRecommendedDisplayRGBValue();
-        double rgbDouble[3] = {double(rgb[0])/256., double(rgb[1])/256., double(rgb[2])/256.};
-        double cielab[3];
+        int cielab[3];
 
-        IODCIELabUtil::rgb2DicomLab(cielab[0], cielab[1], cielab[2], rgbDouble[0], rgbDouble[1], rgbDouble[2]);
+        ColorUtilities::getIntegerScaledCIELabPCSFromSRGB(cielab[0], cielab[1], cielab[2], rgb[0], rgb[1], rgb[2]);
+        //IODCIELabUtil::rgb2DicomLab(cielab[0], cielab[1], cielab[2], rgb[0], rgb[1], rgb[2]);
 
         CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielab[0],cielab[1],cielab[2]));
 
@@ -612,7 +614,7 @@ namespace dcmqi {
 
         // get CIELab color for the segment
         Uint16 ciedcm[3];
-        double rgb[3];
+        int rgb[3];
         if(segment->getRecommendedDisplayCIELabValue(
             ciedcm[0], ciedcm[1], ciedcm[2]
         ).bad()) {
@@ -639,11 +641,8 @@ namespace dcmqi {
         cout << "RGB " << unsigned(rgb[0]*256) << ", " << unsigned(rgb[1]*256) << ", " << unsigned(rgb[2]*256) << endl;
         */
 
-        IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
-
-        rgb[0] = unsigned(rgb[0]*256);
-        rgb[1] = unsigned(rgb[1]*256);
-        rgb[2] = unsigned(rgb[2]*256);
+        ColorUtilities::getSRGBFromIntegerScaledCIELabPCS(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
+        //IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
 
         SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
