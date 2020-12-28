@@ -2,7 +2,7 @@
 
 
 
-| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.2.2.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.2.2) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
+| Docker | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi:v1.2.3.svg)](https://microbadger.com/images/qiicr/dcmqi:v1.2.3) | [![](https://images.microbadger.com/badges/version/qiicr/dcmqi.svg)](https://microbadger.com/images/qiicr/dcmqi) |
 |--------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 
 |              | Linux                                                                                                  | macOS                                                                                                | Windows                                                                                                                             |
