@@ -54,7 +54,7 @@ prereq.install_npm_packages: prereq.pull_dockcross
 	tar xf node-v6.9.5-linux-x64.tar.xz || true
 	# Install tools required to run DCMQI "doc" tests
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:$$PATH && sudo npm install ajv-cli -g"
+	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:$$PATH && sudo npm install ajv-cli@3.3.0 -g"
 
 # Configure, build and package
 dcmqi.generate_package: prereq.pull_dockcross
