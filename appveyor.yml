@@ -21,7 +21,7 @@ environment:
     secure: 3+wBc5SxNqx3XjsY3EZ7afvQbLAWWcw30SPGK7q+QPA=
 before_build:
   # Install tools required to run DCMQI "doc" tests
-  - npm install ajv-cli -g
+  - npm install ajv-cli@3.3.0 -g
   # Display infos
   - cmake --version
   # Downloads

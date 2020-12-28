@@ -644,6 +644,10 @@ namespace dcmqi {
         ColorUtilities::getSRGBFromIntegerScaledCIELabPCS(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
         //IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
 
+        //rgb[0] = unsigned(rgb[0]*256);
+        //rgb[1] = unsigned(rgb[1]*256);
+        //rgb[2] = unsigned(rgb[2]*256);
+
         SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
 
         if (segmentAttributes) {
