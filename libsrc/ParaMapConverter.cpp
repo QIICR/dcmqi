@@ -4,6 +4,7 @@
 #include <itkCastImageFilter.h>
 
 // DCMQI includes
+#include "dcmqi/Helper.h"
 #include "dcmqi/ParaMapConverter.h"
 #include "dcmqi/ImageSEGConverter.h"
 
@@ -77,15 +78,14 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      FloatImageType::SpacingType labelSpacing = parametricMapImage->GetSpacing();
+      FloatImageType::SpacingType pmSpacing = parametricMapImage->GetSpacing();
       ostringstream spacingSStream;
-      spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
+      spacingSStream << Helper::floatToStrScientific(pmSpacing[0]) << "\\" << Helper::floatToStrScientific(pmSpacing[1]);
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
 
-      spacingSStream.clear(); spacingSStream.str("");
-      spacingSStream << scientific << labelSpacing[2];
-      CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
-      CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
+      string sliceThicknessStr = Helper::floatToStrScientific(pmSpacing[2]);
+      CHECK_COND(pixmsr->setSpacingBetweenSlices(sliceThicknessStr.c_str()));
+      CHECK_COND(pixmsr->setSliceThickness(sliceThicknessStr.c_str()));
       CHECK_COND(pMapDoc->addForAllFrames(*pixmsr));
     }
 
@@ -252,7 +252,7 @@ namespace dcmqi {
       slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, cast->GetOutput());
       cout << "Mapping from the ITK image slices to the DICOM instances in the input list" << endl;
       for(size_t i=0;i<slice2derimg.size();i++){
-        cout << "  Slice " << i << ": ";
+        //cout << "  Slice " << i << ": ";
         for(size_t j=0;j<slice2derimg[i].size();j++){
           cout << slice2derimg[i][j] << " ";
           hasDerivationImages = true;
@@ -399,7 +399,7 @@ namespace dcmqi {
         DPMParametricMapIOD::FramesType frames = pMapDoc->getFrames();
         result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, perFrameFGs);
 
-        cout << "Frame " << sliceNumber << " added" << endl;
+        //cout << "Frame " << sliceNumber << " added" << endl;
       }
 
       // remove derivation image FG from the per-frame FGs, only if applicable!

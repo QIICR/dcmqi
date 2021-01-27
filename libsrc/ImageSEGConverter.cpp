@@ -80,15 +80,14 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ShortImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
+      ShortImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();      
       ostringstream spacingSStream;
-      spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
+      spacingSStream << Helper::floatToStrScientific(labelSpacing[0]) << "\\" << Helper::floatToStrScientific(labelSpacing[1]);
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
 
-      spacingSStream.clear(); spacingSStream.str("");
-      spacingSStream << scientific << labelSpacing[2];
-      CHECK_COND(pixmsr->setSpacingBetweenSlices(spacingSStream.str().c_str()));
-      CHECK_COND(pixmsr->setSliceThickness(spacingSStream.str().c_str()));
+      string sliceThicknessStr = Helper::floatToStrScientific(labelSpacing[2]);
+      CHECK_COND(pixmsr->setSpacingBetweenSlices(sliceThicknessStr.c_str()));
+      CHECK_COND(pixmsr->setSliceThickness(sliceThicknessStr.c_str()));
       CHECK_COND(segdoc->addForAllFrames(*pixmsr));
       delete pixmsr;
     }
