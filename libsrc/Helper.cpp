@@ -103,6 +103,7 @@ namespace dcmqi {
 
 
   string Helper::floatToStrScientific(float f) {
+    string formatted_f;
     /*
     Alternatife with scientific to get to 16:
      - mantissa sign (1)
@@ -115,8 +116,17 @@ namespace dcmqi {
 
     ostringstream sstream;
     sstream << setprecision(8) << scientific << f;
-    cout << setprecision(8) << scientific << f << endl;
+    string formatted_f = sstream.str();
     */
+    
+    // somehow this was resulting in more than 16 characters in local tests
+    ostringstream sstream;
+    sstream.imbue(std::locale::classic());
+    sstream << setprecision(15) << f;
+    formatted_f = sstream.str();
+    cout << "Formatted float: " << formatted_f << endl;
+    cout << "Size: " << formatted_f.size() << endl;
+    /*
     ostringstream sstream;
     sstream << fixed << setprecision(15) << f;
     string formatted_f = sstream.str();
@@ -128,6 +138,8 @@ namespace dcmqi {
         formatted_f = formatted_f.substr(0,16);
       }
     }
+    */
+
     return formatted_f;
   }
 
