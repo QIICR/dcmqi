@@ -122,10 +122,11 @@ namespace dcmqi {
     // somehow this was resulting in more than 16 characters in local tests
     ostringstream sstream;
     sstream.imbue(std::locale::classic());
-    sstream << setprecision(15) << f;
+    sstream << setprecision(14) << f;
     formatted_f = sstream.str();
     cout << "Formatted float: " << formatted_f << endl;
     cout << "Size: " << formatted_f.size() << endl;
+
     /*
     ostringstream sstream;
     sstream << fixed << setprecision(15) << f;
