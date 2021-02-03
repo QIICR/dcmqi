@@ -13,6 +13,8 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <limits>
+#include <locale>
 
 // DCMQI includes
 #include "dcmqi/Exceptions.h"
@@ -45,7 +47,7 @@ namespace dcmqi {
     static vector<string> getFileListRecursively(string directory);
     static vector<DcmDataset*> loadDatasets(const vector<string>& dicomImageFiles);
 
-    static string floatToStrScientific(float f);
+    static string floatToStr(float f);
     static void tokenizeString(string str, vector<string> &tokens, string delimiter);
     static void splitString(string str, string &head, string &tail, string delimiter);
 

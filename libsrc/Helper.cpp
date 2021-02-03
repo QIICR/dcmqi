@@ -102,9 +102,11 @@ namespace dcmqi {
   }
 
 
-  string Helper::floatToStrScientific(float f) {
+  string Helper::floatToStr(float f) {
     ostringstream sstream;
-    sstream << scientific << f;
+    sstream.imbue(std::locale::classic());
+    sstream.precision(std::numeric_limits<float>::max_digits10);
+    sstream << f;
     return sstream.str();
   }
 
