@@ -105,8 +105,10 @@ namespace dcmqi {
   string Helper::floatToStr(float f) {
     ostringstream sstream;
     sstream.imbue(std::locale::classic());
-    sstream.precision(std::numeric_limits<float>::max_digits10);
+    sstream.precision(9);
     sstream << f;
+    string f_str = sstream.str();
+    cout << "Formatted float (length): " << f_str << "(" << f_str.size() << ")" << endl;
     return sstream.str();
   }
 
