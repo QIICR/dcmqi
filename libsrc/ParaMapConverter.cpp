@@ -99,12 +99,12 @@ namespace dcmqi {
 
       FGPlaneOrientationPatient *planor =
           FGPlaneOrientationPatient::createMinimal(
-              Helper::floatToStrScientific(labelDirMatrix[0][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[1][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[2][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[0][1]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[1][1]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
+              Helper::floatToStr(labelDirMatrix[0][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[1][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[2][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[0][1]).c_str(),
+              Helper::floatToStr(labelDirMatrix[1][1]).c_str(),
+              Helper::floatToStr(labelDirMatrix[2][1]).c_str());
 
       //CHECK_COND(planor->setImageOrientationPatient(imageOrientationPatientStr));
       CHECK_COND(pMapDoc->addForAllFrames(*planor));
@@ -174,7 +174,7 @@ namespace dcmqi {
     // initialize optional items, if available
     if(metaInfo.metaInfoRoot.isMember("MeasurementMethodCode")){
       ContentItemMacro* measureMethod = new ContentItemMacro;
-	  
+
       CodeSequenceMacro* qCodeName = new CodeSequenceMacro("370129005", "SCT", "Measurement Method");
       CodeSequenceMacro* qSpec = new CodeSequenceMacro(
         metaInfo.metaInfoRoot["MeasurementMethodCode"]["CodeValue"].asCString(),
@@ -383,9 +383,9 @@ namespace dcmqi {
         FloatImageType::PointType sliceOriginPoint;
         parametricMapImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
         fgppp->setImagePositionPatient(
-            Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
-            Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
-            Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+            Helper::floatToStr(sliceOriginPoint[0]).c_str(),
+            Helper::floatToStr(sliceOriginPoint[1]).c_str(),
+            Helper::floatToStr(sliceOriginPoint[2]).c_str());
 
         // Frame Content
         OFCondition result = fgfc->setDimensionIndexValues(sliceNumber+1 /* value within dimension */, 0 /* first dimension */);
@@ -606,9 +606,9 @@ namespace dcmqi {
     FloatImageType::PointType sliceOriginPoint;
     parametricMapImage->TransformIndexToPhysicalPoint(sliceIndex, sliceOriginPoint);
     fgPlanePos->setImagePositionPatient(
-        Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
-        Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
-        Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+        Helper::floatToStr(sliceOriginPoint[0]).c_str(),
+        Helper::floatToStr(sliceOriginPoint[1]).c_str(),
+        Helper::floatToStr(sliceOriginPoint[2]).c_str());
 
     // Frame Content
     OFCondition result = fgFracon->setDimensionIndexValues(frameNo+1 /* value within dimension */, 0 /* first dimension */);

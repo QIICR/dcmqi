@@ -45,7 +45,7 @@ package dcmqi {
 class Helper {
     + {static} tokenizeString(string str, vector<string> &tokens, string delimiter): void
     + {static} splitString(string str, string &head, string &tail, string delimiter): void
-    + {static} floatToStrScientific(float f): string
+    + {static} floatToStr(float f): string
 ---
     + {static} stringToCodeSequenceMacro(std::string str): CodeSequenceMacro
     + {static} stringToDSRCodedEntryValue(std::string str): DSRCodedEntryValue

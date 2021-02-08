@@ -66,12 +66,12 @@ namespace dcmqi {
 
       FGPlaneOrientationPatient *planor =
           FGPlaneOrientationPatient::createMinimal(
-              Helper::floatToStrScientific(labelDirMatrix[0][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[1][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[2][0]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[0][1]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[1][1]).c_str(),
-              Helper::floatToStrScientific(labelDirMatrix[2][1]).c_str());
+              Helper::floatToStr(labelDirMatrix[0][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[1][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[2][0]).c_str(),
+              Helper::floatToStr(labelDirMatrix[0][1]).c_str(),
+              Helper::floatToStr(labelDirMatrix[1][1]).c_str(),
+              Helper::floatToStr(labelDirMatrix[2][1]).c_str());
 
       CHECK_COND(segdoc->addForAllFrames(*planor));
     }
@@ -311,9 +311,9 @@ namespace dcmqi {
               segmentations[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
             }
             fgppp->setImagePositionPatient(
-                Helper::floatToStrScientific(sliceOriginPoint[0]).c_str(),
-                Helper::floatToStrScientific(sliceOriginPoint[1]).c_str(),
-                Helper::floatToStrScientific(sliceOriginPoint[2]).c_str());
+                Helper::floatToStr(sliceOriginPoint[0]).c_str(),
+                Helper::floatToStr(sliceOriginPoint[1]).c_str(),
+                Helper::floatToStr(sliceOriginPoint[2]).c_str());
           }
 
           /* Add frame that references this segment */
