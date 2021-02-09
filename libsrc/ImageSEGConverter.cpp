@@ -5,8 +5,9 @@
 
 
 //DCMTK includes
-#include <dcmtk/dcmsr/codes/dcm.h>
 #include <dcmtk/dcmiod/cielabutil.h>
+#include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/ofstd/ofmem.h>
 
 
 namespace dcmqi {
@@ -495,6 +496,7 @@ namespace dcmqi {
       cerr << "ERROR: Failed to load segmentation dataset! " << cond.text() << endl;
       throw -1;
     }
+    OFunique_ptr<DcmSegmentation> segdocguard(segdoc);
 
     // Directions
     FGInterface &fgInterface = segdoc->getFunctionalGroups();
