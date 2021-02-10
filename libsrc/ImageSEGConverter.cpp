@@ -563,7 +563,7 @@ namespace dcmqi {
     // ImagePositionPatient, set non-zero pixels to the segment number. Notify
     // about pixels that are initialized more than once.
 
-    DcmIODTypes::Frame *unpackedFrame = NULL;
+    const DcmIODTypes::Frame *unpackedFrame = NULL;
 
     JSONSegmentationMetaInformationHandler metaInfo;
 
@@ -735,12 +735,15 @@ namespace dcmqi {
 
       unsigned slice = frameOriginIndex[2];
 
+      bool deleteFrame(true);
       if(segdoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
         unpackedFrame = DcmSegUtils::unpackBinaryFrame(frame,
                                  imageSize[1], // Rows
                                  imageSize[0]); // Cols
-      else
-        unpackedFrame = new DcmIODTypes::Frame(*frame);
+      else {
+        unpackedFrame = frame;
+        deleteFrame = false;
+      }
 
       // initialize slice with the frame content
       for(unsigned row=0;row<imageSize[1];row++){
@@ -759,7 +762,7 @@ namespace dcmqi {
         }
       }
 
-      if(unpackedFrame != NULL)
+      if(deleteFrame)
         delete unpackedFrame;
     }
 
