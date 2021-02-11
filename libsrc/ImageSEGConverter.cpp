@@ -665,7 +665,7 @@ namespace dcmqi {
         //rgb[1] = unsigned(rgb[1]*256);
         //rgb[2] = unsigned(rgb[2]*256);
 
-        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentId):nullptr;
+        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentId):NULL;
 
         if (segmentAttributes) {
           segmentAttributes->setLabelID(segmentId);
