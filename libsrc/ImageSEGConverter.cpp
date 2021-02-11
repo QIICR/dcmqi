@@ -546,8 +546,8 @@ namespace dcmqi {
     // Region size
     ShortImageType::SizeType imageSize;
     {
-      DcmIODImage<IODImagePixelModule<Uint8>> *ip =
-          static_cast<DcmIODImage<IODImagePixelModule<Uint8>> *>(segdoc);
+      DcmIODImage<IODImagePixelModule<Uint8> > *ip =
+          static_cast<DcmIODImage<IODImagePixelModule<Uint8> > *>(segdoc);
       Uint16 value;
       if (ip->getImagePixel().getRows(value).good()) {
         imageSize[1] = value;
