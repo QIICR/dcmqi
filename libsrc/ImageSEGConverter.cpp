@@ -495,8 +495,10 @@ namespace dcmqi {
     JSONSegmentationMetaInformationHandler metaInfo;
     populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
-    const auto segment2image = dcmSegmentation2itkimage(segdoc, &metaInfo);
-    return pair <map<unsigned, ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
+    const std::map<unsigned, ShortImageType::Pointer> segment2image =
+        dcmSegmentation2itkimage(segdoc, &metaInfo);
+    return pair<map<unsigned, ShortImageType::Pointer>, string>(
+        segment2image, metaInfo.getJSONOutputAsString());
   }
 
   std::map<unsigned, ShortImageType::Pointer>
@@ -544,11 +546,13 @@ namespace dcmqi {
     // Region size
     ShortImageType::SizeType imageSize;
     {
-      const auto ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8> >*>(segdoc);
+      DcmIODImage<IODImagePixelModule<Uint8>> *ip =
+          static_cast<DcmIODImage<IODImagePixelModule<Uint8>> *>(segdoc);
       Uint16 value;
       if (ip->getImagePixel().getRows(value).good()) {
         imageSize[1] = value;
-      }if (ip->getImagePixel().getColumns(value).good()) {
+      }
+      if (ip->getImagePixel().getColumns(value).good()) {
         imageSize[0] = value;
       }
     }
