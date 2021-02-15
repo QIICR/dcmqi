@@ -484,12 +484,6 @@ namespace dcmqi {
 
 
   pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
-
-    DcmRLEDecoderRegistration::registerCodecs();
-
-    OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
-    dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
-
     DcmSegmentation *segdoc = NULL;
     OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
     if(!segdoc){
@@ -497,6 +491,24 @@ namespace dcmqi {
       throw -1;
     }
     OFunique_ptr<DcmSegmentation> segdocguard(segdoc);
+
+    JSONSegmentationMetaInformationHandler metaInfo;
+    populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
+
+    const std::map<unsigned, ShortImageType::Pointer> segment2image =
+        dcmSegmentation2itkimage(segdoc, &metaInfo);
+    return pair<map<unsigned, ShortImageType::Pointer>, string>(
+        segment2image, metaInfo.getJSONOutputAsString());
+  }
+
+  std::map<unsigned, ShortImageType::Pointer>
+  ImageSEGConverter::dcmSegmentation2itkimage(
+      DcmSegmentation *segdoc,
+      JSONSegmentationMetaInformationHandler *metaInfo) {
+    DcmRLEDecoderRegistration::registerCodecs();
+
+    OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
+    dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
 
     // Directions
     FGInterface &fgInterface = segdoc->getFunctionalGroups();
@@ -534,12 +546,14 @@ namespace dcmqi {
     // Region size
     ShortImageType::SizeType imageSize;
     {
-      OFString str;
-      if(segDataset->findAndGetOFString(DCM_Rows, str).good()){
-        imageSize[1] = atoi(str.c_str());
+      DcmIODImage<IODImagePixelModule<Uint8> > *ip =
+          static_cast<DcmIODImage<IODImagePixelModule<Uint8> > *>(segdoc);
+      Uint16 value;
+      if (ip->getImagePixel().getRows(value).good()) {
+        imageSize[1] = value;
       }
-      if(segDataset->findAndGetOFString(DCM_Columns, str).good()){
-        imageSize[0] = atoi(str.c_str());
+      if (ip->getImagePixel().getColumns(value).good()) {
+        imageSize[0] = value;
       }
     }
     // number of slices should be computed, since segmentation may have empty frames
@@ -564,10 +578,6 @@ namespace dcmqi {
     // about pixels that are initialized more than once.
 
     const DcmIODTypes::Frame *unpackedFrame = NULL;
-
-    JSONSegmentationMetaInformationHandler metaInfo;
-
-    populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
     for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
       const DcmIODTypes::Frame *frame = segdoc->getFrame(frameId);
@@ -659,7 +669,7 @@ namespace dcmqi {
         //rgb[1] = unsigned(rgb[1]*256);
         //rgb[2] = unsigned(rgb[2]*256);
 
-        SegmentAttributes* segmentAttributes = metaInfo.createAndGetNewSegment(segmentId);
+        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentId):NULL;
 
         if (segmentAttributes) {
           segmentAttributes->setLabelID(segmentId);
@@ -766,7 +776,7 @@ namespace dcmqi {
         delete unpackedFrame;
     }
 
-    return pair <map<unsigned,ShortImageType::Pointer>, string>(segment2image, metaInfo.getJSONOutputAsString());
+    return segment2image;
   }
 
   void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
