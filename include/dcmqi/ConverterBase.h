@@ -258,8 +258,12 @@ namespace dcmqi {
         return EXIT_FAILURE;
       }
 
-      pixelMeasures->getPixelSpacing(spacing[0], 0);
-      pixelMeasures->getPixelSpacing(spacing[1], 1);
+      /*
+      In DICOM, "The first value is the row spacing in mm, that is the spacing between the centers of adjacent rows, or vertical spacing", while in ITK the first value is spacing along the X axis.
+      https://github.com/QIICR/dcmqi/issues/425
+      */
+      pixelMeasures->getPixelSpacing(spacing[0], 1);
+      pixelMeasures->getPixelSpacing(spacing[1], 0);
 
       Float64 spacingFloat;
       float epsilon = 1.e-5;
