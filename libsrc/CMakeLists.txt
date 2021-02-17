@@ -86,3 +86,14 @@ target_link_libraries(${lib_name} PUBLIC
   ${ITK_LIBRARIES}
   $<$<NOT:$<BOOL:${DCMQI_BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )
+
+if(export_targets)
+  install(TARGETS ${lib_name}
+          EXPORT ${PROJECT_NAME}Targets
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib
+          RUNTIME DESTINATION bin
+          INCLUDES DESTINATION include
+    )
+  install(DIRECTORY ${INCLUDE_DIR} DESTINATION include)
+endif()
