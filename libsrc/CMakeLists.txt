@@ -45,7 +45,8 @@ if(DCMQI_BUILTIN_JSONCPP)
   list(APPEND ADDITIONAL_SRCS
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
     )
-  set(JsonCpp_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/jsoncpp)
+  set(JsonCpp_INCLUDE_DIR $<BUILD_INTERFACE:${DCMQI_SOURCE_DIR}/jsoncpp>)
+  install(DIRECTORY ${INCLUDE_DIR} ../jsoncpp/json DESTINATION include)
 endif()
 
 set(lib_name dcmqi)
@@ -66,15 +67,17 @@ set_property(GLOBAL APPEND PROPERTY ${CMAKE_PROJECT_NAME}_TARGETS ${lib_name})
 set(${lib_name}_INCLUDE_DIRS
   ${DCMTK_INCLUDE_DIRS}
   ${ITK_INCLUDE_DIRS}
-  ${DCMQI_SOURCE_DIR}/include
-  ${DCMQI_BINARY_DIR}/include
   ${JsonCpp_INCLUDE_DIR}
+  $<BUILD_INTERFACE:${DCMQI_SOURCE_DIR}/include>  
+  $<BUILD_INTERFACE:${DCMQI_BINARY_DIR}/include>  
   )
 if(ITK_INSTALL_PREFIX)
-  list(APPEND ${lib_name}_INCLUDE_DIRS
-    ${ITK_INSTALL_PREFIX}/include/vxl/core
-    ${ITK_INSTALL_PREFIX}/include/vxl/vcl
-    )
+  if(EXISTS ${ITK_INSTALL_PREFIX}/include/vxl/core AND EXISTS ${ITK_INSTALL_PREFIX}/include/vxl/vcl)
+    list(APPEND ${lib_name}_INCLUDE_DIRS
+      ${ITK_INSTALL_PREFIX}/include/vxl/core
+      ${ITK_INSTALL_PREFIX}/include/vxl/vcl
+      )
+  endif()
 endif()
 target_include_directories(${lib_name} PUBLIC ${${lib_name}_INCLUDE_DIRS})
 
