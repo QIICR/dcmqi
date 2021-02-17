@@ -1,5 +1,6 @@
 
 #-----------------------------------------------------------------------------
+set(ADDITIONAL_HDRS)
 set(ADDITIONAL_SRCS)
 
 set(INCLUDE_DIR ../include/dcmqi)
@@ -12,7 +13,7 @@ set(HDRS
   ${INCLUDE_DIR}/Exceptions.h
   ${INCLUDE_DIR}/framesorter.h
   ${INCLUDE_DIR}/ImageSEGConverter.h
-  ${INCLUDE_DIR}/ParaMapConverter
+  ${INCLUDE_DIR}/ParaMapConverter.h
   ${INCLUDE_DIR}/Helper.h
   ${INCLUDE_DIR}/ColorUtilities.h
   ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
@@ -37,6 +38,10 @@ set(SRCS
 
 
 if(DCMQI_BUILTIN_JSONCPP)
+  list(APPEND ADDITIONAL_HDRS
+    ${DCMQI_SOURCE_DIR}/jsoncpp/json/json.h
+    ${DCMQI_SOURCE_DIR}/jsoncpp/json/json-forwards.h
+    )
   list(APPEND ADDITIONAL_SRCS
     ${DCMQI_SOURCE_DIR}/jsoncpp/jsoncpp.cpp
     )
@@ -48,6 +53,7 @@ set(lib_name dcmqi)
 add_library(${lib_name} STATIC
   ${HDRS}
   ${SRCS}
+  ${ADDITIONAL_HDRS}
   ${ADDITIONAL_SRCS}
   )
 
