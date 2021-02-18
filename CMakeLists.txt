@@ -273,6 +273,16 @@ find_package(DCMTK NO_MODULE REQUIRED)
 find_package(ITK NO_MODULE REQUIRED)
 include(${ITK_USE_FILE})
 
+set(export_targets TRUE)
+if(DCMQI_SUPERBUILD_BINARY_DIR)
+  string(FIND ${ITK_DIR}   "${DCMQI_SUPERBUILD_BINARY_DIR}" itk_here)
+  string(FIND ${DCMTK_DIR} "${DCMQI_SUPERBUILD_BINARY_DIR}" dcmtk_here)
+
+  if(NOT ${itk_here} EQUAL -1 OR NOT ${dcmtk_here} EQUAL -1)
+    set(export_targets FALSE)
+  endif()
+endif()
+
 #-----------------------------------------------------------------------------
 # DCMQI library, applications and tests
 #
@@ -342,8 +352,28 @@ if(NOT Slicer_DIR)
       PATH_VARS
         ${path_vars}
       NO_CHECK_REQUIRED_COMPONENTS_MACRO
-  )
+      )
+  write_basic_package_version_file(
+      ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+      VERSION ${DCMQI_VERSION}
+      COMPATIBILITY ExactVersion
+      )
 
+  if(export_targets)
+    install(EXPORT ${PROJECT_NAME}Targets
+            DESTINATION cmake
+            )
+    install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+            DESTINATION cmake
+            )
+    install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+            DESTINATION cmake
+            )
+    install(EXPORT ${PROJECT_NAME}Targets
+            FILE ${PROJECT_NAME}Targets.cmake
+            DESTINATION cmake
+            )
+  endif()
 endif()
 
 #-----------------------------------------------------------------------------
