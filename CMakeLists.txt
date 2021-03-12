@@ -353,6 +353,16 @@ if(NOT Slicer_DIR)
         ${path_vars}
       NO_CHECK_REQUIRED_COMPONENTS_MACRO
       )
+  set(CONFIG_DIR_CONFIG cmake)
+  set(_install_config ${CMAKE_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake)
+  configure_package_config_file(
+      CMake/${PROJECT_NAME}Config.cmake.in
+      ${_install_config}
+      INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
+      PATH_VARS
+        ${path_vars}
+      NO_CHECK_REQUIRED_COMPONENTS_MACRO
+      )
   write_basic_package_version_file(
       ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
       VERSION ${DCMQI_VERSION}
@@ -363,7 +373,7 @@ if(NOT Slicer_DIR)
     install(EXPORT ${PROJECT_NAME}Targets
             DESTINATION cmake
             )
-    install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    install(FILES ${_install_config}
             DESTINATION cmake
             )
     install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
