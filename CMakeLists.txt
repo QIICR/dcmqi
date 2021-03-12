@@ -383,6 +383,7 @@ if(NOT Slicer_DIR)
             FILE ${PROJECT_NAME}Targets.cmake
             DESTINATION cmake
             )
+    install(DIRECTORY ${PROJECT_BINARY_DIR}/include DESTINATION .)
   endif()
 endif()
 
