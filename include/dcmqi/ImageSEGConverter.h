@@ -1,11 +1,6 @@
 #ifndef DCMQI_SEGMENTATION_CONVERTER_H
 #define DCMQI_SEGMENTATION_CONVERTER_H
 
-// ZLIB includes
-#ifdef WITH_ZLIB
-#include <zlib.h>           /* for zlibVersion() */
-#endif
-
 // DCMTK includes
 #include <dcmtk/dcmfg/fgderimg.h>
 #include <dcmtk/dcmfg/fgseg.h>
