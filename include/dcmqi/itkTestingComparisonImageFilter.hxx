@@ -50,6 +50,7 @@ namespace itk
             m_TotalDifference = NumericTraits< AccumulateType >::ZeroValue();
             m_NumberOfPixelsWithDifferences = 0;
             m_IgnoreBoundaryPixels = false;
+            this->DynamicMultiThreadingOff();
         }
 
 //----------------------------------------------------------------------------
