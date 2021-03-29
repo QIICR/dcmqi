@@ -22,6 +22,7 @@
 # The module defines the following variables:
 #   GIT_EXECUTABLE - path to git command line client
 #   GIT_FOUND - true if the command line client was found
+#   GIT_VERSION_STRING - the version of git found (since CMake 2.8.8)
 #
 # If the command line client executable is found the macro
 #  GIT_WC_INFO(<dir> <var-prefix>)
@@ -47,6 +48,7 @@
 #  <var-prefix>_WC_LAST_CHANGED_DATE - date of last commit
 #  <var-prefix>_WC_LAST_CHANGED_REV - revision of last commit
 #  <var-prefix>_WC_LAST_CHANGED_LOG - last log of base revision
+#  <var-prefix>_WC_COMMIT_COUNT - number of commits in current branch
 #
 # Example usage:
 #   find_package(Git)
@@ -83,6 +85,15 @@ find_program(GIT_EXECUTABLE ${git_names}
 mark_as_advanced(GIT_EXECUTABLE)
 
 if(GIT_EXECUTABLE)
+  execute_process(COMMAND ${GIT_EXECUTABLE} --version
+                  OUTPUT_VARIABLE git_version
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if (git_version MATCHES "^git version [0-9]")
+    string(REPLACE "git version " "" GIT_VERSION_STRING "${git_version}")
+  endif()
+  unset(git_version)
+
   macro(GIT_WC_INFO dir prefix)
     execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify -q --short=7 HEAD
        WORKING_DIRECTORY ${dir}
@@ -92,33 +103,29 @@ if(GIT_EXECUTABLE)
     set(${prefix}_WC_REVISION ${${prefix}_WC_REVISION_HASH})
     if(NOT ${GIT_error} EQUAL 0)
       message(SEND_ERROR "Command \"${GIT_EXECUTBALE} rev-parse --verify -q --short=7 HEAD\" in directory ${dir} failed with output:\n${GIT_error}")
-    else(NOT ${GIT_error} EQUAL 0)
+    else()
       execute_process(COMMAND ${GIT_EXECUTABLE} name-rev ${${prefix}_WC_REVISION_HASH}
          WORKING_DIRECTORY ${dir}
          OUTPUT_VARIABLE ${prefix}_WC_REVISION_NAME
           OUTPUT_STRIP_TRAILING_WHITESPACE)
-    endif(NOT ${GIT_error} EQUAL 0)
-
-    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tag
-       WORKING_DIRECTORY ${dir}
-       OUTPUT_VARIABLE ${prefix}_WC_TAG
-       OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    if(NOT ${GIT_error} EQUAL 0)
-      set(${prefix}_WC_TAG "not available")
-    endif(NOT ${GIT_error} EQUAL 0)
+    endif()
 
     execute_process(COMMAND ${GIT_EXECUTABLE} config --get remote.origin.url
        WORKING_DIRECTORY ${dir}
        OUTPUT_VARIABLE ${prefix}_WC_URL
        OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} show -s --format="%ci" ${${prefix}_WC_REVISION_HASH}
+    execute_process(COMMAND ${GIT_EXECUTABLE} show -s --format=%ci ${${prefix}_WC_REVISION_HASH}
        WORKING_DIRECTORY ${dir}
        OUTPUT_VARIABLE ${prefix}_show_output
        OUTPUT_STRIP_TRAILING_WHITESPACE)
     string(REGEX REPLACE "^([0-9][0-9][0-9][0-9]\\-[0-9][0-9]\\-[0-9][0-9]).*"
       "\\1" ${prefix}_WC_LAST_CHANGED_DATE "${${prefix}_show_output}")
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-list HEAD --count
+       WORKING_DIRECTORY ${dir}
+       OUTPUT_VARIABLE ${prefix}_WC_COMMIT_COUNT
+       OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     set(${prefix}_WC_GITSVN False)
 
@@ -153,8 +160,8 @@ if(GIT_EXECUTABLE)
           "\\2" ${prefix}_WC_LAST_CHANGED_REV "${${prefix}_WC_INFO}")
         string(REGEX REPLACE "^(.*\n)?Last Changed Date: ([^\n]+).*"
           "\\2" ${prefix}_WC_LAST_CHANGED_DATE "${${prefix}_WC_INFO}")
-      endif(${git_svn_info_result} EQUAL 0)
-    endif(NOT "${git_config_output}" STREQUAL "")
+      endif()
+    endif()
 
     # If there is no 'remote.origin', default to "NA" value and print a warning message.
     if(NOT ${prefix}_WC_URL)
@@ -164,8 +171,8 @@ if(GIT_EXECUTABLE)
       set(${prefix}_WC_ROOT ${${prefix}_WC_URL})
     endif()
 
-  endmacro(GIT_WC_INFO)
-endif(GIT_EXECUTABLE)
+  endmacro()
+endif()
 
 # Handle the QUIETLY and REQUIRED arguments and set GIT_FOUND to TRUE if
 # all listed variables are TRUE
