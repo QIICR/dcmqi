@@ -249,11 +249,36 @@ namespace dcmqi {
         if(segmentAttributes->getSegmentDescription().length() > 0)
           segment->setSegmentDescription(segmentAttributes->getSegmentDescription().c_str());
 
-        if(segmentAttributes->getTrackingIdentifier().length() > 0)
-          segment->setTrackingID(segmentAttributes->getTrackingIdentifier().c_str());
+        if(segmentAttributes->getTrackingIdentifier().length() > 0){
+          std::string trackingUID;
+          if(!segmentAttributes->getTrackingUniqueIdentifier().length()){
+            std::cout << "WARNING: TrackingIdentifier is initialized, but TrackingUniqueIdentifier is not!" << std::endl;
+            std::cout << "TrackingUniqueIdentifier will be automatically populated. If you are encoding longitudinally" << std::endl;
+            std::cout << "segmented data, make sure you use the same TrackingUniqueIdentifier for the same structure!" << std::endl;
 
-        if(segmentAttributes->getTrackingUniqueIdentifier().length() > 0)
+            char dimUID[128];
+            dcmGenerateUniqueIdentifier(dimUID, QIICR_UID_ROOT);
+            trackingUID = std::string(dimUID);
+          } else {
+            trackingUID = segmentAttributes->getTrackingUniqueIdentifier();
+          }
+          segment->setTrackingID(segmentAttributes->getTrackingIdentifier().c_str());
+          segment->setTrackingUID(trackingUID.c_str());
+        }
+
+        if(segmentAttributes->getTrackingUniqueIdentifier().length() > 0){
+          std::string trackingID;
+          if(!segmentAttributes->getTrackingUniqueIdentifier().length()){
+            std::cout << "WARNING: TrackingUniqueIdentifier is initialized, but TrackingIdentifier is not!" << std::endl;
+            std::cout << "TrackingIdentifier will be automatically populated to be the same as SegmentLabel." << std::endl;
+
+            trackingID = segmentLabel.c_str();
+          } else {
+            trackingID = segmentAttributes->getTrackingIdentifier();
+          }
+          segment->setTrackingID(trackingID.c_str());
           segment->setTrackingUID(segmentAttributes->getTrackingUniqueIdentifier().c_str());
+        }
 
         CodeSequenceMacro* typeModifierCode = segmentAttributes->getSegmentedPropertyTypeModifierCodeSequence();
         if (typeModifierCode != NULL) {
