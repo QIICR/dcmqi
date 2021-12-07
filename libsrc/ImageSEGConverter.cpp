@@ -557,7 +557,7 @@ namespace dcmqi {
       }
     }
     // number of slices should be computed, since segmentation may have empty frames
-    imageSize[2] = ceil(computedVolumeExtent/imageSpacing[2])+1;
+    imageSize[2] = round(computedVolumeExtent/imageSpacing[2])+1;
 
     // Initialize the image
     ShortImageType::RegionType imageRegion;

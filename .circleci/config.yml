@@ -15,6 +15,23 @@ jobs:
     steps:
       - checkout
       - run:
+          name: install python 3.7.5 # from https://github.com/pyenv/pyenv/issues/950#issuecomment-947978563
+          command: |
+            wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1g.tar.gz
+            tar zxf openssl-1.1.1g.tar.gz
+            cd openssl-1.1.1g
+             ./config --prefix=/home/circleci/openssl --openssldir=/home/circleci/openssl no-ssl2
+            make && make install
+            export LDFLAGS="-L /home/circleci/openssl/lib -Wl,-rpath,/home/circleci/openssl/lib"
+            export CPPFLAGS="-I/home/circleci/openssl/include"
+            export SSH="/home/circleci/openssl"
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+            pyenv install 3.7.5
+            pyenv global 3.7.5
+      - run:
+          name: upgrade pip
+          command: pip install --upgrade pip
+      - run:
           name: install sckit-ci-addons
           command: pip install -U "scikit-ci-addons>=0.22.0"
       - run:
@@ -23,6 +40,8 @@ jobs:
       - run:
           name: install cmake
           command: |
+            sudo apt-get update
+            sudo apt-get install rsync
             ci_addons circle/install_cmake 3.7.0
       - run:
           name: build dcmqi
