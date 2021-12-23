@@ -27,13 +27,13 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/fedorov/ITK-dcmqi.git"
+    "${EP_GIT_PROTOCOL}://github.com/InsightSoftwareConsortium/ITK"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "stripped-down"
+    "v5.2.1"
     QUIET
     )
 
