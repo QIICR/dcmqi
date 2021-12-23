@@ -38,7 +38,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "itkMultiThreader.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
@@ -130,13 +129,11 @@ int main(int ac, char *av[])
       if( strcmp(av[1], "--with-threads") == 0 )
         {
         int numThreads = atoi(av[2]);
-        itk::MultiThreader::SetGlobalDefaultNumberOfThreads(numThreads);
         av += 2;
         ac -= 2;
         }
       else if( strcmp(av[1], "--without-threads") == 0 )
         {
-        itk::MultiThreader::SetGlobalDefaultNumberOfThreads(1);
         av += 1;
         ac -= 1;
         }
