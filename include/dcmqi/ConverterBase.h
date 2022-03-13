@@ -297,8 +297,8 @@ namespace dcmqi {
           ippPoint[j] = atof(ippStr.c_str());
         }
         if(!labelImage->TransformPhysicalPointToIndex(ippPoint, ippIndex)){
-          cout << "image position: " << ippPoint << endl;
-          cerr << "ippIndex: " << ippIndex << endl;
+          //cout << "image position: " << ippPoint << endl;
+          //cerr << "ippIndex: " << ippIndex << endl;
           // if certain DICOM instance does not map to a label slice, just skip it
           continue;
         }
