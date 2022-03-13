@@ -114,27 +114,25 @@ namespace dcmqi {
     int uidfound = 0, uidnotfound = 0;
     Uint8 *frameData = new Uint8[frameSize];
 
-    // NB this assumes all segmentation files have the same dimensions; alternatively, need to
-    //   do this operation for each segmentation file
-    vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[0]);
-
     bool hasDerivationImages = false;
-    for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
-      if((*vI).size()>0)
-        hasDerivationImages = true;
-
 
     FGPlanePosPatient* fgppp = FGPlanePosPatient::createMinimal("1","1","1");
     FGFrameContent* fgfc = new FGFrameContent();
     FGDerivationImage* fgder = new FGDerivationImage();
     OFVector<FGBase*> perFrameFGs;
 
-    perFrameFGs.push_back(fgppp);
-    perFrameFGs.push_back(fgfc);
-    if(hasDerivationImages)
-      perFrameFGs.push_back(fgder);
-
     for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
+
+      vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[segFileNumber]);
+      for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
+        if((*vI).size()>0)
+          hasDerivationImages = true;
+
+      perFrameFGs.clear();
+      perFrameFGs.push_back(fgppp);
+      perFrameFGs.push_back(fgfc);
+      if(hasDerivationImages)
+        perFrameFGs.push_back(fgder);
 
       //cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
@@ -368,6 +366,7 @@ namespace dcmqi {
               //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 			  DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
               OFVector<SourceImageItem*> srcimgItems;
+              cout << "Added source image item" << endl;
               CHECK_COND(derimgItem->addSourceImageItems(siVector,
                                                        CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
 														   code.CodeMeaning),
