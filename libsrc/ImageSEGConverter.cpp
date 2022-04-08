@@ -18,7 +18,6 @@ namespace dcmqi {
                                                           bool skipEmptySlices) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
-    //cout << "Input image size: " << inputSize << endl;
 
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
@@ -182,7 +181,6 @@ namespace dcmqi {
         short label = labelObject->GetLabel();
 
         if(!label){
-          cout << "Skipping label 0" << endl;
           continue;
         }
 
