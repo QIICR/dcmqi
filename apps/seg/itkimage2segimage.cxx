@@ -34,8 +34,19 @@ int main(int argc, char *argv[])
     ShortReaderType::Pointer reader = ShortReaderType::New();
     reader->SetFileName(segImageFiles[segFileNumber]);
     reader->Update();
+    cout << "Loaded segmentation from " << segImageFiles[segFileNumber] << endl;
+
     ShortImageType::Pointer labelImage = reader->GetOutput();
     segmentations.push_back(labelImage);
+
+    ShortImageType::SizeType ref_size, cmp_size;
+    ref_size = segmentations[0]->GetLargestPossibleRegion().GetSize();
+    cmp_size = labelImage->GetLargestPossibleRegion().GetSize();
+    if(ref_size[0] != cmp_size[0] || ref_size[1] != cmp_size[1]){
+      cerr << "Error: In-plane dimensions of segmentations are inconsistent!" << endl;
+      cerr << ref_size << " vs " << cmp_size << endl;
+      return EXIT_FAILURE;
+    }
   }
 
   if (verbose) {
