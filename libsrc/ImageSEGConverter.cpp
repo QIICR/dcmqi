@@ -482,6 +482,9 @@ namespace dcmqi {
 
   pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
     DcmSegmentation *segdoc = NULL;
+    
+    DcmRLEDecoderRegistration::registerCodecs();
+
     OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
     if(!segdoc){
       cerr << "ERROR: Failed to load segmentation dataset! " << cond.text() << endl;
@@ -502,7 +505,6 @@ namespace dcmqi {
   ImageSEGConverter::dcmSegmentation2itkimage(
       DcmSegmentation *segdoc,
       JSONSegmentationMetaInformationHandler *metaInfo) {
-    DcmRLEDecoderRegistration::registerCodecs();
 
     OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
