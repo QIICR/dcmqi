@@ -13,7 +13,7 @@ configuration:
 platform:
   - x64
 environment:
-  PYTHON_DIR: "C:\\Python27-x64"
+  PYTHON_DIR: "C:\\Python311-x64"
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   GITHUB_TOKEN:
     secure: mnRPU2KJBMkkUa4fo4ebLpsEG/gYpcAy4/X2ihGiwZiPGpkyvF1ItFFRSlUGubvf
