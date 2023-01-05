@@ -596,11 +596,14 @@ namespace dcmqi {
           OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
       assert(fgseg);
 
-      Uint16 segmentId = -1;
+      Uint16 segmentId = -1, segmentIdLabel;
       if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
         cerr << "ERROR: Failed to get ReferencedSegmentNumber!";
         throw -1;
       }
+
+      segmentIdLabel = segmentId;
+      segmentId = 1;
 
       // WARNING: this is needed only for David's example, which numbers
       // (incorrectly!) segments starting from 0, should start from 1
@@ -766,7 +769,7 @@ namespace dcmqi {
             index[0] = col;
             index[1] = row;
             index[2] = slice;
-            segment2image[segmentId]->SetPixel(index, segmentId);
+            segment2image[segmentId]->SetPixel(index, segmentIdLabel);
           }
         }
       }
