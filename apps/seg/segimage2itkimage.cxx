@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
      || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
     return EXIT_FAILURE;
 
+  DcmRLEDecoderRegistration::registerCodecs();
+
   DcmFileFormat sliceFF;
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();

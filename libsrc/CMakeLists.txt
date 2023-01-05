@@ -64,8 +64,17 @@ endif()
 
 set_property(GLOBAL APPEND PROPERTY ${CMAKE_PROJECT_NAME}_TARGETS ${lib_name})
 
+set(_dcmtk_libs)
+set(_dcmtk_includes)
+if(TARGET DCMTK::DCMTK)
+  set(_dcmtk_libs DCMTK::DCMTK)
+else()
+  set(_dcmtk_libs ${DCMTK_LIBRARIES})
+  set(_dcmtk_includes ${DCMTK_INCLUDE_DIRS})
+endif()
+
 set(${lib_name}_INCLUDE_DIRS
-  ${DCMTK_INCLUDE_DIRS}
+  ${_dcmtk_includes}
   ${ITK_INCLUDE_DIRS}
   ${JsonCpp_INCLUDE_DIR}
   $<BUILD_INTERFACE:${DCMQI_SOURCE_DIR}/include>  
@@ -82,7 +91,7 @@ endif()
 target_include_directories(${lib_name} PUBLIC ${${lib_name}_INCLUDE_DIRS})
 
 target_link_libraries(${lib_name} PUBLIC
-  ${DCMTK_LIBRARIES}
+  ${_dcmtk_libs}
   ${ITK_LIBRARIES}
   $<$<NOT:$<BOOL:${DCMQI_BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )

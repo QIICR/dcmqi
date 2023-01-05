@@ -102,7 +102,7 @@ endif()
 #     [...]
 #     )
 #
-option(${SUPERBUILD_TOPLEVEL_PROJECT}_USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." ON)
+option(${SUPERBUILD_TOPLEVEL_PROJECT}_USE_GIT_PROTOCOL "If behind a firewall turn this off to use https instead." OFF)
 set(EP_GIT_PROTOCOL "git")
 if(NOT ${SUPERBUILD_TOPLEVEL_PROJECT}_USE_GIT_PROTOCOL)
   set(EP_GIT_PROTOCOL "https")

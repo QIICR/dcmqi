@@ -23,7 +23,7 @@ before_script:
 # Install ajv
 - npm install ajv-cli@3.3.0 -g
 # Install dicom3tools
-- wget --no-check-certificate http://slicer.kitware.com/midas3/download/item/270308/dicom3tools_macexe_1.00.snapshot.20161218101718.zip -O dicom3tools.zip
+- wget  -O dicom3tools.zip https://github.com/QIICR/dicom3tools/releases/download/20211009110822/dicom3tools_macexe_1.00.snapshot.20211009110239.zip
 - tar zxf dicom3tools.zip
 - mv dciodvfy /usr/local/bin/
 # Use scikit-ci-addons to
