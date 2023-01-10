@@ -30,7 +30,7 @@ before_build:
         $client.DownloadFile("https://github.com/QIICR/dicom3tools/releases/download/20200512090031/dicom3tools_winexe_1.00.snapshot.20200512090031.zip", "C:\dicom3tools.zip")
         $client.DownloadFile("https://github.com/qiicr/zlib-dcmqi/releases/download/zlib-dcmqi-1.2.3-VS12-Win64-Release-static/zlib-dcmqi.zip", "C:\zlib-dcmqi.zip")
         $client.DownloadFile("https://github.com/QIICR/dcmtk-dcmqi/releases/download/DCMTK-dcmqi-3.6.5_20200113-VS12-Win64-Release-v0.0.29-static/DCMTK-dcmqi.zip", "C:\DCMTK-dcmqi.zip")
-        $client.DownloadFile("https://github.com/QIICR/ITK-dcmqi/releases/download/ITK-dcmqi-VS17-Win64-Release-v0.0.39-static/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
+        $client.DownloadFile("https://github.com/QIICR/ITK-dcmqi/releases/download/ITK-dcmqi-VS17-Win64-Release-v0.0.40-static/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
   # Extract
   - |
     7z x C:\dicom3tools.zip -oC:\dicom3tools
