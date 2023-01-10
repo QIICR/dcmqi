@@ -58,7 +58,7 @@ before_build:
   - |
     mkdir c:\dcmqi\dcmqi-build
     cd c:\dcmqi\dcmqi-build
-    cmake -G "Visual Studio 17 2022" -Ax64 -DBUILD_SHARED_LIBS:BOOL=OFF c:\dcmqi
+    cmake -G "Visual Studio 17 2022" -Ax64 -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-4.10 -DSlicerExecutionModel_DIR:PATH=C:\SlicerExecutionModel\SlicerExecutionModel-build -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib -DBUILD_SHARED_LIBS:BOOL=OFF c:\dcmqi
     dir
 build_script:
   - cmd: cmake --build . --config Release -- /m
