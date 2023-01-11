@@ -111,7 +111,7 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
                              actual))
 
     # Compare primitive types immediately
-    if type(expected) in (int, str, bool, float, unicode):
+    if type(expected) in (int, str, bool, float):
         return expected == actual, Stack()
 
     if not ignore_missing_keys and len(expected) > len(actual):
