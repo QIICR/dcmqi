@@ -27,7 +27,7 @@ image: dcmqi dcmqi.test
 
 # Pull dockcross image
 prereq.pull_dockcross:
-	$(DOCKER) pull dockcross/manylinux-x64
+	$(DOCKER) pull dockcross/manylinux2014-x64
 	$(DOCKER) run --rm dockcross/manylinux2014-x64 > $(TMP)/dockcross
 	chmod u+x $(TMP)/dockcross
 
