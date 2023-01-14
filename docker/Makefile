@@ -28,7 +28,7 @@ image: dcmqi dcmqi.test
 # Pull dockcross image
 prereq.pull_dockcross:
 	$(DOCKER) pull dockcross/manylinux-x64
-	$(DOCKER) run --rm dockcross/manylinux-x64 > $(TMP)/dockcross
+	$(DOCKER) run --rm dockcross/manylinux2014-x64 > $(TMP)/dockcross
 	chmod u+x $(TMP)/dockcross
 
 # Download and build dicom3tools
