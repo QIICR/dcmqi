@@ -59,7 +59,7 @@ prereq.install_npm_packages: prereq.pull_dockcross
 # Configure, build and package
 dcmqi.generate_package: prereq.pull_dockcross
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross cmake -B$(BUILD_DIR) -H. -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:FILEPATH=/opt/python/cp27-cp27mu/bin/python && \
+	$(TMP)/dockcross cmake -B$(BUILD_DIR) -H. -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:FILEPATH=/opt/python/cp38-cp38/bin/python && \
 	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:/work/build/$(dicom3tools_version)/appsrc/dcfile:$$PATH && ninja -C$(BUILD_DIR) -v" && \
 	$(TMP)/dockcross ninja -C$(BUILD_DIR)/dcmqi-build package
 
@@ -91,7 +91,7 @@ dcmqi: prereq.build_dicom3tools prereq.install_npm_packages dcmqi.generate_packa
 
 dcmqi.test:
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:/work/build/$(dicom3tools_version)/appsrc/dcfile:/opt/python/cp27-cp27mu/bin/:$$PATH && cd /work/build/dcmqi-build && ctest -j4 -D ExperimentalTest -VV --no-compress-output"
+	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:/work/build/$(dicom3tools_version)/appsrc/dcfile:/opt/python/cp38-cp38/bin/:$$PATH && cd /work/build/dcmqi-build && ctest -j4 -D ExperimentalTest -VV --no-compress-output"
 
 dcmqi.clean:
 	rm -rf $(ROOT_DIR)/$(BUILD_DIR)
