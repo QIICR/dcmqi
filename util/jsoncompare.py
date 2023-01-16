@@ -70,7 +70,7 @@ def _is_dict_same(expected, actual, ignore_value_of_keys):
 
 
 def _is_list_same(expected, actual, ignore_value_of_keys):
-    for i in xrange(len(expected)):
+    for i in range(len(expected)):
         are_same_flag, stack = _are_same(expected[i], actual[i], ignore_value_of_keys)
         if not are_same_flag:
             return False, \
@@ -82,7 +82,7 @@ def _is_list_same(expected, actual, ignore_value_of_keys):
 def _bottom_up_sort(unsorted_json):
     if isinstance(unsorted_json, list):
         new_list = []
-        for i in xrange(len(unsorted_json)):
+        for i in range(len(unsorted_json)):
             new_list.append(_bottom_up_sort(unsorted_json[i]))
         return sorted(new_list)
 
@@ -111,7 +111,7 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
                              actual))
 
     # Compare primitive types immediately
-    if type(expected) in (int, str, bool, long, float, unicode):
+    if type(expected) in (int, str, bool, float):
         return expected == actual, Stack()
 
     if not ignore_missing_keys and len(expected) > len(actual):

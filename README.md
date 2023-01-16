@@ -1,9 +1,9 @@
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi) [![codecov](https://codecov.io/gh/QIICR/dcmqi/branch/master/graph/badge.svg)](https://codecov.io/gh/QIICR/dcmqi) 
 [![](https://img.shields.io/docker/pulls/qiicr/dcmqi.svg?maxAge=604800)](https://hub.docker.com/r/qiicr/dcmqi) 
 
-|              | Linux                                                                                                  | macOS                                                                                                | Windows                                                                                                                             |
-|--------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| Build Status for latest | [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi) | [![TravisCI](https://app.travis-ci.com/QIICR/dcmqi.svg?branch=master)](https://app.travis-ci.com/QIICR/dcmqi) | [![Appveyor](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi) |
+|              | Linux                                                                                                                                                                                                  | Windows                                                                                                                             |
+|--------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| Build Status for latest | [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi) |  [![Appveyor](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi) |
 
 # Introduction
 

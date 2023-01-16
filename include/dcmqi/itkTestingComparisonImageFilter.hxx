@@ -34,6 +34,7 @@ namespace itk
         ComparisonImageFilter< TInputImage, TOutputImage >
         ::ComparisonImageFilter()
         {
+	    this->DynamicMultiThreadingOff();
             // We require two inputs to execute.
             this->SetNumberOfRequiredInputs(2);
 

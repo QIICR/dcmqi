@@ -43,7 +43,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install rsync
-            ci_addons circle/install_cmake 3.7.0
+            ci_addons circle/install_cmake 3.16.3
       - run:
           name: build dcmqi
           command: cd docker && make dcmqi
