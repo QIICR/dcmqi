@@ -3,7 +3,7 @@
 
 |              | Linux                                                                                                                                                                                                  | Windows                                                                                                                             |
 |--------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| Build Status for latest | [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=svg)](https://circleci.com/gh/QIICR/dcmqi) |  [![Appveyor](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi) |
+| Build Status for latest | [![Circle CI](https://circleci.com/gh/QIICR/dcmqi.svg?style=shield)](https://circleci.com/gh/QIICR/dcmqi) |  [![Appveyor](https://ci.appveyor.com/api/projects/status/04l87y2j6prboap7?svg=true)](https://ci.appveyor.com/project/fedorov/dcmqi) |
 
 # Introduction
 
