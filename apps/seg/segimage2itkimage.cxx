@@ -23,6 +23,11 @@ int main(int argc, char *argv[])
     dcmtk::log4cplus::BasicConfigurator::doConfigure();
   }
 
+  if (mergeSegments && outputType != "nrrd") {
+    std::cerr << "ERROR: mergeSegments option is only supported when output format is NRRD!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   if(helper::isUndefinedOrPathDoesNotExist(inputSEGFileName, "Input DICOM file")
      || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
     return EXIT_FAILURE;
@@ -34,7 +39,7 @@ int main(int argc, char *argv[])
   DcmDataset* dataset = sliceFF.getDataset();
 
   try {
-    pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset);
+    pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset, mergeSegments);
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
 

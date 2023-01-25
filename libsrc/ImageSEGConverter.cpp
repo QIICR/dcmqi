@@ -480,7 +480,7 @@ namespace dcmqi {
   }
 
 
-  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
+  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset, bool mergeSegments) {
     DcmSegmentation *segdoc = NULL;
     
     DcmRLEDecoderRegistration::registerCodecs();
@@ -496,7 +496,7 @@ namespace dcmqi {
     populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
     const std::map<unsigned, ShortImageType::Pointer> segment2image =
-        dcmSegmentation2itkimage(segdoc, &metaInfo);
+        dcmSegmentation2itkimage(segdoc, &metaInfo, mergeSegments);
     return pair<map<unsigned, ShortImageType::Pointer>, string>(
         segment2image, metaInfo.getJSONOutputAsString());
   }
@@ -504,7 +504,8 @@ namespace dcmqi {
   std::map<unsigned, ShortImageType::Pointer>
   ImageSEGConverter::dcmSegmentation2itkimage(
       DcmSegmentation *segdoc,
-      JSONSegmentationMetaInformationHandler *metaInfo) {
+      JSONSegmentationMetaInformationHandler *metaInfo,
+      bool mergeSegments) {
 
     OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
     dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);

@@ -36,10 +36,12 @@ namespace dcmqi {
                                                 bool skipEmptySlices=true);
 
 
-    static pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset);
+    static pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset,
+        bool mergeSegments);
     static map<unsigned, ShortImageType::Pointer> dcmSegmentation2itkimage(
         DcmSegmentation *segdoc,
-        JSONSegmentationMetaInformationHandler *metaInfo=NULL);
+        JSONSegmentationMetaInformationHandler *metaInfo=NULL,
+        bool mergeSegments = false);
 
     static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
                                                  JSONSegmentationMetaInformationHandler &metaInfo);

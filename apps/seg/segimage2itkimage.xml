@@ -66,6 +66,15 @@
       <description>Display more verbose output, useful for troubleshooting.</description>
     </boolean>
 
+    <boolean>
+      <name>mergeSegments</name>
+      <label>Merge segments</label>
+      <channel>input</channel>
+      <longflag>mergeSegments</longflag>
+      <default>false</default>
+      <description>Save all segments into a single file. When segments are non-overlapping, output is a single 3D file. If overlapping, single 4D following conventions of 3D Slicer segmentations format. Only supported when the output is NRRD for now.</description>
+    </boolean>
+
   </parameters>
 
 </executable>
