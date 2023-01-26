@@ -1,4 +1,4 @@
-FROM centos:5
+FROM centos:7
 MAINTAINER http://github.com/QIICR
 
 COPY imagefiles/docker_entry.sh /dcmqi/
