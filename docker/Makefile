@@ -87,7 +87,17 @@ dcmqi.docker_image:
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 	dcmqi
 
-dcmqi: prereq.build_dicom3tools prereq.install_npm_packages dcmqi.generate_package dcmqi.docker_image
+dcmqi.docker_image_test:
+	$(info $$DOCKER_DIR ${DOCKER_DIR})
+	cd $(DOCKER_DIR) && \
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` itkimage2paramap --help
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` paramap2itkimage --help
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` itkimage2segimage --help
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` segimage2itkimage --help
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` tid1500reader --help
+	docker run --rm $(ORG)/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` tid1500writer --help
+
+dcmqi: prereq.build_dicom3tools prereq.install_npm_packages dcmqi.generate_package dcmqi.docker_image dcmqi.docker_image_test
 
 dcmqi.test:
 	cd $(ROOT_DIR) && \
