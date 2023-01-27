@@ -147,13 +147,11 @@ namespace dcmqi {
       }
 
       values.append(innerList);
-
     }
     return values;
   }
 
   SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID, int segmentationId) {
-
     for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
        vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
@@ -247,7 +245,6 @@ namespace dcmqi {
           Json::Value elem = segment["TrackingUniqueIdentifier"];
           segmentAttribute->setTrackingUniqueIdentifier(elem.asString());
         }
-
       }
       segmentsAttributesMappingList.push_back(labelID2SegmentAttributes);
     }
