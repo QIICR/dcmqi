@@ -672,10 +672,10 @@ namespace dcmqi {
         //rgb[1] = unsigned(rgb[1]*256);
         //rgb[2] = unsigned(rgb[2]*256);
 
-        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentId):NULL;
+        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentIdLabel):NULL;
 
         if (segmentAttributes) {
-          segmentAttributes->setLabelID(segmentId);
+          segmentAttributes->setLabelID(segmentIdLabel);
           DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
           string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
           segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);
@@ -759,6 +759,7 @@ namespace dcmqi {
       }
 
       // initialize slice with the frame content
+
       for(unsigned row=0;row<imageSize[1];row++){
         for(unsigned col=0;col<imageSize[0];col++){
           ShortImageType::PixelType pixel;

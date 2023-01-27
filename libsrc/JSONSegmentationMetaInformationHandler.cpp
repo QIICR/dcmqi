@@ -97,8 +97,12 @@ namespace dcmqi {
   Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
     // return a list of lists, where each inner list contains just one item (segment)
     Json::Value values(Json::arrayValue);
+
     for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
        vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
+
+      Json::Value innerList(Json::arrayValue);
+
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt=vIt->begin();mIt!=vIt->end();++mIt){
         Json::Value segment;
         SegmentAttributes* segmentAttributes = mIt->second;
@@ -139,15 +143,17 @@ namespace dcmqi {
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[1]);
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[2]);
         segment["recommendedDisplayRGBValue"] = rgb;
-        Json::Value innerList(Json::arrayValue);
         innerList.append(segment);
-        values.append(innerList);
       }
+
+      values.append(innerList);
+
     }
     return values;
   }
 
-  SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
+  SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID, int segmentationId) {
+
     for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
        vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
@@ -160,7 +166,11 @@ namespace dcmqi {
     SegmentAttributes *segment = new SegmentAttributes(labelID);
     map<unsigned,SegmentAttributes*> tempMap;
     tempMap[labelID] = segment;
-    this->segmentsAttributesMappingList.push_back(tempMap);
+    if (this->segmentsAttributesMappingList.size() == 0)
+      this->segmentsAttributesMappingList.push_back(tempMap);
+    else
+      this->segmentsAttributesMappingList[0][labelID] = segment;
+
     return segment;
   }
 

@@ -35,7 +35,9 @@ namespace dcmqi {
     void read();
     bool write(string filename);
 
-    SegmentAttributes* createAndGetNewSegment(unsigned labelID);
+    // if segmentationId is -1, create segment within a newly created segmentation
+    // otherwise add segment to the existing segmentation identified by segmentationId
+    SegmentAttributes* createAndGetNewSegment(unsigned labelID, int segmentationId = -1);
 
   protected:
 
