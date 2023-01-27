@@ -162,12 +162,12 @@ namespace dcmqi {
     }
 
     SegmentAttributes *segment = new SegmentAttributes(labelID);
-    map<unsigned,SegmentAttributes*> tempMap;
-    tempMap[labelID] = segment;
-    if (this->segmentsAttributesMappingList.size() == 0)
+    if (this->segmentsAttributesMappingList.size() < segmentationId+1) {
+      map<unsigned,SegmentAttributes*> tempMap;
+      tempMap[labelID] = segment;
       this->segmentsAttributesMappingList.push_back(tempMap);
-    else
-      this->segmentsAttributesMappingList[0][labelID] = segment;
+    } else
+      this->segmentsAttributesMappingList[segmentationId][labelID] = segment;
 
     return segment;
   }

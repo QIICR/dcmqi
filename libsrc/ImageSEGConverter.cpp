@@ -604,7 +604,10 @@ namespace dcmqi {
       }
 
       segmentIdLabel = segmentId;
-      segmentId = 1;
+
+      // TODO: hack? need to think about this AF
+      if (mergeSegments)
+        segmentId = 1;
 
       // WARNING: this is needed only for David's example, which numbers
       // (incorrectly!) segments starting from 0, should start from 1
@@ -672,7 +675,16 @@ namespace dcmqi {
         //rgb[1] = unsigned(rgb[1]*256);
         //rgb[2] = unsigned(rgb[2]*256);
 
-        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentIdLabel):NULL;
+
+        SegmentAttributes* segmentAttributes;
+        if (mergeSegments) {
+          // all segments go into the same segmentation
+          // TODO: check for overlaps!
+          segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentIdLabel, 0):NULL;
+        } else {
+          // each segment is assigned to a separate segmentation
+          segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(1, segmentIdLabel-1):NULL;
+        }
 
         if (segmentAttributes) {
           segmentAttributes->setLabelID(segmentIdLabel);
