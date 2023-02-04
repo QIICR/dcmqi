@@ -683,7 +683,8 @@ namespace dcmqi {
           segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentIdLabel, 0):NULL;
         } else {
           // each segment is assigned to a separate segmentation
-          segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(1, segmentIdLabel-1):NULL;
+          //std::cout << "segmentIdLabel is " << segmentIdLabel << std::endl;
+          segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentIdLabel-1, segmentIdLabel-1):NULL;
         }
 
         if (segmentAttributes) {

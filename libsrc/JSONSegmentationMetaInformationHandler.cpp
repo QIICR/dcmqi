@@ -152,6 +152,8 @@ namespace dcmqi {
   }
 
   SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID, int segmentationId) {
+    //std::cout << "DEBUG: num segmentations: " << this->segmentsAttributesMappingList.size() << std::endl;
+    /*
     for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
        vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
@@ -159,7 +161,7 @@ namespace dcmqi {
         if (segmentAttributes->getLabelID() == labelID)
           return NULL;
       }
-    }
+    }*/
 
     SegmentAttributes *segment = new SegmentAttributes(labelID);
     if (this->segmentsAttributesMappingList.size() < segmentationId+1) {
