@@ -578,6 +578,7 @@ namespace dcmqi {
     // about pixels that are initialized more than once.
 
     const DcmIODTypes::Frame *unpackedFrame = NULL;
+    int targetSegmentsImageIndex = -1;
 
     for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
       const DcmIODTypes::Frame *frame = segdoc->getFrame(frameId);
@@ -598,6 +599,7 @@ namespace dcmqi {
       assert(fgseg);
 
       Uint16 segmentId = -1, segmentIdLabel;
+
       if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
         cerr << "ERROR: Failed to get ReferencedSegmentNumber!";
         throw -1;
@@ -605,18 +607,13 @@ namespace dcmqi {
 
       segmentIdLabel = segmentId;
 
-      // TODO: hack? need to think about this AF
-      if (mergeSegments)
-        segmentId = 1;
-
-      // WARNING: this is needed only for David's example, which numbers
-      // (incorrectly!) segments starting from 0, should start from 1
       if(segmentId == 0){
         cerr << "ERROR: ReferencedSegmentNumber value of 0 was encountered. Segment numbers and references to segment numbers should both start from 1!" << endl;
         throw -1;
       }
 
-      if(segment2image.find(segmentId) == segment2image.end()){
+      // this will happen at least once, and only once if mergeSegments is true
+      if(segment2image.size() == 0 || !mergeSegments && segment2image.find(segmentId) == segment2image.end()){
         typedef itk::ImageDuplicator<ShortImageType> DuplicatorType;
         DuplicatorType::Pointer dup = DuplicatorType::New();
         dup->SetInputImage(segImage);
@@ -624,6 +621,8 @@ namespace dcmqi {
         ShortImageType::Pointer newSegmentImage = dup->GetOutput();
         newSegmentImage->FillBuffer(0);
         segment2image[segmentId] = newSegmentImage;
+
+        targetSegmentsImageIndex = segmentId;
       }
 
       // populate meta information needed for Slicer ScalarVolumeNode initialization
@@ -752,10 +751,10 @@ namespace dcmqi {
         }
       }
 
-      if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
+      if(!segment2image[targetSegmentsImageIndex]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
         cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
         " is outside image geometry!" << frameOriginIndex << endl;
-        cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
+        cerr << "Image size: " << segment2image[targetSegmentsImageIndex]->GetBufferedRegion().GetSize() << endl;
         throw -1;
       }
 
@@ -772,7 +771,6 @@ namespace dcmqi {
       }
 
       // initialize slice with the frame content
-
       for(unsigned row=0;row<imageSize[1];row++){
         for(unsigned col=0;col<imageSize[0];col++){
           ShortImageType::PixelType pixel;
@@ -784,7 +782,7 @@ namespace dcmqi {
             index[0] = col;
             index[1] = row;
             index[2] = slice;
-            segment2image[segmentId]->SetPixel(index, segmentIdLabel);
+            segment2image[targetSegmentsImageIndex]->SetPixel(index, segmentIdLabel);
           }
         }
       }
