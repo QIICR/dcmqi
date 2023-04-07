@@ -37,7 +37,9 @@
 using namespace std;
 
 typedef short ShortPixelType;
+typedef unsigned char CharPixelType;
 typedef itk::Image<ShortPixelType, 3> ShortImageType;
+typedef itk::Image<CharPixelType, 3> CharImageType;
 typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
 
 namespace dcmqi {

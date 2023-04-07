@@ -15,6 +15,7 @@
 #include <itkLabelStatisticsImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
 #include <itkChangeInformationImageFilter.h>
+#include <itkImportImageFilter.h>
 
 // DCMQI includes
 #include "dcmqi/ConverterBase.h"

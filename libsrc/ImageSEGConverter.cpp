@@ -770,7 +770,57 @@ namespace dcmqi {
         deleteFrame = false;
       }
 
+      /* WIP */
+
+      // use ConstIterator, as in this example:
+      // https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Examples/Iterators/ImageRegionIterator.cxx#L201-L212
+      CharImageType::RegionType frameRegion;
+      CharImageType::RegionType::IndexType regionStart;
+      CharImageType::RegionType::SizeType regionSize;
+
+      regionStart[0] = 0;
+      regionStart[1] = 0;
+      regionStart[2] = slice;
+
+      regionSize[0] = imageSize[0];
+      regionSize[1] = imageSize[1];
+      regionSize[2] = 1;
+
+      frameRegion.SetSize(regionSize);
+      frameRegion.SetIndex(regionStart);
+
+      const bool importImageFilterWillOwnTheBuffer = false;
+
+
+
+      // itkImportImageFilter example:
+      // https://itk.org/Doxygen/html/SphinxExamples_2src_2Core_2Common_2ConvertArrayToImage_2Code_8cxx-example.html#_a1
+      const unsigned int numberOfPixels = imageSize[0]*imageSize[1];
+      using ImportFilterType = itk::ImportImageFilter<CharPixelType, 3>;
+      ImportFilterType::Pointer importFilter = ImportFilterType::New();
+      importFilter->SetImportPointer((unsigned char*)unpackedFrame->pixData, numberOfPixels, importImageFilterWillOwnTheBuffer);
+      importFilter->SetRegion(frameRegion);
+      importFilter->Update();
+
+
+      using ConstIteratorType = itk::ImageRegionConstIterator<CharImageType>;
+      using IteratorType = itk::ImageRegionIterator<ShortImageType>;
+      ConstIteratorType inputIt(importFilter->GetOutput(), frameRegion);
+      IteratorType outputIt(segment2image[targetSegmentsImageIndex], frameRegion);
+
+      inputIt.GoToBegin();
+      outputIt.GoToBegin();
+
+      while(!inputIt.IsAtEnd()){
+        if(inputIt.Get() != 0)
+          outputIt.Set(segmentIdLabel);
+        ++outputIt;
+        ++inputIt;
+      }
+      /* WIP */
+
       // initialize slice with the frame content
+      /* WIP commented out 
       for(unsigned row=0;row<imageSize[1];row++){
         for(unsigned col=0;col<imageSize[0];col++){
           ShortImageType::PixelType pixel;
@@ -786,6 +836,7 @@ namespace dcmqi {
           }
         }
       }
+      */
 
       if(deleteFrame)
         delete unpackedFrame;
