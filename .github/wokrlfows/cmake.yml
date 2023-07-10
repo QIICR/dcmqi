@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ gh-actions ]
+  pull_request:
+    branches: [ gh-actions ]
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.7.5' 
+      
+      - name: "Install sckit-ci-addons"
+        run: |
+          pip install -U "scikit-ci-addons>=0.22.0" 
