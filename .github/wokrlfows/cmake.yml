@@ -21,3 +21,6 @@ jobs:
       - name: "Install sckit-ci-addons"
         run: |
           pip install -U "scikit-ci-addons>=0.22.0" 
+
+      - name: "Install jsondiff"
+        run: pip install jsondiff
