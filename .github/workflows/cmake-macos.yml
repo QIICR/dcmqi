@@ -1,0 +1,47 @@
+# derived from https://github.com/QIICR/dcmqi/blob/81768b58ab1ba0380c9bef504e37c360fbd40886/.travis.yml
+name: C/C++ CI macos
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-linux:
+
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.7.14'
+    - name: "Install sckit-ci-addons"
+      run: |
+        pip install -U "scikit-ci-addons>=0.22.0"
+
+    - name: "Install jsondiff"
+      run: pip install jsondiff
+    - name: "Install cmake"
+      run: |
+        cmake --version
+        echo ${PATH}
+        wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
+        unzip ninja-mac.zip && sudo cp ninja /usr/local/bin/
+
+    - name: "Configure dcmqi"
+      run: |
+        cd ${{ github.workspace }} && mkdir dcmqi-build
+        cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }}
+
+    - name: "Build dcmqi"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && ninja
+
+    - name: "Package dcmqi"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
+  
+  
