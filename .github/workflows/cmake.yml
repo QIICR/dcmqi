@@ -47,7 +47,7 @@ jobs:
         with:
           python-version: '3.8.0'
       
-      - name: Download prerequisites
+      - name: Download prerequisite packages
         run: |
           $client = new-object System.Net.WebClient;
           $client.DownloadFile("https://github.com/QIICR/dicom3tools/releases/download/20200512090031/dicom3tools_winexe_1.00.snapshot.20200512090031.zip", "C:\dicom3tools.zip")
@@ -56,9 +56,29 @@ jobs:
           $client.DownloadFile("https://github.com/QIICR/ITK-dcmqi/releases/download/ITK-dcmqi-VS17-Win64-Release-v0.0.40-static/ITK-dcmqi.zip", "C:\ITK-dcmqi.zip")
         shell: pwsh
 
-      - name: Uncompress prerequisites
+      - name: Uncompress prerequisite packages
         run: |
           7z x C:\dicom3tools.zip -oC:\dicom3tools
           7z x C:\zlib-dcmqi.zip  -oC:\zlib-install
           7z x C:\DCMTK-dcmqi.zip -oC:\DCMTK-install
           7z x C:\ITK-dcmqi.zip   -oC:\ITK-install
+
+      - name: Install prerequisite python packages
+        run: |
+          pip install -U "scikit-ci-addons>=0.18.0"
+          pip install jsondiff
+          
+      - name: Configure project
+        run: |
+          mkdir c:\dcmqi\dcmqi-build
+          cd c:\dcmqi\dcmqi-build
+          cmake -G "Visual Studio 17 2022" -Ax64 -DITK_DIR:PATH=C:\ITK-install\lib\cmake\ITK-5.3 -DDCMTK_DIR:PATH=C:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib -DBUILD_SHARED_LIBS:BOOL=OFF c:\dcmqi
+
+      - name: Build and package
+        run: |
+          cmake --build . --config Release -- /m
+          cd c:\dcmqi\dcmqi-build\dcmqi-build
+          cmake --build . --config Release --target PACKAGE -- /m
+      
+      
+      
