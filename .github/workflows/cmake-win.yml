@@ -14,6 +14,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - uses: actions/checkout@v3
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -45,6 +46,7 @@ jobs:
           pip install jsondiff
           
       - name: Configure project
+
         run: |
           ls c:\
           dir c:\
