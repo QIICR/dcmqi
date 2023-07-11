@@ -7,31 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-linux:
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.7.14'
-    - name: "Install sckit-ci-addons"
-      run: |
-        pip install -U "scikit-ci-addons>=0.22.0"
-
-    - name: "Install jsondiff"
-      run: pip install jsondiff
-    - name: "Install cmake"
-      run: |
-        sudo apt-get update
-        sudo apt-get install rsync
-        ci_addons circle/install_cmake 3.16.3
-    - name: "Build dcmqi"
-      run: |
-        cd docker && make dcmqi
-  
+ 
   build-windows:
     
     runs-on: windows-latest
