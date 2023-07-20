@@ -6,7 +6,7 @@
 DOCKER = docker
 
 # Docker organization to pull the images from
-ORG = qiicr
+ORG = fedorov
 
 # Directories
 ROOT_DIR = $(shell pwd)/..
