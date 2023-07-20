@@ -31,5 +31,14 @@ jobs:
     - name: "Build dcmqi"
       run: |
         cd docker && make dcmqi
-  
+
+    - name: "Test dcmqi"
+      run: |
+        cd docker && make dcmqi.test
+
+    - name: "Publish docker image"
+      run: |
+         docker login -u $DOCKER_USER -p $DOCKER_PASS && \
+         docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+         || echo "skipping docker push"
  
