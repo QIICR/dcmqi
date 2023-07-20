@@ -38,7 +38,7 @@ jobs:
 
     - name: "Publish docker image"
       run: |
-         docker login -u $DOCKER_USER -p $DOCKER_PASS && \
+         docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
          docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
          || echo "skipping docker push"
  
