@@ -5,11 +5,12 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
- 
+
   build-windows:
-    
+
     runs-on: windows-latest
     timeout-minutes: 30
 
@@ -19,11 +20,11 @@ jobs:
         with:
           vs-version: '17'
           msbuild-architecture: x64
-        
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8.0'
-      
+
       - name: Download prerequisite packages
         run: |
           $client = new-object System.Net.WebClient;
@@ -44,7 +45,7 @@ jobs:
         run: |
           pip install -U "scikit-ci-addons>=0.18.0"
           pip install jsondiff
-          
+
       - name: Configure project
 
         run: |
@@ -63,6 +64,6 @@ jobs:
           cmake --build . --config Release -- /m
           cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
-      
-      
-      
+
+
+
