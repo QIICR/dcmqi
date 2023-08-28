@@ -37,12 +37,18 @@ jobs:
         cd ${{ github.workspace }} && mkdir dcmqi-build
         cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }}
 
+    - name: "Build DCMTK"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && ninja DCMTK
+
+    - name: "Build ITK"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && ninja ITK
+
     - name: "Build dcmqi"
       run: |
-        cd ${{ github.workspace }}/dcmqi-build && ninja
+        cd ${{ github.workspace }}/dcmqi-build && ninja dcmqi
 
     - name: "Package dcmqi"
       run: |
         cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
-
-
