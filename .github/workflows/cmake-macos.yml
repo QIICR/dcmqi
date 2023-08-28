@@ -6,6 +6,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build-linux:
@@ -43,5 +44,5 @@ jobs:
     - name: "Package dcmqi"
       run: |
         cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
-  
-  
+
+
