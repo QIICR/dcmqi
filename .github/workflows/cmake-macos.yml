@@ -47,7 +47,7 @@ jobs:
     # since dcmqi build later requires DCMTK/ITK headers from source, and libraries from
     # build directories. For ZLIB, installation directory is sufficient since it contains
     # both, headers and libraries.
-    - name: Check for chached DCMTK, ITK and ZLIB
+    - name: Check for cached DCMTK, ITK and ZLIB
       id: cache-dcmtk-itk-zlib
       uses: actions/cache@v3
       env:

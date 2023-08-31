@@ -43,7 +43,6 @@ jobs:
 
       - name: Install prerequisite python packages
         run: |
-          pip install -U "scikit-ci-addons>=0.18.0"
           pip install jsondiff
 
       - name: Configure project
@@ -58,7 +57,7 @@ jobs:
           echo "Step 3"
           cmake -G "Visual Studio 17 2022" -Ax64 -DITK_DIR:PATH=c:\ITK-install\lib\cmake\ITK-5.3 -DDCMTK_DIR:PATH=c:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
 
-      - name: Build and package
+      - name: Build dcmqi and package
         run: |
           cd ${{ github.workspace }}\dcmqi-build/
           cmake --build . --config Release -- /m
