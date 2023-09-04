@@ -42,7 +42,7 @@
 #
 #   Name of the latest tag. It is used to reference the "bleeding edge"
 #   version on GitHub. This lightweight tag is automatically updated
-#   by a script running on CI services like Appveyor, CircleCI or TravisCI.
+#   by the workflow files fueling GitHub Actions.
 #
 # .. variable:: DCMQI_SOURCE_DIR
 #
