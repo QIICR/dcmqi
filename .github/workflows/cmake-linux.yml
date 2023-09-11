@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  deployments: write
+  packages: write
+
 jobs:
   build-linux:
 
