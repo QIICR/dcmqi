@@ -49,4 +49,4 @@ jobs:
             --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
             --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-            --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }} --verbose
+            --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }}
