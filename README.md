@@ -3,7 +3,7 @@
 
 | CI Build     | Linux | Windows | Mac |
 |--------------|-------|---------|-----|
-| Build Status for latest | ![GitHub CI Linux](https://github.com/fedorov/dcmqi/actions/workflows/cmake-linux.yml/badge.svg) | ![GitHub CI Windows](https://github.com/fedorov/dcmqi/actions/workflows/cmake-win.yml/badge.svg) | ![GitHub CI Mac](https://github.com/fedorov/dcmqi/actions/workflows/cmake-macos.yml/badge.svg)
+| Build Status for latest | ![GitHub CI Linux](https://github.com/QIICR/dcmqi/actions/workflows/cmake-linux.yml/badge.svg) | ![GitHub CI Windows](https://github.com/QIICR/dcmqi/actions/workflows/cmake-win.yml/badge.svg) | ![GitHub CI Mac](https://github.com/QIICR/dcmqi/actions/workflows/cmake-macos.yml/badge.svg)
 
 
 # Introduction
