@@ -94,3 +94,13 @@ jobs:
     - name: "Package dcmqi"
       run: |
         cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
+
+
+    - name: Publish package
+      run: |
+        ci_addons publish_github_release qiicr/dcmqi 
+        --exit-success-if-missing-token 
+        --prerelease-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" 
+        --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
+        --token ${{ secrets.GA_TOKEN }}
+        
