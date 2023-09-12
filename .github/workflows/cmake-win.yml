@@ -66,6 +66,7 @@ jobs:
 
       - name: Publish package
         run: |
+          pip install -U "scikit-ci-addons>=0.22.0"
           ci_addons publish_github_release qiicr/dcmqi 
            --exit-success-if-missing-token 
            --release-packages "${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64.zip" 
@@ -73,4 +74,3 @@ jobs:
            --prerelease-packages-clear-pattern "dcmqi-*-win64-*" 
            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
            --token ${{ secrets.GA_TOKEN }}
-           
