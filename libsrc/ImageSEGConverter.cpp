@@ -2,6 +2,7 @@
 // DCMQI includes
 #include "dcmqi/ImageSEGConverter.h"
 #include "dcmqi/ColorUtilities.h"
+#include "dcmqi/OverlapUtil.h"
 
 
 //DCMTK includes
@@ -482,7 +483,7 @@ namespace dcmqi {
 
   pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset, bool mergeSegments) {
     DcmSegmentation *segdoc = NULL;
-    
+
     DcmRLEDecoderRegistration::registerCodecs();
 
     OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
@@ -492,6 +493,32 @@ namespace dcmqi {
     }
     OFunique_ptr<DcmSegmentation> segdocguard(segdoc);
 
+    OverlapUtil util(*segdoc);
+    OverlapUtil::SegmentGroups segmentGroups;
+    // If merging of segments is desired, compute distinct (i.e. non-overlapping)
+    // group of segments
+    if (mergeSegments)
+    {
+      cond = util.getNonOverlappingSegments(segmentGroups);
+      if (cond.bad())
+      {
+        cout << "WARNING: Failed to compute non-overlapping segments (Error: " << cond.text() <<") "
+             << "using all segments instead." << endl;
+      }
+    }
+    // Otherwise, use single group containing all segments (which might overlap)
+    // TODO: remove if not needed later
+    if (!mergeSegments || cond.bad())
+    {
+      size_t numSegs = segdoc->getNumberOfSegments();
+      std::set<size_t> segs;
+      for (size_t i = 1; i <= numSegs; ++i)
+      {
+        segs.insert(i);
+      }
+    }
+
+    // Populate DICOM series information into JSON metainfo
     JSONSegmentationMetaInformationHandler metaInfo;
     populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
 
@@ -820,7 +847,7 @@ namespace dcmqi {
       /* WIP */
 
       // initialize slice with the frame content
-      /* WIP commented out 
+      /* WIP commented out
       for(unsigned row=0;row<imageSize[1];row++){
         for(unsigned col=0;col<imageSize[0];col++){
           ShortImageType::PixelType pixel;

@@ -19,6 +19,7 @@ set(HDRS
   ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
   ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
   ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
+  ${INCLUDE_DIR}/OverlapUtil.h
   ${INCLUDE_DIR}/SegmentAttributes.h
   ${INCLUDE_DIR}/TID1500Reader.h
   )
@@ -32,6 +33,7 @@ set(SRCS
   JSONMetaInformationHandlerBase.cpp
   JSONParametricMapMetaInformationHandler.cpp
   JSONSegmentationMetaInformationHandler.cpp
+  OverlapUtil.cpp
   SegmentAttributes.cpp
   TID1500Reader.cpp
   )
@@ -77,8 +79,8 @@ set(${lib_name}_INCLUDE_DIRS
   ${_dcmtk_includes}
   ${ITK_INCLUDE_DIRS}
   ${JsonCpp_INCLUDE_DIR}
-  $<BUILD_INTERFACE:${DCMQI_SOURCE_DIR}/include>  
-  $<BUILD_INTERFACE:${DCMQI_BINARY_DIR}/include>  
+  $<BUILD_INTERFACE:${DCMQI_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${DCMQI_BINARY_DIR}/include>
   )
 if(ITK_INSTALL_PREFIX)
   if(EXISTS ${ITK_INSTALL_PREFIX}/include/vxl/core AND EXISTS ${ITK_INSTALL_PREFIX}/include/vxl/vcl)
