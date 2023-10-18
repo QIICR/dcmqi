@@ -5,6 +5,7 @@ on:
     branches: [ "testing" ]
   pull_request:
     branches: [ "testing" ]
+  workflow_dispatch:
 
 permissions:
   deployments: write
