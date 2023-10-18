@@ -2,9 +2,9 @@ name: C/C++ CI Linux
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "testing" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "testing" ]
 
 permissions:
   deployments: write
@@ -37,20 +37,24 @@ jobs:
       run: |
         cd docker && make dcmqi.test
 
-    - name: "Publish docker image"
+    - name: "Print dcmqi workspace folder" # TODO remove
       run: |
-         docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
-         docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
-         || echo "skipping docker push"
+        ls -R ${{ github.workspace }}
 
-    - name: "Publish linux package"
-      run: |
-         pip install -U "scikit-ci-addons>=0.22.0"
-         # python -m scikit-ci publish --package-name dcmqi --package-version `git 
-         # describe --tags --exact-match 2> /dev/null || echo "latest"` --platform linux 
-         # --commit-range ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} --repository ${{ github.event.pull_request.head.repo.full_name }} --token ${{ secrets.GITHUB_TOKEN }} --verbose
-         ci_addons publish_github_release QIICR/dcmqi \
-            --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
-            --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
-            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-            --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+    # - name: "Publish docker image"
+    #   run: |
+    #      docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
+    #      docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+    #      || echo "skipping docker push"
+
+    # - name: "Publish linux package"
+    #   run: |
+    #      pip install -U "scikit-ci-addons>=0.22.0"
+    #      # python -m scikit-ci publish --package-name dcmqi --package-version `git
+    #      # describe --tags --exact-match 2> /dev/null || echo "latest"` --platform linux
+    #      # --commit-range ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} --repository ${{ github.event.pull_request.head.repo.full_name }} --token ${{ secrets.GITHUB_TOKEN }} --verbose
+    #      ci_addons publish_github_release QIICR/dcmqi \
+    #         --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
+    #         --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
+    #         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
+    #         --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
