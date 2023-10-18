@@ -64,6 +64,36 @@ jobs:
           cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
+      - uses: actions/upload-artifact@v3
+        with:
+            name: dcmqi-build
+            path: ${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64*.zip
+
+      # TODO remove (debug)
+      - name: Display structure of github workspace files
+        run: ls -R
+        working-directory: ${{ github.workspace }}
+
+
+  publish-windows:
+
+    runs-on: windows-latest
+    timeout-minutes: 5
+    if: github.event_name != 'pull_request'
+    needs: build-windows
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: dcmqi-build
+          #path: ${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64*.zip
+          path: ${{ github.workspace }}\dcmqi-build\dcmqi-build
+
+      - name: Display structure of github workspace files
+        run: ls -R
+        working-directory: ${{ github.workspace }}\dcmqi-build\dcmqi-build
+
       - name: Publish package
         run: |
           pip install -U "scikit-ci-addons>=0.22.0"
@@ -73,4 +103,4 @@ jobs:
           --prerelease-packages "${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64-*.zip" `
           --prerelease-packages-clear-pattern "dcmqi-*-win64-*" `
           --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" `
-          --token ${{ secrets.GA_TOKEN }}
+          --token ${{ secrets.RELEASE_TOKEN }}
