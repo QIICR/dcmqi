@@ -64,6 +64,29 @@ jobs:
           cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
+      - uses: actions/upload-artifact@v3
+        with:
+            name: dcmqi-build
+            path: ${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64*.zip
+
+  publish-windows:
+
+    runs-on: windows-latest
+    timeout-minutes: 5
+    # Only run if the event is not a pull request and the repository owner is QIICR.
+    # The latter is to prevent forks from publishing packages even if the owner's token
+    # would have sufficient privileges.
+    if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+
+    needs: build-windows
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: dcmqi-build
+          path: ${{ github.workspace }}\dcmqi-build\dcmqi-build
+
       - name: Publish package
         run: |
           pip install -U "scikit-ci-addons>=0.22.0"
