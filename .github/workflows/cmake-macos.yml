@@ -100,7 +100,7 @@ jobs:
       run: |
         pip install -U "scikit-ci-addons>=0.22.0"
         ci_addons publish_github_release QIICR/dcmqi 
-        --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" 
+        --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz
         --prerelease-packages-clear-pattern "dcmqi-*-mac-*" 
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" 
         --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
