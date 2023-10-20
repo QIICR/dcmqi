@@ -47,7 +47,11 @@ To acknowledge dcmqi in an academic paper, please cite
 
 If you like dcmqi, please give the dcmqi repository [a star on github](https://help.github.com/articles/about-stars/). This is an easy way to show thanks and it can help us qualify for useful services that are only open to widely recognized open projects.
 
-This work is supported primarily by the National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov). We also acknowledge support of the following grants: [Neuroimage Analysis Center (NAC)](http://nac.spl.harvard.edu/) (P41 EB015902, PI Kikinis) and [National Center for Image Guided Therapy (NCIGT)](http://ncigt.org) (P41 EB015898, PI Tempany).
+This project has been supported in part by the following funded initiatives:
+* [National Cancer Institute Imaging Data Commons (IDC)](https://imaging.datacommons.cancer.gov) project, funded in whole or in part with Federal funds from the National Cancer Institute, National Institutes of Health, under Task Order No. HHSN26110071 under Contract No. HHSN261201500003l
+* National Institutes of Health, National Cancer Institute, [Informatics Technology for Cancer Research (ITCR) program](https://itcr.nci.nih.gov/), grant [Quantitative Image Informatics for Cancer Research (QIICR)](http://qiicr.org) (U24 CA180918, PIs Kikinis and Fedorov)
+* [Neuroimage Analysis Center (NAC)](http://nac.spl.harvard.edu/) (P41 EB015902, PI Kikinis)
+* [National Center for Image Guided Therapy (NCIGT)](http://ncigt.org) (P41 EB015898, PI Tempany)
 
 # References
 
