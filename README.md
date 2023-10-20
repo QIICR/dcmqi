@@ -55,6 +55,8 @@ This project has been supported in part by the following funded initiatives:
 
 # References
 
-1. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) _DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research._ *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+1. Fedorov, A., Longabaugh, W. J. R., Pot, D., Clunie, D. A., Pieper, S., Aerts, H. J. W. L., Homeyer, A., Lewis, R., Akbarzadeh, A., Bontempi, D., Clifford, W., Herrmann, M. D., Höfener, H., Octaviano, I., Osborne, C., Paquette, S., Petts, J., Punzo, D., Reyes, M., Schacherer, D. P., Tian, M., White, G., Ziegler, E., Shmulevich, I., Pihl, T., Wagner, U., Farahani, K. & Kikinis, R. NCI Imaging Data Commons. Cancer Res. 81, 4188–4193 (2021). https://dx.doi.org/10.1158/0008-5472.CAN-21-0950
 
-2. Herz C, Fillion-Robin J-C, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A.  _dcmqi: An Open Source Library for Standardized Communication of Quantitative Image Analysis Results Using DICOM_. *Cancer Research*. 2017;77(21):e87–e90 http://cancerres.aacrjournals.org/content/77/21/e87.
+2. Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) _DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research._ *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
+
+3. Herz C, Fillion-Robin J-C, Onken M, Riesmeier J, Lasso A, Pinter C, Fichtinger G, Pieper S, Clunie D, Kikinis R, Fedorov A.  _dcmqi: An Open Source Library for Standardized Communication of Quantitative Image Analysis Results Using DICOM_. *Cancer Research*. 2017;77(21):e87–e90 http://cancerres.aacrjournals.org/content/77/21/e87.
