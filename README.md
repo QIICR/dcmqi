@@ -10,7 +10,7 @@
 
 dcmqi (DICOM (**dcm**) for Quantitative Imaging (**qi**)) is a collection of libraries and command line tools with minimum dependencies to support standardized communication of [quantitative image analysis](http://journals.sagepub.com/doi/pdf/10.1177/0962280214537333) research data using [DICOM standard](https://en.wikipedia.org/wiki/DICOM).
 
-Specifically, the current focus of development for dcmqi is to support conversion of the following data types to and from DICOM:
+Specifically, dcmqi can help you with the conversion of the following data types to and from DICOM:
 * voxel-based segmentations using [DICOM Segmentation IOD](http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_A.51.html)
 * parametric maps using [DICOM Parametric map IOD](http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_A.75.html)
 * image-based measurements using [DICOM Structured Reporting (SR) template TID1500](http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500)
@@ -19,7 +19,7 @@ As an introduction to the motivation, capabilities and advantages of using the D
 
 > Fedorov A, Clunie D, Ulrich E, Bauer C, Wahle A, Brown B, Onken M, Riesmeier J, Pieper S, Kikinis R, Buatti J, Beichel RR. (2016) DICOM for quantitative imaging biomarker development: a standards based approach to sharing clinical data and structured PET/CT analysis results in head and neck cancer research. *PeerJ* 4:e2057 https://doi.org/10.7717/peerj.2057
 
-dcmqi is developed and maintained by the [QIICR](http://qiicr.org) project.
+dcmqi is developed and maintained by the [NCI Imaging Data Commons](https://imaging.datacommons.cancer.gov) project.
 
 # Getting started
 
