@@ -18,11 +18,15 @@
 #include <itkImportImageFilter.h>
 
 // DCMQI includes
+//#include "dcmqi/OverlapUtil.h"
+#include "OverlapUtil.h"
+#include "SegmentAttributes.h"
 #include "dcmqi/ConverterBase.h"
+#include "dcmqi/OverlapUtil.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
-using namespace std;
 
+using namespace std;
 
 typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterType;
 
@@ -34,6 +38,8 @@ namespace dcmqi {
   class ImageSEGConverter : public ConverterBase {
 
   public:
+
+    ImageSEGConverter();
 
     /**
      * @brief Converts itk images data into a DICOM Segmentation object.
@@ -56,31 +62,67 @@ namespace dcmqi {
      * @param mergeSegments A boolean indicating whether to merge segments during the conversion.
      * @return A pair containing the resulting map of itk images and the metadata.
      */
-    static pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset,
-      bool mergeSegments);
+    pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset, const bool mergeSegments);
 
     /**
      * @brief Converts a DICOM Segmentation object into a map of itk images.
      *
-     * @param segdoc A pointer to the DICOM Segmentation object to be converted.
-     * @param metaInfo A pointer to the JSONSegmentationMetaInformationHandler object containing the metadata.
      * @param mergeSegments A boolean indicating whether to merge segments during the conversion.
      * @return A map of itk images resulting from the conversion.
      */
-    static map<unsigned, ShortImageType::Pointer> dcmSegmentation2itkimage(
-      DcmSegmentation *segdoc,
-      JSONSegmentationMetaInformationHandler *metaInfo=NULL,
-      bool mergeSegments = false);
+
+    map<unsigned, ShortImageType::Pointer> dcmSegmentation2itkimage(const bool mergeSegments = false);
 
     /**
      * @brief Populates the metadata of a DICOM Segmentation object from a DICOM dataset.
      *
      * @param segDataset A pointer to the DICOM dataset containing the metadata.
-     * @param segdoc A pointer to the DICOM Segmentation object to be populated.
-     * @param metaInfo A reference to the JSONSegmentationMetaInformationHandler object to be populated.
      */
-    static void populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
-                           JSONSegmentationMetaInformationHandler &metaInfo);
+    void populateMetaInformationFromDICOM(DcmDataset* segDataset);
+
+  protected:
+
+    /**
+     * Helper method that uses the OverlapUtil class to retrieve non-overlapping segment
+     * groups (by their segment numbers) from the DICOM Segmentation object.
+     * If mergeSegments is false, all segments are returned within a single group.
+     *
+     * @param mergeSegments Whether or not to merge overlapping segments into the same group.
+     * @param segmentGroups The resulting segment groups.
+     * @return EC_Normal if successful, error otherwise
+     */
+    OFCondition getNonOverlappingSegmentGroups(const bool mergeSegments,
+                                               OverlapUtil::SegmentGroups& segmentGroups);
+
+    OFCondition extractBasicSegmentationInfo();
+
+    ShortImageType::Pointer allocateITKImageTemplate();
+
+    ShortImageType::Pointer allocateITKImageDuplicate(ShortImageType::Pointer imageTemplate);
+
+    OFCondition getITKImageOrigin(ShortImageType::PointType& origin);
+
+    OFCondition addSegmentMetadata(const size_t segmentGroup,
+                                   const Uint16 segmentNumber);
+
+
+    OFunique_ptr<DcmSegmentation> m_segDoc;
+
+    ShortImageType::DirectionType m_direction;
+    // Spacing and origin
+    double m_computedSliceSpacing;
+    double m_computedVolumeExtent;
+    vnl_vector<double> m_sliceDirection;
+
+    ShortImageType::PointType m_imageOrigin;
+    ShortImageType::SpacingType m_imageSpacing;
+    ShortImageType::SizeType m_imageSize;
+    ShortImageType::RegionType m_imageRegion;
+
+    JSONSegmentationMetaInformationHandler m_metaInfo;
+
+    OverlapUtil m_overlapUtil;
+
   };
 
 }

@@ -73,7 +73,11 @@ public:
   /// or: which physical frame number is at which logical frame number/position?
   typedef OFVector<size_t> LogicalFrameToPositionIndex;
 
-  // Implements comparision operator to be used for roing sorting of frame positions,
+  /// Lists frames for each segment where segment with index i is represented by the vector at index i,
+  /// and index 0 is unused. I.e. index i is segment number, value is vector of physical frame numbers.
+  typedef OFVector<OFVector<Uint32> > FramesForSegment;
+
+  // Implements comparision operator to be used for sorting of frame positions,
   // making the sorting order depend on the coordinate given in the constructor
   struct ComparePositions
   {
@@ -125,13 +129,19 @@ public:
   // ------------------------------------------ Methods ------------------------------------------
 
 
-  /** Constructor, requires reference to segmentation object to work with
-   *  @param  seg Segmentation object to work with
+  /** Constructor. Use setSegmentationObject() to set the segmentation object to work with.
    */
-  OverlapUtil(DcmSegmentation& seg);
+  OverlapUtil();
 
   /** Destructor */
   ~OverlapUtil();
+
+  /** Set the segmentation object to work with
+   *  TODO: In the future, maybe have DcmSegmentation->getOverlapUtil() to access
+   *  the OverlapUtil object, so that the user does not have to care about
+   *  feeding the segmentation object to the OverlapUtil object.
+   */
+  void setSegmentationObject(DcmSegmentation* seg);
 
   /** Clears all internal data (except segmentation object reference)
    */
@@ -151,6 +161,13 @@ public:
 
   /** TODO Not yet implemented, nice extra functionality */
   OFCondition getSegmentsForFrame(const Uint32 frameNumber, OFVector<Uint32>& segments);
+
+  /** TODO Not yet implemented, nice extra functionality, may go to DcmSegmentation class API directly later.
+   *  @param segmentNumber Segment number to get frames for (1..n)
+   *  @param frames Resulting vector of physical frame numbers (0 is first frame)
+   *  @return EC_Normal if successful, error otherwise
+   */
+  OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
 
   /** Returns computed overlap matrix
    *  @param  matrix Resulting overlap matrix
@@ -241,13 +258,12 @@ protected:
 
 private:
 
-  /** Private undefined default constructor.
-   *  This class must always be initialized with DcmSegmentation object as input instead.
-   */
-  OverlapUtil();
-
   /// Frames with their respective positions (IPP)
   FramePositions m_FramePositions;
+
+  /// Frame numbers (starting from 0) grouped by segment number (first segment is 1,
+  /// i.e. index 0 is unused)
+  FramesForSegment m_framesForSegment;
 
   /// Logical frames, ie. physical frames with the same position are
   /// grouped together in a logical frame. For every logical frame, we
@@ -274,7 +290,7 @@ private:
   SegmentGroups m_nonOverlappingSegments;
 
   /// Reference to segmentation object to work with
-  DcmSegmentation& m_seg;
+  DcmSegmentation* m_seg;
 
 };
 

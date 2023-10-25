@@ -23,14 +23,14 @@ makeOFConditionConst(SG_EC_FramesNotParallel, OFM_dcmseg, 7, OF_error, "Frames a
 
 namespace dcmqi {
 
-OverlapUtil::OverlapUtil(DcmSegmentation& seg)
+OverlapUtil::OverlapUtil()
 : m_FramePositions()
 , m_logicalFramePositions()
 //, m_frameNumToPositionIndex()
 , m_segmentsByPosition()
 , m_segmentOverlapMatrix(0)
 , m_nonOverlappingSegments()
-, m_seg(seg)
+, m_seg()
 {
 
 }
@@ -42,6 +42,13 @@ OverlapUtil::~OverlapUtil()
 }
 
 
+void OverlapUtil::setSegmentationObject(DcmSegmentation* seg)
+{
+    m_seg = seg;
+    clear();
+}
+
+
 void OverlapUtil::clear()
 {
   m_FramePositions.clear();
@@ -49,6 +56,7 @@ void OverlapUtil::clear()
   m_segmentsByPosition.clear();
   m_segmentOverlapMatrix.clear();
   m_nonOverlappingSegments.clear();
+  m_framesForSegment.clear();
 
 }
 
@@ -64,16 +72,55 @@ OFCondition OverlapUtil::getFramesByPosition(DistinctFramePositions& result)
 }
 
 
-OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, OFVector<Uint32>& segments)
+OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames)
 {
+    if ( (segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments() + 1 ) )
+    {
+        DCMSEG_ERROR("getFramesForSegment(): Segment number " << segmentNumber << " is out of range");
+        return EC_IllegalParameter;
+    }
+    if (m_framesForSegment.empty())
+    {
+        FGInterface& fg = m_seg->getFunctionalGroups();
+        Uint32 numFrames = m_seg->getNumberOfFrames();
+        m_framesForSegment.resize(numFrames);
+        // Get Segmentation FG for each frame and remember the segment number for each frame
+        // in the vector m_segmentsForFrame
+        for (size_t f = 0; f < numFrames; f++)
+        {
+            FGBase* group = NULL;
+            FGSegmentation* segFG = NULL;
+            group = fg.get(f, DcmFGTypes::EFG_SEGMENTATION);
+            segFG = OFstatic_cast(FGSegmentation*, group);
+            if (segFG)
+            {
+                Uint16 segNum = 0;
+                OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
+                if (cond.good() && segNum > 0)
+                {
+                    m_framesForSegment[segNum].push_back(f); // physical frame number for segment
+                }
+                else if (segNum == 0)
+                {
+                    DCMSEG_WARN("getSegmentsForFrame(): Referenced Segment Number is 0 (not permitted) for frame #" << f << ", ignoring");
+                    return EC_InvalidValue;
+                }
+                else
+                {
+                    DCMSEG_ERROR("getSegmentsForFrame(): Referenced Segment Number not found (not permitted) for frame #" << f << ", cannot add segment");
+                    return EC_TagNotFound;
+                }
+            }
+        }
+    }
+    frames = m_framesForSegment[segmentNumber];
     return EC_Normal;
 }
 
 
-
 OFCondition OverlapUtil::ensureFramesAreParallel()
 {
-    FGInterface& fg = m_seg.getFunctionalGroups();
+    FGInterface& fg = m_seg->getFunctionalGroups();
     OFCondition cond;
     OFBool perFrame = OFFalse;
     FGPlaneOrientationPatient* pop = NULL;
@@ -111,8 +158,8 @@ OFCondition OverlapUtil::groupFramesByPosition()
     // Group all frames by position into m_logicalFramePositions.
     // After that, all frames at the same position will be in the same vector
     // assigned to the same key (the frame's coordinates) in the map.
-    FGInterface& fg = m_seg.getFunctionalGroups();
-    size_t numFrames = m_seg.getNumberOfFrames();
+    FGInterface& fg = m_seg->getFunctionalGroups();
+    size_t numFrames = m_seg->getNumberOfFrames();
     OFBool perFrame = OFFalse;
     OFCondition cond;
     // Vector of frame numbers with their respective position
@@ -306,7 +353,7 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
             OFVector<Uint32> segs;
             FGBase* group = NULL;
             FGSegmentation* segFG = NULL;
-            group = m_seg.getFunctionalGroups().get(frameNumber, DcmFGTypes::EFG_SEGMENTATION);
+            group = m_seg->getFunctionalGroups().get(frameNumber, DcmFGTypes::EFG_SEGMENTATION);
             segFG = OFstatic_cast(FGSegmentation*, group);
             if (segFG)
             {
@@ -436,6 +483,10 @@ OFCondition OverlapUtil::getNonOverlappingSegments(SegmentGroups& segmentGroups)
             DCMSEG_DEBUG(ss.str());
         }
     }
+    if (result.good())
+    {
+        segmentGroups = m_nonOverlappingSegments;
+    }
     return result;
 }
 
@@ -479,10 +530,10 @@ OFCondition OverlapUtil::buildOverlapMatrix()
     // Make 2 dimensional array matrix of Sint8 type for (segment numbers) X (segment numbers).
     // Initialize with -1 (not checked yet)
     m_segmentOverlapMatrix.clear();
-    m_segmentOverlapMatrix.resize(m_seg.getNumberOfSegments());
+    m_segmentOverlapMatrix.resize(m_seg->getNumberOfSegments());
     for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
     {
-        m_segmentOverlapMatrix[i].resize(m_seg.getNumberOfSegments(), -1);
+        m_segmentOverlapMatrix[i].resize(m_seg->getNumberOfSegments(), -1);
     }
     // Diagonal is always 0 (segment does not interfere/overlap with itself)
     for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
@@ -562,12 +613,12 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
     }
     overlap = OFFalse;
     OFCondition result;
-    const DcmIODTypes::Frame* f1_data = m_seg.getFrame(f1);
-    const DcmIODTypes::Frame* f2_data = m_seg.getFrame(f2);
+    const DcmIODTypes::Frame* f1_data = m_seg->getFrame(f1);
+    const DcmIODTypes::Frame* f2_data = m_seg->getFrame(f2);
     Uint16 rows, cols;
     rows=cols=0;
     DcmIODImage<IODImagePixelModule<Uint8> > *ip =
-    static_cast<DcmIODImage<IODImagePixelModule<Uint8> > *>(&m_seg);
+    static_cast<DcmIODImage<IODImagePixelModule<Uint8> > *>(m_seg);
     ip->getImagePixel().getRows(rows);
     ip->getImagePixel().getColumns(cols);
     if ( rows*cols % 8 != 0 )

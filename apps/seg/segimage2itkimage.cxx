@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
   DcmDataset* dataset = sliceFF.getDataset();
 
   try {
-    pair <map<unsigned,ShortImageType::Pointer>, string> result =  dcmqi::ImageSEGConverter::dcmSegmentation2itkimage(dataset, mergeSegments);
+    dcmqi::ImageSEGConverter converter;
+    pair <map<unsigned,ShortImageType::Pointer>, string> result =  converter.dcmSegmentation2itkimage(dataset, mergeSegments);
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
 

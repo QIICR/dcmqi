@@ -35,10 +35,10 @@ namespace dcmqi {
     void read();
     bool write(string filename);
 
-    // segmentationId starts with 0 and refers to the item in segmentsAttributesMappingList
-    // if segmentationId is invalid, create segment within a newly created segmentation
-    // otherwise add segment to the existing segmentation identified by segmentationId
-    SegmentAttributes* createAndGetNewSegment(unsigned labelID, int segmentationId = 0);
+    // segGroupNumber starts with 0 and refers to the item in segmentsAttributesMappingList.
+    // if segGroupNumber is invalid, create segment within a newly created segmentation group
+    // otherwise add segment to the existing segmentation group identified by segGroupNumber
+    SegmentAttributes* createOrGetSegment(const int segGroupNumber, unsigned labelID);
 
   protected:
 
