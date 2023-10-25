@@ -536,11 +536,11 @@ namespace dcmqi {
     OFCondition result = extractBasicSegmentationInfo();
 
     // Find groups of segments that can go into the same ITK image (i.e. that are non-overlapping)
-    cout << "Computing groups of non-overlapping segments" << std::endl;
+    // TODO: Use dcemfinfLogger DEBUG logger: cout << "Computing groups of non-overlapping segments" << std::endl;
     m_overlapUtil.setSegmentationObject(m_segDoc.get());
     OverlapUtil::SegmentGroups segmentGroups;
     getNonOverlappingSegmentGroups(mergeSegments, segmentGroups);
-    cout << "Found " << segmentGroups.size() << " groups of non-overlapping segments" << std::endl;
+    // TODO: Use dcemfinfLogger DEBUG logger: cout << "Found " << segmentGroups.size() << " groups of non-overlapping segments" << std::endl;
 
     // Create ITK image template, will be to create actual ITK images through
     // ImageDuplicator later.
@@ -557,7 +557,7 @@ namespace dcmqi {
     size_t groupNumber = 0;
     while (group != segmentGroups.end())
     {
-      cout << "Writing segment group #" << groupNumber << endl;
+      //TODO: Use dcemfinfLogger DEBUG logger: cout << "Writing segment group #" << groupNumber << endl;
       // Create target ITK image for this group
       ShortImageType::Pointer itkImage = allocateITKImageDuplicate(imageTemplate);
       segment2image[groupNumber] = itkImage;
@@ -572,7 +572,7 @@ namespace dcmqi {
         m_overlapUtil.getFramesForSegment(*segment, framesForSegment);
         for (size_t f = 1 /* vector uses 1 as starting index*/; f < framesForSegment.size(); f++)
         {
-          cout << "Writing group " << groupNumber << " segment " << *segment << " frame " << f << endl;
+          // TODO: Use dcemfinfLogger DEBUG logger: cout << "Writing group " << groupNumber << " segment " << *segment << " frame " << f << endl;
           // Copy the data from the frame into the ITK image
           ShortImageType::PointType frameOriginPoint;
           ShortImageType::IndexType frameOriginIndex;
@@ -786,13 +786,11 @@ namespace dcmqi {
       result = m_overlapUtil.getNonOverlappingSegments(segmentGroups);
       if (result.bad())
       {
-        cout << "WARNING: Failed to compute non-overlapping segments (Error: " << result.text() << ") "
-              << "using all segments instead." << endl;
-              result = EC_Normal;
+        cout << "WARNING: Failed to compute non-overlapping segments (Error: " << result.text() << "), "
+              << "falling back to one group per segment instead." << endl;
       }
     }
     // Otherwise, use single group containing all segments (which might overlap)
-    // TODO: remove if not needed later
     if (!mergeSegments || result.bad())
     {
       size_t numSegs = m_segDoc->getNumberOfSegments();

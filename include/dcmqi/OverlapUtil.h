@@ -162,7 +162,7 @@ public:
   /** TODO Not yet implemented, nice extra functionality */
   OFCondition getSegmentsForFrame(const Uint32 frameNumber, OFVector<Uint32>& segments);
 
-  /** TODO Not yet implemented, nice extra functionality, may go to DcmSegmentation class API directly later.
+  /** Get phyiscal frames for a specific segment
    *  @param segmentNumber Segment number to get frames for (1..n)
    *  @param frames Resulting vector of physical frame numbers (0 is first frame)
    *  @return EC_Normal if successful, error otherwise

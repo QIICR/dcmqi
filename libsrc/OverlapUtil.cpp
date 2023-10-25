@@ -337,6 +337,7 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
 {
     OFTimer tm;
     OFCondition cond;
+    size_t numSegments = m_seg->getNumberOfSegments();
     if (m_logicalFramePositions.empty())
     {
          cond = getFramesByPosition(m_logicalFramePositions);
@@ -359,13 +360,20 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
             {
                 Uint16 segNum = 0;
                 cond = segFG->getReferencedSegmentNumber(segNum);
-                if (cond.good() && segNum > 0)
+                if (cond.good() && segNum > 0 && (segNum <= numSegments))
                 {
                     m_segmentsByPosition[l].insert(SegNumAndFrameNum(segNum, frameNumber));
                 }
                 else if (segNum == 0)
                 {
                     DCMSEG_ERROR("getSegmentsByPosition(): Referenced Segment Number is 0 (not permitted), cannot add segment");
+                    cond = EC_InvalidValue;
+                    break;
+                }
+                else if (segNum > numSegments)
+                {
+                    DCMSEG_ERROR("getSegmentsByPosition(): Found Referenced Segment Number " << segNum << " but only " << numSegments << " segments are present, cannot add segment");
+                    DCMSEG_ERROR("getSegmentsByPosition(): Segments are not numbered consecutively, cannot add segment");
                     cond = EC_InvalidValue;
                     break;
                 }
@@ -376,6 +384,10 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
                     break;
                 }
             }
+        }
+        if (cond.bad())
+        {
+            break;
         }
     }
     // print segments per logical frame  if debug log level is enabled
@@ -395,7 +407,7 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
     }
     DCMSEG_DEBUG("groupFramesByPosition(): Grouping segments by position took " << tm.getDiff() << " s");
 
-    return EC_Normal;
+    return cond;
 }
 
 
