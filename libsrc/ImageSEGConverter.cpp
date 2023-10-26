@@ -15,7 +15,7 @@ namespace dcmqi {
 
 
   ImageSEGConverter::ImageSEGConverter()
-  : m_segDoc(NULL)
+  : m_segDoc()
   , m_direction()
   , m_computedSliceSpacing()
   , m_computedVolumeExtent()
@@ -557,26 +557,25 @@ namespace dcmqi {
     size_t groupNumber = 0;
     while (group != segmentGroups.end())
     {
-      //TODO: Use dcemfinfLogger DEBUG logger: cout << "Writing segment group #" << groupNumber << endl;
       // Create target ITK image for this group
       ShortImageType::Pointer itkImage = allocateITKImageDuplicate(imageTemplate);
       segment2image[groupNumber] = itkImage;
 
       // Loop over segments belonging to this segment group
-      auto segment = group->begin();
-      while (segment != group->end())
+      auto segNum = group->begin();
+      while (segNum != group->end())
       {
         // Iterate over frames for this segment, and copy the data into the ITK image.
         // Afterwards, the ITK image will have the complete data belonging to that segment
         OverlapUtil::FramesForSegment::value_type framesForSegment;
-        m_overlapUtil.getFramesForSegment(*segment, framesForSegment);
+        m_overlapUtil.getFramesForSegment(*segNum, framesForSegment);
         for (size_t f = 1 /* vector uses 1 as starting index*/; f < framesForSegment.size(); f++)
         {
-          // TODO: Use dcemfinfLogger DEBUG logger: cout << "Writing group " << groupNumber << " segment " << *segment << " frame " << f << endl;
+          cout << "Writing group " << groupNumber << " segment " << *segNum << " frame " << f << endl;
           // Copy the data from the frame into the ITK image
           ShortImageType::PointType frameOriginPoint;
           ShortImageType::IndexType frameOriginIndex;
-          result = getITKImageOrigin(frameOriginPoint);
+          result = getITKImageOrigin(f, frameOriginPoint);
           if(!itkImage->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex))
           {
             cerr << "ERROR: Frame " << f << " origin " << frameOriginPoint <<
@@ -666,7 +665,7 @@ namespace dcmqi {
                 // Otherwise, just copy the pixel value (fractional value) from the frame.
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
-                  itkImage->SetPixel(index, *segment);
+                  itkImage->SetPixel(index, *segNum);
                 }
                 else
                 {
@@ -682,8 +681,8 @@ namespace dcmqi {
           }
         }
         // Create/register JSON metadata for this segment
-        result = addSegmentMetadata(groupNumber, *segment);
-        segment++;
+        result = addSegmentMetadata(groupNumber, *segNum);
+        segNum++;
       }
       group++; groupNumber++;
     }
@@ -789,6 +788,7 @@ namespace dcmqi {
         cout << "WARNING: Failed to compute non-overlapping segments (Error: " << result.text() << "), "
               << "falling back to one group per segment instead." << endl;
       }
+      cout << "Identified " << segmentGroups.size() << " groups of non-overlapping segments" << endl;
     }
     // Otherwise, use single group containing all segments (which might overlap)
     if (!mergeSegments || result.bad())
@@ -800,6 +800,7 @@ namespace dcmqi {
         segs.insert(i);
         segmentGroups.push_back(segs);
       }
+      cout << "Will not merge segments: Splitting segments into " << segmentGroups.size() << " groups" << endl;
     }
     return result;;
   }
@@ -830,33 +831,30 @@ namespace dcmqi {
       return newSegmentImage;
   }
 
-
-  OFCondition ImageSEGConverter::getITKImageOrigin(ShortImageType::PointType& origin)
+  OFCondition ImageSEGConverter::getITKImageOrigin(const Uint32 frameNo, ShortImageType::PointType& origin)
   {
     FGInterface& fgInterface = m_segDoc->getFunctionalGroups();
 
-    for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++)
-    {
-      FGPlanePosPatient *planposfg =
-          OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT));
-      assert(planposfg);
+    FGPlanePosPatient *planposfg =
+        OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameNo, DcmFGTypes::EFG_PLANEPOSPATIENT));
+    assert(planposfg);
 
-      for(int j=0;j<3;j++)
+    for(int j=0;j<3;j++)
+    {
+      OFString planposStr;
+      if(planposfg->getImagePositionPatient(planposStr, j).good())
       {
-        OFString planposStr;
-        if(planposfg->getImagePositionPatient(planposStr, j).good())
-        {
-          origin[j] = atof(planposStr.c_str());
-        }
+        origin[j] = atof(planposStr.c_str());
       }
     }
     return EC_Normal;
   }
 
+
   OFCondition ImageSEGConverter::addSegmentMetadata(const size_t segmentGroup,
                                                     const Uint16 segmentNumber)
   {
-    SegmentAttributes* segmentAttributes = m_metaInfo.createOrGetSegment(segmentNumber, segmentGroup);
+    SegmentAttributes* segmentAttributes = m_metaInfo.createOrGetSegment(segmentGroup, segmentNumber);
     // NOTE: Segment numbers in DICOM start with 1
     DcmSegment* segment = m_segDoc->getSegment(segmentNumber);
     if(segment == NULL){
@@ -880,7 +878,6 @@ namespace dcmqi {
     }
 
     ColorUtilities::getSRGBFromIntegerScaledCIELabPCS(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
-    m_metaInfo.createOrGetSegment(0, segmentNumber);
 
     if (segmentAttributes) {
       segmentAttributes->setLabelID(segmentNumber);

@@ -86,7 +86,7 @@ namespace dcmqi {
     data["InstanceNumber"] = this->instanceNumber;
     data["BodyPartExamined"] = this->bodyPartExamined;
 
-    data["segmentAttributes"] = createAndGetSegmentAttributes();
+    data["segmentAttributes"] = createAndGetSegmentAttributesJSON();
 
     Json::StyledWriter styledWriter;
     ss << styledWriter.write(data);
@@ -94,7 +94,7 @@ namespace dcmqi {
     return ss.str();
   }
 
-  Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
+  Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributesJSON() {
     // return a list of lists, where each inner list contains just one item (segment)
     Json::Value values(Json::arrayValue);
 

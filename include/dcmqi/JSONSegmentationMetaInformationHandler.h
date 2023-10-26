@@ -49,7 +49,7 @@ namespace dcmqi {
 
     void readSegmentAttributes();
 
-    Json::Value createAndGetSegmentAttributes();
+    Json::Value createAndGetSegmentAttributesJSON();
   };
 
 }

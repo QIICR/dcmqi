@@ -100,7 +100,7 @@ namespace dcmqi {
 
     ShortImageType::Pointer allocateITKImageDuplicate(ShortImageType::Pointer imageTemplate);
 
-    OFCondition getITKImageOrigin(ShortImageType::PointType& origin);
+    OFCondition getITKImageOrigin(const Uint32 frameNo, ShortImageType::PointType& origin);
 
     OFCondition addSegmentMetadata(const size_t segmentGroup,
                                    const Uint16 segmentNumber);
