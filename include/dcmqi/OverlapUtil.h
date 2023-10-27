@@ -164,7 +164,8 @@ public:
 
   /** Get phyiscal frames for a specific segment
    *  @param segmentNumber Segment number to get frames for (1..n)
-   *  @param frames Resulting vector of physical frame numbers (0 is first frame)
+   *  @param frames Resulting vector of physical frame numbers
+   *         (1 is first used index, 0 is first frame number)
    *  @return EC_Normal if successful, error otherwise
    */
   OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);

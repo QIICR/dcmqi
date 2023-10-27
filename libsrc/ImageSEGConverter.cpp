@@ -576,6 +576,11 @@ namespace dcmqi {
           ShortImageType::PointType frameOriginPoint;
           ShortImageType::IndexType frameOriginIndex;
           result = getITKImageOrigin(f, frameOriginPoint);
+          if (result.bad())
+          {
+            cerr << "ERROR: Failed to get origin for frame " << f << " of segment " << *segNum << endl;
+            throw -1;
+          }
           if(!itkImage->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex))
           {
             cerr << "ERROR: Frame " << f << " origin " << frameOriginPoint <<
