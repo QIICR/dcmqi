@@ -439,6 +439,8 @@ namespace dcmqi {
       CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
     }
 
+    std::cout << "Writing DICOM segmentation dataset " << std::endl;
+    segdoc->setCheckFGOnWrite(OFFalse);
     OFCondition writeResult = segdoc->writeDataset(segdocDataset);
     if(writeResult.bad()){
       cerr << "FATAL ERROR: Writing of the SEG dataset failed!";
@@ -450,6 +452,7 @@ namespace dcmqi {
     }
 
     // Set reader/session/timepoint information
+    std::cout << "Patching in extra meta information into DICOM dataset" << std::endl;
     CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
@@ -569,28 +572,28 @@ namespace dcmqi {
         // Afterwards, the ITK image will have the complete data belonging to that segment
         OverlapUtil::FramesForSegment::value_type framesForSegment;
         m_overlapUtil.getFramesForSegment(*segNum, framesForSegment);
-        for (size_t f = 1 /* vector uses 1 as starting index*/; f < framesForSegment.size(); f++)
+        for (size_t frameIndex = 1 /* vector uses 1 as starting index*/; frameIndex < framesForSegment.size(); frameIndex++)
         {
-          cout << "Writing group " << groupNumber << " segment " << *segNum << " frame " << f << endl;
+          cout << "Writing group " << groupNumber << " segment " << *segNum << " frame " << frameIndex << endl;
           // Copy the data from the frame into the ITK image
           ShortImageType::PointType frameOriginPoint;
           ShortImageType::IndexType frameOriginIndex;
-          result = getITKImageOrigin(f, frameOriginPoint);
+          result = getITKImageOrigin(framesForSegment[frameIndex], frameOriginPoint);
           if (result.bad())
           {
-            cerr << "ERROR: Failed to get origin for frame " << f << " of segment " << *segNum << endl;
+            cerr << "ERROR: Failed to get origin for frame " << framesForSegment[frameIndex] << " of segment " << *segNum << endl;
             throw -1;
           }
           if(!itkImage->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex))
           {
-            cerr << "ERROR: Frame " << f << " origin " << frameOriginPoint <<
+            cerr << "ERROR: Frame " << framesForSegment[frameIndex] << " origin " << frameOriginPoint <<
             " is outside image geometry!" << frameOriginIndex << endl;
             cerr << "Image size: " << itkImage->GetBufferedRegion().GetSize() << endl;
             throw -1;
           }
           // Handling differs depending on whether the segmentation is binary or fractional
           // (we have to unpack binary frames before copying them into the ITK image)
-          const DcmIODTypes::Frame *rawFrame = m_segDoc->getFrame(f);
+          const DcmIODTypes::Frame *rawFrame = m_segDoc->getFrame(framesForSegment[frameIndex]);
           const DcmIODTypes::Frame *unpackedFrame = NULL;
           if(m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
           {
@@ -660,9 +663,9 @@ namespace dcmqi {
               ShortImageType::PixelType pixel;
               unsigned bitCnt = row*m_imageSize[0]+col;
               pixel = unpackedFrame->pixData[bitCnt];
+              ShortImageType::IndexType index;
               if(pixel!=0)
               {
-                ShortImageType::IndexType index;
                 index[0] = col;
                 index[1] = row;
                 index[2] = slice;
@@ -670,6 +673,7 @@ namespace dcmqi {
                 // Otherwise, just copy the pixel value (fractional value) from the frame.
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
+
                   itkImage->SetPixel(index, *segNum);
                 }
                 else
