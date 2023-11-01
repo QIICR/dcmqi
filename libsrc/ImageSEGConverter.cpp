@@ -393,7 +393,7 @@ namespace dcmqi {
                 ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
                 OFString instanceUID;
                 CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
-                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID))cpp;
+                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
 
                 if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
                   SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
