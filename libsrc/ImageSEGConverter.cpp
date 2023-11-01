@@ -421,6 +421,10 @@ namespace dcmqi {
       CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
     }
 
+    // Don't check functional groups since its very time consuming and we trust
+    // ourselves to put together valid datasets
+    segdoc->setCheckFGOnWrite(OFFalse);
+
     OFCondition writeResult = segdoc->writeDataset(segdocDataset);
     if(writeResult.bad()){
       cerr << "FATAL ERROR: Writing of the SEG dataset failed!";
@@ -482,7 +486,7 @@ namespace dcmqi {
 
   pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
     DcmSegmentation *segdoc = NULL;
-    
+
     DcmRLEDecoderRegistration::registerCodecs();
 
     OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);

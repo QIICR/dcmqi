@@ -445,6 +445,10 @@ namespace dcmqi {
     pMapDoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
 
     DcmDataset* output = new DcmDataset();
+
+    // Don't check functional groups since its very time consuming and we trust
+    // ourselves to put together valid datasets
+    pMapDoc->getFunctionalGroups().setCheckOnWrite(OFFalse);
     CHECK_COND(pMapDoc->writeDataset(*output));
     return output;
   }
