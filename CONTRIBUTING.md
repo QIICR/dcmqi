@@ -53,7 +53,7 @@ Then, click on the "Delete branch" button that appears afterward.
 
 #### Automatic testing of pull requests
 
-Every pull request is tested automatically using continuous integration using CircleCI, Appveyor and TravisCI
+Every pull request is tested automatically using continuous integration using GitHub Actions
 each time you push a commit to it. No PR should be merged until all CI are green, unless there is
 a good reason to merge it first (as an example, proper testing cannot be done due to the references of
   the components that are changing, but must be available in the `master` branch).

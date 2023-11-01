@@ -1,0 +1,106 @@
+name: C/C++ CI macOS
+
+# We only run this on pushes and pull requests to master branch,
+# as well as on manual trigger (workflow_dispatch, useful if workflow
+# has been disabled earlier).
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+
+    runs-on: macos-latest
+    # So far, a full superbuild (no caches) has always been complete in < 45 minutes.
+    timeout-minutes: 45
+
+    # Checkout and install python
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.7.14'
+
+    # Install build tools (cmake and ninja) as well as jsondiff
+    - name: "Install jsondiff"
+      run: pip install jsondiff
+    - name: "Install cmake"
+      run: |
+        cmake --version
+        echo ${PATH}
+        wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
+        unzip ninja-mac.zip && sudo cp ninja /usr/local/bin/
+
+    # Make sure all directories required for computing the hash actually exist
+    - name: "Prepare cache directories"
+      run: |
+        mkdir -p ${{ github.workspace }}/dcmqi-build/DCMTK-build
+        mkdir -p ${{ github.workspace }}/dcmqi-build/DCMTK
+        mkdir -p ${{ github.workspace }}/dcmqi-build/ITK
+        mkdir -p ${{ github.workspace }}/dcmqi-build/ITK-build
+        mkdir -p ${{ github.workspace }}/dcmqi-build/zlib-install
+
+    # Prepare the cache directories, which are DCMTK/ITK source and build directories
+    # since dcmqi build later requires DCMTK/ITK headers from source, and libraries from
+    # build directories. For ZLIB, installation directory is sufficient since it contains
+    # both, headers and libraries.
+    - name: Check for cached DCMTK, ITK and ZLIB
+      id: cache-dcmtk-itk-zlib
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-dcmtk-itk-zlib
+      with:
+        # The recursive content of these directories goes into the cache
+        path: |
+          ${{ github.workspace }}/dcmqi-build/DCMTK
+          ${{ github.workspace }}/dcmqi-build/DCMTK-build
+          ${{ github.workspace }}/dcmqi-build/ITK
+          ${{ github.workspace }}/dcmqi-build/ITK-build
+          ${{ github.workspace }}/dcmqi-build/zlib-install
+        # The hash key decides whether cache entry is out of date or can be used.
+        # We use the hash of the CMakeExternals files to decide whether
+        # we must rebuild it. Also a change in the OS will trigger cash rebuild.
+        # A hashkey will have the form of macOS-build-cache-dcmtk-itk-<hash>
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake','CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake') }}
+        # Below is the key pattern that defines, which cache entries stored on the
+        # GitHub repository will match our key. We simply use the name of OS and
+        # name of the cache, i.e. every cache entry with key pattern
+        # macOS-build-cache-dcmtk-itk-<hash> will match.
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+
+    # This is step executed if a cache entry is found
+    - name: "Configure dcmqi w/ cached DCMTK/ITK/ZLIB"
+      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit == 'true' }}
+      # Make sure to set ITK, DCMTK and ZLIB directories to dcmqi cmake configuration step
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }} -DDCMTK_DIR=${{ github.workspace }}/dcmqi-build/DCMTK-build -DITK_DIR=${{ github.workspace }}/dcmqi-build/ITK-build -DZLIB_ROOT=${{ github.workspace }}/dcmqi-build/zlib-install
+
+    # If we don't have a matching cache entry, configure for full rebuild (regular dcmqi superbuild)
+    - name: "Configure dcmqi w/o cached DCMTK/ITK/ZLIB"
+      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true' }}
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }}
+
+    # Build dcmqi
+    - name: "Build dcmqi"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build && ninja
+
+    # ...and finally package it.
+    - name: "Package dcmqi"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
+
+
+    - name: Publish package
+      run: |
+        pip install -U "scikit-ci-addons>=0.22.0"
+        ci_addons publish_github_release qiicr/dcmqi 
+        --exit-success-if-missing-token 
+        --prerelease-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz" 
+        --prerelease-packages-clear-pattern "dcmqi-*-mac-*" --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*"
+        --token ${{ secrets.GA_TOKEN }}
