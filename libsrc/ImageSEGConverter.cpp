@@ -393,7 +393,7 @@ namespace dcmqi {
                 ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
                 OFString instanceUID;
                 CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
-                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
+                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID))cpp;
 
                 if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
                   SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
@@ -440,6 +440,8 @@ namespace dcmqi {
     }
 
     std::cout << "Writing DICOM segmentation dataset " << std::endl;
+    // Don't check functional groups since its very time consuming and we trust
+    // ourselves to put together valid datasets
     segdoc->setCheckFGOnWrite(OFFalse);
     OFCondition writeResult = segdoc->writeDataset(segdocDataset);
     if(writeResult.bad()){
@@ -504,6 +506,7 @@ namespace dcmqi {
 
   pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset, const bool mergeSegments) {
     DcmSegmentation *segdoc = NULL;
+
 
     // Make sure RLE-compressed images can be decompressed
     DcmRLEDecoderRegistration::registerCodecs();
