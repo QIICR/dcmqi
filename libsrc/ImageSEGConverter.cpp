@@ -27,8 +27,9 @@ namespace dcmqi {
   , m_metaInfo()
   , m_overlapUtil()
   {
-
   };
+
+  // -------------------------------------------------------------------------------------
 
   DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
@@ -415,7 +416,6 @@ namespace dcmqi {
               // clean up for the next frame
               fgder->clearData();
             }
-
           }
         }
       }
@@ -527,7 +527,7 @@ namespace dcmqi {
         segment2image, m_metaInfo.getJSONOutputAsString());
   }
 
-// -------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------
 
   std::map<unsigned, ShortImageType::Pointer> ImageSEGConverter::dcmSegmentation2itkimage(const bool mergeSegments)
   {
@@ -676,7 +676,6 @@ namespace dcmqi {
                 // Otherwise, just copy the pixel value (fractional value) from the frame.
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
-
                   itkImage->SetPixel(index, *segNum);
                 }
                 else
@@ -728,12 +727,11 @@ namespace dcmqi {
     m_metaInfo.setBodyPartExamined(bodyPartExamined.c_str());
   }
 
-
   // -------------------------------------------------------------------------------------
 
   OFCondition ImageSEGConverter::extractBasicSegmentationInfo()
   {
-    // TODO: error handling
+    // TODO: Better error handling
     OFCondition result;
 
     // Directions
@@ -808,8 +806,8 @@ namespace dcmqi {
       size_t numSegs = m_segDoc->getNumberOfSegments();
       for (size_t i = 1; i <= numSegs; ++i)
       {
-        std::set<Uint32> segs;
-        segs.insert(i);
+        OFVector<Uint32> segs;
+        segs.push_back(i);
         segmentGroups.push_back(segs);
       }
       cout << "Will not merge segments: Splitting segments into " << segmentGroups.size() << " groups" << endl;
@@ -843,6 +841,8 @@ namespace dcmqi {
       return newSegmentImage;
   }
 
+  // -------------------------------------------------------------------------------------
+
   OFCondition ImageSEGConverter::getITKImageOrigin(const Uint32 frameNo, ShortImageType::PointType& origin)
   {
     FGInterface& fgInterface = m_segDoc->getFunctionalGroups();
@@ -862,6 +862,7 @@ namespace dcmqi {
     return EC_Normal;
   }
 
+  // -------------------------------------------------------------------------------------
 
   OFCondition ImageSEGConverter::addSegmentMetadata(const size_t segmentGroup,
                                                     const Uint16 segmentNumber)

@@ -18,9 +18,7 @@
 #include <itkImportImageFilter.h>
 
 // DCMQI includes
-//#include "dcmqi/OverlapUtil.h"
 #include "OverlapUtil.h"
-#include "SegmentAttributes.h"
 #include "dcmqi/ConverterBase.h"
 #include "dcmqi/OverlapUtil.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
@@ -94,33 +92,73 @@ namespace dcmqi {
     OFCondition getNonOverlappingSegmentGroups(const bool mergeSegments,
                                                OverlapUtil::SegmentGroups& segmentGroups);
 
+    /**
+     *  Extract basic image info like directions, origin, spacing and image region.
+     *  @return EC_Normal if successful, error otherwise
+     */
     OFCondition extractBasicSegmentationInfo();
 
+    /**
+     *  Allocate an ITK image template with the same size and spacing as the DICOM image.
+     *  This is used as a template for each slice that is to be inserted into the ITK space.
+     *  @return EC_Normal if successful, error otherwise
+     */
     ShortImageType::Pointer allocateITKImageTemplate();
 
+    /**
+     *  Allocate an ITK image based on the given template.
+     *  @param  imageTemplate The template to use for the new image.
+     *  @return EC_Normal if successful, error otherwise
+     */
     ShortImageType::Pointer allocateITKImageDuplicate(ShortImageType::Pointer imageTemplate);
 
+    /**
+     *  Get the ITK image origin for the given frame.
+     *  @param  frameNo The (DICOM) frame number to get the origin for.
+     *  @param  origin The resulting origin.
+     *  @return EC_Normal if successful, error otherwise
+     */
     OFCondition getITKImageOrigin(const Uint32 frameNo, ShortImageType::PointType& origin);
 
+    /**
+     *  Collect segment metadata for the given frame that will later go into the
+     *  accompanying JSON segmentation description.
+     *  @param  segmentGroup The segment group number
+     *          (i.e. uniquely identifying the NRRD output file in the end).
+     *  @param  segmentNumber The DICOM segment number.
+     *  @param  origin The resulting origin.
+     *  @return EC_Normal if successful, error otherwise
+     */
     OFCondition addSegmentMetadata(const size_t segmentGroup,
                                    const Uint16 segmentNumber);
 
 
+    /// The segmentation object, guarded by unique pointer
     OFunique_ptr<DcmSegmentation> m_segDoc;
 
+    /// Image direction in ITK speak
     ShortImageType::DirectionType m_direction;
-    // Spacing and origin
+    /// Computed image slice spacing
     double m_computedSliceSpacing;
+    /// Computed volume extent
     double m_computedVolumeExtent;
+    /// Slice direction in ITK speak
     vnl_vector<double> m_sliceDirection;
 
+    /// Image origin in ITK speak
     ShortImageType::PointType m_imageOrigin;
+    /// Image slice spacing in ITK speak
     ShortImageType::SpacingType m_imageSpacing;
+    /// Image size in ITK speak
     ShortImageType::SizeType m_imageSize;
+    /// Image region in ITK speak
     ShortImageType::RegionType m_imageRegion;
 
+    /// Segment meta information handler for the JSON segmentation description
     JSONSegmentationMetaInformationHandler m_metaInfo;
 
+    /// OverlapUtil instance used by this class, used in DICOM segmentation
+    /// to itk conversion
     OverlapUtil m_overlapUtil;
 
   };
