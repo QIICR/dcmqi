@@ -3,7 +3,7 @@
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/Dicom2ItkConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 // DCMTK includes
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   DcmDataset* dataset = sliceFF.getDataset();
 
   try {
-    dcmqi::ImageSEGConverter converter;
+    dcmqi::Dicom2ItkConverter converter;
     pair <map<unsigned,ShortImageType::Pointer>, string> result =  converter.dcmSegmentation2itkimage(dataset, mergeSegments);
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";

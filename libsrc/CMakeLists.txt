@@ -10,9 +10,10 @@ set(HDRS
   ${INCLUDE_DIR}/QIICRConstants.h
   ${INCLUDE_DIR}/QIICRUIDs.h
   ${INCLUDE_DIR}/ConverterBase.h
+  ${INCLUDE_DIR}/Dicom2ItkConverter.h
   ${INCLUDE_DIR}/Exceptions.h
   ${INCLUDE_DIR}/framesorter.h
-  ${INCLUDE_DIR}/ImageSEGConverter.h
+  ${INCLUDE_DIR}/Itk2DicomConverter.h
   ${INCLUDE_DIR}/ParaMapConverter.h
   ${INCLUDE_DIR}/Helper.h
   ${INCLUDE_DIR}/ColorUtilities.h
@@ -26,10 +27,11 @@ set(HDRS
 
 set(SRCS
   ConverterBase.cpp
-  ImageSEGConverter.cpp
+  Dicom2ItkConverter.cpp
   ParaMapConverter.cpp
   Helper.cpp
   ColorUtilities.cpp
+  Itk2DicomConverter.cpp
   JSONMetaInformationHandlerBase.cpp
   JSONParametricMapMetaInformationHandler.cpp
   JSONSegmentationMetaInformationHandler.cpp

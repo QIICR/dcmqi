@@ -31,45 +31,35 @@ typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterTyp
 namespace dcmqi {
 
   /**
-   * @brief The ImageSEGConverter class provides methods to convert between itk images and DICOM Segmentation objects.
+   * @brief The ImageSEGConverter class provides methods to convert from DICOM Segmentation objects to itk images.
    */
-  class ImageSEGConverter : public ConverterBase {
+  class Dicom2ItkConverter : public ConverterBase {
 
   public:
 
-    ImageSEGConverter();
-
-    /**
-     * @brief Converts itk images data into a DICOM Segmentation object.
-     *
-     * @param dcmDatasets A vector of DICOM datasets with the images that the segmentation is based on.
-     * @param segmentations A vector of itk images to be converted.
-     * @param metaData A string containing the metadata to be used for the DICOM Segmentation object.
-     * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
-     * @return A pointer to the resulting DICOM Segmentation object.
-     */
-    static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                          vector<ShortImageType::Pointer> segmentations,
-                          const string &metaData,
-                          bool skipEmptySlices=true);
+    Dicom2ItkConverter();
 
     /**
      * @brief Converts a DICOM Segmentation object into a map of itk images and metadata.
      *
      * @param segDataset A pointer to the DICOM Segmentation object to be converted.
      * @param mergeSegments A boolean indicating whether to merge segments during the conversion.
+     *        Defaults to false.
      * @return A pair containing the resulting map of itk images and the metadata.
      */
-    pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset, const bool mergeSegments);
+    pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset, const bool mergeSegments = false);
 
     /**
      * @brief Converts a DICOM Segmentation object into a map of itk images.
      *
      * @param mergeSegments A boolean indicating whether to merge segments during the conversion.
+     *        Defaults to false.
      * @return A map of itk images resulting from the conversion.
      */
 
     map<unsigned, ShortImageType::Pointer> dcmSegmentation2itkimage(const bool mergeSegments = false);
+
+  protected:
 
     /**
      * @brief Populates the metadata of a DICOM Segmentation object from a DICOM dataset.
@@ -77,8 +67,6 @@ namespace dcmqi {
      * @param segDataset A pointer to the DICOM dataset containing the metadata.
      */
     void populateMetaInformationFromDICOM(DcmDataset* segDataset);
-
-  protected:
 
     /**
      * Helper method that uses the OverlapUtil class to retrieve non-overlapping segment
@@ -160,7 +148,6 @@ namespace dcmqi {
     /// OverlapUtil instance used by this class, used in DICOM segmentation
     /// to itk conversion
     OverlapUtil m_overlapUtil;
-
   };
 
 }

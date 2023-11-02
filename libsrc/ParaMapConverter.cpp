@@ -5,7 +5,6 @@
 
 // DCMQI includes
 #include "dcmqi/ParaMapConverter.h"
-#include "dcmqi/ImageSEGConverter.h"
 
 // DCMTK includes
 #include <dcmtk/dcmsr/codes/dcm.h>
