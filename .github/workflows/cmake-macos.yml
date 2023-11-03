@@ -90,6 +90,11 @@ jobs:
       run: |
         cd ${{ github.workspace }}/dcmqi-build && ninja
 
+    - name: "Test dcmqi"
+      run: |
+        cd ${{ github.workspace }}/dcmqi-build/dcmqi-build
+        ctest -VV -DCTEST_MODEL=$CTEST_MODEL -DCTEST_EMPTY_BINARY_DIRECTORY=FALSE .
+
     # ...and finally package it.
     - name: "Package dcmqi"
       # Only run if the event is not a pull request and the repository owner is QIICR.
