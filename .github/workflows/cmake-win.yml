@@ -57,10 +57,18 @@ jobs:
           echo "Step 3"
           cmake -G "Visual Studio 17 2022" -Ax64 -DITK_DIR:PATH=c:\ITK-install\lib\cmake\ITK-5.3 -DDCMTK_DIR:PATH=c:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
 
-      - name: Build dcmqi and package
+      - name: Build dcmqi
         run: |
           cd ${{ github.workspace }}\dcmqi-build/
           cmake --build . --config Release -- /m
+
+      - name: Test dcmqi
+        run: |
+          cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
+          ctest -VV -C Release -D ExperimentalTest --no-compress-output
+  
+      - name: Package dcmqi
+        run: |  
           cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
