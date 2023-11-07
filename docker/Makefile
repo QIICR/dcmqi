@@ -44,17 +44,19 @@ prereq.build_dicom3tools: prereq.pull_dockcross
 	&& ( $(TMP)/dockcross make -j$(grep -c processor /proc/cpuinfo) World > /dev/null 2>&1 )\
 	|| echo "Reusing "
 
-# Download and install "ajv" 
+# Download and install "ajv"
 prereq.install_npm_packages: prereq.pull_dockcross
 	mkdir -p $(ROOT_DIR)/$(BUILD_DIR)
+	echo "Root dir: $(ROOT_DIR)"
+	echo "Build dir: $(BUILD_DIR)"
 	# If needed, download node
 	cd $(ROOT_DIR)/$(BUILD_DIR) && \
-	[ ! -e node-v6.9.5-linux-x64 ] && \
-  wget --no-check-certificate https://nodejs.org/dist/v6.9.5/node-v6.9.5-linux-x64.tar.xz && \
-	tar xf node-v6.9.5-linux-x64.tar.xz || true
+	[ ! -e node-v12.19.1-linux-x64 ] && \
+  wget --no-check-certificate https://nodejs.org/dist/v12.19.1/node-v12.19.1-linux-x64.tar.xz && \
+	tar xf node-v12.19.1-linux-x64.tar.xz || true
 	# Install tools required to run DCMQI "doc" tests
 	cd $(ROOT_DIR) && \
-	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v6.9.5-linux-x64/bin:$$PATH && sudo npm install ajv-cli@3.3.0 -g"
+	$(TMP)/dockcross bash -c "export PATH=/work/build/node-v12.19.1-linux-x64/bin:$$PATH && sudo npm install ajv-cli@3.3.0 -g"
 
 # Configure, build and package
 dcmqi.generate_package: prereq.pull_dockcross
