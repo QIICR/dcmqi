@@ -104,7 +104,8 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
     {
         FGInterface& fg  = m_seg->getFunctionalGroups();
         Uint32 numFrames = m_seg->getNumberOfFrames();
-        m_framesForSegment.resize(numFrames);
+        m_framesForSegment.clear();
+        m_framesForSegment.resize(m_seg->getNumberOfSegments());
         // Get Segmentation FG for each frame and remember the segment number for each frame
         // in the vector m_segmentsForFrame
         for (size_t f = 0; f < numFrames; f++)
@@ -119,7 +120,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                 OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
                 if (cond.good() && segNum > 0)
                 {
-                    m_framesForSegment[segNum].push_back(f); // physical frame number for segment
+                    m_framesForSegment[segNum-1].push_back(f); // physical frame number for segment
                 }
                 else if (segNum == 0)
                 {
@@ -137,7 +138,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             }
         }
     }
-    frames = m_framesForSegment[segmentNumber];
+    frames = m_framesForSegment[segmentNumber-1];
     return EC_Normal;
 }
 
@@ -552,7 +553,7 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
     ip->getImagePixel().getColumns(cols);
     if (rows * cols % 8 != 0)
     {
-        // We must copmare pixel by pixel of the unpacked frames (for now)
+        // We must compare pixel by pixel of the unpacked frames (for now)
         result = checkFramesOverlapUnpacked(f1, f2, f1_data, f2_data, rows, cols, overlap);
     }
     else

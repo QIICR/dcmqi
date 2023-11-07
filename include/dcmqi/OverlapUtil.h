@@ -67,7 +67,7 @@ public:
         }
         /** Constructor
          *  @param  pos Image position
-         *   @param  num Pyhsical frame number
+         *   @param  num Physical frame number
          */
         FramePositionAndNumber(const ImagePosition& pos, const Uint32& num)
             : m_position(pos)
@@ -186,10 +186,9 @@ public:
      */
     OFCondition getSegmentsByPosition(SegmentsByPosition& result);
 
-    /** Get phyiscal frames for a specific segment
+    /** Get phyiscal frames for a specific segment by its segment number
      *  @param segmentNumber Segment number to get frames for (1..n)
-     *  @param frames Resulting vector of physical frame numbers
-     *         (1 is first used index, 0 is first frame number)
+     *  @param frames Resulting vector of physical frame numbers (first frame is frame 0)
      *  @return EC_Normal if successful, error otherwise
      */
     OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
@@ -326,8 +325,10 @@ private:
     /// Phyiscal frames with their respective positions (IPP)
     FramePositions m_framePositions;
 
-    /// Frame numbers (starting from 0) grouped by segment number
-    /// (first segment number is 1, i.e. index 0 is unused)
+    /// Outer vector with one entry per segment. Index is the DICOM segment
+    /// number where segment 1 goes to index 0, segment 2 to index 1, and so on.
+    /// Inner vector contains the physical frame numbers that represent the
+    /// segment.
     FramesForSegment m_framesForSegment;
 
     /// Logical frames, ie. physical frames with the same position are

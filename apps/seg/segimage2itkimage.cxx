@@ -45,18 +45,23 @@ int main(int argc, char *argv[])
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
     string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
-
     for(map<unsigned,ShortImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
       typedef itk::ImageFileWriter<ShortImageType> WriterType;
       stringstream imageFileNameSStream;
-
+      cout << "Writing itk image to " << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
       imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
 
-      WriterType::Pointer writer = WriterType::New();
-      writer->SetFileName(imageFileNameSStream.str().c_str());
-      writer->SetInput(sI->second);
-      writer->SetUseCompression(1);
-      writer->Update();
+      try {
+        WriterType::Pointer writer = WriterType::New();
+        writer->SetFileName(imageFileNameSStream.str().c_str());
+        writer->SetInput(sI->second);
+        writer->SetUseCompression(1);
+        writer->Update();
+        cout << " ... done" << endl;
+      } catch (itk::ExceptionObject & error) {
+        std::cerr << "fatal ITK error: " << error << std::endl;
+        return EXIT_FAILURE;
+      }
     }
 
     stringstream jsonOutput;

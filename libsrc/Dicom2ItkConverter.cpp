@@ -87,7 +87,7 @@ namespace dcmqi {
     // Along the way, we also create JSON metadata for each segment,
     // to be returned in metaInfo parameter.
     OverlapUtil::SegmentGroups::iterator group = segmentGroups.begin();
-    size_t groupNumber = 0;
+    size_t groupNumber = 1;
     while (group != segmentGroups.end())
     {
       // Create target ITK image for this group
@@ -102,9 +102,8 @@ namespace dcmqi {
         // Afterwards, the ITK image will have the complete data belonging to that segment
         OverlapUtil::FramesForSegment::value_type framesForSegment;
         m_overlapUtil.getFramesForSegment(*segNum, framesForSegment);
-        for (size_t frameIndex = 1 /* vector uses 1 as starting index*/; frameIndex < framesForSegment.size(); frameIndex++)
+        for (size_t frameIndex = 0; frameIndex < framesForSegment.size(); frameIndex++)
         {
-          cout << "Writing group " << groupNumber << " segment " << *segNum << " frame " << frameIndex << endl;
           // Copy the data from the frame into the ITK image
           ShortImageType::PointType frameOriginPoint;
           ShortImageType::IndexType frameOriginIndex;

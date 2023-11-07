@@ -41,8 +41,6 @@
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include "itkImageRegionConstIterator.h"
-#include "itkSubtractImageFilter.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkFloatingPointExceptions.h"
@@ -257,6 +255,9 @@ int RegressionTestImage(const char *testImageFilename,
                         ::itk::SizeValueType numberOfPixelsTolerance,
                         unsigned int radiusTolerance)
 {
+  // Print filenames
+  std::cout << "Test image:     " << testImageFilename << std::endl;
+  std::cout << "Baseline image: " << baselineImageFilename << std::endl;
   // Use the factory mechanism to read the test and baseline files and convert
   // them to double
   typedef itk::Image<double, ITK_TEST_DIMENSION_MAX>        ImageType;
@@ -314,12 +315,25 @@ int RegressionTestImage(const char *testImageFilename,
   diff->SetDifferenceThreshold(intensityTolerance);
   diff->SetToleranceRadius(radiusTolerance);
   diff->UpdateLargestPossibleRegion();
+  std::cout << "Number of differences: " << diff->GetNumberOfPixelsWithDifferences() << std::endl;
+  // Write difference image to file "testoutput" if there are discrepencies
+  if( diff->GetNumberOfPixelsWithDifferences() > 0 )
+    {
+    std::cout << "Difference image was saved as " << "testoutput" << std::endl;
+    typedef itk::ImageFileWriter<DiffType::OutputImageType> WriterType;
+    WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName("testoutput.nrrd");
+    writer->SetInput(diff->GetOutput());
+    writer->UpdateLargestPossibleRegion();
+  }
 
   const itk::SizeValueType status = diff->GetNumberOfPixelsWithDifferences();
 
   // if there are discrepencies, create an diff image
   if( ( status > numberOfPixelsTolerance ) && reportErrors )
     {
+  std::cout << "RegressionTestimage: Number of pixels with differences = "
+            << status << ", threshold = " << numberOfPixelsTolerance << std::endl;
     typedef itk::RescaleIntensityImageFilter<ImageType, OutputType> RescaleType;
     typedef itk::ExtractImageFilter<OutputType, DiffOutputType>     ExtractType;
     typedef itk::ImageFileWriter<DiffOutputType>                    WriterType;
@@ -465,9 +479,11 @@ int RegressionTestImage(const char *testImageFilename,
     std::cout << testName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
     }
+  std::cout << "RegressionTestimage: Number of pixels with differences = "
+            << status << ", threshold = " << numberOfPixelsTolerance << std::endl;
   return ( status > numberOfPixelsTolerance ) ? 1 : 0;
-}
 
+}
 //
 // Generate all of the possible baselines
 // The possible baselines are generated fromn the baselineFilename using the
