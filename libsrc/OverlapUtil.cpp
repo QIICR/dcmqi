@@ -45,7 +45,8 @@ namespace dcmqi
 {
 
 OverlapUtil::OverlapUtil()
-    : m_framePositions()
+    : m_imageOrientation()
+    , m_framePositions()
     , m_framesForSegment()
     , m_logicalFramePositions()
     , m_segmentsByPosition()
@@ -68,6 +69,7 @@ void OverlapUtil::setSegmentationObject(DcmSegmentation* seg)
 
 void OverlapUtil::clear()
 {
+    m_imageOrientation.clear();
     m_framePositions.clear();
     m_framesForSegment.clear();
     m_logicalFramePositions.clear();
@@ -78,13 +80,10 @@ void OverlapUtil::clear()
 
 OFCondition OverlapUtil::getFramesByPosition(DistinctFramePositions& result)
 {
-    OFCondition cond = ensureFramesAreParallel();
-    if (cond.good())
+    OFCondition cond;
+    if (m_logicalFramePositions.empty())
     {
-        if (m_logicalFramePositions.empty())
-        {
-            cond = groupFramesByPosition();
-        }
+        cond = groupFramesByPosition();
     }
     if (cond.good())
     {
@@ -149,25 +148,28 @@ OFCondition OverlapUtil::ensureFramesAreParallel()
     OFBool perFrame                = OFFalse;
     FGPlaneOrientationPatient* pop = NULL;
     // Ensure that Image Orientation Patient is shared, i.e. we have parallel frames
-    OFVector<Float64> iop(6);
+    m_imageOrientation.clear();
+    m_imageOrientation.resize(6);
     FGBase* group = fg.get(0, DcmFGTypes::EFG_PLANEORIENTPATIENT, perFrame);
     if (group && (pop = OFstatic_cast(FGPlaneOrientationPatient*, group)))
     {
         if (perFrame == OFFalse)
         {
-            DCMSEG_DEBUG("getFramesByPosition(): Image Orientation Patient is shared, frames are parallel");
-            return EC_Normal;
+            DCMSEG_DEBUG("ensureFramesAreParallel(): Image Orientation Patient is shared, frames are parallel");
+            m_imageOrientation.resize(6);
+            cond = pop->getImageOrientationPatient(m_imageOrientation[0], m_imageOrientation[1], m_imageOrientation[2], m_imageOrientation[3], m_imageOrientation[4], m_imageOrientation[5]);
+            return cond;
         }
         else
         {
             DCMSEG_ERROR(
-                "getFramesByPosition(): Image Orientation Patient is per-frame, frames are probably not parallel");
+                "ensureFramesAreParallel(): Image Orientation Patient is per-frame, frames are probably not parallel");
             return SG_EC_FramesNotParallel;
         }
     }
     else
     {
-        DCMSEG_ERROR("getFramesByPosition(): Plane Orientation (Patient) FG not found, cannot check for parallelness");
+        DCMSEG_ERROR("ensureFramesAreParallel(): Plane Orientation (Patient) FG not found, cannot check for parallel frames");
         return EC_TagNotFound;
     }
     return EC_Normal;
@@ -180,13 +182,20 @@ OFCondition OverlapUtil::groupFramesByPosition()
         // Already computed
         return EC_Normal;
     }
+
+    OFCondition cond = ensureFramesAreParallel();
+    if (cond.bad())
+    {
+        return cond;
+    }
+
     OFTimer tm;
 
     // Group all frames by position into m_logicalFramePositions.
     // After that, all frames at the same position will be in the same vector
     // assigned to the same key (the frame's coordinates) in the map.
     // Group all frames by position into m_logicalFramePositions.
-    OFCondition cond = collectPhysicalFramePositions();
+    cond = collectPhysicalFramePositions();
     if (cond.good())
     {
         cond = groupFramesByLogicalPosition();
@@ -513,7 +522,7 @@ OFCondition OverlapUtil::buildOverlapMatrix()
         }
     }
     // Since we don't compare all segments (since not all are showing up together on a single logical frame),
-    // we set all remaining entries that are still unitialized (-1) to 0 (no overlap)
+    // we set all remaining entries that are still not initialized (-1) to 0 (no overlap)
     for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
     {
         for (size_t j = 0; j < m_segmentOverlapMatrix[i].size(); ++j)
@@ -671,8 +680,6 @@ OFCondition OverlapUtil::collectPhysicalFramePositions()
             {
                 // Insert frame into map
                 m_framePositions.push_back(FramePositionAndNumber(ipp, i));
-                // m_frameNumToPositionIndex.push_back(m_FramePositions.size() - 1); // current position in
-                // m_logicalFramePositions
             }
             else
             {
@@ -702,63 +709,18 @@ OFCondition OverlapUtil::groupFramesByLogicalPosition()
     // Find all distinct positions and for each position the actual frames that can be found at it
     Float64 sliceThickness   = 0.0;
     FGPixelMeasures* pm      = NULL;
-    Uint8 relevantCoordinate = 0;
+    Uint8 relevantCoordinate = 3; // not determined yet
     FGBase* group            = fg.get(0, DcmFGTypes::EFG_PIXELMEASURES, perFrame);
-    // Get/compute Slice Thickness
     if (group && (pm = OFstatic_cast(FGPixelMeasures*, group)))
     {
+        // Get/compute Slice Thickness
         cond = pm->getSliceThickness(sliceThickness);
         if (cond.good())
         {
             DCMSEG_DEBUG("groupFramesByPosition(): Slice Thickness is " << sliceThickness);
-            // Compute mean distance of frame positions in x, y and z direction
-            Float64 means[3] = { 0 };
-            Float64 diff[3]  = { 0 };
-            size_t count[3]  = { 0 };
-            for (size_t j = 0; j < m_framePositions.size() - 1; ++j)
-            {
-                for (size_t xyz = 0; xyz < 3; ++xyz)
-                {
-                    diff[xyz] = fabs(m_framePositions[j].m_position[xyz] - m_framePositions[j + 1].m_position[xyz]);
-                    if (diff[xyz] > sliceThickness * 0.5)
-                    {
-                        means[xyz] += diff[xyz];
-                        count[xyz]++;
-                    }
-                }
-            }
-            // Compute mean value for each coordinate
-            for (size_t xyz = 0; xyz < 3; ++xyz)
-            {
-                if (count[xyz] > 0)
-                    means[xyz] = means[xyz] / count[xyz];
-            }
-
-            // Output mean value for debug purposes
-            DCMSEG_DEBUG("groupFramesByPosition(): Mean distance of x coordinate is " << means[0]);
-            DCMSEG_DEBUG("groupFramesByPosition(): Mean distance of y coordinate is " << means[1]);
-            DCMSEG_DEBUG("groupFramesByPosition(): Mean distance of z coordinate is " << means[2]);
-            // Ensure that mean distance of one coordinate is close to slice thickness (not smaller than 90& as a rule
-            // of thumb) or multiple of it
-            if (fabs(means[0]) > sliceThickness * 0.9)
-                relevantCoordinate = 0;
-            else if (fabs(means[1]) > sliceThickness * 0.9)
-                relevantCoordinate = 1;
-            else if (fabs(means[2]) > sliceThickness * 0.9)
-                relevantCoordinate = 2;
-            // else if deviation of all three coordinates is close to zero, all frames are at the same position
-            // and we can use any of the coordinates for sorting, so we arbitrarily choose x.
-            // The worst thing that could happen is that we map segments internally to the same frame
-            // position later, and therefore, create more distinct segments than necessary.
-            else if (fabs(means[0]) < 0.1 * sliceThickness && fabs(means[1]) < 0.1 * sliceThickness
-                     && fabs(means[2]) < 0.1 * sliceThickness)
-            {
-                DCMSEG_DEBUG("Frames are at the same position, arbitrarily choosing first coordinate for sorting");
-                relevantCoordinate = 0;
-            }
-            else
-                relevantCoordinate = 100; // error
-            if (relevantCoordinate < 100)
+            // Identify coordinate to be used for frame sorting
+            relevantCoordinate = identifyChangingCoordinate(m_imageOrientation);
+            if (relevantCoordinate < 3)
             {
                 DCMSEG_DEBUG("Using coordinate " << OFstatic_cast(Uint16, relevantCoordinate)
                                                  << " for sorting frames by position");
@@ -804,9 +766,9 @@ OFCondition OverlapUtil::groupFramesByLogicalPosition()
             }
             else
             {
-                DCMSEG_ERROR("groupFramesByPosition(): Slice Thickness not represented in frame positions, cannot sort "
+                DCMSEG_ERROR("groupFramesByPosition(): Cannot identify coordinate relevant sorting coordinate, cannot sort "
                              "frames by position");
-                cond = EC_TagNotFound;
+                cond = EC_InvalidValue;
             }
         }
         else
@@ -821,6 +783,34 @@ OFCondition OverlapUtil::groupFramesByLogicalPosition()
         cond = EC_TagNotFound;
     }
     return cond;
+}
+
+
+Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrientation)
+{
+    return 3;
+    Float64 product_x, product_y, product_z;
+    Float64 cross_product[3];
+    // Compute cross product of image orientation vectors.
+    // We are only interested into the absolute values for later comparison
+    cross_product[0] = fabs(imageOrientation[1] * imageOrientation[5] - imageOrientation[2] * imageOrientation[4]);
+    cross_product[1] = fabs(imageOrientation[2] * imageOrientation[3] - imageOrientation[0] * imageOrientation[5]);
+    cross_product[2] = fabs(imageOrientation[0] * imageOrientation[4] - imageOrientation[1] * imageOrientation[3]);
+    // Find out which coordinate is changing the most (biggest absolute product value)
+    if ( (cross_product[0] > cross_product[1]) && (cross_product[0] > cross_product[2]) )
+    {
+        return 0;
+    }
+    if ( (cross_product[1] > cross_product[0]) && (cross_product[1] > cross_product[2]) )
+    {
+        return 1;
+    }
+    if ( (cross_product[2] > cross_product[0]) && (cross_product[2] > cross_product[1]) )
+    {
+            return 2;
+    }
+    // No clear winner
+    return 3;
 }
 
 }

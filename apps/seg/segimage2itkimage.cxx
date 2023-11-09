@@ -41,6 +41,11 @@ int main(int argc, char *argv[])
   try {
     dcmqi::Dicom2ItkConverter converter;
     pair <map<unsigned,ShortImageType::Pointer>, string> result =  converter.dcmSegmentation2itkimage(dataset, mergeSegments);
+    if (result.first.empty())
+    {
+      std::cerr << "ERROR: Failed to convert DICOM SEG to ITK image" << std::endl;
+      return EXIT_FAILURE;
+    }
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
 

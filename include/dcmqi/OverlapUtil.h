@@ -321,7 +321,20 @@ protected:
                                            const Uint16 cols,
                                            OFBool& overlap);
 
+    /** Return the most relevant (changing) coordinate, computed by multiplying
+     *  x and y vectors of the image orientation and selecting the coordinate
+     *  with the largest absolute value.
+     *  @param  imageOrientation Image orientation patient (3 coordinates for x vector,
+     *  3 coordinates for y vector )
+     *  @return 0 if x, 1 if y, 2 if z, 3 if not determinable
+     */
+    static Uint8 identifyChangingCoordinate(const OFVector<Float64>& imageOrientation);
+
 private:
+
+    /// Image Orientation Patient
+    OFVector<Float64> m_imageOrientation;
+
     /// Phyiscal frames with their respective positions (IPP)
     FramePositions m_framePositions;
 
