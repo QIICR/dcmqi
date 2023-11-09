@@ -55,7 +55,7 @@ public:
      *        Defaults to false.
      * @return A pair containing the resulting map of itk images and the metadata.
      */
-    OFCondition dcmSegmentation2itkimage(DcmDataset* segDataset, OFString& metaInfo, const bool mergeSegments = false);
+    OFCondition dcmSegmentation2itkimage(DcmDataset* segDataset, std::string& metaInfo, const bool mergeSegments = false);
 
     /** Get first ITK image result of conversion, or null pointer if conversion failed
      *  @return Shared pointer to first ITK image resulting from the conversion

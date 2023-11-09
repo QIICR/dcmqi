@@ -103,7 +103,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
     {
         FGInterface& fg  = m_seg->getFunctionalGroups();
         size_t tempNum = m_seg->getNumberOfFrames();
-        if (tempNum > OFnumeric_limits<Uint32>::max())
+        if (tempNum > 4294967295)
         {
             DCMSEG_ERROR("getFramesForSegment(): Number of frames " << tempNum << " exceeds maximum number of possible frames (2^32-1)");
             return EC_IllegalParameter;
@@ -437,7 +437,7 @@ void OverlapUtil::printSegmentsByPosition(OFStringStream& ss)
                 tempSS << ",";
             tempSS << "(" << (*it).m_segmentNumber << "," << (*it).m_frameNumber << ")";
         }
-        ss << "getSegmentsByPosition(): Logical frame #" << i << ": " << tempSS.str();
+        ss << "printSegmentsByPosition(): Logical frame #" << i << ": " << tempSS.str();
     }
 }
 
