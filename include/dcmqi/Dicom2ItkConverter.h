@@ -2,41 +2,49 @@
 #define DCMQI_SEGMENTATION_CONVERTER_H
 
 // DCMTK includes
+#include <dcmtk/dcmdata/dcrledrg.h>
 #include <dcmtk/dcmfg/fgderimg.h>
 #include <dcmtk/dcmfg/fgseg.h>
 #include <dcmtk/dcmseg/segdoc.h>
 #include <dcmtk/dcmseg/segment.h>
 #include <dcmtk/dcmseg/segutils.h>
-#include <dcmtk/dcmdata/dcrledrg.h>
 
 // ITK includes
-#include <itkImageDuplicator.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkLabelStatisticsImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
 #include <itkChangeInformationImageFilter.h>
+#include <itkImageDuplicator.h>
+#include <itkImageRegionConstIterator.h>
 #include <itkImportImageFilter.h>
+#include <itkLabelStatisticsImageFilter.h>
 
 // DCMQI includes
 #include "OverlapUtil.h"
 #include "dcmqi/ConverterBase.h"
-#include "dcmqi/OverlapUtil.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
-
+#include "dcmqi/OverlapUtil.h"
 
 using namespace std;
 
 typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterType;
 
-namespace dcmqi {
+namespace dcmqi
+{
 
-  /**
-   * @brief The ImageSEGConverter class provides methods to convert from DICOM Segmentation objects to itk images.
-   */
-  class Dicom2ItkConverter : public ConverterBase {
+/**
+ * @brief The ImageSEGConverter class provides methods to convert from DICOM Segmentation objects to itk images.
+ * It should be used as follows:
+ * - Call dcmSegmentation2itkimage() to start the conversion of DICOM
+ *   Segmentation object into a map of itk images. This will return to you
+ *   the JSON meta information of the conversion.
+ * - Call begin() to get the first ITK image result of the conversion.
+ *   Note that if conversion fails, this can return a null pointer.
+ * - Call next() to get the next ITK image result of the conversion, until
+ *   it returns a null pointer.
+ */
+class Dicom2ItkConverter : public ConverterBase
+{
 
-  public:
-
+public:
     Dicom2ItkConverter();
 
     /**
@@ -47,7 +55,28 @@ namespace dcmqi {
      *        Defaults to false.
      * @return A pair containing the resulting map of itk images and the metadata.
      */
-    pair<map<unsigned, ShortImageType::Pointer>, string> dcmSegmentation2itkimage(DcmDataset *segDataset, const bool mergeSegments = false);
+    OFCondition dcmSegmentation2itkimage(DcmDataset* segDataset, OFString& metaInfo, const bool mergeSegments = false);
+
+    /** Get first ITK image result of conversion, or null pointer if conversion failed
+     *  @return Shared pointer to first ITK image resulting from the conversion
+     */
+    itk::SmartPointer<ShortImageType> begin();
+
+    /** Get next ITK image result of conversion, or nuĺl pointer if no more results
+     *  @return Shared pointer to next ITK image resulting from the conversion, or null
+     */
+    itk::SmartPointer<ShortImageType> next();
+
+    /** Get JSON the metadata of the conversion
+     *  @return Metadata of the conversion
+     */
+    JSONSegmentationMetaInformationHandler getMetaInformation();
+
+protected:
+    /** Internal result loop, produced one result at a time (or null)
+     *  @return Shared pointer to first/next ITK image resulting from the conversion
+     */
+    itk::SmartPointer<ShortImageType> nextResult();
 
     /**
      * @brief Converts a DICOM Segmentation object into a map of itk images.
@@ -57,9 +86,7 @@ namespace dcmqi {
      * @return A map of itk images resulting from the conversion.
      */
 
-    map<unsigned, ShortImageType::Pointer> dcmSegmentation2itkimage(const bool mergeSegments = false);
-
-  protected:
+    OFCondition dcmSegmentation2itkimage(const bool mergeSegments = false);
 
     /**
      * @brief Populates the metadata of a DICOM Segmentation object from a DICOM dataset.
@@ -77,8 +104,7 @@ namespace dcmqi {
      * @param segmentGroups The resulting segment groups.
      * @return EC_Normal if successful, error otherwise
      */
-    OFCondition getNonOverlappingSegmentGroups(const bool mergeSegments,
-                                               OverlapUtil::SegmentGroups& segmentGroups);
+    OFCondition getNonOverlappingSegmentGroups(const bool mergeSegments, OverlapUtil::SegmentGroups& segmentGroups);
 
     /**
      *  Extract basic image info like directions, origin, spacing and image region.
@@ -87,11 +113,11 @@ namespace dcmqi {
     OFCondition extractBasicSegmentationInfo();
 
     /**
-     *  Allocate an ITK image template with the same size and spacing as the DICOM image.
-     *  This is used as a template for each slice that is to be inserted into the ITK space.
+     *  Allocate an ITK image with the same size and spacing as the DICOM image.
+     *  This is used for each slice that is to be inserted into the ITK space.
      *  @return EC_Normal if successful, error otherwise
      */
-    ShortImageType::Pointer allocateITKImageTemplate();
+    ShortImageType::Pointer allocateITKImage();
 
     /**
      *  Allocate an ITK image based on the given template.
@@ -117,9 +143,9 @@ namespace dcmqi {
      *  @param  origin The resulting origin.
      *  @return EC_Normal if successful, error otherwise
      */
-    OFCondition addSegmentMetadata(const size_t segmentGroup,
-                                   const Uint16 segmentNumber);
+    OFCondition addSegmentMetadata(const size_t segmentGroup, const Uint16 segmentNumber);
 
+    OFCondition createMetaInfo();
 
     /// The segmentation object, guarded by unique pointer
     OFunique_ptr<DcmSegmentation> m_segDoc;
@@ -145,11 +171,18 @@ namespace dcmqi {
     /// Segment meta information handler for the JSON segmentation description
     JSONSegmentationMetaInformationHandler m_metaInfo;
 
+    /// Segment groups, used to iterate over results
+    OverlapUtil::SegmentGroups m_segmentGroups;
+
+    /// Internal iterator to current segment group, used while iterating
+    /// over results using begin() and next()
+    OverlapUtil::SegmentGroups::iterator m_groupIterator;
+
     /// OverlapUtil instance used by this class, used in DICOM segmentation
     /// to itk conversion
     OverlapUtil m_overlapUtil;
-  };
+};
 
 }
 
-#endif //DCMQI_SEGMENTATION_CONVERTER_H
+#endif // DCMQI_SEGMENTATION_CONVERTER_H

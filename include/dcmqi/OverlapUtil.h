@@ -331,7 +331,6 @@ protected:
     static Uint8 identifyChangingCoordinate(const OFVector<Float64>& imageOrientation);
 
 private:
-
     /// Image Orientation Patient
     OFVector<Float64> m_imageOrientation;
 

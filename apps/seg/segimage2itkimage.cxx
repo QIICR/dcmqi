@@ -1,5 +1,6 @@
 // CLP includes
 #include "segimage2itkimageCLP.h"
+#include <itkSmartPointer.h>
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
@@ -10,6 +11,7 @@
 #include <dcmtk/oflog/configrt.h>
 
 typedef dcmqi::Helper helper;
+typedef itk::ImageFileWriter<ShortImageType> WriterType;
 
 
 int main(int argc, char *argv[])
@@ -40,26 +42,29 @@ int main(int argc, char *argv[])
 
   try {
     dcmqi::Dicom2ItkConverter converter;
-    pair <map<unsigned,ShortImageType::Pointer>, string> result =  converter.dcmSegmentation2itkimage(dataset, mergeSegments);
-    if (result.first.empty())
+    std::string metaInfo;
+    OFCondition result  =  converter.dcmSegmentation2itkimage(dataset, metaInfo, mergeSegments);
+    if (result.bad())
     {
-      std::cerr << "ERROR: Failed to convert DICOM SEG to ITK image" << std::endl;
+      std::cerr << "ERROR: Failed to convert DICOM SEG to ITK image: " << result.text() << std::endl;
       return EXIT_FAILURE;
     }
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
 
     string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
-    for(map<unsigned,ShortImageType::Pointer>::const_iterator sI=result.first.begin();sI!=result.first.end();++sI){
-      typedef itk::ImageFileWriter<ShortImageType> WriterType;
+    itk::SmartPointer<ShortImageType> itkImage = converter.begin();
+    size_t fileIndex = 1;
+    while (itkImage)
+    {
       stringstream imageFileNameSStream;
-      cout << "Writing itk image to " << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
-      imageFileNameSStream << outputDirName << "/" << outputPrefix << sI->first << fileExtension;
+      cout << "Writing itk image to " << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
+      imageFileNameSStream << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
 
       try {
         WriterType::Pointer writer = WriterType::New();
         writer->SetFileName(imageFileNameSStream.str().c_str());
-        writer->SetInput(sI->second);
+        writer->SetInput(itkImage);
         writer->SetUseCompression(1);
         writer->Update();
         cout << " ... done" << endl;
@@ -67,6 +72,8 @@ int main(int argc, char *argv[])
         std::cerr << "fatal ITK error: " << error << std::endl;
         return EXIT_FAILURE;
       }
+      itkImage = converter.next();
+      fileIndex++;
     }
 
     stringstream jsonOutput;
@@ -74,7 +81,7 @@ int main(int argc, char *argv[])
 
     ofstream outputFile;
     outputFile.open(jsonOutput.str().c_str());
-    outputFile << result.second;
+    outputFile << metaInfo;
     outputFile.close();
 
     return EXIT_SUCCESS;

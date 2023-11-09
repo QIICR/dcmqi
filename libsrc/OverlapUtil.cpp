@@ -119,7 +119,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                 OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
                 if (cond.good() && segNum > 0)
                 {
-                    m_framesForSegment[segNum-1].push_back(f); // physical frame number for segment
+                    m_framesForSegment[segNum - 1].push_back(f); // physical frame number for segment
                 }
                 else if (segNum == 0)
                 {
@@ -137,7 +137,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             }
         }
     }
-    frames = m_framesForSegment[segmentNumber-1];
+    frames = m_framesForSegment[segmentNumber - 1];
     return EC_Normal;
 }
 
@@ -157,7 +157,15 @@ OFCondition OverlapUtil::ensureFramesAreParallel()
         {
             DCMSEG_DEBUG("ensureFramesAreParallel(): Image Orientation Patient is shared, frames are parallel");
             m_imageOrientation.resize(6);
-            cond = pop->getImageOrientationPatient(m_imageOrientation[0], m_imageOrientation[1], m_imageOrientation[2], m_imageOrientation[3], m_imageOrientation[4], m_imageOrientation[5]);
+            cond = pop->getImageOrientationPatient(m_imageOrientation[0],
+                                                   m_imageOrientation[1],
+                                                   m_imageOrientation[2],
+                                                   m_imageOrientation[3],
+                                                   m_imageOrientation[4],
+                                                   m_imageOrientation[5]);
+            std::cout << "Image Orientation Patient set to : " << m_imageOrientation[0] << ", " << m_imageOrientation[1]
+                      << ", " << m_imageOrientation[2] << ", " << m_imageOrientation[3] << ", " << m_imageOrientation[4]
+                      << ", " << m_imageOrientation[5] << std::endl;
             return cond;
         }
         else
@@ -169,7 +177,8 @@ OFCondition OverlapUtil::ensureFramesAreParallel()
     }
     else
     {
-        DCMSEG_ERROR("ensureFramesAreParallel(): Plane Orientation (Patient) FG not found, cannot check for parallel frames");
+        DCMSEG_ERROR(
+            "ensureFramesAreParallel(): Plane Orientation (Patient) FG not found, cannot check for parallel frames");
         return EC_TagNotFound;
     }
     return EC_Normal;
@@ -766,29 +775,30 @@ OFCondition OverlapUtil::groupFramesByLogicalPosition()
             }
             else
             {
-                DCMSEG_ERROR("groupFramesByPosition(): Cannot identify coordinate relevant sorting coordinate, cannot sort "
-                             "frames by position");
+                std::cerr
+                    << "groupFramesByPosition(): Cannot identify coordinate relevant for sorting frames by position"
+                    << std::endl;
                 cond = EC_InvalidValue;
             }
         }
         else
         {
-            DCMSEG_ERROR("groupFramesByPosition(): Slice Thickness not found, cannot sort frames by position");
+            std::cerr << "groupFramesByPosition(): Slice Thickness not found, cannot sort frames by position"
+                      << std::endl;
             cond = EC_TagNotFound;
         }
     }
     else
     {
-        DCMSEG_ERROR("groupFramesByPosition(): Pixel Measures FG not found, cannot sort frames by position");
+        std::cerr << "groupFramesByPosition(): Pixel Measures FG not found, cannot sort frames by position"
+                  << std::endl;
         cond = EC_TagNotFound;
     }
     return cond;
 }
 
-
 Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrientation)
 {
-    return 3;
     Float64 product_x, product_y, product_z;
     Float64 cross_product[3];
     // Compute cross product of image orientation vectors.
@@ -796,18 +806,18 @@ Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrie
     cross_product[0] = fabs(imageOrientation[1] * imageOrientation[5] - imageOrientation[2] * imageOrientation[4]);
     cross_product[1] = fabs(imageOrientation[2] * imageOrientation[3] - imageOrientation[0] * imageOrientation[5]);
     cross_product[2] = fabs(imageOrientation[0] * imageOrientation[4] - imageOrientation[1] * imageOrientation[3]);
-    // Find out which coordinate is changing the most (biggest absolute product value)
-    if ( (cross_product[0] > cross_product[1]) && (cross_product[0] > cross_product[2]) )
+    // Find out which coordinate is changing the most (biggest absolute coordinate value of cross product)
+    if ((cross_product[0] > cross_product[1]) && (cross_product[0] > cross_product[2]))
     {
         return 0;
     }
-    if ( (cross_product[1] > cross_product[0]) && (cross_product[1] > cross_product[2]) )
+    if ((cross_product[1] > cross_product[0]) && (cross_product[1] > cross_product[2]))
     {
         return 1;
     }
-    if ( (cross_product[2] > cross_product[0]) && (cross_product[2] > cross_product[1]) )
+    if ((cross_product[2] > cross_product[0]) && (cross_product[2] > cross_product[1]))
     {
-            return 2;
+        return 2;
     }
     // No clear winner
     return 3;
