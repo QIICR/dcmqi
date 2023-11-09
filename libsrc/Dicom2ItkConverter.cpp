@@ -32,7 +32,7 @@ Dicom2ItkConverter::Dicom2ItkConverter()
 // -------------------------------------------------------------------------------------
 
 OFCondition
-Dicom2ItkConverter::dcmSegmentation2itkimage(DcmDataset* segDataset, OFString& metaInfo, const bool mergeSegments)
+Dicom2ItkConverter::dcmSegmentation2itkimage(DcmDataset* segDataset, std::string& metaInfo, const bool mergeSegments)
 {
     DcmSegmentation* segdoc = NULL;
 

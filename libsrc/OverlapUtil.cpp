@@ -102,12 +102,18 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
     if (m_framesForSegment.empty())
     {
         FGInterface& fg  = m_seg->getFunctionalGroups();
-        Uint32 numFrames = m_seg->getNumberOfFrames();
+        size_t tempNum = m_seg->getNumberOfFrames();
+        if (tempNum > OFnumeric_limits<Uint32>::max())
+        {
+            DCMSEG_ERROR("getFramesForSegment(): Number of frames " << tempNum << " exceeds maximum number of possible frames (2^32-1)");
+            return EC_IllegalParameter;
+        }
+        Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
         m_framesForSegment.clear();
         m_framesForSegment.resize(m_seg->getNumberOfSegments());
         // Get Segmentation FG for each frame and remember the segment number for each frame
         // in the vector m_segmentsForFrame
-        for (size_t f = 0; f < numFrames; f++)
+        for (Uint32 f = 0; f < numFrames; f++)
         {
             FGBase* group         = NULL;
             FGSegmentation* segFG = NULL;
@@ -799,7 +805,6 @@ OFCondition OverlapUtil::groupFramesByLogicalPosition()
 
 Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrientation)
 {
-    Float64 product_x, product_y, product_z;
     Float64 cross_product[3];
     // Compute cross product of image orientation vectors.
     // We are only interested into the absolute values for later comparison
