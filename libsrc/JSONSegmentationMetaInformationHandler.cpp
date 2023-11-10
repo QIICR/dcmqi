@@ -151,25 +151,21 @@ namespace dcmqi {
     return values;
   }
 
-  SegmentAttributes *JSONSegmentationMetaInformationHandler::createOrGetSegment(const int segGroupNumber, const unsigned labelID) {
-    //std::cout << "DEBUG: num segmentations: " << this->segmentsAttributesMappingList.size() << std::endl;
-    /*
-    for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
-       vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
-      for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
-        SegmentAttributes *segmentAttributes = mIt->second;
-        if (segmentAttributes->getLabelID() == labelID)
-          return NULL;
-      }
-    }*/
+  SegmentAttributes *JSONSegmentationMetaInformationHandler::createOrGetSegment(const unsigned int segGroupNumber, const unsigned labelID) {
+    if (segGroupNumber < 1)
+    {
+      std::cerr << "ERROR: Segment group number must be >= 1" << std::endl;
+      return NULL;
+    }
 
     SegmentAttributes *segment = new SegmentAttributes(labelID);
-    if (this->segmentsAttributesMappingList.size() < segGroupNumber+1) {
+    if (this->segmentsAttributesMappingList.size() < segGroupNumber) {
       map<unsigned,SegmentAttributes*> tempMap;
       tempMap[labelID] = segment;
       this->segmentsAttributesMappingList.push_back(tempMap);
-    } else
-      this->segmentsAttributesMappingList[segGroupNumber][labelID] = segment;
+    } else {
+      this->segmentsAttributesMappingList[segGroupNumber-1][labelID] = segment;
+    }
 
     return segment;
   }

@@ -50,6 +50,7 @@ dcmqi_add_test(
       --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
     )
 
+
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
@@ -139,6 +140,22 @@ dcmqi_add_test(
       ${itk2dcm}_makeSEG_multiple_segment_files_reordered
     )
 
+    dcmqi_add_test(
+      NAME ${dcm2itk}_makeNRRD_merged_segment_file
+      MODULE_NAME ${MODULE_NAME}
+      COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+        --compare ${BASELINE}/liver_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-1.nrrd
+        --compare ${BASELINE}/spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-2.nrrd
+        --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-3.nrrd
+        ${dcm2itk}Test
+        --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
+        --outputDirectory ${MODULE_TEMP_DIR}
+        --prefix makeNRRD_merged_segment_file
+        --mergeSegments
+      TEST_DEPENDS
+        ${itk2dcm}_makeSEG_multiple_segment_files
+      )
+
 dcmqi_add_test(
   NAME seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
@@ -159,8 +176,6 @@ dcmqi_add_test(
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD_multiple_segment_files
   )
-
-
 
 set(TEST_SEG_SIZES 24x38x3 23x38x3)
 

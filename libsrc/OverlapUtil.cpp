@@ -324,7 +324,6 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
         DCMSEG_DEBUG(ss.str());
     }
     DCMSEG_DEBUG("groupFramesByPosition(): Grouping segments by position took " << tm.getDiff() << " s");
-
     return cond;
 }
 
