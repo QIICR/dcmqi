@@ -1,0 +1,68 @@
+{
+   "BodyPartExamined" : "",
+   "ClinicalTrialCoordinatingCenterName" : "BWH",
+   "ClinicalTrialSeriesID" : "Session1",
+   "ClinicalTrialTimePointID" : "1",
+   "ContentCreatorName" : "Doe^John",
+   "InstanceNumber" : "1",
+   "SeriesDescription" : "Segmentation",
+   "SeriesNumber" : "300",
+   "segmentAttributes" : [
+      [
+         {
+            "SegmentAlgorithmName" : "SlicerEditor",
+            "SegmentAlgorithmType" : "SEMIAUTOMATIC",
+            "SegmentDescription" : "Liver Segmentation",
+            "SegmentLabel" : "Liver",
+            "SegmentedPropertyCategoryCodeSequence" : {
+               "CodeMeaning" : "Tissue",
+               "CodeValue" : "85756007",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "SegmentedPropertyTypeCodeSequence" : {
+               "CodeMeaning" : "Liver",
+               "CodeValue" : "10200004",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "labelID" : 1,
+            "recommendedDisplayRGBValue" : [ 220, 129, 101 ]
+         },
+         {
+            "SegmentAlgorithmType" : "MANUAL",
+            "SegmentDescription" : "Anatomical Structure",
+            "SegmentLabel" : "Thoracic spine",
+            "SegmentedPropertyCategoryCodeSequence" : {
+               "CodeMeaning" : "Anatomical Structure",
+               "CodeValue" : "123037004",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "SegmentedPropertyTypeCodeSequence" : {
+               "CodeMeaning" : "Thoracic spine",
+               "CodeValue" : "122495006",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "labelID" : 2,
+            "recommendedDisplayRGBValue" : [ 226, 202, 134 ]
+         }
+      ],
+      [
+         {
+            "SegmentAlgorithmType" : "MANUAL",
+            "SegmentDescription" : "Anatomical Structure",
+            "SegmentLabel" : "Heart",
+            "SegmentedPropertyCategoryCodeSequence" : {
+               "CodeMeaning" : "Anatomical Structure",
+               "CodeValue" : "123037004",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "SegmentedPropertyTypeCodeSequence" : {
+               "CodeMeaning" : "Heart",
+               "CodeValue" : "80891009",
+               "CodingSchemeDesignator" : "SCT"
+            },
+            "labelID" : 3,
+            "recommendedDisplayRGBValue" : [ 206, 110, 84 ]
+         }
+      ]
+   ]
+}
