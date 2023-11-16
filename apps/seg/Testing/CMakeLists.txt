@@ -30,6 +30,10 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
+# Creates a DICOM segmentation file that has 3 segments:
+# - segment for liver (DICOM Segment Number 1)
+# - segment for spine (DICOM Segment Number 2)
+# - segment for heart (DICOM Segment Number 3)
 dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
@@ -49,6 +53,7 @@ dcmqi_add_test(
       --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
       --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
     )
+
 
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
@@ -139,6 +144,38 @@ dcmqi_add_test(
       ${itk2dcm}_makeSEG_multiple_segment_files_reordered
     )
 
+  # Reads a DICOM segmentation file that has 3 segments (liver, spine, heart - in this order).
+  # Heart and liver segments overlap.
+  # The goal is to export these segments to NRRD+JSON. Since the liver and heart segments overlap,
+  # one output file will contain 2 segments (liver and spine) and the other will contain only
+  # the heart. This will be reflected in the JSON metadata files with two entries in the outer
+  # array (one for each NRRD file), one with 2 segments (liver,spine) and one with 1 segment (heart).
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_merged_segment_file
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+      --compare ${BASELINE}/liver_spine_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_file-1.nrrd
+      --compare ${BASELINE}/heart_seg.nrrd ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_file-2.nrrd
+      ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRD_merged_segment_file
+      --mergeSegments
+    TEST_DEPENDS
+      ${itk2dcm}_makeSEG_multiple_segment_files
+  )
+
+  # Compare expected JSON output coming from makeNRRD_merged_segment_file test.
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_merged_segment_file_JSON
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+      ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments_merged.json
+      ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_file-meta.json
+    TEST_DEPENDS
+      ${dcm2itk}_makeNRRD_merged_segment_file
+  )
+
 dcmqi_add_test(
   NAME seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
@@ -159,8 +196,6 @@ dcmqi_add_test(
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD_multiple_segment_files
   )
-
-
 
 set(TEST_SEG_SIZES 24x38x3 23x38x3)
 

@@ -37,7 +37,9 @@
 using namespace std;
 
 typedef short ShortPixelType;
+typedef unsigned char CharPixelType;
 typedef itk::Image<ShortPixelType, 3> ShortImageType;
+typedef itk::Image<CharPixelType, 3> CharImageType;
 typedef itk::ImageFileReader<ShortImageType> ShortReaderType;
 
 namespace dcmqi {
@@ -219,6 +221,21 @@ namespace dcmqi {
         sort(originDistances.begin(), originDistances.end());
 
         sliceSpacing = fabs(originDistances[0]-originDistances[1]);
+        if (sliceSpacing == 0)
+        {
+          cout << "Slice spacing is zero, trying to get/use it from DICOM file instead" << endl;
+          // Get Slice Spacing as defined in Pixel Measures FG
+          OFBool isPerFrame;
+          FGPixelMeasures *pixelMeasures = OFstatic_cast(FGPixelMeasures*,
+                                                         fgInterface.get(0, DcmFGTypes::EFG_PIXELMEASURES, isPerFrame));
+          if(!pixelMeasures){
+            cerr << "Canont get Slice Spacing, Pixel Measures FG is missing!" << endl;
+            return EXIT_FAILURE;
+          }
+          if(pixelMeasures->getSpacingBetweenSlices(sliceSpacing,0).good()){
+            cout << "Using Slice Spacing (from DICOM file): " << sliceSpacing << endl;
+          }
+        }
 
         // for(size_t i=1;i<originDistances.size(); i++){
           // float dist1 = fabs(originDistances[i-1]-originDistances[i]);
@@ -232,7 +249,6 @@ namespace dcmqi {
             if(it->second>1)
               overlappingFramesCnt++;
         }
-
         cout << "Total frames with unique IPP: " << originDistances.size() << endl;
         cout << "Total overlapping frames: " << overlappingFramesCnt << endl;
       }
@@ -244,6 +260,9 @@ namespace dcmqi {
         sliceSpacing = 1.0;
       }
       cout << "Origin: " << imageOrigin << endl;
+      cout << "Slice extent: " << sliceExtent << endl;
+      cout << "Slice spacing: " << sliceSpacing << endl;
+
 
       return 0;
     }

@@ -86,7 +86,7 @@ namespace dcmqi {
     data["InstanceNumber"] = this->instanceNumber;
     data["BodyPartExamined"] = this->bodyPartExamined;
 
-    data["segmentAttributes"] = createAndGetSegmentAttributes();
+    data["segmentAttributes"] = createAndGetSegmentAttributesJSON();
 
     Json::StyledWriter styledWriter;
     ss << styledWriter.write(data);
@@ -94,11 +94,15 @@ namespace dcmqi {
     return ss.str();
   }
 
-  Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributes() {
+  Json::Value JSONSegmentationMetaInformationHandler::createAndGetSegmentAttributesJSON() {
     // return a list of lists, where each inner list contains just one item (segment)
     Json::Value values(Json::arrayValue);
+
     for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
        vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
+
+      Json::Value innerList(Json::arrayValue);
+
       for(map<unsigned,SegmentAttributes*>::const_iterator mIt=vIt->begin();mIt!=vIt->end();++mIt){
         Json::Value segment;
         SegmentAttributes* segmentAttributes = mIt->second;
@@ -139,28 +143,30 @@ namespace dcmqi {
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[1]);
         rgb.append(segmentAttributes->getRecommendedDisplayRGBValue()[2]);
         segment["recommendedDisplayRGBValue"] = rgb;
-        Json::Value innerList(Json::arrayValue);
         innerList.append(segment);
-        values.append(innerList);
       }
+
+      values.append(innerList);
     }
     return values;
   }
 
-  SegmentAttributes *JSONSegmentationMetaInformationHandler::createAndGetNewSegment(unsigned labelID) {
-    for (vector<map<unsigned,SegmentAttributes*> >::const_iterator vIt = this->segmentsAttributesMappingList.begin();
-       vIt != this->segmentsAttributesMappingList.end(); ++vIt) {
-      for(map<unsigned,SegmentAttributes*>::const_iterator mIt = vIt->begin();mIt!=vIt->end();++mIt){
-        SegmentAttributes *segmentAttributes = mIt->second;
-        if (segmentAttributes->getLabelID() == labelID)
-          return NULL;
-      }
+  SegmentAttributes *JSONSegmentationMetaInformationHandler::createOrGetSegment(const unsigned int segGroupNumber, const unsigned labelID) {
+    if (segGroupNumber < 1)
+    {
+      std::cerr << "ERROR: Segment group number must be >= 1" << std::endl;
+      return NULL;
     }
 
     SegmentAttributes *segment = new SegmentAttributes(labelID);
-    map<unsigned,SegmentAttributes*> tempMap;
-    tempMap[labelID] = segment;
-    this->segmentsAttributesMappingList.push_back(tempMap);
+    if (this->segmentsAttributesMappingList.size() < segGroupNumber) {
+      map<unsigned,SegmentAttributes*> tempMap;
+      tempMap[labelID] = segment;
+      this->segmentsAttributesMappingList.push_back(tempMap);
+    } else {
+      this->segmentsAttributesMappingList[segGroupNumber-1][labelID] = segment;
+    }
+
     return segment;
   }
 
@@ -237,7 +243,6 @@ namespace dcmqi {
           Json::Value elem = segment["TrackingUniqueIdentifier"];
           segmentAttribute->setTrackingUniqueIdentifier(elem.asString());
         }
-
       }
       segmentsAttributesMappingList.push_back(labelID2SegmentAttributes);
     }

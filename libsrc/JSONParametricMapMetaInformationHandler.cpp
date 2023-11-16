@@ -204,9 +204,11 @@ namespace dcmqi {
         data["SourceImageDiffusionBValues"].append(*it);
     }
 
-    Json::StyledWriter styledWriter;
-
-    ss << styledWriter.write(data);
+    Json::StreamWriterBuilder styledBuilder;
+    styledBuilder["indentation"] = "  ";
+    std::unique_ptr<Json::StreamWriter> writer(styledBuilder.newStreamWriter());
+    writer->write(data, &ss);
+    ss << std::endl;
 
     return ss.str();
   }

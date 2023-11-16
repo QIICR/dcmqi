@@ -1,9 +1,9 @@
 // CLP includes
+#include "dcmqi/Itk2DicomConverter.h"
 #include "itkimage2segimageCLP.h"
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/ImageSEGConverter.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 // DCMTK includes
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
   }
 
   try {
-    DcmDataset* result = dcmqi::ImageSEGConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+    DcmDataset* result = dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
 
     if (result == NULL){
       std::cerr << "ERROR: Conversion failed." << std::endl;

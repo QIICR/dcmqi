@@ -35,7 +35,10 @@ namespace dcmqi {
     void read();
     bool write(string filename);
 
-    SegmentAttributes* createAndGetNewSegment(unsigned labelID);
+    // segGroupNumber starts with 0 and refers to the item in segmentsAttributesMappingList.
+    // if segGroupNumber is invalid, create segment within a newly created segmentation group
+    // otherwise add segment to the existing segmentation group identified by segGroupNumber
+    SegmentAttributes* createOrGetSegment(const unsigned int segGroupNumber, unsigned labelID);
 
   protected:
 
@@ -46,7 +49,7 @@ namespace dcmqi {
 
     void readSegmentAttributes();
 
-    Json::Value createAndGetSegmentAttributes();
+    Json::Value createAndGetSegmentAttributesJSON();
   };
 
 }

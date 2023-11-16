@@ -1,18 +1,24 @@
 
 // DCMQI includes
-#include "dcmqi/ImageSEGConverter.h"
+#include "dcmqi/Itk2DicomConverter.h"
 #include "dcmqi/ColorUtilities.h"
+#include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
-
-//DCMTK includes
-#include <dcmtk/dcmiod/cielabutil.h>
+// DCMTK includes
 #include <dcmtk/dcmsr/codes/dcm.h>
-#include <dcmtk/ofstd/ofmem.h>
+
 
 
 namespace dcmqi {
 
-  DcmDataset* ImageSEGConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+
+  Itk2DicomConverter::Itk2DicomConverter()
+  {
+  };
+
+  // -------------------------------------------------------------------------------------
+
+  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices) {
@@ -397,7 +403,6 @@ namespace dcmqi {
               // clean up for the next frame
               fgder->clearData();
             }
-
           }
         }
       }
@@ -421,10 +426,10 @@ namespace dcmqi {
       CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
     }
 
+    std::cout << "Writing DICOM segmentation dataset " << std::endl;
     // Don't check functional groups since its very time consuming and we trust
     // ourselves to put together valid datasets
     segdoc->setCheckFGOnWrite(OFFalse);
-
     OFCondition writeResult = segdoc->writeDataset(segdocDataset);
     if(writeResult.bad()){
       cerr << "FATAL ERROR: Writing of the SEG dataset failed!";
@@ -436,6 +441,7 @@ namespace dcmqi {
     }
 
     // Set reader/session/timepoint information
+    std::cout << "Patching in extra meta information into DICOM dataset" << std::endl;
     CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
     CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
@@ -481,330 +487,6 @@ namespace dcmqi {
     }
 
     return new DcmDataset(segdocDataset);
-  }
-
-
-  pair <map<unsigned,ShortImageType::Pointer>, string> ImageSEGConverter::dcmSegmentation2itkimage(DcmDataset *segDataset) {
-    DcmSegmentation *segdoc = NULL;
-
-    DcmRLEDecoderRegistration::registerCodecs();
-
-    OFCondition cond = DcmSegmentation::loadDataset(*segDataset, segdoc);
-    if(!segdoc){
-      cerr << "ERROR: Failed to load segmentation dataset! " << cond.text() << endl;
-      throw -1;
-    }
-    OFunique_ptr<DcmSegmentation> segdocguard(segdoc);
-
-    JSONSegmentationMetaInformationHandler metaInfo;
-    populateMetaInformationFromDICOM(segDataset, segdoc, metaInfo);
-
-    const std::map<unsigned, ShortImageType::Pointer> segment2image =
-        dcmSegmentation2itkimage(segdoc, &metaInfo);
-    return pair<map<unsigned, ShortImageType::Pointer>, string>(
-        segment2image, metaInfo.getJSONOutputAsString());
-  }
-
-  std::map<unsigned, ShortImageType::Pointer>
-  ImageSEGConverter::dcmSegmentation2itkimage(
-      DcmSegmentation *segdoc,
-      JSONSegmentationMetaInformationHandler *metaInfo) {
-
-    OFLogger dcemfinfLogger = OFLog::getLogger("qiicr.apps");
-    dcemfinfLogger.setLogLevel(dcmtk::log4cplus::OFF_LOG_LEVEL);
-
-    // Directions
-    FGInterface &fgInterface = segdoc->getFunctionalGroups();
-    ShortImageType::DirectionType direction;
-    if(getImageDirections(fgInterface, direction)){
-      cerr << "ERROR: Failed to get image directions!" << endl;
-      throw -1;
-    }
-
-    // Spacing and origin
-    double computedSliceSpacing, computedVolumeExtent;
-    vnl_vector<double> sliceDirection(3);
-    sliceDirection[0] = direction[0][2];
-    sliceDirection[1] = direction[1][2];
-    sliceDirection[2] = direction[2][2];
-
-    ShortImageType::PointType imageOrigin;
-    if(computeVolumeExtent(fgInterface, sliceDirection, imageOrigin, computedSliceSpacing, computedVolumeExtent)){
-      cerr << "ERROR: Failed to compute origin and/or slice spacing!" << endl;
-      throw -1;
-    }
-
-    ShortImageType::SpacingType imageSpacing;
-    imageSpacing.Fill(0);
-    if(getDeclaredImageSpacing(fgInterface, imageSpacing)){
-      cerr << "ERROR: Failed to get image spacing from DICOM!" << endl;
-      throw -1;
-    }
-
-    if(!imageSpacing[2]){
-      cerr << "ERROR: No sufficient information to derive slice spacing! Unable to interpret the data." << endl;
-      throw -1;
-    }
-
-    // Region size
-    ShortImageType::SizeType imageSize;
-    {
-      DcmIODImage<IODImagePixelModule<Uint8> > *ip =
-          static_cast<DcmIODImage<IODImagePixelModule<Uint8> > *>(segdoc);
-      Uint16 value;
-      if (ip->getImagePixel().getRows(value).good()) {
-        imageSize[1] = value;
-      }
-      if (ip->getImagePixel().getColumns(value).good()) {
-        imageSize[0] = value;
-      }
-    }
-    // number of slices should be computed, since segmentation may have empty frames
-    imageSize[2] = round(computedVolumeExtent/imageSpacing[2])+1;
-
-    // Initialize the image
-    ShortImageType::RegionType imageRegion;
-    imageRegion.SetSize(imageSize);
-    ShortImageType::Pointer segImage = ShortImageType::New();
-    segImage->SetRegions(imageRegion);
-    segImage->SetOrigin(imageOrigin);
-    segImage->SetSpacing(imageSpacing);
-    segImage->SetDirection(direction);
-    segImage->Allocate();
-    segImage->FillBuffer(0);
-
-    // ITK images corresponding to the individual segments
-    map<unsigned,ShortImageType::Pointer> segment2image;
-
-    // Iterate over frames, find the matching slice for each of the frames based on
-    // ImagePositionPatient, set non-zero pixels to the segment number. Notify
-    // about pixels that are initialized more than once.
-
-    const DcmIODTypes::Frame *unpackedFrame = NULL;
-
-    for(size_t frameId=0;frameId<fgInterface.getNumberOfFrames();frameId++){
-      const DcmIODTypes::Frame *frame = segdoc->getFrame(frameId);
-      bool isPerFrame;
-
-      FGPlanePosPatient *planposfg =
-          OFstatic_cast(FGPlanePosPatient*,fgInterface.get(frameId, DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-      assert(planposfg);
-
-#ifndef NDEBUG
-      FGFrameContent *fracon =
-          OFstatic_cast(FGFrameContent*,fgInterface.get(frameId, DcmFGTypes::EFG_FRAMECONTENT, isPerFrame));
-      assert(fracon);
-#endif
-
-      FGSegmentation *fgseg =
-          OFstatic_cast(FGSegmentation*,fgInterface.get(frameId, DcmFGTypes::EFG_SEGMENTATION, isPerFrame));
-      assert(fgseg);
-
-      Uint16 segmentId = -1;
-      if(fgseg->getReferencedSegmentNumber(segmentId).bad()){
-        cerr << "ERROR: Failed to get ReferencedSegmentNumber!";
-        throw -1;
-      }
-
-      // WARNING: this is needed only for David's example, which numbers
-      // (incorrectly!) segments starting from 0, should start from 1
-      if(segmentId == 0){
-        cerr << "ERROR: ReferencedSegmentNumber value of 0 was encountered. Segment numbers and references to segment numbers should both start from 1!" << endl;
-        throw -1;
-      }
-
-      if(segment2image.find(segmentId) == segment2image.end()){
-        typedef itk::ImageDuplicator<ShortImageType> DuplicatorType;
-        DuplicatorType::Pointer dup = DuplicatorType::New();
-        dup->SetInputImage(segImage);
-        dup->Update();
-        ShortImageType::Pointer newSegmentImage = dup->GetOutput();
-        newSegmentImage->FillBuffer(0);
-        segment2image[segmentId] = newSegmentImage;
-      }
-
-      // populate meta information needed for Slicer ScalarVolumeNode initialization
-      //  (for example)
-      {
-        // NOTE: according to the standard, segment numbering should start from 1,
-        //  not clear if this is intentional behavior or a bug in DCMTK expecting
-        //  it to start from 0
-
-        DcmSegment* segment = segdoc->getSegment(segmentId);
-        if(segment == NULL){
-          cerr << "Failed to get segment for segment ID " << segmentId << endl;
-          continue;
-        }
-
-        // get CIELab color for the segment
-        Uint16 ciedcm[3];
-        int rgb[3];
-        if(segment->getRecommendedDisplayCIELabValue(
-            ciedcm[0], ciedcm[1], ciedcm[2]
-        ).bad()) {
-          // NOTE: if the call above fails, it overwrites the values anyway,
-          //  not sure if this is a dcmtk bug or not
-          ciedcm[0] = 43803;
-          ciedcm[1] = 26565;
-          ciedcm[2] = 37722;
-          cerr << "Failed to get CIELab values - initializing to default " <<
-          ciedcm[0] << "," << ciedcm[1] << "," << ciedcm[2] << endl;
-        }
-
-        /* Debug CIELab 2 RGB conversion
-        double lab[3];
-
-        cout << "DICOM Lab " << ciedcm[0] << ", " << ciedcm[1] << ", " << ciedcm[2] << endl;
-
-        IODCIELabUtil::dicomlab2Lab(lab[0], lab[1], lab[2], ciedcm[0], ciedcm[1], ciedcm[2]);
-
-        cout << "Lab " << ciedcm[0] << ", " << ciedcm[1] << ", " << ciedcm[2] << endl;
-
-        IODCIELabUtil::lab2Rgb(rgb[0], rgb[1], rgb[2], lab[0], lab[1], lab[2]);
-
-        cout << "RGB " << unsigned(rgb[0]*256) << ", " << unsigned(rgb[1]*256) << ", " << unsigned(rgb[2]*256) << endl;
-        */
-
-        ColorUtilities::getSRGBFromIntegerScaledCIELabPCS(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
-        //IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
-
-        //rgb[0] = unsigned(rgb[0]*256);
-        //rgb[1] = unsigned(rgb[1]*256);
-        //rgb[2] = unsigned(rgb[2]*256);
-
-        SegmentAttributes* segmentAttributes = metaInfo?metaInfo->createAndGetNewSegment(segmentId):NULL;
-
-        if (segmentAttributes) {
-          segmentAttributes->setLabelID(segmentId);
-          DcmSegTypes::E_SegmentAlgoType algorithmType = segment->getSegmentAlgorithmType();
-          string readableAlgorithmType = DcmSegTypes::algoType2OFString(algorithmType).c_str();
-          segmentAttributes->setSegmentAlgorithmType(readableAlgorithmType);
-
-          if (algorithmType == DcmSegTypes::SAT_UNKNOWN) {
-            cerr << "ERROR: AlgorithmType is not valid with value " << readableAlgorithmType << endl;
-            throw -1;
-          }
-          if (algorithmType != DcmSegTypes::SAT_MANUAL) {
-            OFString segmentAlgorithmName;
-            segment->getSegmentAlgorithmName(segmentAlgorithmName);
-            if(segmentAlgorithmName.length() > 0)
-              segmentAttributes->setSegmentAlgorithmName(segmentAlgorithmName.c_str());
-          }
-
-          OFString segmentDescription, segmentLabel, trackingIdentifier, trackingUniqueIdentifier;
-
-          segment->getSegmentDescription(segmentDescription);
-          segmentAttributes->setSegmentDescription(segmentDescription.c_str());
-
-          segment->getSegmentLabel(segmentLabel);
-          segmentAttributes->setSegmentLabel(segmentLabel.c_str());
-
-          segment->getTrackingID(trackingIdentifier);
-          segment->getTrackingUID(trackingUniqueIdentifier);
-
-          if (trackingIdentifier.length() > 0) {
-              segmentAttributes->setTrackingIdentifier(trackingIdentifier.c_str());
-          }
-          if (trackingUniqueIdentifier.length() > 0) {
-              segmentAttributes->setTrackingUniqueIdentifier(trackingUniqueIdentifier.c_str());
-          }
-
-          segmentAttributes->setRecommendedDisplayRGBValue(rgb[0], rgb[1], rgb[2]);
-          segmentAttributes->setSegmentedPropertyCategoryCodeSequence(segment->getSegmentedPropertyCategoryCode());
-            segmentAttributes->setSegmentedPropertyTypeCodeSequence(segment->getSegmentedPropertyTypeCode());
-
-          if (segment->getSegmentedPropertyTypeModifierCode().size() > 0) {
-              segmentAttributes->setSegmentedPropertyTypeModifierCodeSequence(
-                      segment->getSegmentedPropertyTypeModifierCode()[0]);
-          }
-
-          GeneralAnatomyMacro &anatomyMacro = segment->getGeneralAnatomyCode();
-          CodeSequenceMacro& anatomicRegionSequence = anatomyMacro.getAnatomicRegion();
-          if (anatomicRegionSequence.check(true).good()) {
-              segmentAttributes->setAnatomicRegionSequence(anatomyMacro.getAnatomicRegion());
-          }
-          if (anatomyMacro.getAnatomicRegionModifier().size() > 0) {
-              segmentAttributes->setAnatomicRegionModifierSequence(*(anatomyMacro.getAnatomicRegionModifier()[0]));
-          }
-        }
-      }
-
-      // get string representation of the frame origin
-      ShortImageType::PointType frameOriginPoint;
-      ShortImageType::IndexType frameOriginIndex;
-      for(int j=0;j<3;j++){
-        OFString planposStr;
-        if(planposfg->getImagePositionPatient(planposStr, j).good()){
-          frameOriginPoint[j] = atof(planposStr.c_str());
-        }
-      }
-
-      if(!segment2image[segmentId]->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex)){
-        cerr << "ERROR: Frame " << frameId << " origin " << frameOriginPoint <<
-        " is outside image geometry!" << frameOriginIndex << endl;
-        cerr << "Image size: " << segment2image[segmentId]->GetBufferedRegion().GetSize() << endl;
-        throw -1;
-      }
-
-      unsigned slice = frameOriginIndex[2];
-
-      bool deleteFrame(true);
-      if(segdoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
-        unpackedFrame = DcmSegUtils::unpackBinaryFrame(frame,
-                                 imageSize[1], // Rows
-                                 imageSize[0]); // Cols
-      else {
-        unpackedFrame = frame;
-        deleteFrame = false;
-      }
-
-      // initialize slice with the frame content
-      for(unsigned row=0;row<imageSize[1];row++){
-        for(unsigned col=0;col<imageSize[0];col++){
-          ShortImageType::PixelType pixel;
-          unsigned bitCnt = row*imageSize[0]+col;
-          pixel = unpackedFrame->pixData[bitCnt];
-
-          if(pixel!=0){
-            ShortImageType::IndexType index;
-            index[0] = col;
-            index[1] = row;
-            index[2] = slice;
-            segment2image[segmentId]->SetPixel(index, segmentId);
-          }
-        }
-      }
-
-      if(deleteFrame)
-        delete unpackedFrame;
-    }
-
-    return segment2image;
-  }
-
-  void ImageSEGConverter::populateMetaInformationFromDICOM(DcmDataset *segDataset, DcmSegmentation *segdoc,
-                               JSONSegmentationMetaInformationHandler &metaInfo) {
-    OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined, coordinatingCenter;
-
-    segDataset->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
-    segdoc->getContentIdentification().getContentCreatorName(creatorName);
-
-    segDataset->findAndGetOFString(DCM_ClinicalTrialTimePointID, timePointID);
-    segDataset->findAndGetOFString(DCM_ClinicalTrialSeriesID, sessionID);
-    segDataset->findAndGetOFString(DCM_ClinicalTrialCoordinatingCenterName, coordinatingCenter);
-
-    segdoc->getSeries().getBodyPartExamined(bodyPartExamined);
-    segdoc->getSeries().getSeriesNumber(seriesNumber);
-    segdoc->getSeries().getSeriesDescription(seriesDescription);
-
-    metaInfo.setClinicalTrialCoordinatingCenterName(coordinatingCenter.c_str());
-    metaInfo.setContentCreatorName(creatorName.c_str());
-    metaInfo.setClinicalTrialSeriesID(sessionID.c_str());
-    metaInfo.setSeriesNumber(seriesNumber.c_str());
-    metaInfo.setClinicalTrialTimePointID(timePointID.c_str());
-    metaInfo.setSeriesDescription(seriesDescription.c_str());
-    metaInfo.setInstanceNumber(instanceNumber.c_str());
-    metaInfo.setBodyPartExamined(bodyPartExamined.c_str());
   }
 
 }
