@@ -15,7 +15,9 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -89,7 +91,9 @@ jobs:
     needs: build-windows
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - uses: actions/download-artifact@v3
         with:
           name: dcmqi-build
