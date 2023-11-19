@@ -19,7 +19,9 @@ jobs:
 
     # Checkout and install python
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        fetch-tags: true       
     - uses: actions/setup-python@v4
       with:
         python-version: '3.7.14'
@@ -117,4 +119,4 @@ jobs:
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz \
         --prerelease-packages-clear-pattern "dcmqi-*-mac-*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-        --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }}
+        --exit-success-if-missing-token --token ${{ secrets.PAT }}
