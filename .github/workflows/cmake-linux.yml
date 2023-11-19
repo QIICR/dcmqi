@@ -39,29 +39,29 @@ jobs:
       run: |
         cd docker && make dcmqi.test
 
-    # - name: "Publish docker image"
-    #   # Only run if the event is not a pull request and the repository owner is QIICR.
-    #   # The latter is to prevent forks from publishing packages even if the owner's token
-    #   # would have sufficient privileges.
-    #   if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
-    #   run: |
-    #      docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
-    #      docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
-    #      || echo "skipping docker push"
+    - name: "Publish docker image"
+      # Only run if the event is not a pull request and the repository owner is QIICR.
+      # The latter is to prevent forks from publishing packages even if the owner's token
+      # would have sufficient privileges.
+      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      run: |
+         docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
+         docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+         || echo "skipping docker push"
 
     - name: "Publish linux package"
       # Only run if the event is not a pull request and the repository owner is QIICR.
       # The latter is to prevent forks from publishing packages even if the owner's token
       # would have sufficient privileges.
-      #if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
       run: |
          pip install -U "scikit-ci-addons>=0.22.0"
          # python -m scikit-ci publish --package-name dcmqi --package-version `git
          # describe --tags --exact-match 2> /dev/null || echo "latest"` --platform linux
          # --commit-range ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} --repository ${{ github.event.pull_request.head.repo.full_name }} --token ${{ secrets.GITHUB_TOKEN }} --verbose
-         ci_addons publish_github_release vkt1414/dcmqi \
+         ci_addons publish_github_release qiicr/dcmqi \
             --release-packages "build/dcmqi-build/dcmqi-*-linux.tar.gz" \
             --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
             --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-            --exit-success-if-missing-token --token ${{ secrets.PAT }}
+            --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN  }}
