@@ -20,6 +20,8 @@ jobs:
     # Checkout and install python
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-tags: true     
     - uses: actions/setup-python@v4
       with:
         python-version: '3.7.14'
@@ -112,8 +114,8 @@ jobs:
       if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
       run: |
         pip install -U "scikit-ci-addons>=0.22.0"
-        ci_addons publish_github_release QIICR/dcmqi \
-        --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-linux.tar.gz" \
+        ci_addons publish_github_release qiicr/dcmqi \
+        --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz" \
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz \
         --prerelease-packages-clear-pattern "dcmqi-*-mac-*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \

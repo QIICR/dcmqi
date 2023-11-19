@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-tags: true     
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -90,6 +92,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-tags: true          
       - uses: actions/download-artifact@v3
         with:
           name: dcmqi-build
