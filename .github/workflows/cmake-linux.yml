@@ -60,7 +60,7 @@ jobs:
          # describe --tags --exact-match 2> /dev/null || echo "latest"` --platform linux
          # --commit-range ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} --repository ${{ github.event.pull_request.head.repo.full_name }} --token ${{ secrets.GITHUB_TOKEN }} --verbose
          ci_addons publish_github_release vkt1414/dcmqi \
-            --release-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
+            --release-packages "build/dcmqi-build/dcmqi-*-linux.tar.gz" \
             --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
             --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
