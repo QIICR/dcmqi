@@ -112,7 +112,7 @@ jobs:
       if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
       run: |
         pip install -U "scikit-ci-addons>=0.22.0"
-        ci_addons publish_github_release QIICR/dcmqi \
+        ci_addons publish_github_release vkt1414/dcmqi \
         --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-linux.tar.gz" \
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz \
         --prerelease-packages-clear-pattern "dcmqi-*-mac-*" \
