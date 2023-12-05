@@ -20,6 +20,7 @@
  */
 
 #include "dcmqi/OverlapUtil.h"
+#include "dcmqi/framesorter.h"
 #include "dcmtk/dcmdata/dcerror.h"
 #include "dcmtk/dcmfg/fginterface.h"
 #include "dcmtk/dcmfg/fgpixmsr.h"
@@ -210,11 +211,23 @@ OFCondition OverlapUtil::groupFramesByPosition()
     // After that, all frames at the same position will be in the same vector
     // assigned to the same key (the frame's coordinates) in the map.
     // Group all frames by position into m_logicalFramePositions.
-    cond = collectPhysicalFramePositions();
-    if (cond.good())
+    FrameSorterIPP sorter;
+    sorter.setSorterInput(&(m_seg->getFunctionalGroups()));
+    FrameSorterIPP::Results results;
+    sorter.sort(results);
+    if (results.errorCode != EC_Normal)
     {
-        cond = groupFramesByLogicalPosition();
+        DCMSEG_ERROR("groupFramesByPosition(): Cannot sort frames by position: " << results.errorCode.text());
+        return results.errorCode;
     }
+    // Copy results from frame sorter to overlap util framePositions member
+    m_framePositions.clear();
+    m_framePositions.reserve(results.framePositions.size());
+    for (size_t i = 0; i < results.framePositions.size(); ++i)
+    {
+        m_framePositions.push_back(FramePositionAndNumber(results.framePositions[i], results.frameNumbers[i]));
+    }
+    cond = groupFramesByLogicalPosition();
 
     // print frame groups if debug log level is enabled:
     if (cond.good() && DCM_dcmsegLogger.isEnabledFor(OFLogger::DEBUG_LOG_LEVEL))
@@ -665,140 +678,67 @@ OFCondition OverlapUtil::checkFramesOverlapUnpacked(const Uint32& f1,
     return EC_Normal;
 }
 
-OFCondition OverlapUtil::collectPhysicalFramePositions()
-{
-    // Group all frames by position into m_logicalFramePositions.
-    FGInterface& fg  = m_seg->getFunctionalGroups();
-    size_t numFrames = m_seg->getNumberOfFrames();
-    OFBool perFrame  = OFFalse;
-    OFCondition cond;
-    // Vector of frame numbers with their respective position
-    m_framePositions.clear();
-    m_framePositions.reserve(numFrames);
-
-    // Put all frames into vector along with their Image Position Patient coordinates
-    for (size_t i = 0; i < numFrames; ++i)
-    {
-        FGPlanePosPatient* ppp = NULL;
-        FGBase* group          = fg.get(i, DcmFGTypes::EFG_PLANEPOSPATIENT, perFrame);
-        if (group)
-            ppp = OFstatic_cast(FGPlanePosPatient*, group);
-        if (ppp)
-        {
-            // Get image position patient for frame i
-            OFVector<Float64> ipp(3);
-            // Only in later DCMTK version:
-            // cond = ppp->getImagePositionPatient(ipp);
-            cond = ppp->getImagePositionPatient(ipp[0], ipp[1], ipp[2]);
-            if (cond.good())
-            {
-                // Insert frame into map
-                m_framePositions.push_back(FramePositionAndNumber(ipp, i));
-            }
-            else
-            {
-                DCMSEG_ERROR("groupFramesByPosition(): Image Position Patient not found for frame "
-                             << i << ", cannot sort frames by position");
-                cond = EC_TagNotFound;
-                break;
-            }
-        }
-        else
-        {
-            DCMSEG_ERROR("groupFramesByPosition(): Image Position Patient not found for frame "
-                         << i << ", cannot sort frames by position");
-            cond = EC_TagNotFound;
-            break;
-        }
-    }
-    return cond;
-}
 
 OFCondition OverlapUtil::groupFramesByLogicalPosition()
 {
     OFCondition cond;
     FGInterface& fg = m_seg->getFunctionalGroups();
     OFBool perFrame = OFFalse;
-
-    // Find all distinct positions and for each position the actual frames that can be found at it
     Float64 sliceThickness   = 0.0;
     FGPixelMeasures* pm      = NULL;
-    Uint8 relevantCoordinate = 3; // not determined yet
     FGBase* group            = fg.get(0, DcmFGTypes::EFG_PIXELMEASURES, perFrame);
     if (group && (pm = OFstatic_cast(FGPixelMeasures*, group)))
     {
         // Get/compute Slice Thickness
         cond = pm->getSliceThickness(sliceThickness);
-        if (cond.good())
+        if (cond.bad())
         {
-            DCMSEG_DEBUG("groupFramesByPosition(): Slice Thickness is " << sliceThickness);
-            // Identify coordinate to be used for frame sorting
-            relevantCoordinate = identifyChangingCoordinate(m_imageOrientation);
-            if (relevantCoordinate < 3)
-            {
-                DCMSEG_DEBUG("Using coordinate " << OFstatic_cast(Uint16, relevantCoordinate)
-                                                 << " for sorting frames by position");
-                ComparePositions c(relevantCoordinate);
-                std::sort(m_framePositions.begin(), m_framePositions.end(), c);
-                // vec will contain all frame numbers that are at the same position
-                OFVector<Uint32> vec;
-                vec.push_back(m_framePositions[0].m_frameNumber);
-                m_logicalFramePositions.push_back(vec); // Initialize for first logical frame
-                for (size_t j = 1; j < m_framePositions.size(); ++j)
-                {
-                    // If frame is close to previous frame, add it to the same vector.
-                    // 2.5 is chosen since it means the frames are not further away if clearly less than half a slice
-                    // thickness
-                    Float64 diff = fabs(m_framePositions[j].m_position[relevantCoordinate]
-                                        - m_framePositions[j - 1].m_position[relevantCoordinate]);
-                    DCMSEG_DEBUG("Coordinates of both frames:");
-                    DCMSEG_DEBUG("Frame " << j << ": " << m_framePositions[j].m_position[0] << ", "
-                                          << m_framePositions[j].m_position[1] << ", "
-                                          << m_framePositions[j].m_position[2]);
-                    DCMSEG_DEBUG("Frame " << j - 1 << ": " << m_framePositions[j - 1].m_position[0] << ", "
-                                          << m_framePositions[j - 1].m_position[1] << ", "
-                                          << m_framePositions[j - 1].m_position[2]);
-                    DCMSEG_DEBUG("groupFramesByPosition(): Frame " << j << " is " << diff
-                                                                   << " mm away from previous frame");
-                    // 1% inaccuracy for slice thickness will be considered as same logical position
-                    if (diff < sliceThickness * 0.01)
-                    {
-                        // Add frame to last vector
-                        DCMSEG_DEBUG("Assigning to same frame bucket as previous frame");
-                        m_logicalFramePositions.back().push_back(
-                            m_framePositions[j].m_frameNumber); // physical frame number
-                    }
-                    else
-                    {
-                        DCMSEG_DEBUG("Assigning to same new frame bucket");
-                        // Create new vector
-                        OFVector<Uint32> vec;
-                        vec.push_back(m_framePositions[j].m_frameNumber);
-                        m_logicalFramePositions.push_back(vec);
-                    }
-                }
-            }
-            else
-            {
-                std::cerr
-                    << "groupFramesByPosition(): Cannot identify coordinate relevant for sorting frames by position"
-                    << std::endl;
-                cond = EC_InvalidValue;
-            }
+            DCMSEG_ERROR("groupFramesByPosition(): Cannot get Slice Thickness from Pixel Measures FG: "
+                         << cond.text());
+            return cond;
+        }
+    }
+
+    Uint8 relevantCoordinate = identifyChangingCoordinate(m_imageOrientation);
+
+    // vec will contain all frame numbers that are at the same position
+    OFVector<Uint32> vec;
+    vec.push_back(m_framePositions[0].m_frameNumber);
+    m_logicalFramePositions.push_back(vec); // Initialize for first logical frame
+    for (size_t j = 1; j < m_framePositions.size(); ++j)
+    {
+        // If frame is close to previous frame, add it to the same vector.
+        // 2.5 is chosen since it means the frames are not further away if clearly less than half a slice
+        // thickness
+        Float64 diff = fabs(m_framePositions[j].m_position[relevantCoordinate]
+                            - m_framePositions[j - 1].m_position[relevantCoordinate]);
+        DCMSEG_DEBUG("Coordinates of both frames:");
+        DCMSEG_DEBUG("Frame " << j << ": " << m_framePositions[j].m_position[0] << ", "
+                                << m_framePositions[j].m_position[1] << ", "
+                                << m_framePositions[j].m_position[2]);
+        DCMSEG_DEBUG("Frame " << j - 1 << ": " << m_framePositions[j - 1].m_position[0] << ", "
+                                << m_framePositions[j - 1].m_position[1] << ", "
+                                << m_framePositions[j - 1].m_position[2]);
+        DCMSEG_DEBUG("groupFramesByPosition(): Frame " << j << " is " << diff
+                                                        << " mm away from previous frame");
+        // 1% inaccuracy for slice thickness will be considered as same logical position
+        if (diff < sliceThickness * 0.01)
+        {
+            // Add frame to last vector
+            DCMSEG_DEBUG("Assigning to same frame bucket as previous frame");
+            m_logicalFramePositions.back().push_back(
+                m_framePositions[j].m_frameNumber); // physical frame number
         }
         else
         {
-            std::cerr << "groupFramesByPosition(): Slice Thickness not found, cannot sort frames by position"
-                      << std::endl;
-            cond = EC_TagNotFound;
+            DCMSEG_DEBUG("Assigning to same new frame bucket");
+            // Create new vector
+            OFVector<Uint32> vec;
+            vec.push_back(m_framePositions[j].m_frameNumber);
+            m_logicalFramePositions.push_back(vec);
         }
     }
-    else
-    {
-        std::cerr << "groupFramesByPosition(): Pixel Measures FG not found, cannot sort frames by position"
-                  << std::endl;
-        cond = EC_TagNotFound;
-    }
+
     return cond;
 }
 
@@ -827,4 +767,5 @@ Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrie
     return 3;
 }
 
-}
+
+} // namespace dcmqi
