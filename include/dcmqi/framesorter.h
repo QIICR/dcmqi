@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+typedef OFVector<Float64> ImagePosition;      // Image Position Patient
+typedef OFPair<Uint32, Float64> FrameWithPos; // DICOM frame number and Image Position Patient
+
 /** Abstract class for sorting a set of frames in a functional group. The
  *  sorting criteria are up to the actual implementation classes.
  */
@@ -70,6 +73,10 @@ public:
     OFCondition errorCode;
     /// The frame numbers, in sorted order (default: empty)
     OFVector<Uint32> frameNumbers;
+    /// The frame positions, in sorted order, if provided
+    /// by the sorter (default: empty). If not empty, contains the same number
+    /// of items as frameNumbers.
+    OFVector<ImagePosition> framePositions;
     /// Tag key that contains the information that was crucial for sorting.
     /// This is especially useful for creating dimension indices. Should be
     /// set to (0xffff,0xfff) if none was used (default).
@@ -85,6 +92,11 @@ public:
     /// attibutes. Should be left empty if fgSequenceKey is not private or fgSequenceKey
     /// is not used at all (default).
     OFString fgPrivateCreator;
+  };
+
+  struct FramePositions
+  {
+    OFVector<ImagePosition> positions;
   };
 
   /** Default constructor, does nothing
@@ -126,6 +138,12 @@ protected:
   FGInterface* m_fg;
 };
 
+/** Dummy sorter implementing the FrameSorter interface,
+  *  but not doing any sorting at all. As a result it provides
+  *  a list of frames in their natural order, as found in the underlying
+  *  DICOM dataset. The results will not contain frame position
+  *  to make this implementation as lightweight and "stupid" as possible.
+ */
 class FrameSorterIdentity : public FrameSorter
 {
 
@@ -143,7 +161,11 @@ public:
     return "Returns frames in the order defined in the functional group, i.e. as defined in the image file";
   }
 
-
+  /** Performs actual sorting. Does only set Results.frameNumbers and errorCode,
+   *  leaving the rest untouched.
+   *  @param  results The results produced by dummy sorter (list of frame numbers as
+   *          found in the underlying DICOM dataset, and EC_Normal as error code)
+   */
   virtual void sort(Results& results)
   {
     if (m_fg == NULL)
@@ -168,6 +190,11 @@ public:
 
 };
 
+/** Sorter implementing the FrameSorter interface that sorts frames
+ *  by their Image Position (Patient) attribute. The sorting is done
+ *  by projecting the Image Position (Patient) on the slice direction
+ *  (as defined by the Image Orientation (Patient) attribute).
+ */
 class FrameSorterIPP : public FrameSorter
 {
 public:
@@ -179,9 +206,14 @@ public:
       frameId()
     {}
 
-    Float32 key;
-    unsigned frameId;
+    /// The key relevant for sorting
+    Float64 key;
+    /// The DICOM frame number
+    Uint32 frameId;
+    /// The frame position as found in Image Position (Patient)
+    ImagePosition framePos;
   };
+
 
   FrameSorterIPP(){};
 
@@ -201,7 +233,7 @@ public:
       return;
     }
 
-    OFVector<Float32> dirX, dirY;
+    OFVector<Float64> dirX, dirY;
     OFString orientStr;
     for(int i=0;i<3;i++){
       if(planorfg->getImageOrientationPatient(orientStr, i).good()){
@@ -253,7 +285,7 @@ public:
         return;
       }
 
-      OFVector<Float32> sOrigin;
+      ImagePosition sOrigin;
       for(int j=0;j<3;j++){
         OFString planposStr;
         if(planposfg->getImagePositionPatient(planposStr, j).good()){
@@ -264,10 +296,11 @@ public:
         }
       }
 
-      Float32 dist;
+      Float64 dist;
       dist = dot(sliceDirection, sOrigin);
       orderedFrameItems[frameId].key = dist;
       orderedFrameItems[frameId].frameId = frameId;
+      orderedFrameItems[frameId].framePos = sOrigin;
     }
 
     qsort(&orderedFrameItems[0], numFrames, sizeof(OrderedFrameItem), &compareIPPKeys);
@@ -275,6 +308,7 @@ public:
     for(Uint32 count=0;count<numFrames;count++)
     {
       results.frameNumbers.push_back(orderedFrameItems[count].frameId);
+      results.framePositions.push_back(orderedFrameItems[count].framePos);
     }
 
     delete [] orderedFrameItems;
@@ -284,8 +318,8 @@ public:
 
 private:
 
-  OFVector<Float32> cross_3d(OFVector<Float32> v1, OFVector<Float32> v2){
-    OFVector<Float32> result;
+  OFVector<Float64> cross_3d(OFVector<Float64> v1, OFVector<Float64> v2){
+    OFVector<Float64> result;
     result.push_back(v1[1]*v2[2]-v1[2]*v2[1]);
     result.push_back(v1[2]*v2[0]-v1[0]*v2[2]);
     result.push_back(v1[0]*v2[1]-v1[1]*v2[0]);
@@ -293,11 +327,11 @@ private:
     return result;
   }
 
-  Float32 dot(OFVector<Float32> v1, OFVector<Float32> v2){
-    return Float32(v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]);
+  Float64 dot(OFVector<Float64> v1, OFVector<Float64> v2){
+    return Float64(v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]);
   }
 
-  void normalize(OFVector<Float32> &v){
+  void normalize(OFVector<Float64> &v){
     double norm = sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
     v[0] = v[0]/norm;
     v[1] = v[1]/norm;
@@ -306,7 +340,7 @@ private:
 
   static int compareIPPKeys(const void *a, const void *b);
 
-  OFVector<Float32> sliceDirection;
+  OFVector<Float64> sliceDirection;
 
 };
 
