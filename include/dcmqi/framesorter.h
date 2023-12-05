@@ -69,7 +69,7 @@ public:
     /// The error code should be set in any case (default: EC_Normal)
     OFCondition errorCode;
     /// The frame numbers, in sorted order (default: empty)
-    OFVector<Uint16> frameNumbers;
+    OFVector<Uint32> frameNumbers;
     /// Tag key that contains the information that was crucial for sorting.
     /// This is especially useful for creating dimension indices. Should be
     /// set to (0xffff,0xfff) if none was used (default).
