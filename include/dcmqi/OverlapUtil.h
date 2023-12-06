@@ -233,10 +233,7 @@ public:
     void printNonOverlappingSegments(OFStringStream& ss);
 
 protected:
-    /** Collect all physical frame positions in m_FramePositions
-     *  @return EC_Normal if successful, error otherwise
-     */
-    OFCondition collectPhysicalFramePositions();
+
 
     /** Group physical frame positions into logical positions. This is done by sorting
      *  frames after *that* position coordinate that in its mean position difference is
