@@ -88,8 +88,11 @@ namespace dcmqi {
 
     data["segmentAttributes"] = createAndGetSegmentAttributesJSON();
 
-    Json::StyledWriter styledWriter;
-    ss << styledWriter.write(data);
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "  ";
+    std::unique_ptr<Json::StreamWriter> writer( builder.newStreamWriter() );
+    writer->write(data, &ss);
 
     return ss.str();
   }
