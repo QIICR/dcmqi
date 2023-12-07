@@ -21,7 +21,8 @@ namespace dcmqi {
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
-                                                          bool skipEmptySlices) {
+                                                          bool skipEmptySlices,
+                                                          bool sortByLabelID) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
@@ -36,9 +37,12 @@ namespace dcmqi {
     IODGeneralEquipmentModule::EquipmentInfo eq = getEquipmentInfo();
     ContentIdentificationMacro ident = createContentIdentificationInformation(metaInfo);
     CHECK_COND(ident.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
+    // Map that will hold the mapping from segment number (as written to DICOM) and label ID
+    // as it is found in the input image. This can be used later to re-map the segment numbers
+    // to their original label IDs (see sortByLabel() method).
+    map<Uint16,Uint16> segNum2Label;
 
     /* Create new segmentation document */
-    DcmDataset segdocDataset;
     DcmSegmentation *segdoc = NULL;
 
     DcmSegmentation::createBinarySegmentation(
@@ -101,7 +105,7 @@ namespace dcmqi {
 
 
     // Iterate over the files and labels available in each file, create a segment for each label,
-    //  initialize segment frames and add to the document
+    // initialize segment frames and add to the document
 
     OFString seriesInstanceUID, classUID;
     set<OFString> instanceUIDs;
@@ -285,6 +289,7 @@ namespace dcmqi {
 
         Uint16 segmentNumber;
         CHECK_COND(segdoc->addSegment(segment, segmentNumber /* returns logical segment number */));
+        segNum2Label.insert(make_pair(segmentNumber, label));
 
         // TODO: make it possible to skip empty frames (optional)
         // iterate over slices for an individual label and populate output frames
@@ -426,11 +431,13 @@ namespace dcmqi {
       CHECK_COND(segdoc->getFrameOfReference().setFrameOfReferenceUID(frameOfRefUIDchar));
     }
 
-    std::cout << "Writing DICOM segmentation dataset " << std::endl;
+    std::cout << "Writing DICOM segmentation dataset" << std::endl;
     // Don't check functional groups since its very time consuming and we trust
     // ourselves to put together valid datasets
     segdoc->setCheckFGOnWrite(OFFalse);
-    OFCondition writeResult = segdoc->writeDataset(segdocDataset);
+
+    std::unique_ptr<DcmDataset> segdocDataset(new DcmDataset());
+    OFCondition writeResult = segdoc->writeDataset(*segdocDataset);
     if(writeResult.bad()){
       cerr << "FATAL ERROR: Writing of the SEG dataset failed!";
       if (writeResult.text()){
@@ -442,12 +449,12 @@ namespace dcmqi {
 
     // Set reader/session/timepoint information
     std::cout << "Patching in extra meta information into DICOM dataset" << std::endl;
-    CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
-    CHECK_COND(segdocDataset.putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
-    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
-    CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
+    CHECK_COND(segdocDataset->putAndInsertString(DCM_SeriesDescription, metaInfo.getSeriesDescription().c_str()));
+    CHECK_COND(segdocDataset->putAndInsertString(DCM_ContentCreatorName, metaInfo.getContentCreatorName().c_str()));
+    CHECK_COND(segdocDataset->putAndInsertString(DCM_ClinicalTrialSeriesID, metaInfo.getClinicalTrialSeriesID().c_str()));
+    CHECK_COND(segdocDataset->putAndInsertString(DCM_ClinicalTrialTimePointID, metaInfo.getClinicalTrialTimePointID().c_str()));
     if (metaInfo.getClinicalTrialCoordinatingCenterName().size())
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.getClinicalTrialCoordinatingCenterName().c_str()));
+      CHECK_COND(segdocDataset->putAndInsertString(DCM_ClinicalTrialCoordinatingCenterName, metaInfo.getClinicalTrialCoordinatingCenterName().c_str()));
 
     // populate BodyPartExamined
     {
@@ -460,7 +467,7 @@ namespace dcmqi {
         bodyPartAssigned = bodyPartStr.c_str();
 
       if(bodyPartAssigned.size())
-        CHECK_COND(segdocDataset.putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
+        CHECK_COND(segdocDataset->putAndInsertString(DCM_BodyPartExamined, bodyPartAssigned.c_str()));
     }
 
     // StudyDate/Time should be of the series segmented, not when segmentation was made - this is initialized by DCMTK
@@ -471,8 +478,8 @@ namespace dcmqi {
       DcmDate::getCurrentDate(contentDate);
       DcmTime::getCurrentTime(contentTime);
 
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesDate, contentDate.c_str()));
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_SeriesTime, contentTime.c_str()));
+      CHECK_COND(segdocDataset->putAndInsertString(DCM_SeriesDate, contentDate.c_str()));
+      CHECK_COND(segdocDataset->putAndInsertString(DCM_SeriesTime, contentTime.c_str()));
       segdoc->getGeneralImage().setContentDate(contentDate.c_str());
       segdoc->getGeneralImage().setContentTime(contentTime.c_str());
     }
@@ -483,10 +490,116 @@ namespace dcmqi {
         segmentsOverlap = "NO";
       else
         segmentsOverlap = "UNDEFINED";
-      CHECK_COND(segdocDataset.putAndInsertString(DCM_SegmentsOverlap, segmentsOverlap.c_str()));
+      CHECK_COND(segdocDataset->putAndInsertString(DCM_SegmentsOverlap, segmentsOverlap.c_str()));
     }
 
-    return new DcmDataset(segdocDataset);
+    if (sortByLabelID)
+    {
+      sortByLabel(segdocDataset.get(), segNum2Label);
+    }
+
+    return segdocDataset.release();
+  }
+
+
+  void Itk2DicomConverter::sortByLabel(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
+  {
+    cout << "Rearranging segments to restore original label order (sort by label)" << endl;
+    DcmSequenceOfItems* seq = NULL;
+    CHECK_COND(dset->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, seq));
+    if(!seq){
+      cerr << "ERROR: Per-frame functional groups sequence not found!" << endl;
+      return;
+    }
+
+    // 0. Get Segment Sequence and remember number of segments
+    // 1. Loop over all items in per-frame FG sequence
+    // 2. Get segmentation FG for that frame
+    // 3. Get the referenced segment number from it
+    // 4. Replace the referenced segment number with the original label value
+    // 5. From the Segment Sequence, find the item with the matching segment number
+    // 6. Replace the segment number in the item of the Segment Sequence to make it match the replacement (label) value
+    // 7. Sort items in Segment Sequence by newly assigned Segment Numbers
+
+    // 0. Get Segment Sequence
+    DcmSequenceOfItems* segmentSequence = NULL;
+    CHECK_COND(dset->findAndGetSequence(DCM_SegmentSequence, segmentSequence));
+    if(!segmentSequence){
+      cerr << "ERROR: Segment sequence not found!" << endl;
+      return;
+    }
+    Uint16 numSegments = segmentSequence->card();
+    vector<DcmItem*> segmentHandled(numSegments, NULL);
+
+    // 1.Get per-frame FG sequence and loop over all items (frames)
+    DcmSequenceOfItems* fgSeq = NULL;
+    CHECK_COND(dset->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, fgSeq));
+    for(unsigned i=0;i<fgSeq->card();i++){
+      DcmItem* frameItem = seq->getItem(i);
+      if(!frameItem){
+        cerr << "ERROR: Failed to get item " << i << " from the per-frame FG sequence!" << endl;
+        return;
+      }
+
+      // 2. Get segmentation FG for that frame
+      DcmItem* segItem = NULL;
+      CHECK_COND(frameItem->findAndGetSequenceItem(DCM_SegmentIdentificationSequence, segItem, 0));
+
+      // 3. Get the referenced segment number from it
+      Uint16 oldSegNum;
+      CHECK_COND(segItem->findAndGetUint16(DCM_ReferencedSegmentNumber, oldSegNum));
+
+      // 4. Replace the referenced segment number with the original label value
+      map<Uint16,Uint16>::iterator segNum2LabelIt = segNum2Label.find(oldSegNum);
+      if(segNum2LabelIt == segNum2Label.end()){
+        cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the mapping!" << endl;
+        return;
+      }
+      Uint16 newSegNum = segNum2LabelIt->second;
+      CHECK_COND(segItem->putAndInsertUint16(DCM_ReferencedSegmentNumber, newSegNum));
+      // Make sure this fits into the vector of ordered segments
+      if ((newSegNum == 0) || ( newSegNum > numSegments)){
+        cerr << "ERROR: Segment number " << newSegNum << " is out of range!" << endl;
+        return;
+      }
+      if (!segmentHandled[newSegNum-1])
+      {
+        // 5. From the Segment Sequence, find the item with the matching old segment number
+        DcmItem* segmentItem = NULL;
+        for(unsigned j=0;j<segmentSequence->card();j++){
+          segmentItem = segmentSequence->getItem(j);
+          if(!segmentItem){
+            cerr << "ERROR: Failed to get item " << j << " from the segment sequence!" << endl;
+            return;
+          }
+          Uint16 segmentNumber;
+          CHECK_COND(segmentItem->findAndGetUint16(DCM_SegmentNumber, segmentNumber));
+          // 6. Replace the segment number in the item of the Segment Sequence to make it match the replacement (label) value
+          if(segmentNumber == oldSegNum)
+          {
+            segmentHandled[newSegNum-1] = new DcmItem(*segmentItem);
+            CHECK_COND(segmentHandled[newSegNum-1]->putAndInsertUint16(DCM_SegmentNumber,newSegNum));
+            break;
+          }
+        }
+        if(!segmentItem){
+          cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the segment sequence!" << endl;
+          return;
+        }
+      }
+    }
+    // 7. Sort items in Segment Sequence by newly assigned Segment Numbers
+    std::unique_ptr<DcmSequenceOfItems> newSegSeq(new DcmSequenceOfItems(DCM_SegmentSequence));
+    for (size_t z=0; z<segmentHandled.size(); z++)
+    {
+      if (!segmentHandled[z])
+      {
+        cerr << "ERROR: Segment number " << z+1 << " is missing!" << endl;
+        return;
+      }
+      newSegSeq->insert(segmentHandled[z]);
+    }
+    dset->insert(newSegSeq.release(), OFTrue /* replace old */);
   }
 
 }

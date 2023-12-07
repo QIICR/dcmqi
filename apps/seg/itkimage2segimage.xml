@@ -65,6 +65,15 @@
     </boolean>
 
     <boolean>
+      <name>sortByLabelID</name>
+      <label>Sort by label ID </label>
+      <channel>output</channel>
+      <longflag>sortByLabelID</longflag>
+      <default>false</default>
+      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1.</description>
+    </boolean>
+
+    <boolean>
       <name>verbose</name>
       <label>Verbose</label>
       <channel>input</channel>

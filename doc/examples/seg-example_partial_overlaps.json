@@ -1,0 +1,114 @@
+{
+  "BodyPartExamined" : "",
+  "ClinicalTrialCoordinatingCenterName" : "QIICR",
+  "ClinicalTrialSeriesID" : "1",
+  "ClinicalTrialTimePointID" : "1",
+  "ContentCreatorName" : "Slicer",
+  "InstanceNumber" : "1",
+  "SeriesDescription" : "Segmentation",
+  "SeriesNumber" : "100",
+  "segmentAttributes" : 
+  [
+    [
+      {
+        "SegmentAlgorithmType" : "MANUAL",
+        "SegmentDescription" : "Tissue",
+        "SegmentLabel" : "GREEN",
+        "SegmentedPropertyCategoryCodeSequence" : 
+        {
+          "CodeMeaning" : "Tissue",
+          "CodeValue" : "85756007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" : 
+        {
+          "CodeMeaning" : "Tissue",
+          "CodeValue" : "85756007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 1,
+        "recommendedDisplayRGBValue" : [ 128, 174, 128 ]
+      },
+      {
+        "SegmentAlgorithmType" : "MANUAL",
+        "SegmentDescription" : "Morphologically Altered Structure",
+        "SegmentLabel" : "LIGHT_BLUE",
+        "SegmentedPropertyCategoryCodeSequence" : 
+        {
+          "CodeMeaning" : "Morphologically Altered Structure",
+          "CodeValue" : "49755003",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" : 
+        {
+          "CodeMeaning" : "Edema",
+          "CodeValue" : "79654002",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 4,
+        "recommendedDisplayRGBValue" : [ 140, 224, 228 ]
+      },
+      {
+        "SegmentAlgorithmType" : "MANUAL",
+        "SegmentDescription" : "Tissue",
+        "SegmentLabel" : "DARK_BLUE",
+        "SegmentedPropertyCategoryCodeSequence" : 
+        {
+          "CodeMeaning" : "Tissue",
+          "CodeValue" : "85756007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" : 
+        {
+          "CodeMeaning" : "Vein",
+          "CodeValue" : "29092000",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 5,
+        "recommendedDisplayRGBValue" : [ 0, 151, 206 ]
+      }
+    ],
+    [
+      {
+        "SegmentAlgorithmType" : "MANUAL",
+        "SegmentDescription" : "Tissue",
+        "SegmentLabel" : "ORANGE",
+        "SegmentedPropertyCategoryCodeSequence" : 
+        {
+          "CodeMeaning" : "Tissue",
+          "CodeValue" : "85756007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" : 
+        {
+          "CodeMeaning" : "Artery",
+          "CodeValue" : "51114001",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 2,
+        "recommendedDisplayRGBValue" : [ 216, 101, 79 ]
+      }
+    ],
+    [
+      {
+        "SegmentAlgorithmType" : "MANUAL",
+        "SegmentDescription" : "Tissue",
+        "SegmentLabel" : "PURPLE",
+        "SegmentedPropertyCategoryCodeSequence" : 
+        {
+          "CodeMeaning" : "Tissue",
+          "CodeValue" : "85756007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" : 
+        {
+          "CodeMeaning" : "Capillary",
+          "CodeValue" : "20982000",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 3,
+        "recommendedDisplayRGBValue" : [ 183, 156, 220 ]
+      }
+    ]
+  ]
+}

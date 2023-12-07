@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
   }
 
   try {
-    DcmDataset* result = dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices);
+    DcmDataset* result = dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmDatasets, segmentations, metadata, skipEmptySlices, sortByLabelID);
 
     if (result == NULL){
       std::cerr << "ERROR: Conversion failed." << std::endl;

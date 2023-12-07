@@ -43,12 +43,27 @@ namespace dcmqi {
      * @param segmentations A vector of itk images to be converted.
      * @param metaData A string containing the metadata to be used for the DICOM Segmentation object.
      * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
+     * @param sortByLabelID A boolean indicating whether to sort the segments by label ID.
+     *        In this case, the label IDs are used as DICOM segment numbers. This only works
+     *        if the label IDs start at 1 and numbered monotonically without gaps. The processing
+     *        order of label IDs are not relevant, i.e. they can occur in any order int he input.
+     *        If n labels are not assigned uniquely to label IDs 1..n in the input, the
+     *        conversion will fail.
+     *        If this is set to false (default), the segment numbers are assigned in the order of the
+     *        labels that are being converted, i.e. the first label will receive the Segment
+     *        Number 1, the second label will receive the Segment Number 2, etc.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                           vector<ShortImageType::Pointer> segmentations,
                           const string &metaData,
-                          bool skipEmptySlices=true);
+                          bool skipEmptySlices=true,
+                          bool sortByLabelID=false);
+
+  protected:
+
+    static void sortByLabel(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
+
   };
 
 }
