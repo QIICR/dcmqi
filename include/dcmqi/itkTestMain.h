@@ -82,7 +82,7 @@ void PrintAvailableTests()
     }
 }
 
-int main(int ac, char *av[])
+int main(int arg_c, char *arg_v[])
 {
   itk::FloatingPointExceptions::Enable();
 
@@ -99,7 +99,7 @@ int main(int ac, char *av[])
 
   RegisterTests();
   std::string testToRun;
-  if( ac < 2 )
+  if( arg_c < 2 )
     {
     PrintAvailableTests();
     std::cout << "To run a test, enter the test number: ";
@@ -122,58 +122,58 @@ int main(int ac, char *av[])
     }
   else
     {
-    while( ac > 0 && testToRun.empty() )
+    while( arg_c > 0 && testToRun.empty() )
       {
-      if( strcmp(av[1], "--with-threads") == 0 )
+      if( strcmp(arg_v[1], "--with-threads") == 0 )
         {
-        int numThreads = atoi(av[2]);
-        av += 2;
-        ac -= 2;
+        int numThreads = atoi(arg_v[2]);
+        arg_v += 2;
+        arg_c -= 2;
         }
-      else if( strcmp(av[1], "--without-threads") == 0 )
+      else if( strcmp(arg_v[1], "--without-threads") == 0 )
         {
-        av += 1;
-        ac -= 1;
+        arg_v += 1;
+        arg_c -= 1;
         }
-      else if( ac > 3 && strcmp(av[1], "--compare") == 0 )
+      else if( arg_c > 3 && strcmp(arg_v[1], "--compare") == 0 )
         {
-        compareList.push_back( ComparePairType(av[2], av[3]) );
-        av += 3;
-        ac -= 3;
+        compareList.push_back( ComparePairType(arg_v[2], arg_v[3]) );
+        arg_v += 3;
+        arg_c -= 3;
         }
-      else if( ac > 2 && strcmp(av[1], "--compareNumberOfPixelsTolerance") == 0 )
+      else if( arg_c > 2 && strcmp(arg_v[1], "--compareNumberOfPixelsTolerance") == 0 )
         {
-        numberOfPixelsTolerance = atoi(av[2]);
-        av += 2;
-        ac -= 2;
+        numberOfPixelsTolerance = atoi(arg_v[2]);
+        arg_v += 2;
+        arg_c -= 2;
         }
-      else if( ac > 2 && strcmp(av[1], "--compareRadiusTolerance") == 0 )
+      else if( arg_c > 2 && strcmp(arg_v[1], "--compareRadiusTolerance") == 0 )
         {
-        radiusTolerance = atoi(av[2]);
-        av += 2;
-        ac -= 2;
+        radiusTolerance = atoi(arg_v[2]);
+        arg_v += 2;
+        arg_c -= 2;
         }
-      else if( ac > 2 && strcmp(av[1], "--compareIntensityTolerance") == 0 )
+      else if( arg_c > 2 && strcmp(arg_v[1], "--compareIntensityTolerance") == 0 )
         {
-        intensityTolerance = atof(av[2]);
-        av += 2;
-        ac -= 2;
+        intensityTolerance = atof(arg_v[2]);
+        arg_v += 2;
+        arg_c -= 2;
         }
       else
         {
-        testToRun = av[1];
+        testToRun = arg_v[1];
         }
       }
     }
   std::map<std::string, MainFuncPointer>::iterator j = StringToTestFunctionMap.find(testToRun);
   if( j != StringToTestFunctionMap.end() )
     {
-    MainFuncPointer f = j->second;
+    MainFuncPointer mainFunc = j->second;
     int             result;
     try
       {
       // Invoke the test's "main" function.
-      result = ( *f )( ac - 1, av + 1 );
+      result = ( *mainFunc )( arg_c - 1, arg_v + 1 );
       // Make a list of possible baselines
       for( int i = 0; i < static_cast<int>( compareList.size() ); i++ )
         {
@@ -329,7 +329,7 @@ int RegressionTestImage(const char *testImageFilename,
 
   const itk::SizeValueType status = diff->GetNumberOfPixelsWithDifferences();
 
-  // if there are discrepencies, create an diff image
+  // if there are discrepancies, create an diff image
   if( ( status > numberOfPixelsTolerance ) && reportErrors )
     {
   std::cout << "RegressionTestimage: Number of pixels with differences = "
@@ -486,7 +486,7 @@ int RegressionTestImage(const char *testImageFilename,
 }
 //
 // Generate all of the possible baselines
-// The possible baselines are generated fromn the baselineFilename using the
+// The possible baselines are generated from the baselineFilename using the
 // following algorithm:
 // 1) strip the suffix
 // 2) append a digit .x

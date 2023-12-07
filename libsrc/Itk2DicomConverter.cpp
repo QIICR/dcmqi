@@ -205,7 +205,7 @@ namespace dcmqi {
         }
 
         cout << "Total non-empty slices that will be encoded in SEG for label " <<
-        label << " is " << lastSlice-firstSlice << endl <<
+        label << " is " << lastSlice-firstSlice+1 << endl <<
         " (inclusive from " << firstSlice << " to " <<
         lastSlice << ")" << endl;
 
@@ -367,16 +367,16 @@ namespace dcmqi {
               CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
 				  code_seg.CodeMeaning),"",derimgItem));
 
-              //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
+              // cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 			  DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
               OFVector<SourceImageItem*> srcimgItems;
-              cout << "Added source image item" << endl;
+              // cout << "Added source image item" << endl;
               CHECK_COND(derimgItem->addSourceImageItems(siVector,
                                                        CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
 														   code.CodeMeaning),
                                                        srcimgItems));
 
-              if(1){
+              {
                 // initialize class UID and series instance UID
                 ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
                 OFString instanceUID;

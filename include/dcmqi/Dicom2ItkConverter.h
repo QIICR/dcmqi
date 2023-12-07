@@ -57,7 +57,9 @@ public:
      */
     OFCondition dcmSegmentation2itkimage(DcmDataset* segDataset, std::string& metaInfo, const bool mergeSegments = false);
 
-    /** Get first ITK image result of conversion, or null pointer if conversion failed
+    /** Get first ITK image result of conversion, or null pointer if conversion failed.
+     *  One result represents one ITK image containing all segments of one (OverlapUtil)
+     *  segment group.
      *  @return Shared pointer to first ITK image resulting from the conversion
      */
     itk::SmartPointer<ShortImageType> begin();
@@ -73,7 +75,9 @@ public:
     JSONSegmentationMetaInformationHandler getMetaInformation();
 
 protected:
-    /** Internal result loop, produced one result at a time (or null)
+    /** Internal result loop, produced one result at a time (or null).
+     *  One result represents one ITK image containing all segments of one (OverlapUtil)
+     *  segment group.
      *  @return Shared pointer to first/next ITK image resulting from the conversion
      */
     itk::SmartPointer<ShortImageType> nextResult();
@@ -174,8 +178,8 @@ protected:
     /// Segment groups, used to iterate over results
     OverlapUtil::SegmentGroups m_segmentGroups;
 
-    /// Internal iterator to current segment group, used while iterating
-    /// over results using begin() and next()
+    /// Internal iterator to "next" segment group to be returned,
+    /// used while iterating over results using begin() and next()
     OverlapUtil::SegmentGroups::iterator m_groupIterator;
 
     /// OverlapUtil instance used by this class, used in DICOM segmentation
