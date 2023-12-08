@@ -45,8 +45,8 @@ namespace dcmqi {
      * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
      * @param sortByLabelID A boolean indicating whether to sort the segments by label ID.
      *        In this case, the label IDs are used as DICOM segment numbers. This only works
-     *        if the label IDs start at 1 and numbered monotonically without gaps. The processing
-     *        order of label IDs are not relevant, i.e. they can occur in any order int he input.
+     *        if the label IDs start at 1 and are numbered monotonically without gaps. The processing
+     *        order of label IDs is not relevant, i.e. they can occur in any order in the input.
      *        If n labels are not assigned uniquely to label IDs 1..n in the input, the
      *        conversion will fail.
      *        If this is set to false (default), the segment numbers are assigned in the order of the
