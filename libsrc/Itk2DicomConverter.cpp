@@ -436,6 +436,8 @@ namespace dcmqi {
     // ourselves to put together valid datasets
     segdoc->setCheckFGOnWrite(OFFalse);
 
+    // Ensure dataset memory is cleaned up on exit, and avoid the copy on
+    // return that was performed before
     std::unique_ptr<DcmDataset> segdocDataset(new DcmDataset());
     OFCondition writeResult = segdoc->writeDataset(*segdocDataset);
     if(writeResult.bad()){
@@ -502,14 +504,14 @@ namespace dcmqi {
   }
 
 
-  void Itk2DicomConverter::sortByLabel(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
+  bool Itk2DicomConverter::sortByLabel(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
   {
     cout << "Rearranging segments to restore original label order (sort by label)" << endl;
     DcmSequenceOfItems* seq = NULL;
     CHECK_COND(dset->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, seq));
     if(!seq){
       cerr << "ERROR: Per-frame functional groups sequence not found!" << endl;
-      return;
+      return false;
     }
 
     // 0. Get Segment Sequence and remember number of segments
@@ -526,7 +528,7 @@ namespace dcmqi {
     CHECK_COND(dset->findAndGetSequence(DCM_SegmentSequence, segmentSequence));
     if(!segmentSequence){
       cerr << "ERROR: Segment sequence not found!" << endl;
-      return;
+      return false;
     }
     Uint16 numSegments = segmentSequence->card();
     vector<DcmItem*> segmentHandled(numSegments, NULL);
@@ -538,7 +540,7 @@ namespace dcmqi {
       DcmItem* frameItem = seq->getItem(i);
       if(!frameItem){
         cerr << "ERROR: Failed to get item " << i << " from the per-frame FG sequence!" << endl;
-        return;
+        return false;
       }
 
       // 2. Get segmentation FG for that frame
@@ -553,14 +555,14 @@ namespace dcmqi {
       map<Uint16,Uint16>::iterator segNum2LabelIt = segNum2Label.find(oldSegNum);
       if(segNum2LabelIt == segNum2Label.end()){
         cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the mapping!" << endl;
-        return;
+        return false;
       }
       Uint16 newSegNum = segNum2LabelIt->second;
       CHECK_COND(segItem->putAndInsertUint16(DCM_ReferencedSegmentNumber, newSegNum));
       // Make sure this fits into the vector of ordered segments
       if ((newSegNum == 0) || ( newSegNum > numSegments)){
         cerr << "ERROR: Segment number " << newSegNum << " is out of range!" << endl;
-        return;
+        return false;
       }
       if (!segmentHandled[newSegNum-1])
       {
@@ -570,7 +572,7 @@ namespace dcmqi {
           segmentItem = segmentSequence->getItem(j);
           if(!segmentItem){
             cerr << "ERROR: Failed to get item " << j << " from the segment sequence!" << endl;
-            return;
+            return false;
           }
           Uint16 segmentNumber;
           CHECK_COND(segmentItem->findAndGetUint16(DCM_SegmentNumber, segmentNumber));
@@ -584,7 +586,7 @@ namespace dcmqi {
         }
         if(!segmentItem){
           cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the segment sequence!" << endl;
-          return;
+          return false;
         }
       }
     }
@@ -595,11 +597,12 @@ namespace dcmqi {
       if (!segmentHandled[z])
       {
         cerr << "ERROR: Segment number " << z+1 << " is missing!" << endl;
-        return;
+        return false;
       }
       newSegSeq->insert(segmentHandled[z]);
     }
     dset->insert(newSegSeq.release(), OFTrue /* replace old */);
+    return true;
   }
 
 }

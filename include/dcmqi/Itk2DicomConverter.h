@@ -62,7 +62,18 @@ namespace dcmqi {
 
   protected:
 
-    static void sortByLabel(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
+    /** This method takes an existing DICOM segmentation dataset and a mapping from
+     *  (existing) segment number to new segment number (i.e. original label ID).
+     *  Therefore it will go through all frames in the dataset, and for each frame
+     *  maps Referenced Segment Number to the new value.
+     *  Afterwards, it goes trough the Segment Sequence, arranging Segment (i.e. items)
+     *  so that the  first Segment has the number 1, second number 2, and so on.
+     *  There is no reordering of frames, i.e. only the meta data is adapted.
+     *  @param  dset DICOM dataset to be modified, must be a DICOM Segmentation object
+     *  @param  segNum2Label mapping from segment number (old) to label ID (new)
+     *  @return true if successful, false otherwise
+     */
+    static bool sortByLabel(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
 
   };
 
