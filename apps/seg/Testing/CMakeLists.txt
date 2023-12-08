@@ -245,7 +245,7 @@ dcmqi_add_test(
       --prefix makeNRRD_merged_segment_files_from_partial_overlaps
       --mergeSegments
     TEST_DEPENDS
-      ${itk2dcm}_makeSEG_multiple_segment_files
+      ${itk2dcm}_makeSEG_merged_segment_files_from_partial_overlap
   )
 
   dcmqi_add_test(
