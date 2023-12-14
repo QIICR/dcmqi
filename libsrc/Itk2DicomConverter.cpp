@@ -145,6 +145,8 @@ namespace dcmqi {
 
       //cout << "Processing input label " << segmentations[segFileNumber] << endl;
 
+      // note that labels are the same in the input and output image produced 
+      // by this filter, see https://itk.org/Doxygen/html/classitk_1_1LabelImageToLabelMapFilter.html
       LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
       l2lm->SetInput(segmentations[segFileNumber]);
       l2lm->Update();
