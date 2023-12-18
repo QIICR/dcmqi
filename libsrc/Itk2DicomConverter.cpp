@@ -72,8 +72,6 @@ namespace dcmqi {
     {
       ShortImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
 
-      //cout << "Directions: " << labelDirMatrix << endl;
-
       FGPlaneOrientationPatient *planor =
           FGPlaneOrientationPatient::createMinimal(
               Helper::floatToStr(labelDirMatrix[0][0]).c_str(),
@@ -143,9 +141,7 @@ namespace dcmqi {
       if(hasDerivationImages)
         perFrameFGs.push_back(fgder);
 
-      //cout << "Processing input label " << segmentations[segFileNumber] << endl;
-
-      // note that labels are the same in the input and output image produced 
+      // note that labels are the same in the input and output image produced
       // by this filter, see https://itk.org/Doxygen/html/classitk_1_1LabelImageToLabelMapFilter.html
       LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
       l2lm->SetInput(segmentations[segFileNumber]);
@@ -349,16 +345,9 @@ namespace dcmqi {
               if(sliceIterator.Get() == label){
                 frameData[framePixelCnt] = 1;
                 ShortImageType::IndexType idx = sliceIterator.GetIndex();
-                //cout << framePixelCnt << " " << idx[1] << "," << idx[0] << endl;
               } else
                 frameData[framePixelCnt] = 0;
             }
-
-            /*
-            if(sliceNumber>=dcmDatasets.size()){
-              cerr << "ERROR: trying to access missing DICOM Slice! And sorry, multi-frame not supported at the moment..." << endl;
-              return NULL;
-            }*/
 
             OFVector<DcmDataset*> siVector;
             for(size_t derImageInstanceNum=0;
@@ -374,10 +363,8 @@ namespace dcmqi {
               CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
 				  code_seg.CodeMeaning),"",derimgItem));
 
-              // cout << "Total of " << siVector.size() << " source image items will be added" << endl;
 			  DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
               OFVector<SourceImageItem*> srcimgItems;
-              // cout << "Added source image item" << endl;
               CHECK_COND(derimgItem->addSourceImageItems(siVector,
                                                        CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
 														   code.CodeMeaning),

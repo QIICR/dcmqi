@@ -316,8 +316,6 @@ namespace dcmqi {
           throw -1;
         }
 
-        //cout << "Total of " << siVector.size() << " source image items will be added" << endl;
-
         OFVector<SourceImageItem*> srcimgItems;
 		DSRBasicCodedEntry code_src_img = CODE_DCM_SourceImageForImageProcessingOperation;
 
@@ -346,9 +344,6 @@ namespace dcmqi {
         }
 
       }
-
-
-      //result = addFrame(*pMapDoc, parametricMapImage, metaInfo, sliceNumber, perFrameFGs);
 
       // addFrame
       {

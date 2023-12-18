@@ -135,8 +135,6 @@ Json::Value TID1500Reader::getMeasurements() {
         DSRDocumentTreeNodeCursor cursor(groupCursor);
 
         if (cursor.gotoChild()) {
-          //size_t counter = 0;
-          //COUT << "- Measurements:" << OFendl;
           // iterate over all direct child nodes
           do {
             const DSRDocumentTreeNode *node = cursor.getNode();
@@ -153,8 +151,6 @@ Json::Value TID1500Reader::getMeasurements() {
 
             /* and check for numeric measurement value content items */
             if ((node != NULL) && (node->getValueType() == VT_Num)) {
-              //COUT << "  #" << (++counter) << " ";
-              //printMeasurement(*OFstatic_cast(const DSRNumTreeNode *, node), cursor);
               Json::Value singleMeasurement = getSingleMeasurement(*OFstatic_cast(const DSRNumTreeNode *, node), cursor);
               measurementItems.append(singleMeasurement);
             } else if (( node != NULL) && (node->getValueType() == VT_Text)) {
@@ -202,7 +198,6 @@ Json::Value TID1500Reader::getContentItem(const DSRCodedEntryValue &conceptName,
   if (gotoNamedChildNode(conceptName, cursor)) {
     const DSRDocumentTreeNode *node = cursor.getNode();
     if (node != NULL) {
-      //COUT << "  - " << conceptName.getCodeMeaning() << ": ";
       // use appropriate value for output
       switch (node->getValueType()) {
         case VT_Text:
@@ -252,7 +247,6 @@ void TID1500Reader::initSegmentationContentItems(DSRDocumentTreeNodeCursor curso
 Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
                                      DSRDocumentTreeNodeCursor cursor) {
   Json::Value singleMeasurement;
-  //COUT << numNode.getConceptName().getCodeMeaning() << ": " << numNode.getValue().getNumericValue() << " " << numNode.getValue().getMeasurementUnit().getCodeMeaning() << OFendl;
   singleMeasurement["value"] = numNode.getValue().getNumericValue().c_str();
   singleMeasurement["units"] = DSRCodedEntryValue2CodeSequence(numNode.getMeasurementUnit());
   singleMeasurement["quantity"] = DSRCodedEntryValue2CodeSequence(numNode.getConceptName());
@@ -270,8 +264,6 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
       const DSRDocumentTreeNode *node = cursor.getNode();
       if (node != NULL) {
         if ((node->getRelationshipType() == RT_hasConceptMod) && (node->getValueType() == VT_Code)) {
-          //COUT << "     - " << node->getConceptName().getCodeMeaning() << ": " << OFstatic_cast(
-          //const DSRCodeTreeNode *, node)->getCodeMeaning() << OFendl;
 
           // There is only one "Derivation" concept modifier (row 8 in TID1419)
           //  http://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1419
@@ -316,8 +308,6 @@ Json::Value TID1500Reader::getSingleMeasurement(const DSRNumTreeNode &numNode,
         //   in which case this heuristic will break.
         // R-INFERRED FROM are not handled
         else if ((node->getRelationshipType() == RT_inferredFrom) && (node->getValueType() == VT_Num)) {
-          //COUT << "     - " << node->getConceptName().getCodeMeaning() << ": " << OFstatic_cast(const DSRNumTreeNode *, node)->getNumericValue()
-          //    << " " << OFstatic_cast(const DSRNumTreeNode *, node)->getValue().getMeasurementUnit().getCodeMeaning() << OFendl;
           Json::Value derivationParameter;
           derivationParameter["derivationParameter"] = DSRCodedEntryValue2CodeSequence(node->getConceptName());
           derivationParameter["derivationParameterUnits"] = DSRCodedEntryValue2CodeSequence(OFstatic_cast(const DSRNumTreeNode *, node)->getValue().getMeasurementUnit());
