@@ -88,7 +88,7 @@ namespace dcmqi {
 
       ShortImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
       ostringstream spacingSStream;
-      spacingSStream << scientific << labelSpacing[0] << "\\" << labelSpacing[1];
+      spacingSStream << scientific << labelSpacing[1] << "\\" << labelSpacing[0];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
 
       spacingSStream.clear(); spacingSStream.str("");
