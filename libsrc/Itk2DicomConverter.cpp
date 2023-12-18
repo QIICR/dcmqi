@@ -22,7 +22,7 @@ namespace dcmqi {
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices,
-                                                          bool sortByLabelID) {
+                                                          bool useLabelIDAsSegmentNumber) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
@@ -39,7 +39,7 @@ namespace dcmqi {
     CHECK_COND(ident.setInstanceNumber(metaInfo.getInstanceNumber().c_str()));
     // Map that will hold the mapping from segment number (as written to DICOM) and label ID
     // as it is found in the input image. This can be used later to re-map the segment numbers
-    // to their original label IDs (see sortByLabel() method).
+    // to their original label IDs (see mapLabelIDsToSegmentNumbers() method).
     map<Uint16,Uint16> segNum2Label;
 
     /* Create new segmentation document */
@@ -497,22 +497,29 @@ namespace dcmqi {
       CHECK_COND(segdocDataset->putAndInsertString(DCM_SegmentsOverlap, segmentsOverlap.c_str()));
     }
 
-    if (sortByLabelID)
+    if (useLabelIDAsSegmentNumber)
     {
-      sortByLabel(segdocDataset.get(), segNum2Label);
+      mapLabelIDsToSegmentNumbers(segdocDataset.get(), segNum2Label);
     }
 
     return segdocDataset.release();
   }
 
 
-  bool Itk2DicomConverter::sortByLabel(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
+  bool Itk2DicomConverter::mapLabelIDsToSegmentNumbers(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
   {
-    cout << "Rearranging segments to restore original label order (sort by label)" << endl;
+    cout << "Mapping Label IDs to Segment Numbers" << endl;
     DcmSequenceOfItems* seq = NULL;
     CHECK_COND(dset->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, seq));
     if(!seq){
-      cerr << "ERROR: Per-frame functional groups sequence not found!" << endl;
+      cerr << "ERROR: Mapping Label IDs to Segment Numbers: Per-frame functional groups sequence not found!" << endl;
+      return false;
+    }
+
+    // Check whether the provided label numbers (values in segNum2Label) are unique
+    // and monotonically increasing from 1.
+    if (!checkLabelNumbering(segNum2Label))
+    {
       return false;
     }
 
@@ -529,10 +536,16 @@ namespace dcmqi {
     DcmSequenceOfItems* segmentSequence = NULL;
     CHECK_COND(dset->findAndGetSequence(DCM_SegmentSequence, segmentSequence));
     if(!segmentSequence){
-      cerr << "ERROR: Segment sequence not found!" << endl;
+      cerr << "ERROR: Mapping Label IDs to Segment Numbers: Segment sequence not found!" << endl;
       return false;
     }
+    // This tells us how many segments we have, and therefore also how many segment numbers we must expect
     Uint16 numSegments = segmentSequence->card();
+    // Vector that holds all input segments (from Segment Sequence) that have been handled. This is
+    // used to check whether the Segmentation Sequence has already been updated with the new segment number.
+    // Since multiple frames can reference the same segment and we are looping over frames,
+    // we only want to update the segment sequence once per segment to save time.
+    // The index is the sequence number, the value is the item from the Segment Sequence.
     vector<DcmItem*> segmentHandled(numSegments, NULL);
 
     // 1.Get per-frame FG sequence and loop over all items (frames)
@@ -541,7 +554,7 @@ namespace dcmqi {
     for(unsigned i=0;i<fgSeq->card();i++){
       DcmItem* frameItem = seq->getItem(i);
       if(!frameItem){
-        cerr << "ERROR: Failed to get item " << i << " from the per-frame FG sequence!" << endl;
+        cerr << "ERROR: Mapping Label IDs to Segment Numbers: Failed to get item " << i << " from the per-frame FG sequence!" << endl;
         return false;
       }
 
@@ -556,16 +569,13 @@ namespace dcmqi {
       // 4. Replace the referenced segment number with the original label value
       map<Uint16,Uint16>::iterator segNum2LabelIt = segNum2Label.find(oldSegNum);
       if(segNum2LabelIt == segNum2Label.end()){
-        cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the mapping!" << endl;
+        cerr << "ERROR: Mapping Label IDs to Segment Numbers: Failed to find segment number " << oldSegNum << " in the mapping!" << endl;
         return false;
       }
       Uint16 newSegNum = segNum2LabelIt->second;
       CHECK_COND(segItem->putAndInsertUint16(DCM_ReferencedSegmentNumber, newSegNum));
-      // Make sure this fits into the vector of ordered segments
-      if ((newSegNum == 0) || ( newSegNum > numSegments)){
-        cerr << "ERROR: Segment number " << newSegNum << " is out of range!" << endl;
-        return false;
-      }
+      // Replace the referenced segment number with the original label value if not already done.
+      // Range check is not necessary, because we already checked sanity of segmentSequence.
       if (!segmentHandled[newSegNum-1])
       {
         // 5. From the Segment Sequence, find the item with the matching old segment number
@@ -573,7 +583,7 @@ namespace dcmqi {
         for(unsigned j=0;j<segmentSequence->card();j++){
           segmentItem = segmentSequence->getItem(j);
           if(!segmentItem){
-            cerr << "ERROR: Failed to get item " << j << " from the segment sequence!" << endl;
+            cerr << "ERROR: Mapping Label IDs to Segment Numbers: Failed to get item " << j << " from the segment sequence!" << endl;
             return false;
           }
           Uint16 segmentNumber;
@@ -587,7 +597,7 @@ namespace dcmqi {
           }
         }
         if(!segmentItem){
-          cerr << "ERROR: Failed to find segment number " << oldSegNum << " in the segment sequence!" << endl;
+          cerr << "ERROR: Mapping Label IDs to Segment Numbers: Failed to find segment number " << oldSegNum << " in the segment sequence!" << endl;
           return false;
         }
       }
@@ -598,12 +608,39 @@ namespace dcmqi {
     {
       if (!segmentHandled[z])
       {
-        cerr << "ERROR: Segment number " << z+1 << " is missing!" << endl;
+        cerr << "ERROR: Mapping Label IDs to Segment Numbers: Segment number " << z+1 << " is missing!" << endl;
         return false;
       }
       newSegSeq->insert(segmentHandled[z]);
     }
     dset->insert(newSegSeq.release(), OFTrue /* replace old */);
+    return true;
+  }
+
+  bool Itk2DicomConverter::checkLabelNumbering(const map<Uint16, Uint16>& segNum2Label)
+  {
+    // Check whether the provided label numbers (values in segNum2Label) are unique
+    // and monotonically increasing from 1.
+    // If not, we cannot use this method to sort the segments.
+    std::vector<Uint16> labels;
+    for (auto it = segNum2Label.begin(); it != segNum2Label.end(); ++it)
+    {
+      labels.push_back(it->second);
+    }
+    std::sort(labels.begin(), labels.end());
+    if (labels[0] != 1)
+    {
+      cerr << "ERROR: Cannot sort segments by label, because the label numbers are not monotonically increasing from 1!" << endl;
+      return false;
+    }
+    for (size_t i=0; i<labels.size(); i++)
+    {
+      if (labels[i] != i+1)
+      {
+        cerr << "ERROR: Cannot sort segments by label, because the label numbers are not monotonically increasing from 1!" << endl;
+        return false;
+      }
+    }
     return true;
   }
 

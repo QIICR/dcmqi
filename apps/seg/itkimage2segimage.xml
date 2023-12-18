@@ -65,12 +65,12 @@
     </boolean>
 
     <boolean>
-      <name>sortByLabelID</name>
-      <label>Sort by label ID </label>
+      <name>useLabelIDAsSegmentNumber</name>
+      <label>Use label ID as Segment Number </label>
       <channel>output</channel>
-      <longflag>sortByLabelID</longflag>
+      <longflag>useLabelIDAsSegmentNumber</longflag>
       <default>false</default>
-      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1.</description>
+      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1, otherwise conversion will fail.</description>
     </boolean>
 
     <boolean>

@@ -43,22 +43,27 @@ namespace dcmqi {
      * @param segmentations A vector of itk images to be converted.
      * @param metaData A string containing the metadata to be used for the DICOM Segmentation object.
      * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
-     * @param sortByLabelID A boolean indicating whether to sort the segments by label ID.
-     *        In this case, the label IDs are used as DICOM segment numbers. This only works
-     *        if the label IDs start at 1 and are numbered monotonically without gaps. The processing
-     *        order of label IDs is not relevant, i.e. they can occur in any order in the input.
+     * @param useLabelIDAsSegmentNumber A boolean indicating whether to use input label IDs as segment numbers.
+     *        This only works if the label IDs start at 1 and are numbered monotonically without gaps.
+     *        The processing order of label IDs is not relevant, i.e. they can occur in any order in the input.
      *        If n labels are not assigned uniquely to label IDs 1..n in the input, the
      *        conversion will fail.
      *        If this is set to false (default), the segment numbers are assigned in the order of the
      *        labels that are being converted, i.e. the first label will receive the Segment
      *        Number 1, the second label will receive the Segment Number 2, etc.
+     *        Setting this flag to true is especially useful for track label IDs in the DICOM
+     *        result, as done in the tests (e.g. roundtrip testing DICOM -> ITK -> DICOM).
+     *        Note that neither the order of frames nor the order of display (Dimension Index Values)
+     *        are updated by this flag, compared to the default behavior (false). Of course, the
+     *        resulting DICOM object is still valid, dimensions are consistent and lead to meaningful
+     *        display.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                           vector<ShortImageType::Pointer> segmentations,
                           const string &metaData,
                           bool skipEmptySlices=true,
-                          bool sortByLabelID=false);
+                          bool useLabelIDAsSegmentNumber=false);
 
   protected:
 
@@ -73,7 +78,13 @@ namespace dcmqi {
      *  @param  segNum2Label mapping from segment number (old) to label ID (new)
      *  @return true if successful, false otherwise
      */
-    static bool sortByLabel(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
+    static bool mapLabelIDsToSegmentNumbers(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
+
+    /** Check whether labels (values in given map) are unique and monotonically increasing by 1
+     *  @param  segNum2Label mapping from segment number (old) to label ID (new)
+     *  @return true if successful, false otherwise
+     */
+    static bool checkLabelNumbering(const map<Uint16, Uint16>& segNum2Label);
 
   };
 

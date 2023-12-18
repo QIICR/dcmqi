@@ -59,7 +59,7 @@ dcmqi_add_test(
     --inputImageList ${BASELINE}/partial_overlaps-1.nrrd,${BASELINE}/partial_overlaps-2.nrrd,${BASELINE}/partial_overlaps-3.nrrd
     --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/partial_overlaps.dcm
-    --sortByLabelID
+    --useLabelIDAsSegmentNumber
   )
 
 # ------------------------------------------------------------------------------
