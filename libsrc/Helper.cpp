@@ -107,8 +107,6 @@ namespace dcmqi {
     sstream.imbue(std::locale::classic());
     sstream.precision(9);
     sstream << f;
-    //string f_str = sstream.str();
-    //cout << "Formatted float (length): " << f_str << "(" << f_str.size() << ")" << endl;
     return sstream.str();
   }
 

@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
   DcmRLEDecoderRegistration::registerCodecs();
 
   DcmFileFormat sliceFF;
+  std::cout << "Loading DICOM SEG file " << inputSEGFileName << std::endl;
   CHECK_COND(sliceFF.loadFile(inputSEGFileName.c_str()));
   DcmDataset* dataset = sliceFF.getDataset();
 

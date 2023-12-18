@@ -82,6 +82,11 @@ void OverlapUtil::clear()
 OFCondition OverlapUtil::getFramesByPosition(DistinctFramePositions& result)
 {
     OFCondition cond;
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getFramesByPosition(): No segmentation object set");
+        return EC_IllegalCall;
+    }
     if (m_logicalFramePositions.empty())
     {
         cond = groupFramesByPosition();
@@ -95,7 +100,12 @@ OFCondition OverlapUtil::getFramesByPosition(DistinctFramePositions& result)
 
 OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames)
 {
-    if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments() + 1))
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getFramesForSegment(): No segmentation object set");
+        return EC_IllegalCall;
+    }
+    if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
     {
         DCMSEG_ERROR("getFramesForSegment(): Segment number " << segmentNumber << " is out of range");
         return EC_IllegalParameter;
@@ -215,7 +225,7 @@ OFCondition OverlapUtil::groupFramesByPosition()
     sorter.setSorterInput(&(m_seg->getFunctionalGroups()));
     FrameSorterIPP::Results results;
     sorter.sort(results);
-    if (results.errorCode != EC_Normal)
+    if (results.errorCode.bad())
     {
         DCMSEG_ERROR("groupFramesByPosition(): Cannot sort frames by position: " << results.errorCode.text());
         return results.errorCode;
@@ -257,6 +267,11 @@ OFCondition OverlapUtil::groupFramesByPosition()
 
 OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
 {
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getSegmentsByPosition(): No segmentation object set");
+        return EC_IllegalCall;
+    }
     if (!m_segmentsByPosition.empty())
     {
         // Already computed
@@ -342,6 +357,11 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
 
 OFCondition OverlapUtil::getOverlapMatrix(OverlapMatrix& matrix)
 {
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getOverlapMatrix(): No segmentation object set");
+        return EC_IllegalCall;
+    }
     if (!m_segmentOverlapMatrix.empty())
     {
         // Already computed
@@ -366,6 +386,11 @@ OFCondition OverlapUtil::getOverlapMatrix(OverlapMatrix& matrix)
 
 OFCondition OverlapUtil::getNonOverlappingSegments(SegmentGroups& segmentGroups)
 {
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getNonOverlappingSegments(): No segmentation object set");
+        return EC_IllegalCall;
+    }
     OFTimer tm;
     OFCondition result;
     if (!m_nonOverlappingSegments.empty())
@@ -766,6 +791,5 @@ Uint8 OverlapUtil::identifyChangingCoordinate(const OFVector<Float64>& imageOrie
     // No clear winner
     return 3;
 }
-
 
 } // namespace dcmqi

@@ -30,6 +30,40 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
+
+# ------------------------------------------------------------------------------
+
+# Creates a DICOM segmentation with 5 segments, partially overlapping:
+# - Segments GREEN:
+#   - overlaps with ORANGE on same frame
+#   - overlaps with PURPLE on next frame
+# - Segment ORANGE:
+#   - overlaps with GREEN on same frame
+#   - overlaps with PURPLE on next frame
+# - Segment PURPLE:
+#   - overlaps with GREEN on previous frame
+#   - overlaps with ORANGE on previous frame
+# - SEGMENT LIGHT_BLUE:
+#   - no overlaps at all
+# - SEGMENT DARK_BLUE:
+#   - no overlaps at all
+# This will produce 3 groups (i.e NRRD files):
+# - Group 1: GREEN, LIGHT_BLUE, DARK_BLUE
+# - Group 2: ORANGE
+# - Group 3: PURPLE
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_merged_segment_files_from_partial_overlap
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_partial_overlaps.json
+    --inputImageList ${BASELINE}/partial_overlaps-1.nrrd,${BASELINE}/partial_overlaps-2.nrrd,${BASELINE}/partial_overlaps-3.nrrd
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/partial_overlaps.dcm
+    --useLabelIDAsSegmentNumber
+  )
+
+# ------------------------------------------------------------------------------
+
 # Creates a DICOM segmentation file that has 3 segments:
 # - segment for liver (DICOM Segment Number 1)
 # - segment for spine (DICOM Segment Number 2)
@@ -53,7 +87,6 @@ dcmqi_add_test(
       --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
       --outputDICOM ${MODULE_TEMP_DIR}/liver_heart_seg_reordered.dcm
     )
-
 
 find_program(DCIODVFY_EXECUTABLE dciodvfy)
 
@@ -144,6 +177,8 @@ dcmqi_add_test(
       ${itk2dcm}_makeSEG_multiple_segment_files_reordered
     )
 
+# ------------------------------------------------------------------------------
+
   # Reads a DICOM segmentation file that has 3 segments (liver, spine, heart - in this order).
   # Heart and liver segments overlap.
   # The goal is to export these segments to NRRD+JSON. Since the liver and heart segments overlap,
@@ -175,6 +210,55 @@ dcmqi_add_test(
     TEST_DEPENDS
       ${dcm2itk}_makeNRRD_merged_segment_file
   )
+
+# ------------------------------------------------------------------------------
+
+
+  # Reads a DICOM segmentation file (partial_overlaps.dcm) that has 5 segments,
+  # - Segments GREEN:
+  #   - overlaps with ORANGE on same frame
+  #   - overlaps with PURPLE on next frame
+  # - Segment ORANGE:
+  #   - overlaps with GREEN on same frame
+  #   - overlaps with PURPLE on next frame
+  # - Segment PURPLE:
+  #   - overlaps with GREEN on previous frame
+  #   - overlaps with ORANGE on previous frame
+  # - SEGMENT LIGHT_BLUE:
+  #   - no overlaps at all
+  # - SEGMENT DARK_BLUE:
+  #   - no overlaps at all
+  # This will produce 3 groups (i.e NRRD files):
+  # - Group 1: GREEN, LIGHT_BLUE, DARK_BLUE
+  # - Group 2: ORANGE
+  # - Group 3: PURPLE
+
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_merged_segment_files_from_partial_overlaps
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND ${SEM_LAUNCH_COMMAND} $<TARGET_FILE:${dcm2itk}Test>
+      --compare ${BASELINE}/partial_overlaps-1.nrrd ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_files_from_partial_overlaps-1.nrrd
+      --compare ${BASELINE}/partial_overlaps-2.nrrd ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_files_from_partial_overlaps-2.nrrd
+      ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/partial_overlaps.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --prefix makeNRRD_merged_segment_files_from_partial_overlaps
+      --mergeSegments
+    TEST_DEPENDS
+      ${itk2dcm}_makeSEG_merged_segment_files_from_partial_overlap
+  )
+
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_merged_segment_files_from_partial_overlaps_JSON
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+      ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_partial_overlaps.json
+      ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_files_from_partial_overlaps-meta.json
+    TEST_DEPENDS
+      ${dcm2itk}_makeNRRD_merged_segment_files_from_partial_overlaps
+  )
+
+# ------------------------------------------------------------------------------
 
 dcmqi_add_test(
   NAME seg_meta_roundtrip

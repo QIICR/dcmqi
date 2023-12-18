@@ -65,6 +65,15 @@
     </boolean>
 
     <boolean>
+      <name>useLabelIDAsSegmentNumber</name>
+      <label>Use label ID as Segment Number</label>
+      <channel>output</channel>
+      <longflag>useLabelIDAsSegmentNumber</longflag>
+      <default>false</default>
+      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1, otherwise conversion will fail.</description>
+    </boolean>
+
+    <boolean>
       <name>verbose</name>
       <label>Verbose</label>
       <channel>input</channel>
