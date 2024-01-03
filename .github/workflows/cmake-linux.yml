@@ -46,7 +46,7 @@ jobs:
       if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
       run: |
          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }} && \
-         docker push fedorov/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
+         docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
          || echo "skipping docker push"
 
     - name: "Publish linux package"
