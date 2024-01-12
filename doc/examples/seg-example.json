@@ -14,6 +14,7 @@
       {
         "labelID": 1,
         "SegmentDescription": "Liver Segmentation",
+        "SegmentLabel": "Liver",
         "SegmentedPropertyCategoryCodeSequence": {
           "CodeValue": "85756007",
           "CodingSchemeDesignator": "SCT",
