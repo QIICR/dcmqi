@@ -245,6 +245,9 @@ namespace dcmqi {
         if(segmentAttributes->getSegmentLabel().length() > 0){
           cout << "Populating segment label to " << segmentAttributes->getSegmentLabel() << endl;
           segmentLabel = segmentAttributes->getSegmentLabel().c_str();
+        } else if(segmentAttributes->getSegmentDescription().length() > 0){
+          cout << "Populating segment label from SegmentDescription to " << segmentAttributes->getSegmentDescription() << endl;
+          segmentLabel = segmentAttributes->getSegmentDescription().c_str();
         } else
           CHECK_COND(typeCode->getCodeMeaning(segmentLabel));
 

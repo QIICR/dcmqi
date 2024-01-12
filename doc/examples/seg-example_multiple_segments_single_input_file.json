@@ -14,6 +14,7 @@
       {
         "labelID": 1,
         "SegmentDescription": "Liver Segmentation",
+        "SegmentLabel": "Liver",
         "SegmentedPropertyCategoryCodeSequence": {
           "CodeValue": "85756007",
           "CodingSchemeDesignator": "SCT",
@@ -35,6 +36,7 @@
       {
         "labelID": 2,
         "SegmentDescription": "Anatomical Structure",
+        "SegmentLabel": "Thoracic spine",
         "SegmentedPropertyTypeCodeSequence": {
           "CodeMeaning": "Thoracic spine",
           "CodingSchemeDesignator": "SCT",
@@ -55,6 +57,7 @@
       {
         "labelID": 3,
         "SegmentDescription": "Anatomical Structure",
+        "SegmentLabel": "Heart",
         "SegmentedPropertyCategoryCodeSequence": {
           "CodeMeaning": "Anatomical Structure",
           "CodingSchemeDesignator": "SCT",
