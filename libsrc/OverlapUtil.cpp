@@ -49,6 +49,7 @@ OverlapUtil::OverlapUtil()
     : m_imageOrientation()
     , m_framePositions()
     , m_framesForSegment()
+    , m_segmentsForFrame()
     , m_logicalFramePositions()
     , m_segmentsByPosition()
     , m_segmentOverlapMatrix(0)
@@ -126,35 +127,111 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
         // in the vector m_segmentsForFrame
         for (Uint32 f = 0; f < numFrames; f++)
         {
-            FGBase* group         = NULL;
-            FGSegmentation* segFG = NULL;
-            group                 = fg.get(f, DcmFGTypes::EFG_SEGMENTATION);
-            segFG                 = OFstatic_cast(FGSegmentation*, group);
-            if (segFG)
+            OFCondition result;
+            std::set<Uint32> segments;
+            result = getSegmentsForFrame(f, segments);
+            if (result.good())
             {
-                Uint16 segNum    = 0;
-                OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
-                if (cond.good() && segNum > 0)
-                {
-                    m_framesForSegment[segNum - 1].push_back(f); // physical frame number for segment
+                if(segments.find(segmentNumber) != segments.end()) {
+                    m_framesForSegment[segmentNumber - 1].push_back(f); // physical frame number for segment
                 }
-                else if (segNum == 0)
-                {
-                    DCMSEG_WARN("getFramesForSegment(): Referenced Segment Number is 0 (not permitted) for frame #"
-                                << f << ", ignoring");
-                    return EC_InvalidValue;
-                }
-                else
-                {
-                    DCMSEG_ERROR(
-                        "getFramesForSegment(): Referenced Segment Number not found (not permitted) for frame #"
-                        << f << ", cannot add segment");
-                    return EC_TagNotFound;
-                }
+            }
+            else
+            {
+                DCMSEG_ERROR("getFramesForSegment(): Cannot get segments for frame " << f);
+                return EC_IllegalCall;
             }
         }
     }
     frames = m_framesForSegment[segmentNumber - 1];
+    return EC_Normal;
+}
+
+OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, std::set<Uint32>& segments)
+{
+    if (!m_seg)
+    {
+        DCMSEG_ERROR("getSegmentsForFrame(): No segmentation object set");
+        return EC_IllegalCall;
+    }
+    if (frameNumber > m_seg->getNumberOfFrames() - 1)
+    {
+        DCMSEG_ERROR("getSegmentsForFrame(): Frame number " << frameNumber << " is out of range");
+        return EC_IllegalParameter;
+    }
+    if (m_segmentsForFrame.empty())
+    {
+        FGInterface& fg  = m_seg->getFunctionalGroups();
+        size_t tempNum = m_seg->getNumberOfFrames();
+        if (tempNum > 4294967295)
+        {
+            DCMSEG_ERROR("getSegmentsForFrame(): Number of frames " << tempNum << " exceeds maximum number of possible frames (2^32-1)");
+            return EC_IllegalParameter;
+        }
+        Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
+        m_segmentsForFrame.clear();
+        m_segmentsForFrame.resize(numFrames);
+        for (Uint32 f = 0; f < numFrames; f++) {
+            m_segmentsForFrame.push_back(std::set<Uint32>());
+            if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
+            { 
+                const DcmIODTypes::Frame* f_data = m_seg->getFrame(f);
+                Uint16 rows, cols;
+                rows = cols = 0;
+                DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
+                ip->getImagePixel().getRows(rows);
+                ip->getImagePixel().getColumns(cols);
+                if (!f_data)
+                {
+                    DCMSEG_ERROR("getSegmentsForFrame(): Cannot access label map frame " << f);
+                    return EC_IllegalCall;
+                }
+
+                for (size_t n = 0; n < f_data->length; ++n)
+                {
+                    Uint8 segmentNumber = f_data->pixData[n];
+                    if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
+                    {
+                        DCMSEG_ERROR("getSegmentsForFrame(): Segment number " << segmentNumber << " is out of range");
+                        return EC_IllegalParameter;
+                    }
+                    m_segmentsForFrame[f].insert(segmentNumber);
+                }
+                return EC_Normal;
+            }
+            else
+            {
+                FGBase* group         = NULL;
+                FGSegmentation* segFG = NULL;
+                group                 = fg.get(f, DcmFGTypes::EFG_SEGMENTATION);
+                segFG                 = OFstatic_cast(FGSegmentation*, group);
+                if (segFG)
+                {
+                    Uint16 segNum    = 0;
+                    OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
+                    if (cond.good() && segNum > 0)
+                    {
+                        m_segmentsForFrame[f].insert(segNum); // physical frame number for segment
+                    }
+                    else if (segNum == 0)
+                    {
+                        DCMSEG_WARN("getSegmentsForFrame(): Referenced Segment Number is 0 (not permitted) for frame #"
+                                    << f << ", ignoring");
+                        return EC_InvalidValue;
+                    }
+                    else
+                    {
+                        DCMSEG_ERROR(
+                            "getSegmentsForFrame(): Referenced Segment Number not found (not permitted) for frame #"
+                            << f << ", cannot add segment");
+                        return EC_TagNotFound;
+                    }
+                }
+            }
+        }
+    }
+
+    segments = m_segmentsForFrame[frameNumber];
     return EC_Normal;
 }
 
@@ -296,52 +373,24 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
     m_segmentsByPosition.resize(m_logicalFramePositions.size());
     for (size_t l = 0; l < m_logicalFramePositions.size(); ++l)
     {
-        OFVector<Uint32> segments;
         for (size_t f = 0; f < m_logicalFramePositions[l].size(); ++f)
         {
+            std::set<Uint32> segmentsInFrame;
             Uint32 frameNumber = m_logicalFramePositions[l][f];
-            OFVector<Uint32> segs;
-            FGBase* group         = NULL;
-            FGSegmentation* segFG = NULL;
-            group                 = m_seg->getFunctionalGroups().get(frameNumber, DcmFGTypes::EFG_SEGMENTATION);
-            segFG                 = OFstatic_cast(FGSegmentation*, group);
-            if (segFG)
+            if (getSegmentsForFrame(frameNumber, segmentsInFrame).good())
             {
-                Uint16 segNum = 0;
-                cond          = segFG->getReferencedSegmentNumber(segNum);
-                if (cond.good() && segNum > 0 && (segNum <= numSegments))
+                for (std::set<Uint32>::iterator it = segmentsInFrame.begin();
+                     it != segmentsInFrame.end();
+                     ++it)
                 {
-                    m_segmentsByPosition[l].insert(SegNumAndFrameNum(segNum, frameNumber));
-                }
-                else if (segNum == 0)
-                {
-                    DCMSEG_ERROR(
-                        "getSegmentsByPosition(): Referenced Segment Number is 0 (not permitted), cannot add segment");
-                    cond = EC_InvalidValue;
-                    break;
-                }
-                else if (segNum > numSegments)
-                {
-                    DCMSEG_ERROR("getSegmentsByPosition(): Found Referenced Segment Number "
-                                 << segNum << " but only " << numSegments
-                                 << " segments are present, cannot add segment");
-                    DCMSEG_ERROR(
-                        "getSegmentsByPosition(): Segments are not numbered consecutively, cannot add segment");
-                    cond = EC_InvalidValue;
-                    break;
-                }
-                else
-                {
-                    DCMSEG_ERROR("getSegmentsByPosition(): Referenced Segment Number not found (not permitted) , "
-                                 "cannot add segment");
-                    cond = EC_TagNotFound;
-                    break;
+                    m_segmentsByPosition[l].insert(SegNumAndFrameNum(*it, frameNumber));
                 }
             }
-        }
-        if (cond.bad())
-        {
-            break;
+            else
+            {
+                DCMSEG_ERROR("getSegmentsByPosition(): Cannot get segments for frame " << frameNumber);
+                return EC_IllegalCall;
+            }
         }
     }
     // print segments per logical frame  if debug log level is enabled
@@ -564,7 +613,14 @@ OFCondition OverlapUtil::buildOverlapMatrix()
                     // Compare pixels of the frames referenced by each segments.
                     // If they overlap, mark as overlapping
                     OFBool overlap = OFFalse;
-                    checkFramesOverlap(it->m_frameNumber, it2->m_frameNumber, overlap);
+                    if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
+                    {
+                        checkFramesOverlapLabelMap(*it, *it2, overlap);
+                    }
+                    else
+                    {
+                        checkFramesOverlap(it->m_frameNumber, it2->m_frameNumber, overlap);
+                    }
 
                     // Enter result into overlap matrix
                     m_segmentOverlapMatrix[(*it).m_segmentNumber - 1][(*it2).m_segmentNumber - 1] = overlap ? 1 : 0;
@@ -595,6 +651,57 @@ OFCondition OverlapUtil::buildOverlapMatrix()
     return EC_Normal;
 }
 
+OFCondition OverlapUtil::checkFramesOverlapLabelMap(const SegNumAndFrameNum& sf1,
+                                                    const SegNumAndFrameNum& sf2,
+                                                    OFBool& overlap)
+{
+    if (sf1.m_frameNumber == sf2.m_frameNumber || sf1.m_segmentNumber == sf2.m_segmentNumber)
+    {
+        // The same frame or segment should not be considered overlapping
+        overlap = OFFalse;
+        return EC_Normal;
+    }
+
+    overlap = OFFalse;
+    const Uint32& f1 = sf1.m_frameNumber;
+    const Uint32& f2 = sf2.m_frameNumber;
+    OFCondition result;
+    const DcmIODTypes::Frame* f1_data = m_seg->getFrame(sf1.m_frameNumber);
+    const DcmIODTypes::Frame* f2_data = m_seg->getFrame(sf2.m_frameNumber);
+    Uint16 rows, cols;
+    rows = cols = 0;
+    DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
+    ip->getImagePixel().getRows(rows);
+    ip->getImagePixel().getColumns(cols);
+
+    DCMSEG_DEBUG("checkFramesOverlapLabelMap(): Comparing frame " << f1 << ", segment " << sf1.m_segmentNumber << ", and frame "
+                                                                  << f2 << ", segment " << sf2.m_segmentNumber 
+                                                                  << ", for overlap");
+    if (!f1_data || !f2_data)
+    {
+        DCMSEG_ERROR("checkFramesOverlapLabelMap(): Cannot access label map frames " << f1 << " and " << f2 << " for comparison");
+        return EC_IllegalCall;
+    }
+    if (f1_data->length != f2_data->length)
+    {
+        DCMSEG_ERROR("checkFramesOverlapLabelMap(): Frames " << f1 << " and " << f2
+                                                     << " have different length, cannot compare");
+        return EC_IllegalCall;
+    }
+
+    for (size_t n = 0; n < f1_data->length; ++n)
+    {
+        if (f1_data->pixData[n] == sf1.m_segmentNumber && f2_data->pixData[n] == sf2.m_segmentNumber)
+        {
+            DCMSEG_DEBUG("checkFramesOverlapLabelMap(): Frame " << f1 << ", segment " << sf1.m_segmentNumber << ", and frame "
+                                            << f2 << ", segment " << sf2.m_segmentNumber << ", do overlap at index " << n);
+            overlap = OFTrue;
+            break;
+        }
+    }
+    return EC_Normal;
+}
+
 OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, OFBool& overlap)
 {
     if (f1 == f2)
@@ -608,7 +715,7 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
     const DcmIODTypes::Frame* f1_data = m_seg->getFrame(f1);
     const DcmIODTypes::Frame* f2_data = m_seg->getFrame(f2);
     Uint16 rows, cols;
-    rows = cols                                 = 0;
+    rows = cols = 0;
     DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
     ip->getImagePixel().getRows(rows);
     ip->getImagePixel().getColumns(cols);

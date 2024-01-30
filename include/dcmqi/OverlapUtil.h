@@ -93,6 +93,9 @@ public:
     /// and index 0 is unused. I.e. index i is segment number, value is vector of physical frame numbers.
     typedef OFVector<OFVector<Uint32>> FramesForSegment;
 
+    // Lists of segments for each frame. Used for Label Maps where each frame can have multiple segments.
+    typedef OFVector<std::set<Uint32>> SegmentsForFrame;
+
     /// Implements comparision operator to be used for sorting of frame positions,
     /// making the sorting order depend on the coordinate given in the constructor
     struct ComparePositions
@@ -193,6 +196,11 @@ public:
      */
     OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
 
+    /** 
+     * TODO
+    */
+    OFCondition getSegmentsForFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
+
     /** Returns computed overlap matrix
      *  @param  matrix Resulting overlap matrix
      *  @return EC_Normal if successful, error otherwise
@@ -277,6 +285,16 @@ protected:
      */
     OFCondition checkFramesOverlap(const Uint32& f1, const Uint32& f2, OFBool& overlap);
 
+    /**
+     *  @param sf1 TODO
+     *  @param sf1 TODO
+     *  @param overlap Resulting overlap (overlaps if OFTrue, otherwise not)
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition checkFramesOverlapLabelMap(const SegNumAndFrameNum& sf1,
+                                           const SegNumAndFrameNum& sf2,
+                                           OFBool& overlap);
+
     /** Checks whether the given two frames overlap by using comparing their pixel data
      *  by bitwise "and". This is very efficient, however, only works and is called (right now),
      *  if row*cols % 8 = 0, so we can easily extract frames as binary bitsets without unpacking them.
@@ -339,6 +357,9 @@ private:
     /// Inner vector contains the physical frame numbers that represent the
     /// segment.
     FramesForSegment m_framesForSegment;
+
+    /// Stores which segments are present on each frame. 
+    SegmentsForFrame m_segmentsForFrame;
 
     /// Logical frames, ie. physical frames with the same position are
     /// grouped together to a logical frame. For every logical frame, we
