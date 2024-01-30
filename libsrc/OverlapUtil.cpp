@@ -121,11 +121,11 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             return EC_IllegalParameter;
         }
         Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
-         // use sets for performance and deduplication while adding frames to each set
-        OFVector<std::set<Uint32>> segmentFrameSet;
-        segmentFrameSet.resize(m_seg->getNumberOfSegments());
-        // Get Segmentation FG for each frame and remember the segment number for each frame
-        // in the vector m_segmentsForFrame
+        // use sets for performance and deduplication when adding frames to each segment index
+        OFVector<std::set<Uint32>> frameSetsForSegment;
+        frameSetsForSegment.resize(m_seg->getNumberOfSegments());
+        // Use the helper function getSegmentsForFrame() to pivot the data
+        // from segments on each frame, to the list of frames with contain each segment
         for (Uint32 f = 0; f < numFrames; f++)
         {
             OFCondition result;
@@ -137,7 +137,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                      itr != segments.end();
                      itr++)
                 {
-                    segmentFrameSet[(*itr) - 1].insert(f);
+                    frameSetsForSegment[(*itr) - 1].insert(f);
                 }
             }
             else
@@ -146,12 +146,12 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                 return result;
             }
         }
-        // copy the set back into the OFVector in m_framesForSegment
-        m_framesForSegment.resize(segmentFrameSet.size());
-        for (Uint32 s = 0; s < segmentFrameSet.size(); s++) {
-            m_framesForSegment[s].reserve(segmentFrameSet[s].size());
-            for (std::set<Uint32>::iterator itr = segmentFrameSet[s].begin();
-                 itr != segmentFrameSet[s].end();
+        // copy the sets back into the OFVectors in m_framesForSegment
+        m_framesForSegment.resize(frameSetsForSegment.size());
+        for (Uint32 s = 0; s < frameSetsForSegment.size(); s++) {
+            m_framesForSegment[s].reserve(frameSetsForSegment[s].size());
+            for (std::set<Uint32>::iterator itr = frameSetsForSegment[s].begin();
+                 itr != frameSetsForSegment[s].end();
                  itr++)
             {
                 m_framesForSegment[s].push_back(*itr);
@@ -352,7 +352,8 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
         {
             std::set<Uint32> segmentsInFrame;
             Uint32 frameNumber = m_logicalFramePositions[l][f];
-            if (getSegmentsForFrame(frameNumber, segmentsInFrame).good())
+            cond = getSegmentsForFrame(frameNumber, segmentsInFrame);
+            if (cond.good())
             {
                 for (std::set<Uint32>::iterator it = segmentsInFrame.begin();
                      it != segmentsInFrame.end();
@@ -364,8 +365,12 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
             else
             {
                 DCMSEG_ERROR("getSegmentsByPosition(): Cannot get segments for frame " << frameNumber);
-                return EC_IllegalCall;
+                break;
             }
+        }
+        if (cond.bad())
+        {
+            break;
         }
     }
     // print segments per logical frame  if debug log level is enabled
@@ -375,7 +380,7 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
         printSegmentsByPosition(ss);
         DCMSEG_DEBUG(ss.str());
     }
-    DCMSEG_DEBUG("groupFramesByPosition(): Grouping segments by position took " << tm.getDiff() << " s");
+    DCMSEG_DEBUG("getSegmentsByPosition(): Getting segments by position took " << tm.getDiff() << " s");
     return cond;
 }
 
@@ -648,14 +653,21 @@ OFCondition OverlapUtil::buildOverlapMatrix()
                     }
                     // Compare pixels of the frames referenced by each segments.
                     // If they overlap, mark as overlapping
+                    OFCondition cond;
                     OFBool overlap = OFFalse;
                     if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
                     {
-                        checkFramesOverlapLabelMap(*it, *it2, overlap);
+                        cond = checkFramesOverlapLabelMap(*it, *it2, overlap);
                     }
                     else
                     {
-                        checkFramesOverlap(it->m_frameNumber, it2->m_frameNumber, overlap);
+                        cond = checkFramesOverlap(it->m_frameNumber, it2->m_frameNumber, overlap);
+                    }
+                    if (cond.bad())
+                    {
+                        DCMSEG_ERROR("getOverlappingSegments(): Error checking overlap of frames "
+                                    << it->m_frameNumber << " and " << it2->m_frameNumber);
+                        return cond;
                     }
 
                     // Enter result into overlap matrix
