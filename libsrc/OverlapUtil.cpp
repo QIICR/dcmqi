@@ -121,8 +121,9 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             return EC_IllegalParameter;
         }
         Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
-        m_framesForSegment.clear();
-        m_framesForSegment.resize(m_seg->getNumberOfSegments());
+         // use sets for performance and deduplication while adding frames to each set
+        OFVector<std::set<Uint32>> segmentFrameSet;
+        segmentFrameSet.resize(m_seg->getNumberOfSegments());
         // Get Segmentation FG for each frame and remember the segment number for each frame
         // in the vector m_segmentsForFrame
         for (Uint32 f = 0; f < numFrames; f++)
@@ -132,14 +133,28 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             result = getSegmentsForFrame(f, segments);
             if (result.good())
             {
-                if(segments.find(segmentNumber) != segments.end()) {
-                    m_framesForSegment[segmentNumber - 1].push_back(f); // physical frame number for segment
+                for (std::set<Uint32>::iterator itr = segments.begin();
+                     itr != segments.end();
+                     itr++)
+                {
+                    segmentFrameSet[(*itr) - 1].insert(f);
                 }
             }
             else
             {
                 DCMSEG_ERROR("getFramesForSegment(): Cannot get segments for frame " << f);
                 return result;
+            }
+        }
+        // copy the set back into the OFVector in m_framesForSegment
+        m_framesForSegment.resize(segmentFrameSet.size());
+        for (Uint32 s = 0; s < segmentFrameSet.size(); s++) {
+            m_framesForSegment[s].reserve(segmentFrameSet[s].size());
+            for (std::set<Uint32>::iterator itr = segmentFrameSet[s].begin();
+                 itr != segmentFrameSet[s].end();
+                 itr++)
+            {
+                m_framesForSegment[s].push_back(*itr);
             }
         }
     }
@@ -182,7 +197,7 @@ OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, std::set<
             else
             {
                 Uint32 segment;
-                result = getSegmentForFrame(frameNumber, segment);
+                result = getSegmentForFrame(f, segment);
                 if (result.good())
                 {
                     m_segmentsForFrame[f].insert(segment);
