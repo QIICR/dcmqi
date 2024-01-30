@@ -93,7 +93,7 @@ public:
     /// and index 0 is unused. I.e. index i is segment number, value is vector of physical frame numbers.
     typedef OFVector<OFVector<Uint32>> FramesForSegment;
 
-    // Lists of segments for each frame. Used for Label Maps where each frame can have multiple segments.
+    // Set of segments present on each frame.
     typedef OFVector<std::set<Uint32>> SegmentsForFrame;
 
     /// Implements comparision operator to be used for sorting of frame positions,
@@ -196,8 +196,7 @@ public:
      */
     OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
 
-    /** Get the all the segments, by segment number (1..n), present on
-     * a specified frame
+    /** Get the all the segments present on a specified frame
      *  @param frameNumber The frame number for which to get segments
      *  @param segments Resulting set of segment numbers (1..n)
      *  @return EC_Normal if successful, error otherwise
@@ -245,17 +244,17 @@ public:
 
 protected:
 
-    /** Get the list of segment numbers (1..n) for segments within a labelmap
-     *  segmentation frame. Does not cache the result. To be used only a label map frame.
+    /** Get the list of segments within a label map segmentation frame.
+     *  Does not cache the result. To be used exclusively on a label map frame.
      *  @param frameNumber The frame number for which to get labels
-     *  @param segments The resulting set of segments on the frame
+     *  @param segments The resulting set of segments on the frame (1..n)
      *  @return EC_Normal if successful, error otherwise
     */
     OFCondition getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
 
-    /** Get the segment number (1..n) for a binary or fractional segmentation a frame.
-     *  Does not cache the result. To be used exclusively a binary or fractional segmentation
-     *  frame.
+    /** Get the segment number (1..n) for a binary or fractional segmentation frame.
+     *  Does not cache the result. To be used exclusively on a binary or fractional
+     *  segmentation frame.
      *  @param frameNumber The frame number for which to get labels
      *  @param segment The resulting segments on the frame
      *  @return EC_Normal if successful, error otherwise
@@ -304,8 +303,8 @@ protected:
      */
     OFCondition checkFramesOverlap(const Uint32& f1, const Uint32& f2, OFBool& overlap);
 
-    /** Checks, on labelmap frames, if a segment as present of a first frame
-     *  overlaps with another segment as present a second frame
+    /** Checks to see if a segment on a first frame overlaps with a different segment
+     *  on a second frame
      *  @param sf1 Segment number on frame number to check
      *  @param sf2 Segment number on frame number to check
      *  @param overlap Resulting overlap (overlaps if OFTrue, otherwise not)
@@ -378,7 +377,7 @@ private:
     /// segment.
     FramesForSegment m_framesForSegment;
 
-    /// Stores which segments are present on each frame. 
+    /// Stores which segments are present on each frame.
     SegmentsForFrame m_segmentsForFrame;
 
     /// Logical frames, ie. physical frames with the same position are

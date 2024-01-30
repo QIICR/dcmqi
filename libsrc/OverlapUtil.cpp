@@ -187,7 +187,7 @@ OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, std::set<
         for (Uint32 f = 0; f < numFrames; f++) {
             OFCondition result;
             if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
-            { 
+            {
                 result = getSegmentsForLabelMapFrame(f, m_segmentsForFrame[f]);
                 if (result.bad())
                 {
