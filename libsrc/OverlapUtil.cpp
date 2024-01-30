@@ -139,7 +139,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             else
             {
                 DCMSEG_ERROR("getFramesForSegment(): Cannot get segments for frame " << f);
-                return EC_IllegalCall;
+                return result;
             }
         }
     }
@@ -159,73 +159,33 @@ OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, std::set<
         DCMSEG_ERROR("getSegmentsForFrame(): Frame number " << frameNumber << " is out of range");
         return EC_IllegalParameter;
     }
+    size_t tempNum = m_seg->getNumberOfFrames();
+    if (tempNum > 4294967295)
+    {
+        DCMSEG_ERROR("getSegmentsForFrame(): Number of frames " << tempNum << " exceeds maximum number of possible frames (2^32-1)");
+        return EC_IllegalParameter;
+    }
     if (m_segmentsForFrame.empty())
     {
-        FGInterface& fg  = m_seg->getFunctionalGroups();
-        size_t tempNum = m_seg->getNumberOfFrames();
-        if (tempNum > 4294967295)
-        {
-            DCMSEG_ERROR("getSegmentsForFrame(): Number of frames " << tempNum << " exceeds maximum number of possible frames (2^32-1)");
-            return EC_IllegalParameter;
-        }
         Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
-        m_segmentsForFrame.clear();
         m_segmentsForFrame.resize(numFrames);
         for (Uint32 f = 0; f < numFrames; f++) {
-            m_segmentsForFrame.push_back(std::set<Uint32>());
+            OFCondition result;
             if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
             { 
-                const DcmIODTypes::Frame* f_data = m_seg->getFrame(f);
-                Uint16 rows, cols;
-                rows = cols = 0;
-                DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
-                ip->getImagePixel().getRows(rows);
-                ip->getImagePixel().getColumns(cols);
-                if (!f_data)
+                result = getSegmentsForLabelMapFrame(f, m_segmentsForFrame[f]);
+                if (result.bad())
                 {
-                    DCMSEG_ERROR("getSegmentsForFrame(): Cannot access label map frame " << f);
-                    return EC_IllegalCall;
+                    return result;
                 }
-
-                for (size_t n = 0; n < f_data->length; ++n)
-                {
-                    Uint8 segmentNumber = f_data->pixData[n];
-                    if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
-                    {
-                        DCMSEG_ERROR("getSegmentsForFrame(): Segment number " << segmentNumber << " is out of range");
-                        return EC_IllegalParameter;
-                    }
-                    m_segmentsForFrame[f].insert(segmentNumber);
-                }
-                return EC_Normal;
             }
             else
             {
-                FGBase* group         = NULL;
-                FGSegmentation* segFG = NULL;
-                group                 = fg.get(f, DcmFGTypes::EFG_SEGMENTATION);
-                segFG                 = OFstatic_cast(FGSegmentation*, group);
-                if (segFG)
+                Uint32 segment;
+                result = getSegmentForFrame(frameNumber, segment);
+                if (result.good())
                 {
-                    Uint16 segNum    = 0;
-                    OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
-                    if (cond.good() && segNum > 0)
-                    {
-                        m_segmentsForFrame[f].insert(segNum); // physical frame number for segment
-                    }
-                    else if (segNum == 0)
-                    {
-                        DCMSEG_WARN("getSegmentsForFrame(): Referenced Segment Number is 0 (not permitted) for frame #"
-                                    << f << ", ignoring");
-                        return EC_InvalidValue;
-                    }
-                    else
-                    {
-                        DCMSEG_ERROR(
-                            "getSegmentsForFrame(): Referenced Segment Number not found (not permitted) for frame #"
-                            << f << ", cannot add segment");
-                        return EC_TagNotFound;
-                    }
+                    m_segmentsForFrame[f].insert(segment);
                 }
             }
         }
@@ -561,6 +521,67 @@ void OverlapUtil::printNonOverlappingSegments(OFStringStream& ss)
         ss << OFendl;
     }
 }
+
+OFCondition OverlapUtil::getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments)
+{
+    const DcmIODTypes::Frame* f_data = m_seg->getFrame(frameNumber);
+    Uint16 rows, cols;
+    rows = cols = 0;
+    DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
+    ip->getImagePixel().getRows(rows);
+    ip->getImagePixel().getColumns(cols);
+    if (!f_data)
+    {
+        DCMSEG_ERROR("getSegmentsForLabelMapFrame(): Cannot access label map frame " << frameNumber);
+        return EC_IllegalCall;
+    }
+
+    segments.clear();
+    for (size_t n = 0; n < f_data->length; ++n)
+    {
+        Uint8 segmentNumber = f_data->pixData[n];
+        if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
+        {
+            DCMSEG_ERROR("getSegmentsForFrame(): Segment number " << segmentNumber << " is out of range");
+            return EC_IllegalParameter;
+        }
+        segments.insert(segmentNumber);
+    }
+    return EC_Normal;
+}
+
+OFCondition OverlapUtil::getSegmentForFrame(const Uint32 frameNumber, Uint32& segment)
+{
+    FGBase* group         = NULL;
+    FGSegmentation* segFG = NULL;
+    FGInterface& fg       = m_seg->getFunctionalGroups();
+    group                 = fg.get(frameNumber, DcmFGTypes::EFG_SEGMENTATION);
+    segFG                 = OFstatic_cast(FGSegmentation*, group);
+    if (segFG)
+    {
+        Uint16 segNum    = 0;
+        OFCondition cond = segFG->getReferencedSegmentNumber(segNum);
+        if (cond.good() && segNum > 0)
+        {
+            segment = segNum;
+        }
+        else if (segNum == 0)
+        {
+            DCMSEG_WARN("getSegmentForFrame(): Referenced Segment Number is 0 (not permitted) for frame #"
+                        << frameNumber << ", ignoring");
+            return EC_InvalidValue;
+        }
+        else
+        {
+            DCMSEG_ERROR(
+                "getSegmentForFrame(): Referenced Segment Number not found (not permitted) for frame #"
+                << frameNumber << ", cannot add segment");
+            return EC_TagNotFound;
+        }
+    }
+    return EC_Normal;
+}
+
 
 OFCondition OverlapUtil::buildOverlapMatrix()
 {

@@ -196,8 +196,11 @@ public:
      */
     OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
 
-    /** 
-     * TODO
+    /** Get the all the segments, by segment number (1..n), present on
+     * a specified frame
+     *  @param frameNumber The frame number for which to get segments
+     *  @param segments Resulting set of segment numbers (1..n)
+     *  @return EC_Normal if successful, error otherwise
     */
     OFCondition getSegmentsForFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
 
@@ -242,6 +245,22 @@ public:
 
 protected:
 
+    /** Get the list of segment numbers (1..n) for segments within a labelmap
+     *  segmentation frame. Does not cache the result. To be used only a label map frame.
+     *  @param frameNumber The frame number for which to get labels
+     *  @param segments The resulting set of segments on the frame
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
+
+    /** Get the segment number (1..n) for a binary or fractional segmentation a frame.
+     *  Does not cache the result. To be used exclusively a binary or fractional segmentation
+     *  frame.
+     *  @param frameNumber The frame number for which to get labels
+     *  @param segment The resulting segments on the frame
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition getSegmentForFrame(const Uint32 frameNumber, Uint32& segment);
 
     /** Group physical frame positions into logical positions. This is done by sorting
      *  frames after *that* position coordinate that in its mean position difference is
@@ -285,9 +304,10 @@ protected:
      */
     OFCondition checkFramesOverlap(const Uint32& f1, const Uint32& f2, OFBool& overlap);
 
-    /**
-     *  @param sf1 TODO
-     *  @param sf1 TODO
+    /** Checks, on labelmap frames, if a segment as present of a first frame
+     *  overlaps with another segment as present a second frame
+     *  @param sf1 Segment number on frame number to check
+     *  @param sf2 Segment number on frame number to check
      *  @param overlap Resulting overlap (overlaps if OFTrue, otherwise not)
      *  @return EC_Normal if successful, error otherwise
     */
