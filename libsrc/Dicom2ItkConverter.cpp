@@ -212,6 +212,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                     /* WIP */
                 }
 
+                bool labelMapSegmentation = m_segDoc->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3; // LABELMAP;
                 for (unsigned row = 0; row < m_imageSize[1]; row++)
                 {
                     for (unsigned col = 0; col < m_imageSize[0]; col++)
@@ -220,7 +221,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                         unsigned bitCnt = row * m_imageSize[0] + col;
                         pixel           = unpackedFrame->pixData[bitCnt];
                         ShortImageType::IndexType index;
-                        if (pixel != 0)
+                        if (labelMapSegmentation ? pixel == *segNum : pixel != 0)
                         {
                             index[0] = col;
                             index[1] = row;
