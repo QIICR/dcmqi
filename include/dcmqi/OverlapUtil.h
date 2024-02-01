@@ -330,8 +330,8 @@ protected:
      */
     OFCondition checkFramesOverlapBinary(const Uint32& f1,
                                          const Uint32& f2,
-                                         const DcmIODTypes::Frame* f1_data,
-                                         const DcmIODTypes::Frame* f2_data,
+                                         const DcmIODTypes::Frame<Uint8>* f1_data,
+                                         const DcmIODTypes::Frame<Uint8>* f2_data,
                                          const Uint16& rows,
                                          const Uint16 cols,
                                          OFBool& overlap);
@@ -350,8 +350,8 @@ protected:
      */
     OFCondition checkFramesOverlapUnpacked(const Uint32& f1,
                                            const Uint32& f2,
-                                           const DcmIODTypes::Frame* f1_data,
-                                           const DcmIODTypes::Frame* f2_data,
+                                           const DcmIODTypes::Frame<Uint8>* f1_data,
+                                           const DcmIODTypes::Frame<Uint8>* f2_data,
                                            const Uint16& rows,
                                            const Uint16 cols,
                                            OFBool& overlap);

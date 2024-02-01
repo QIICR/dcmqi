@@ -526,27 +526,23 @@ void OverlapUtil::printNonOverlappingSegments(OFStringStream& ss)
 
 OFCondition OverlapUtil::getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments)
 {
-    const DcmIODTypes::Frame* f_data = m_seg->getFrame(frameNumber);
+    const DcmIODTypes::FrameBase* frame = m_seg->getFrame(frameNumber);
     Uint16 rows, cols;
     rows = cols = 0;
     DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
     ip->getImagePixel().getRows(rows);
     ip->getImagePixel().getColumns(cols);
-    if (!f_data)
+    if (frame)
     {
         DCMSEG_ERROR("getSegmentsForLabelMapFrame(): Cannot access label map frame " << frameNumber);
         return EC_IllegalCall;
     }
 
     segments.clear();
-    for (size_t n = 0; n < f_data->length; ++n)
+    for (size_t n = 0; n < frame->length(); ++n)
     {
-        Uint8 segmentNumber = f_data->pixData[n];
-        if (segmentNumber > m_seg->getNumberOfSegments())
-        {
-            DCMSEG_ERROR("getSegmentsForFrame(): Segment number " << segmentNumber << " is out of range");
-            return EC_IllegalParameter;
-        }
+        Uint16 segmentNumber;
+        frame->getUint16AtIndex(segmentNumber, n);
         segments.insert(segmentNumber);
     }
     return EC_Normal;
@@ -587,13 +583,18 @@ OFCondition OverlapUtil::getSegmentForFrame(const Uint32 frameNumber, Uint32& se
 
 OFCondition OverlapUtil::buildOverlapMatrix()
 {
-    // TODO This corresponds to the list of segments in a binary or fractional
-    // segmentation IOD, we still need to get the actual list if this is a labelmap
-    const Uint32 numSegments = m_seg->getNumberOfSegments();
-    std::set<Uint32> segmentNumbers;
-    for (Uint32 i = 1; i <= numSegments; ++i)
+    if (!m_seg)
     {
-        segmentNumbers.insert(i);
+        DCMSEG_ERROR("getFramesForSegment(): No segmentation object set");
+        return EC_IllegalCall;
+    }
+
+    std::set<Uint32> segmentNumbers;
+    OFVector<DcmSegment*> segments;
+    m_seg->getSegments(segments);
+    for (int i = 0; i < segments.size(); i++)
+    {
+        segmentNumbers.insert(segments[i]->getSegmentNumber());
     }
 
     // Make 2 dimensional matrix of Sint8 type for (segment numbers) X (segment numbers).
@@ -718,8 +719,8 @@ OFCondition OverlapUtil::checkFramesOverlapLabelMap(const SegNumAndFrameNum& sf1
     const Uint32& f1 = sf1.m_frameNumber;
     const Uint32& f2 = sf2.m_frameNumber;
     OFCondition result;
-    const DcmIODTypes::Frame* f1_data = m_seg->getFrame(sf1.m_frameNumber);
-    const DcmIODTypes::Frame* f2_data = m_seg->getFrame(sf2.m_frameNumber);
+    const DcmIODTypes::FrameBase* f1_data = m_seg->getFrame(sf1.m_frameNumber);
+    const DcmIODTypes::FrameBase* f2_data = m_seg->getFrame(sf2.m_frameNumber);
     Uint16 rows, cols;
     rows = cols = 0;
     DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
@@ -734,16 +735,19 @@ OFCondition OverlapUtil::checkFramesOverlapLabelMap(const SegNumAndFrameNum& sf1
         DCMSEG_ERROR("checkFramesOverlapLabelMap(): Cannot access label map frames " << f1 << " and " << f2 << " for comparison");
         return EC_IllegalCall;
     }
-    if (f1_data->length != f2_data->length)
+    if (f1_data->length() != f2_data->length())
     {
         DCMSEG_ERROR("checkFramesOverlapLabelMap(): Frames " << f1 << " and " << f2
                                                      << " have different length, cannot compare");
         return EC_IllegalCall;
     }
 
-    for (size_t n = 0; n < f1_data->length; ++n)
+    for (size_t n = 0; n < f1_data->length(); ++n)
     {
-        if (f1_data->pixData[n] == sf1.m_segmentNumber && f2_data->pixData[n] == sf2.m_segmentNumber)
+        Uint16 f1Pixel, f2Pixel;
+        f1_data->getUint16AtIndex(f1Pixel, n);
+        f2_data->getUint16AtIndex(f2Pixel, n);
+        if (f1Pixel == sf1.m_segmentNumber && f2Pixel == sf2.m_segmentNumber)
         {
             DCMSEG_DEBUG("checkFramesOverlapLabelMap(): Frame " << f1 << ", segment " << sf1.m_segmentNumber << ", and frame "
                                             << f2 << ", segment " << sf2.m_segmentNumber << ", do overlap at index " << n);
@@ -764,8 +768,8 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
     }
     overlap = OFFalse;
     OFCondition result;
-    const DcmIODTypes::Frame* f1_data = m_seg->getFrame(f1);
-    const DcmIODTypes::Frame* f2_data = m_seg->getFrame(f2);
+    const DcmIODTypes::FrameBase* f1_data = m_seg->getFrame(f1);
+    const DcmIODTypes::FrameBase* f2_data = m_seg->getFrame(f2);
     Uint16 rows, cols;
     rows = cols = 0;
     DcmIODImage<IODImagePixelModule<Uint8>>* ip = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_seg);
@@ -774,12 +778,14 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
     if (rows * cols % 8 != 0)
     {
         // We must compare pixel by pixel of the unpacked frames (for now)
-        result = checkFramesOverlapUnpacked(f1, f2, f1_data, f2_data, rows, cols, overlap);
+        result = checkFramesOverlapUnpacked(f1, f2, dynamic_cast<DcmIODTypes::Frame<Uint8>*>(f1_data),
+                        dynamic_cast<DcmIODTypes::Frame<Uint8>*>(f2_data), rows, cols, overlap);
     }
     else
     {
         // We can compare byte by byte using bitwise AND (if both have a 1 at the same position, they overlap)
-        result = checkFramesOverlapBinary(f1, f2, f1_data, f2_data, rows, cols, overlap);
+        result = checkFramesOverlapBinary(f1, f2, dynamic_cast<DcmIODTypes::Frame<Uint8>*>(f1_data),
+                        dynamic_cast<DcmIODTypes::Frame<Uint8>*>(f2_data), rows, cols, overlap);
     }
     if (result.good() && !overlap)
     {
@@ -790,8 +796,8 @@ OFCondition OverlapUtil::checkFramesOverlap(const Uint32& f1, const Uint32& f2, 
 
 OFCondition OverlapUtil::checkFramesOverlapBinary(const Uint32& f1,
                                                   const Uint32& f2,
-                                                  const DcmIODTypes::Frame* f1_data,
-                                                  const DcmIODTypes::Frame* f2_data,
+                                                  const DcmIODTypes::Frame<Uint8>* f1_data,
+                                                  const DcmIODTypes::Frame<Uint8>* f2_data,
                                                   const Uint16& rows,
                                                   const Uint16 cols,
                                                   OFBool& overlap)
@@ -802,16 +808,18 @@ OFCondition OverlapUtil::checkFramesOverlapBinary(const Uint32& f1,
         DCMSEG_ERROR("checkFramesOverlap(): Cannot access binary frames " << f1 << " and " << f2 << " for comparison");
         return EC_IllegalCall;
     }
-    if (f1_data->length != f2_data->length)
+    if (f1_data->length() != f2_data->length())
     {
         DCMSEG_ERROR("checkFramesOverlap(): Frames " << f1 << " and " << f2
                                                      << " have different length, cannot compare");
         return EC_IllegalCall;
     }
     // Compare byte (8 pixels at once) using bitwise AND (if both have a 1 at the same position, they overlap)
-    for (size_t n = 0; n < f1_data->length; ++n)
+    Uint8 *pixelData1 = f1_data->getPixelDataTyped();
+    Uint8 *pixelData2 = f2_data->getPixelDataTyped();
+    for (size_t n = 0; n < f1_data->length(); ++n)
     {
-        if (f1_data->pixData[n] & f2_data->pixData[n])
+        if (pixelData1[n] & pixelData2[n])
         {
             DCMSEG_DEBUG("checkFramesOverlap(): Frames " << f1 << " and " << f2 << " do overlap, pixel value "
                                                          << OFstatic_cast(Uint16, f1_data->pixData[n]) << " at index "
@@ -825,22 +833,22 @@ OFCondition OverlapUtil::checkFramesOverlapBinary(const Uint32& f1,
 
 OFCondition OverlapUtil::checkFramesOverlapUnpacked(const Uint32& f1,
                                                     const Uint32& f2,
-                                                    const DcmIODTypes::Frame* f1_data,
-                                                    const DcmIODTypes::Frame* f2_data,
+                                                    const DcmIODTypes::Frame<Uint8>* f1_data,
+                                                    const DcmIODTypes::Frame<Uint8>* f2_data,
                                                     const Uint16& rows,
                                                     const Uint16 cols,
                                                     OFBool& overlap)
 {
     DCMSEG_DEBUG("checkFramesOverlap(): Comparing frames " << f1 << " and " << f2
                                                            << " for overlap (slow unpacked mode)");
-    OFunique_ptr<DcmIODTypes::Frame> f1_unpacked(DcmSegUtils::unpackBinaryFrame(f1_data, rows, cols));
-    OFunique_ptr<DcmIODTypes::Frame> f2_unpacked(DcmSegUtils::unpackBinaryFrame(f2_data, rows, cols));
+    OFunique_ptr<DcmIODTypes::Frame<Uint8>> f1_unpacked(DcmSegUtils::unpackBinaryFrame(f1_data, rows, cols));
+    OFunique_ptr<DcmIODTypes::Frame<Uint8>> f2_unpacked(DcmSegUtils::unpackBinaryFrame(f2_data, rows, cols));
     if (!f1_unpacked || !f2_unpacked)
     {
         DCMSEG_ERROR("checkFramesOverlap(): Cannot unpack frames " << f1 << " and " << f2 << " for comparison");
         return EC_IllegalCall;
     }
-    if (f1_unpacked->length != f2_unpacked->length)
+    if (f1_unpacked->length() != f2_unpacked->length())
     {
         DCMSEG_ERROR("checkFramesOverlap(): Frames " << f1 << " and " << f2
                                                      << " have different length, cannot compare");
@@ -848,9 +856,11 @@ OFCondition OverlapUtil::checkFramesOverlapUnpacked(const Uint32& f1,
     }
     // Compare pixels of both frames and check whether at least one has the same value
     DCMSEG_DEBUG("checkFramesOverlap(): Comparing frames " << f1 << " and " << f2 << " for overlap");
-    for (size_t n = 0; n < f1_unpacked->length; ++n)
+    Uint8 *pixelDataUnpacked1 = f1_unpacked->getPixelDataTyped();
+    Uint8 *pixelDataUnpacked2 = f2_unpacked->getPixelDataTyped();
+    for (size_t n = 0; n < f1_unpacked->length(); ++n)
     {
-        if (f1_unpacked->pixData[n] != 0 && (f1_unpacked->pixData[n] == f2_unpacked->pixData[n]))
+        if (pixelDataUnpacked1[n] != 0 && (pixelDataUnpacked1[n] == pixelDataUnpacked2[n]))
         {
             DCMSEG_DEBUG("checkFramesOverlap(): Frames " << f1 << " and " << f2 << " do overlap, pixel value "
                                                          << OFstatic_cast(Uint16, f1_unpacked->pixData[n])

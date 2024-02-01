@@ -151,11 +151,11 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                 }
                 // Handling differs depending on whether the segmentation is binary or fractional
                 // (we have to unpack binary frames before copying them into the ITK image)
-                const DcmIODTypes::Frame* rawFrame      = m_segDoc->getFrame(*it);
-                const DcmIODTypes::Frame* unpackedFrame = NULL;
+                const DcmIODTypes::FrameBase* rawFrame      = m_segDoc->getFrame(*it);
+                const DcmIODTypes::FrameBase* unpackedFrame = NULL;
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
-                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(rawFrame,
+                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(dynamic_cast<DcmIODTypes::Frame<Uint8>*>(rawFrame),
                                                                    m_imageSize[1],  // Rows
                                                                    m_imageSize[0]); // Cols
                 }
@@ -221,7 +221,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                     {
                         ShortImageType::PixelType pixel;
                         unsigned bitCnt = row * m_imageSize[0] + col;
-                        pixel           = unpackedFrame->pixData[bitCnt];
+                        unpackedFrame->getUint16AtIndex(pixel, bitCnt);
                         ShortImageType::IndexType index;
                         if (labelMapSegmentation ? pixel == *segNum : pixel != 0)
                         {
