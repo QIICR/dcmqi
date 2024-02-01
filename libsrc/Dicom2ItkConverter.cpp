@@ -124,24 +124,26 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
         {
             // Iterate over frames for this segment, and copy the data into the ITK image.
             // Afterwards, the ITK image will have the complete data belonging to that segment
-            OverlapUtil::FramesForSegment::value_type framesForSegment;
+            OverlapUtil::FramesForSegment::mapped_type framesForSegment;
             m_overlapUtil.getFramesForSegment(*segNum, framesForSegment);
-            for (size_t frameIndex = 0; frameIndex < framesForSegment.size(); frameIndex++)
+            for (std::set<Uint32>::iterator it = framesForSegment.begin();
+                 it != framesForSegment.end();
+                 it++)
             {
                 // Copy the data from the frame into the ITK image
                 ShortImageType::PointType frameOriginPoint;
                 ShortImageType::IndexType frameOriginIndex;
-                result = getITKImageOrigin(framesForSegment[frameIndex], frameOriginPoint);
+                result = getITKImageOrigin(*it, frameOriginPoint);
                 if (result.bad())
                 {
-                    cerr << "ERROR: Failed to get origin for frame " << framesForSegment[frameIndex] << " of segment "
+                    cerr << "ERROR: Failed to get origin for frame " << *it << " of segment "
                          << *segNum << endl;
                     m_groupIterator = m_segmentGroups.end();
                     return nullptr;
                 }
                 if (!itkImage->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex))
                 {
-                    cerr << "ERROR: Frame " << framesForSegment[frameIndex] << " origin " << frameOriginPoint
+                    cerr << "ERROR: Frame " << *it << " origin " << frameOriginPoint
                          << " is outside image geometry!" << frameOriginIndex << endl;
                     cerr << "Image size: " << itkImage->GetBufferedRegion().GetSize() << endl;
                     m_groupIterator = m_segmentGroups.end();
@@ -149,7 +151,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                 }
                 // Handling differs depending on whether the segmentation is binary or fractional
                 // (we have to unpack binary frames before copying them into the ITK image)
-                const DcmIODTypes::Frame* rawFrame      = m_segDoc->getFrame(framesForSegment[frameIndex]);
+                const DcmIODTypes::Frame* rawFrame      = m_segDoc->getFrame(*it);
                 const DcmIODTypes::Frame* unpackedFrame = NULL;
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
@@ -372,7 +374,6 @@ OFCondition Dicom2ItkConverter::getNonOverlappingSegmentGroups(const bool mergeS
         cout << "Will not merge segments: Splitting segments into " << segmentGroups.size() << " groups" << endl;
     }
     return result;
-    ;
 }
 
 // -------------------------------------------------------------------------------------

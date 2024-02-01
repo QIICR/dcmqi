@@ -52,7 +52,7 @@ OverlapUtil::OverlapUtil()
     , m_segmentsForFrame()
     , m_logicalFramePositions()
     , m_segmentsByPosition()
-    , m_segmentOverlapMatrix(0)
+    , m_segmentOverlapMatrix()
     , m_nonOverlappingSegments()
     , m_seg()
 {
@@ -99,17 +99,12 @@ OFCondition OverlapUtil::getFramesByPosition(DistinctFramePositions& result)
     return cond;
 }
 
-OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames)
+OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, std::set<Uint32>& frames)
 {
     if (!m_seg)
     {
         DCMSEG_ERROR("getFramesForSegment(): No segmentation object set");
         return EC_IllegalCall;
-    }
-    if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
-    {
-        DCMSEG_ERROR("getFramesForSegment(): Segment number " << segmentNumber << " is out of range");
-        return EC_IllegalParameter;
     }
     if (m_framesForSegment.empty())
     {
@@ -121,9 +116,6 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
             return EC_IllegalParameter;
         }
         Uint32 numFrames = static_cast<Uint32>(m_seg->getNumberOfFrames());
-        // use sets for performance and deduplication when adding frames to each segment index
-        OFVector<std::set<Uint32>> frameSetsForSegment;
-        frameSetsForSegment.resize(m_seg->getNumberOfSegments());
         // Use the helper function getSegmentsForFrame() to pivot the data
         // from segments on each frame, to the list of frames with contain each segment
         for (Uint32 f = 0; f < numFrames; f++)
@@ -137,7 +129,7 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                      itr != segments.end();
                      itr++)
                 {
-                    frameSetsForSegment[(*itr) - 1].insert(f);
+                    m_framesForSegment[*itr].insert(f);
                 }
             }
             else
@@ -146,19 +138,8 @@ OFCondition OverlapUtil::getFramesForSegment(const Uint32 segmentNumber, OFVecto
                 return result;
             }
         }
-        // copy the sets back into the OFVectors in m_framesForSegment
-        m_framesForSegment.resize(frameSetsForSegment.size());
-        for (Uint32 s = 0; s < frameSetsForSegment.size(); s++) {
-            m_framesForSegment[s].reserve(frameSetsForSegment[s].size());
-            for (std::set<Uint32>::iterator itr = frameSetsForSegment[s].begin();
-                 itr != frameSetsForSegment[s].end();
-                 itr++)
-            {
-                m_framesForSegment[s].push_back(*itr);
-            }
-        }
     }
-    frames = m_framesForSegment[segmentNumber - 1];
+    frames = m_framesForSegment[segmentNumber];
     return EC_Normal;
 }
 
@@ -337,7 +318,6 @@ OFCondition OverlapUtil::getSegmentsByPosition(SegmentsByPosition& result)
     {
         return cond;
     }
-    size_t numSegments = m_seg->getNumberOfSegments();
     if (m_logicalFramePositions.empty())
     {
         cond = getFramesByPosition(m_logicalFramePositions);
@@ -438,19 +418,21 @@ OFCondition OverlapUtil::getNonOverlappingSegments(SegmentGroups& segmentGroups)
         // grouped segments. If not, add them to the same group. If yes, create a new group
         // and add them there.
         m_nonOverlappingSegments.push_back(OFVector<Uint32>());
-        for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
+        for (OverlapMatrix::iterator matrixItr = m_segmentOverlapMatrix.begin();
+             matrixItr != m_segmentOverlapMatrix.end();
+             matrixItr++)
         {
             // Loop over all groups and check whether the current segment overlaps with any of them
             OFBool overlaps = OFFalse;
             for (size_t j = 0; j < m_nonOverlappingSegments.size(); ++j)
             {
                 // Loop over all segments in the current group
-                for (OFVector<Uint32>::iterator it = m_nonOverlappingSegments[j].begin();
+                for (SegmentGroups::value_type::iterator it = m_nonOverlappingSegments[j].begin();
                      it != m_nonOverlappingSegments[j].end();
                      ++it)
                 {
                     // Check if the current segment overlaps with the segment in the current group
-                    if (m_segmentOverlapMatrix[i][(*it) - 1] == 1)
+                    if (m_segmentOverlapMatrix[matrixItr->first][*it] == 1)
                     {
                         overlaps = OFTrue;
                         break;
@@ -459,7 +441,7 @@ OFCondition OverlapUtil::getNonOverlappingSegments(SegmentGroups& segmentGroups)
                 if (!overlaps)
                 {
                     // Add segment to current group
-                    m_nonOverlappingSegments[j].push_back(i + 1);
+                    m_nonOverlappingSegments[j].push_back(matrixItr->first);
                     break;
                 }
             }
@@ -467,7 +449,7 @@ OFCondition OverlapUtil::getNonOverlappingSegments(SegmentGroups& segmentGroups)
             {
                 // Create new group and add segment to it
                 m_nonOverlappingSegments.push_back(OFVector<Uint32>());
-                m_nonOverlappingSegments.back().push_back(i + 1);
+                m_nonOverlappingSegments.back().push_back(matrixItr->first);
             }
         }
     }
@@ -495,7 +477,7 @@ void OverlapUtil::printSegmentsByPosition(OFStringStream& ss)
     for (size_t i = 0; i < m_segmentsByPosition.size(); ++i)
     {
         OFStringStream tempSS;
-        for (std::set<SegNumAndFrameNum>::iterator it = m_segmentsByPosition[i].begin();
+        for (SegmentsByPosition::value_type::iterator it = m_segmentsByPosition[i].begin();
              it != m_segmentsByPosition[i].end();
              ++it)
         {
@@ -530,7 +512,7 @@ void OverlapUtil::printNonOverlappingSegments(OFStringStream& ss)
     for (size_t i = 0; i < m_nonOverlappingSegments.size(); ++i)
     {
         ss << "Group #" << i << ": ";
-        for (OFVector<Uint32>::iterator it = m_nonOverlappingSegments[i].begin();
+        for (SegmentGroups::value_type::iterator it = m_nonOverlappingSegments[i].begin();
              it != m_nonOverlappingSegments[i].end();
              ++it)
         {
@@ -560,7 +542,7 @@ OFCondition OverlapUtil::getSegmentsForLabelMapFrame(const Uint32 frameNumber, s
     for (size_t n = 0; n < f_data->length; ++n)
     {
         Uint8 segmentNumber = f_data->pixData[n];
-        if ((segmentNumber == 0) || (segmentNumber > m_seg->getNumberOfSegments()))
+        if (segmentNumber > m_seg->getNumberOfSegments())
         {
             DCMSEG_ERROR("getSegmentsForFrame(): Segment number " << segmentNumber << " is out of range");
             return EC_IllegalParameter;
@@ -605,19 +587,37 @@ OFCondition OverlapUtil::getSegmentForFrame(const Uint32 frameNumber, Uint32& se
 
 OFCondition OverlapUtil::buildOverlapMatrix()
 {
-    // Make 2 dimensional array matrix of Sint8 type for (segment numbers) X (segment numbers).
+    // TODO This corresponds to the list of segments in a binary or fractional
+    // segmentation IOD, we still need to get the actual list if this is a labelmap
+    const Uint32 numSegments = m_seg->getNumberOfSegments();
+    std::set<Uint32> segmentNumbers;
+    for (Uint32 i = 1; i <= numSegments; ++i)
+    {
+        segmentNumbers.insert(i);
+    }
+
+    // Make 2 dimensional matrix of Sint8 type for (segment numbers) X (segment numbers).
     // Initialize with -1 (not checked yet)
-    m_segmentOverlapMatrix.clear();
-    m_segmentOverlapMatrix.resize(m_seg->getNumberOfSegments());
-    for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
-    {
-        m_segmentOverlapMatrix[i].resize(m_seg->getNumberOfSegments(), -1);
-    }
     // Diagonal is always 0 (segment does not interfere/overlap with itself)
-    for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
+    for (std::set<Uint32>::iterator it1 = segmentNumbers.begin();
+         it1 != segmentNumbers.end();
+         it1++)
     {
-        m_segmentOverlapMatrix[i][i] = 0;
+        for (std::set<Uint32>::iterator it2 = segmentNumbers.begin();
+             it2 != segmentNumbers.end();
+             it2++)
+        {
+            if (*it1 == *it2)
+            {
+                m_segmentOverlapMatrix[*it1][*it2] = 0;
+            }
+            else
+            {
+                m_segmentOverlapMatrix[*it1][*it2] = -1;
+            }
+        }
     }
+
     // Go through all logical frame positions, and compare all segments at each position
     size_t index1, index2;
     index1 = index2 = 0;
@@ -625,12 +625,12 @@ OFCondition OverlapUtil::buildOverlapMatrix()
     {
         DCMSEG_DEBUG("getOverlappingSegments(): Comparing segments at logical frame position " << i);
         // Compare all segments at this position
-        for (std::set<SegNumAndFrameNum>::iterator it = m_segmentsByPosition[i].begin();
+        for (SegmentsByPosition::value_type::iterator it = m_segmentsByPosition[i].begin();
              it != m_segmentsByPosition[i].end();
              ++it)
         {
             index1++;
-            for (std::set<SegNumAndFrameNum>::iterator it2 = m_segmentsByPosition[i].begin();
+            for (SegmentsByPosition::value_type::iterator it2 = m_segmentsByPosition[i].begin();
                  it2 != m_segmentsByPosition[i].end();
                  ++it2)
             {
@@ -643,7 +643,7 @@ OFCondition OverlapUtil::buildOverlapMatrix()
                 {
                     // Check if we already have found an overlap on another logical frame, and if so, skip
                     Sint8 existing_result
-                        = m_segmentOverlapMatrix[(*it).m_segmentNumber - 1][(*it2).m_segmentNumber - 1];
+                        = m_segmentOverlapMatrix[(*it).m_segmentNumber][(*it2).m_segmentNumber];
                     if (existing_result == 1)
                     {
                         DCMSEG_DEBUG("getOverlappingSegments(): Skipping frame comparison on pos #"
@@ -671,21 +671,25 @@ OFCondition OverlapUtil::buildOverlapMatrix()
                     }
 
                     // Enter result into overlap matrix
-                    m_segmentOverlapMatrix[(*it).m_segmentNumber - 1][(*it2).m_segmentNumber - 1] = overlap ? 1 : 0;
-                    m_segmentOverlapMatrix[(*it2).m_segmentNumber - 1][(*it).m_segmentNumber - 1] = overlap ? 1 : 0;
+                    m_segmentOverlapMatrix[(*it).m_segmentNumber][(*it2).m_segmentNumber] = overlap ? 1 : 0;
+                    m_segmentOverlapMatrix[(*it2).m_segmentNumber][(*it).m_segmentNumber] = overlap ? 1 : 0;
                 }
             }
         }
     }
     // Since we don't compare all segments (since not all are showing up together on a single logical frame),
     // we set all remaining entries that are still not initialized (-1) to 0 (no overlap)
-    for (size_t i = 0; i < m_segmentOverlapMatrix.size(); ++i)
+    for (std::set<Uint32>::iterator it1 = segmentNumbers.begin();
+         it1 != segmentNumbers.end();
+         it1++)
     {
-        for (size_t j = 0; j < m_segmentOverlapMatrix[i].size(); ++j)
+        for (std::set<Uint32>::iterator it2 = segmentNumbers.begin();
+             it2 != segmentNumbers.end();
+             it2++)
         {
-            if (m_segmentOverlapMatrix[i][j] == -1)
+            if (m_segmentOverlapMatrix[*it1][*it2] == -1)
             {
-                m_segmentOverlapMatrix[i][j] = 0;
+                m_segmentOverlapMatrix[*it1][*it2] = 0;
             }
         }
     }

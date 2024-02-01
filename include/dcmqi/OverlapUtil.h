@@ -27,6 +27,7 @@
 #include "dcmtk/ofstd/oftypes.h"
 #include "dcmtk/ofstd/ofvector.h"
 #include <set>
+#include <map>
 
 class DcmSegmentation;
 
@@ -91,7 +92,7 @@ public:
 
     /// Lists frames for each segment where segment with index i is represented by the vector at index i,
     /// and index 0 is unused. I.e. index i is segment number, value is vector of physical frame numbers.
-    typedef OFVector<OFVector<Uint32>> FramesForSegment;
+    typedef std::map<Uint32, std::set<Uint32>> FramesForSegment;
 
     // Set of segments present on each frame.
     typedef OFVector<std::set<Uint32>> SegmentsForFrame;
@@ -119,7 +120,7 @@ public:
 
     /// Matrix of N x N segment numbers, where N is the number of segments.
     /// Value is 1 at x,y if x and y overlap, 0 if they don't overlap, and -1 if not initialized.
-    typedef OFVector<OFVector<Sint8>> OverlapMatrix;
+    typedef std::map<Uint32, std::map<Uint32, Sint8>> OverlapMatrix;
 
     /// Group of non-overlapping segments (each represented by its segment number)
     typedef OFVector<OFVector<Uint32>> SegmentGroups;
@@ -137,7 +138,7 @@ public:
             , m_frameNumber(f)
         {
         }
-        /// Segment number as used in DICOM segmentation object (1-n)
+        /// Segment number as used in DICOM segmentation object
         Uint16 m_segmentNumber;
         /// Logical frame number (number of frame in DistinctFramePositions vector)
         Uint16 m_frameNumber;
@@ -190,15 +191,15 @@ public:
     OFCondition getSegmentsByPosition(SegmentsByPosition& result);
 
     /** Get phyiscal frames for a specific segment by its segment number
-     *  @param segmentNumber Segment number to get frames for (1..n)
-     *  @param frames Resulting vector of physical frame numbers (first frame is frame 0)
+     *  @param segmentNumber Segment number for which to get frames
+     *  @param frames Resulting vector of physical frame numbers
      *  @return EC_Normal if successful, error otherwise
      */
-    OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
+    OFCondition getFramesForSegment(const Uint32 segmentNumber, std::set<Uint32>& frames);
 
     /** Get the all the segments present on a specified frame
      *  @param frameNumber The frame number for which to get segments
-     *  @param segments Resulting set of segment numbers (1..n)
+     *  @param segments Resulting set of segment numbers
      *  @return EC_Normal if successful, error otherwise
     */
     OFCondition getSegmentsForFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
@@ -247,12 +248,12 @@ protected:
     /** Get the list of segments within a label map segmentation frame.
      *  Does not cache the result. To be used exclusively on a label map frame.
      *  @param frameNumber The frame number for which to get labels
-     *  @param segments The resulting set of segments on the frame (1..n)
+     *  @param segments The resulting set of segments on the frame
      *  @return EC_Normal if successful, error otherwise
     */
     OFCondition getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
 
-    /** Get the segment number (1..n) for a binary or fractional segmentation frame.
+    /** Get the segment number for a binary or fractional segmentation frame.
      *  Does not cache the result. To be used exclusively on a binary or fractional
      *  segmentation frame.
      *  @param frameNumber The frame number for which to get labels
