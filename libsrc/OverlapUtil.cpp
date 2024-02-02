@@ -167,7 +167,7 @@ OFCondition OverlapUtil::getSegmentsForFrame(const Uint32 frameNumber, std::set<
         m_segmentsForFrame.resize(numFrames);
         for (Uint32 f = 0; f < numFrames; f++) {
             OFCondition result;
-            if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
+            if (m_seg->getSegmentationType() == DcmSegTypes::ST_LABELMAP)
             {
                 result = getSegmentsForLabelMapFrame(f, m_segmentsForFrame[f]);
                 if (result.bad())
@@ -656,7 +656,7 @@ OFCondition OverlapUtil::buildOverlapMatrix()
                     // If they overlap, mark as overlapping
                     OFCondition cond;
                     OFBool overlap = OFFalse;
-                    if (m_seg->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3) // LABELMAP
+                    if (m_seg->getSegmentationType() == DcmSegTypes::ST_LABELMAP)
                     {
                         cond = checkFramesOverlapLabelMap(*it, *it2, overlap);
                     }

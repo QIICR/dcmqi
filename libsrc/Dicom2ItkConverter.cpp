@@ -214,7 +214,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                     /* WIP */
                 }
 
-                bool labelMapSegmentation = m_segDoc->getSegmentationType() == (DcmSegTypes::E_SegmentationType) 3; // LABELMAP;
+                bool labelMapSegmentation = m_segDoc->getSegmentationType() == DcmSegTypes::ST_LABELMAP;
                 for (unsigned row = 0; row < m_imageSize[1]; row++)
                 {
                     for (unsigned col = 0; col < m_imageSize[0]; col++)
