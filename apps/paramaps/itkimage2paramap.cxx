@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
                         (std::istreambuf_iterator<char>()));
 
   try {
-    DcmDataset* result = dcmqi::ParaMapConverter::itkimage2paramap(parametricMapImage, dcmDatasets, metadata);
+    std::vector<DcmItem*> toItems(dcmDatasets.begin(), dcmDatasets.end());
+    DcmDataset* result = dcmqi::ParaMapConverter::itkimage2paramap(parametricMapImage, toItems, metadata);
 
     if (result == NULL) {
       std::cerr << "ERROR: Conversion failed." << std::endl;

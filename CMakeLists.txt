@@ -274,6 +274,7 @@ set(export_targets TRUE)
 if(DCMQI_SUPERBUILD_BINARY_DIR)
   string(FIND ${ITK_DIR}   "${DCMQI_SUPERBUILD_BINARY_DIR}" itk_here)
   string(FIND ${DCMTK_DIR} "${DCMQI_SUPERBUILD_BINARY_DIR}" dcmtk_here)
+  message(STATUS "---------------------------------------- DCMTK DIR: ${DCMTK_DIR} ------------------------------------------")
 
   if(NOT ${itk_here} EQUAL -1 OR NOT ${dcmtk_here} EQUAL -1)
     set(export_targets FALSE)

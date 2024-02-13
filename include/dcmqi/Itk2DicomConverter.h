@@ -39,7 +39,7 @@ namespace dcmqi {
     /**
      * @brief Converts itk images data into a DICOM Segmentation object.
      *
-     * @param dcmDatasets A vector of DICOM datasets with the images that the segmentation is based on.
+     * @param dcmDatasets A vector of DICOM items (usually dataset level) with the images that the segmentation is based on.
      * @param segmentations A vector of itk images to be converted.
      * @param metaData A string containing the metadata to be used for the DICOM Segmentation object.
      * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
@@ -59,7 +59,7 @@ namespace dcmqi {
      *        display.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
-    static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+    static DcmDataset* itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                           vector<ShortImageType::Pointer> segmentations,
                           const string &metaData,
                           bool skipEmptySlices=true,
@@ -78,7 +78,7 @@ namespace dcmqi {
      *  @param  segNum2Label mapping from segment number (old) to label ID (new)
      *  @return true if successful, false otherwise
      */
-    static bool mapLabelIDsToSegmentNumbers(DcmDataset* dset, map<Uint16, Uint16> segNum2Label);
+    static bool mapLabelIDsToSegmentNumbers(DcmItem* dset, map<Uint16, Uint16> segNum2Label);
 
     /** Check whether labels (values in given map) are unique and monotonically increasing by 1
      *  @param  segNum2Label mapping from segment number (old) to label ID (new)

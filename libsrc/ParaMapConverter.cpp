@@ -26,7 +26,7 @@ using namespace std;
 
 namespace dcmqi {
 
-  DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+  DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmItem*> dcmDatasets,
                                          const string &metaData) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
@@ -67,7 +67,7 @@ namespace dcmqi {
 
     DPMParametricMapIOD* pMapDoc = OFget<DPMParametricMapIOD>(&obj);
 
-    DcmDataset* srcDataset = NULL;
+    DcmItem* srcDataset = NULL;
     if(dcmDatasets.size()){
       srcDataset = dcmDatasets[0];
     }
@@ -296,7 +296,7 @@ namespace dcmqi {
 
     for (unsigned long sliceNumber = 0; result.good() && (sliceNumber < inputSize[2]); sliceNumber++) {
 
-      OFVector<DcmDataset*> siVector;
+      OFVector<DcmItem*> siVector;
       for(size_t derImageInstanceNum=0;
           derImageInstanceNum<slice2derimg[sliceNumber].size();
           derImageInstanceNum++){

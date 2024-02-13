@@ -97,7 +97,7 @@ protected:
      *
      * @param segDataset A pointer to the DICOM dataset containing the metadata.
      */
-    void populateMetaInformationFromDICOM(DcmDataset* segDataset);
+    void populateMetaInformationFromDICOM(DcmItem* segDataset);
 
     /**
      * Helper method that uses the OverlapUtil class to retrieve non-overlapping segment
