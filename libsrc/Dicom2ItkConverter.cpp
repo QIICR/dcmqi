@@ -253,7 +253,7 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
 
 // -------------------------------------------------------------------------------------
 
-void Dicom2ItkConverter::populateMetaInformationFromDICOM(DcmDataset* segDataset)
+void Dicom2ItkConverter::populateMetaInformationFromDICOM(DcmItem* segDataset)
 {
     OFString creatorName, sessionID, timePointID, seriesDescription, seriesNumber, instanceNumber, bodyPartExamined,
         coordinatingCenter;

@@ -72,9 +72,14 @@ set(_dcmtk_libs)
 set(_dcmtk_includes)
 if(TARGET DCMTK::DCMTK)
   set(_dcmtk_libs DCMTK::DCMTK)
+  # TODO
+  MESSAGE(STATUS "------------------------------------- DCMTK::DCMTK: _dcmtk_libs1: ${_dcmtk_libs} --------------------------------")
 else()
   set(_dcmtk_libs ${DCMTK_LIBRARIES})
   set(_dcmtk_includes ${DCMTK_INCLUDE_DIRS})
+  # TODO
+  MESSAGE(STATUS "------------------------------------- DCMTK::DCMTK: ${DCMTK_LIBRARIES} --------------------------------")
+  MESSAGE(STATUS "------------------------------------- DCMTK::DCMTK: _dcmtk_libs2: ${_dcmtk_libs} --------------------------------")
 endif()
 
 set(${lib_name}_INCLUDE_DIRS
@@ -99,6 +104,8 @@ target_link_libraries(${lib_name} PUBLIC
   ${ITK_LIBRARIES}
   $<$<NOT:$<BOOL:${DCMQI_BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )
+  # TODO
+  MESSAGE(STATUS "------------------------------------- DCMTK::DCMTK: _dcmtk_libs3: ${_dcmtk_libs} --------------------------------")
 
 if(export_targets)
   install(TARGETS ${lib_name}
