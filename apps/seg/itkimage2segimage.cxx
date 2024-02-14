@@ -120,9 +120,10 @@ int main(int argc, char *argv[])
     }
     segmentations = segmentationsReordered;
   }
-
+  // Copy to DcmItem* vector to use it in itkimage2dcmSegmentation() call
+  std::vector<DcmItem*> dcmItems(dcmDatasets.begin(), dcmDatasets.end());
   try {
-    DcmDataset* result = dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmDatasets,
+    DcmDataset* result = dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmItems,
                                                                              segmentations,
                                                                              metadata,
                                                                              skipEmptySlices,
