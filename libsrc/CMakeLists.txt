@@ -73,7 +73,7 @@ set(_dcmtk_includes)
 if(TARGET DCMTK::DCMTK)
   set(_dcmtk_libs DCMTK::DCMTK)
 else()
-  set(_dcmtk_libs ${DCMTK_LIBRARIES})
+  set(_dcmtk_libs DCMTK::DCMTK)
   set(_dcmtk_includes ${DCMTK_INCLUDE_DIRS})
 endif()
 
