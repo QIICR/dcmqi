@@ -72,7 +72,7 @@
       <channel>input</channel>
       <longflag>mergeSegments</longflag>
       <default>false</default>
-      <description>Save all segments into a single file. When segments are non-overlapping, output is a single 3D file. If overlapping, single 4D following conventions of 3D Slicer segmentations format. Only supported when the output is NRRD for now.</description>
+      <description>Save all segments into a single file. When segments are non-overlapping, output is a single 3D file. If overlapping segments are identified, multiple 3D files will be created each containing non-overlapping segments. Metadata JSON files will be created for each such 3D file.</description>
     </boolean>
 
   </parameters>

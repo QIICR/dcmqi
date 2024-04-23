@@ -25,11 +25,6 @@ int main(int argc, char *argv[])
     dcmtk::log4cplus::BasicConfigurator::doConfigure();
   }
 
-  if (mergeSegments && outputType != "nrrd") {
-    std::cerr << "ERROR: mergeSegments option is only supported when output format is NRRD!" << std::endl;
-    return EXIT_FAILURE;
-  }
-
   if(helper::isUndefinedOrPathDoesNotExist(inputSEGFileName, "Input DICOM file")
      || helper::isUndefinedOrPathDoesNotExist(outputDirName, "Output directory"))
     return EXIT_FAILURE;
