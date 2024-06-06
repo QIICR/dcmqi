@@ -7,6 +7,17 @@
 #include "dcmqi/ParaMapConverter.h"
 
 // DCMTK includes
+#include <dcmtk/config/osconfig.h>
+#if defined(PACKAGE_VERSION_NUMBER) && PACKAGE_VERSION_NUMBER > 366
+  #include <dcmtk/dcmdata/dcuid.h>
+  #include <dcmtk/dcmdata/dcvrda.h>
+  #include <dcmtk/dcmdata/dcvrtm.h>
+  #include <dcmtk/dcmfg/fgfracon.h>
+  #include <dcmtk/dcmfg/fgframeanatomy.h>
+  #include <dcmtk/dcmfg/fgparametricmapframetype.h>
+  #include <dcmtk/dcmfg/fgpixeltransform.h>
+  #include <dcmtk/dcmfg/fgrealworldvaluemapping.h>
+#endif
 #include <dcmtk/dcmsr/codes/dcm.h>
 #include <dcmtk/dcmsr/codes/sct.h>
 #include <dcmtk/dcmsr/codes/ucum.h>
