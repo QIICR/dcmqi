@@ -293,6 +293,7 @@ foreach(seg_size ${TEST_SEG_SIZES})
       --inputImageList ${BASELINE}/${seg_size}/nrrd/label.nrrd
       --inputDICOMDirectory ${BASELINE}/${seg_size}/image
       --outputDICOM ${MODULE_TEMP_DIR}/${seg_size}_seg.dcm
+      --skip 0
     )
 
   dcmqi_add_test(
