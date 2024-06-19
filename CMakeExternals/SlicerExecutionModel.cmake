@@ -34,7 +34,7 @@ if(NOT DEFINED SlicerExecutionModel_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "62d0121dbb0fb057ebbd7c9ab84520accacec8bc"
+    "4325526343f582dd2080d0ffd93a63c8817dfb95"
     QUIET
     )
 

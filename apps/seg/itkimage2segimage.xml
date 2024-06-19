@@ -55,14 +55,14 @@
   <parameters advanced="true">
     <label>Advanced processing parameters</label>
 
-    <boolean>
+    <integer>
       <name>skipEmptySlices</name>
       <label>Skip empty slices</label>
       <channel>input</channel>
       <longflag>skip</longflag>
-      <default>true</default>
+      <default>1</default>
       <description>Skip empty slices while encoding segmentation image. By default, empty slices will not be encoded, resulting in a smaller output file size.</description>
-    </boolean>
+    </integer>
 
     <boolean>
       <name>useLabelIDAsSegmentNumber</name>
