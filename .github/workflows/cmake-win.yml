@@ -11,8 +11,8 @@ jobs:
 
   build-windows:
 
-    runs-on: windows-latest
-    timeout-minutes: 30
+    runs-on: windows-2022
+    timeout-minutes: 360
 
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
           echo "Step 2"
           cd ${{ github.workspace }}\dcmqi-build
           echo "Step 3"
-          cmake -G "Visual Studio 17 2022" -Ax64 -DITK_DIR:PATH=c:\ITK-install\lib\cmake\ITK-5.3 -DDCMTK_DIR:PATH=c:\DCMTK-install\cmake -DZLIB_ROOT:PATH=c:\zlib-install -DZLIB_INCLUDE_DIR:PATH=c:\zlib-install\include -DZLIB_LIBRARY:FILEPATH=c:\zlib-install\lib\zlib.lib -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
+          cmake -G "Visual Studio 17 2022" -Ax64 -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
 
       - name: Build dcmqi
         run: |
@@ -81,7 +81,7 @@ jobs:
 
   publish-windows:
 
-    runs-on: windows-latest
+    runs-on: windows-2019
     timeout-minutes: 5
     # Only run if the event is not a pull request and the repository owner is QIICR.
     # The latter is to prevent forks from publishing packages even if the owner's token

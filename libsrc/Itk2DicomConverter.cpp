@@ -5,6 +5,13 @@
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 
 // DCMTK includes
+#include <dcmtk/config/osconfig.h>
+#if defined(PACKAGE_VERSION_NUMBER) && PACKAGE_VERSION_NUMBER > 366
+  #include <dcmtk/dcmdata/dcuid.h>
+  #include <dcmtk/dcmdata/dcvrda.h>
+  #include <dcmtk/dcmdata/dcvrtm.h>
+  #include <dcmtk/dcmfg/fgfracon.h>
+#endif
 #include <dcmtk/dcmsr/codes/dcm.h>
 
 
