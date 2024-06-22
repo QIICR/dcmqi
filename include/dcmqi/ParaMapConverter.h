@@ -34,10 +34,10 @@ namespace dcmqi {
   class ParaMapConverter : public ConverterBase {
 
   public:
-    static DcmDataset* itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmDataset*> dcmDatasets,
+    static DcmDataset* itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmItem*> dcmDatasets,
                                         const string &metaData);
 
-    static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
+    static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset); //TODO: Check
   protected:
     static OFCondition addFrame(DPMParametricMapIOD &map, const FloatImageType::Pointer &parametricMapImage,
                                 const JSONParametricMapMetaInformationHandler &metaInfo, const unsigned long frameNo, OFVector<FGBase*> perFrameGroups);

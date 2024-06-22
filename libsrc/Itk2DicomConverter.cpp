@@ -25,11 +25,11 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
-  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                                                          vector<ShortImageType::Pointer> segmentations,
-                                                          const string &metaData,
-                                                          bool skipEmptySlices,
-                                                          bool useLabelIDAsSegmentNumber) {
+  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
+                                                           vector<ShortImageType::Pointer> segmentations,
+                                                           const string &metaData,
+                                                           bool skipEmptySlices,
+                                                           bool useLabelIDAsSegmentNumber) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
@@ -359,7 +359,7 @@ namespace dcmqi {
                 frameData[framePixelCnt] = 0;
             }
 
-            OFVector<DcmDataset*> siVector;
+            OFVector<DcmItem*> siVector;
             for(size_t derImageInstanceNum=0;
                 derImageInstanceNum<slice2derimg[sliceNumber].size();
                 derImageInstanceNum++){
@@ -503,7 +503,7 @@ namespace dcmqi {
   }
 
 
-  bool Itk2DicomConverter::mapLabelIDsToSegmentNumbers(DcmDataset* dset, map<Uint16,Uint16> segNum2Label)
+  bool Itk2DicomConverter::mapLabelIDsToSegmentNumbers(DcmItem* dset, map<Uint16,Uint16> segNum2Label)
   {
     cout << "Mapping Label IDs to Segment Numbers" << endl;
     DcmSequenceOfItems* seq = NULL;

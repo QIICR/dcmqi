@@ -28,13 +28,13 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/commontk/DCMTK.git"
+    "${EP_GIT_PROTOCOL}://github.com/michaelonken/dcmtk.git"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "patched-DCMTK-3.6.6_20210115"
+    "use_dcmitem_instead_of_dcmdataset"
     QUIET
     )
 
@@ -94,11 +94,14 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_WITH_PNG:BOOL=OFF # see github issue #25
       -DDCMTK_WITH_TIFF:BOOL=OFF  # see github issue #25
       -DDCMTK_WITH_XML:BOOL=OFF  # see github issue #25
-      -DDCMTK_WITH_ICONV:BOOL=OFF  # see github issue #178
+      -DDCMTK_WITH_ICU:BOOL=OFF  # make sure to not include any ICU dependencies
+      -DDCMTK_WITH_ICONV:BOOL=OFF  # make sure to not include any iconv dependencies
       -DDCMTK_WITH_SNDFILE:BOOL=OFF # see github issue #395
       -DDCMTK_FORCE_FPIC_ON_UNIX:BOOL=ON
       -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
-      -DDCMTK_ENABLE_BUILTIN_DICTIONARY:BOOL=ON
+      -DDCMTK_DEFAULT_DICT:STRING=builtin
+      -DDCMTK_ENABLE_CHARSET_CONVERSION:STRING=oficonv
+      -DDCMTK_ENABLE_BUILTIN_OFICONV_DATA:BOOL=ON
       -DDCMTK_ENABLE_PRIVATE_TAGS:BOOL=ON
       -DDCMTK_COMPILE_WIN32_MULTITHREADED_DLL:BOOL=ON
       -DDCMTK_ENABLE_STL:BOOL=ON
