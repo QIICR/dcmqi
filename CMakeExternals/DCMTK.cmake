@@ -26,6 +26,19 @@ endif()
 
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
+  set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS)
+
+  if(CTEST_USE_LAUNCHERS)
+    set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+      "-DCMAKE_PROJECT_DCMTK_INCLUDE:FILEPATH=${CMAKE_ROOT}/Modules/CTestUseLaunchers.cmake")
+  endif()
+
+  if(UNIX)
+    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+      -DDCMTK_FORCE_FPIC_ON_UNIX:BOOL=ON
+      )
+  endif()
+
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_REPOSITORY
     "${EP_GIT_PROTOCOL}://github.com/commontk/DCMTK.git"
@@ -33,8 +46,8 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     )
 
   ExternalProject_SetIfNotDefined(
-    ${proj}_REVISION_TAG
-    "patched-DCMTK-3.6.6_20210115"
+    ${proj}_GIT_TAG
+    "ea07125078cd097245867a71d8fba8b36fd92878" # patched-DCMTK-3.6.8_20241024
     QUIET
     )
 
@@ -44,31 +57,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   else()
     set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
                       GIT_TAG ${${proj}_GIT_TAG})
-  endif()
-
-  set(ep_project_include_arg)
-  if(CTEST_USE_LAUNCHERS)
-    set(ep_project_include_arg
-      "-DCMAKE_PROJECT_DCMTK_INCLUDE:FILEPATH=${CMAKE_ROOT}/Modules/CTestUseLaunchers.cmake")
-  endif()
-
-  set(ep_cxx_standard_args)
-  # XXX: On MSVC disable building DCMTK with C++11. DCMTK checks C++11.
-  # compiler compatibility by inspecting __cplusplus, but MSVC doesn't set __cplusplus.
-  # See https://blogs.msdn.microsoft.com/vcblog/2016/06/07/standards-version-switches-in-the-compiler/.
-  # Microsoft: "We won’t update __cplusplus until the compiler fully conforms to
-  # the standard. Until then, you can check the value of _MSVC_LANG."
-  if(CMAKE_CXX_STANDARD AND UNIX)
-    list(APPEND ep_cxx_standard_args
-      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
-      -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
-      -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
-      )
-    if(NOT CMAKE_CXX_STANDARD EQUAL 98)
-      list(APPEND ep_cxx_standard_args
-        -DDCMTK_ENABLE_CXX11:BOOL=ON
-        )
-    endif()
   endif()
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
@@ -84,9 +72,9 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_INSTALL_BINDIR:STRING=bin/${CMAKE_CFG_INTDIR}
       -DDCMTK_INSTALL_LIBDIR:STRING=${DCMQI_INSTALL_LIB_DIR}
     CMAKE_CACHE_ARGS
-      ${ep_common_cache_args}
-      ${ep_cxx_standard_args}
-      ${ep_project_include_arg}
+      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
+      -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
+      -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
       -DBUILD_SHARED_LIBS:BOOL=OFF
       -DDCMTK_WITH_DOXYGEN:BOOL=OFF
       -DDCMTK_WITH_ZLIB:BOOL=OFF # see github issue #25
@@ -96,12 +84,12 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_WITH_XML:BOOL=OFF  # see github issue #25
       -DDCMTK_WITH_ICONV:BOOL=OFF  # see github issue #178
       -DDCMTK_WITH_SNDFILE:BOOL=OFF # see github issue #395
-      -DDCMTK_FORCE_FPIC_ON_UNIX:BOOL=ON
       -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
-      -DDCMTK_ENABLE_BUILTIN_DICTIONARY:BOOL=ON
+      -DDCMTK_DEFAULT_DICT:STRING=builtin
       -DDCMTK_ENABLE_PRIVATE_TAGS:BOOL=ON
       -DDCMTK_COMPILE_WIN32_MULTITHREADED_DLL:BOOL=ON
       -DDCMTK_ENABLE_STL:BOOL=ON
+      ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
