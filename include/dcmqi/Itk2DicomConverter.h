@@ -57,13 +57,17 @@ namespace dcmqi {
      *        are updated by this flag, compared to the default behavior (false). Of course, the
      *        resulting DICOM object is still valid, dimensions are consistent and lead to meaningful
      *        display.
+     * @param referencesGeometryCheck A boolean indicating whether the conversion process should attempt checking if the geometry of the referenced DICOM images is consistent with the corresponding slices of the segmentation. 
+     *        By default, this check is enabled. If disabled, all of the references will be 
+     *        added in the SharedFunctionalGroupsSequence without any geometry checks.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                           vector<ShortImageType::Pointer> segmentations,
                           const string &metaData,
                           bool skipEmptySlices=true,
-                          bool useLabelIDAsSegmentNumber=false);
+                          bool useLabelIDAsSegmentNumber=false,
+                          bool referencesGeometryCheck=true);
 
   protected:
 

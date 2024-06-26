@@ -126,7 +126,8 @@ int main(int argc, char *argv[])
                                                                              segmentations,
                                                                              metadata,
                                                                              skipEmptySlices,
-                                                                             useLabelIDAsSegmentNumber);
+                                                                             useLabelIDAsSegmentNumber,
+                                                                             referencesGeometryCheck);
 
     if (result == NULL){
       std::cerr << "ERROR: Conversion failed." << std::endl;

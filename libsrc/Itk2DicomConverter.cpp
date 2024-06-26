@@ -29,7 +29,8 @@ namespace dcmqi {
                                                           vector<ShortImageType::Pointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices,
-                                                          bool useLabelIDAsSegmentNumber) {
+                                                          bool useLabelIDAsSegmentNumber,
+                                                          bool referencesGeometryCheck) {
 
     ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
@@ -108,7 +109,6 @@ namespace dcmqi {
       delete pixmsr;
     }
 
-
     // Iterate over the files and labels available in each file, create a segment for each label,
     // initialize segment frames and add to the document
 
@@ -125,6 +125,38 @@ namespace dcmqi {
     CHECK_COND(dcmDatasets[0]->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID));
     CHECK_COND(refseriesItem->setSeriesInstanceUID(seriesInstanceUID));
 
+    // Shared FGs: DerivationImageSequence
+    if(!referencesGeometryCheck && dcmDatasets.size() > 1){
+      FGDerivationImage *fgder = new FGDerivationImage();
+      DerivationImageItem *derimgItem;
+
+      DSRBasicCodedEntry code_seg=CODE_DCM_Segmentation_113076;
+      CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
+			code_seg.CodeMeaning),"",derimgItem));
+
+      OFVector<SourceImageItem*> srcimgItems;
+      derimgItem->addSourceImageItems(dcmDatasets, 
+        CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator, code_seg.CodeMeaning), srcimgItems, OFTrue /*skip file errors */);
+
+      for(size_t src_image_cnt=0;src_image_cnt<srcimgItems.size();src_image_cnt++){
+        // initialize class UID and series instance UID
+        ImageSOPInstanceReferenceMacro &instRef = srcimgItems[src_image_cnt]->getImageSOPInstanceReference();
+        OFString instanceUID;
+        CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
+        CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
+
+        if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
+          SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+          CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
+          CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
+          refinstances.push_back(refinstancesItem);
+          instanceUIDs.insert(instanceUID);
+        }
+      }
+      CHECK_COND(segdoc->addForAllFrames(*fgder));
+      delete fgder;
+    }
+
     int uidfound = 0, uidnotfound = 0;
     Uint8 *frameData = new Uint8[frameSize];
 
@@ -137,10 +169,15 @@ namespace dcmqi {
 
     for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
-      vector<vector<int> > slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[segFileNumber]);
-      for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
-        if((*vI).size()>0)
-          hasDerivationImages = true;
+      vector<vector<int> > slice2derimg;
+      if(referencesGeometryCheck){
+        slice2derimg = getSliceMapForSegmentation2DerivationImage(dcmDatasets, segmentations[segFileNumber]);
+        for(vector<vector<int> >::const_iterator vI=slice2derimg.begin();vI!=slice2derimg.end();++vI)
+          if((*vI).size()>0)
+            hasDerivationImages = true;
+      } else {
+        hasDerivationImages = false;
+      }
 
       perFrameFGs.clear();
       perFrameFGs.push_back(fgppp);
@@ -360,42 +397,44 @@ namespace dcmqi {
             }
 
             OFVector<DcmDataset*> siVector;
-            for(size_t derImageInstanceNum=0;
-                derImageInstanceNum<slice2derimg[sliceNumber].size();
-                derImageInstanceNum++){
-              siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
-            }
+            if(referencesGeometryCheck){
+              for(size_t derImageInstanceNum=0;
+                  derImageInstanceNum<slice2derimg[sliceNumber].size();
+                  derImageInstanceNum++){
+                siVector.push_back(dcmDatasets[slice2derimg[sliceNumber][derImageInstanceNum]]);
+              }
 
-            if(siVector.size()>0){
+              if(siVector.size()>0){
 
-              DerivationImageItem *derimgItem;
-			  DSRBasicCodedEntry code_seg=CODE_DCM_Segmentation_113076;
-              CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
-				  code_seg.CodeMeaning),"",derimgItem));
+                DerivationImageItem *derimgItem;
+          DSRBasicCodedEntry code_seg=CODE_DCM_Segmentation_113076;
+                CHECK_COND(fgder->addDerivationImageItem(CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator,
+            code_seg.CodeMeaning),"",derimgItem));
 
-			  DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
-              OFVector<SourceImageItem*> srcimgItems;
-              CHECK_COND(derimgItem->addSourceImageItems(siVector,
-                                                       CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
-														   code.CodeMeaning),
-                                                       srcimgItems));
+          DSRBasicCodedEntry code = CODE_DCM_SourceImageForImageProcessingOperation;
+                OFVector<SourceImageItem*> srcimgItems;
+                CHECK_COND(derimgItem->addSourceImageItems(siVector,
+                                                        CodeSequenceMacro(code.CodeValue, code.CodingSchemeDesignator,
+                                code.CodeMeaning),
+                                                        srcimgItems));
 
-              {
-                // initialize class UID and series instance UID
-                ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
-                OFString instanceUID;
-                CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
-                CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
+                {
+                  // initialize class UID and series instance UID
+                  ImageSOPInstanceReferenceMacro &instRef = srcimgItems[0]->getImageSOPInstanceReference();
+                  OFString instanceUID;
+                  CHECK_COND(instRef.getReferencedSOPClassUID(classUID));
+                  CHECK_COND(instRef.getReferencedSOPInstanceUID(instanceUID));
 
-                if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
-                  SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
-                  CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
-                  CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
-                  refinstances.push_back(refinstancesItem);
-                  instanceUIDs.insert(instanceUID);
-                  uidnotfound++;
-                } else {
-                  uidfound++;
+                  if(instanceUIDs.find(instanceUID) == instanceUIDs.end()){
+                    SOPInstanceReferenceMacro *refinstancesItem = new SOPInstanceReferenceMacro();
+                    CHECK_COND(refinstancesItem->setReferencedSOPClassUID(classUID));
+                    CHECK_COND(refinstancesItem->setReferencedSOPInstanceUID(instanceUID));
+                    refinstances.push_back(refinstancesItem);
+                    instanceUIDs.insert(instanceUID);
+                    uidnotfound++;
+                  } else {
+                    uidfound++;
+                  }
                 }
               }
             }
@@ -403,7 +442,7 @@ namespace dcmqi {
             CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
 
             // remove derivation image FG from the per-frame FGs, only if applicable!
-            if(siVector.size()>0){
+            if(referencesGeometryCheck && siVector.size()>0){
               // clean up for the next frame
               fgder->clearData();
             }
@@ -418,7 +457,8 @@ namespace dcmqi {
 
     delete fgfc;
     delete fgppp;
-    delete fgder;
+    if(referencesGeometryCheck)
+      delete fgder;
 
     segdoc->getSeries().setSeriesNumber(metaInfo.getSeriesNumber().c_str());
 
