@@ -26,7 +26,7 @@ namespace dcmqi {
   // -------------------------------------------------------------------------------------
 
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                                                          vector<ShortImageType::Pointer> segmentations,
+                                                          vector<ShortImageType::ConstPointer> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices,
                                                           bool useLabelIDAsSegmentNumber,
