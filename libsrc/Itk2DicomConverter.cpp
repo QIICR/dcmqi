@@ -135,6 +135,7 @@ namespace dcmqi {
 			code_seg.CodeMeaning),"",derimgItem));
 
       OFVector<SourceImageItem*> srcimgItems;
+      OFVector<DcmDataset*> dcmDatasets_ofvector(dcmDatasets.begin(), dcmDatasets.end());
       derimgItem->addSourceImageItems(dcmDatasets, 
         CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator, code_seg.CodeMeaning), srcimgItems, OFTrue /*skip file errors */);
 
