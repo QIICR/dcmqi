@@ -135,7 +135,10 @@ namespace dcmqi {
 			code_seg.CodeMeaning),"",derimgItem));
 
       OFVector<SourceImageItem*> srcimgItems;
-      OFVector<DcmDataset*> dcmDatasets_ofvector(dcmDatasets.begin(), dcmDatasets.end());
+      OFVector<DcmDataset*> dcmDatasets_ofvector;
+      for (const auto& dataset : dcmDatasets) {
+        dcmDatasets_ofvector.push_back(dataset);
+      }
       derimgItem->addSourceImageItems(dcmDatasets_ofvector, 
         CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator, code_seg.CodeMeaning), srcimgItems, OFTrue /*skip file errors */);
 
