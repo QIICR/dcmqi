@@ -63,7 +63,7 @@ namespace dcmqi {
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                          vector<ShortImageType::Pointer> segmentations,
+                          vector<ShortImageType::ConstPointer> segmentations,
                           const string &metaData,
                           bool skipEmptySlices=true,
                           bool useLabelIDAsSegmentNumber=false,
