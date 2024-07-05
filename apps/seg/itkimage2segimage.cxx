@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  vector<ShortImageType::Pointer> segmentations;
+  vector<ShortImageType::ConstPointer> segmentations;
 
   for(size_t segFileNumber=0; segFileNumber<segImageFiles.size(); segFileNumber++){
     ShortReaderType::Pointer reader = ShortReaderType::New();
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     Json::Value reorderedSegmentAttributes;
     vector<int> fileOrder(segImageFiles.size());
     fill(fileOrder.begin(), fileOrder.end(), -1);
-    vector<ShortImageType::Pointer> segmentationsReordered(segImageFiles.size());
+    vector<ShortImageType::ConstPointer> segmentationsReordered(segImageFiles.size());
     for(size_t filePosition=0;filePosition<segImageFiles.size();filePosition++){
       for(size_t mappingPosition=0;mappingPosition<segImageFiles.size();mappingPosition++){
         string mappingItem = metaRoot["segmentAttributesFileMapping"][static_cast<int>(mappingPosition)].asCString();
