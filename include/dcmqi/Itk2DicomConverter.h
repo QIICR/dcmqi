@@ -62,8 +62,9 @@ namespace dcmqi {
      *        added in the SharedFunctionalGroupsSequence without any geometry checks.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
+    template<class ImageSourceType>
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                          vector<ShortImageType::ConstPointer> segmentations,
+                          vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                           const string &metaData,
                           bool skipEmptySlices=true,
                           bool useLabelIDAsSegmentNumber=false,
