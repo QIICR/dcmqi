@@ -26,7 +26,7 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
-  template<class ImageSourceType>
+  template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                                                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                                                           const string &metaData,

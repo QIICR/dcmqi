@@ -62,7 +62,7 @@ namespace dcmqi {
      *        added in the SharedFunctionalGroupsSequence without any geometry checks.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
-    template<class ImageSourceType>
+    template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                           const string &metaData,
