@@ -14,6 +14,7 @@
 #endif
 #include <dcmtk/dcmsr/codes/dcm.h>
 
+#include <itkVectorImageToImageAdaptor.h>
 
 
 namespace dcmqi {
@@ -25,14 +26,15 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
+  template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
-                                                          vector<ShortImageType::ConstPointer> segmentations,
+                                                          vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices,
                                                           bool useLabelIDAsSegmentNumber,
                                                           bool referencesGeometryCheck) {
 
-    ShortImageType::SizeType inputSize = segmentations[0]->GetBufferedRegion().GetSize();
+    auto inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
@@ -78,7 +80,7 @@ namespace dcmqi {
 
     // Shared FGs: PlaneOrientationPatientSequence
     {
-      ShortImageType::DirectionType labelDirMatrix = segmentations[0]->GetDirection();
+      auto labelDirMatrix = segmentations[0]->GetDirection();
 
       FGPlaneOrientationPatient *planor =
           FGPlaneOrientationPatient::createMinimal(
@@ -96,7 +98,7 @@ namespace dcmqi {
     {
       FGPixelMeasures *pixmsr = new FGPixelMeasures();
 
-      ShortImageType::SpacingType labelSpacing = segmentations[0]->GetSpacing();
+      auto labelSpacing = segmentations[0]->GetSpacing();
       ostringstream spacingSStream;
       spacingSStream << scientific << labelSpacing[1] << "\\" << labelSpacing[0];
       CHECK_COND(pixmsr->setPixelSpacing(spacingSStream.str().c_str()));
@@ -191,14 +193,15 @@ namespace dcmqi {
 
       // note that labels are the same in the input and output image produced
       // by this filter, see https://itk.org/Doxygen/html/classitk_1_1LabelImageToLabelMapFilter.html
-      LabelToLabelMapFilterType::Pointer l2lm = LabelToLabelMapFilterType::New();
+      using LabelToLabelMapFilterType2 = itk::LabelImageToLabelMapFilter<ImageSourceType>;
+      typename LabelToLabelMapFilterType2::Pointer l2lm = LabelToLabelMapFilterType2::New();
       l2lm->SetInput(segmentations[segFileNumber]);
       l2lm->Update();
 
-      typedef LabelToLabelMapFilterType::OutputImageType::LabelObjectType LabelType;
-      typedef itk::LabelStatisticsImageFilter<ShortImageType,ShortImageType> LabelStatisticsType;
+      typedef typename LabelToLabelMapFilterType2::OutputImageType::LabelObjectType LabelType;
+      typedef itk::LabelStatisticsImageFilter<ImageSourceType,ImageSourceType> LabelStatisticsType;
 
-      LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
+      typename LabelStatisticsType::Pointer labelStats = LabelStatisticsType::New();
 
       cout << "Found " << l2lm->GetOutput()->GetNumberOfLabelObjects() << " label(s)" << endl;
       labelStats->SetInput(segmentations[segFileNumber]);
@@ -208,21 +211,21 @@ namespace dcmqi {
       bool cropSegmentsBBox = false;
       if(cropSegmentsBBox){
         cout << "WARNING: Crop operation enabled - WIP" << endl;
-        typedef itk::BinaryThresholdImageFilter<ShortImageType,ShortImageType> ThresholdType;
-        ThresholdType::Pointer thresh = ThresholdType::New();
+        typedef itk::BinaryThresholdImageFilter<ImageSourceType,ImageSourceType> ThresholdType;
+        typename ThresholdType::Pointer thresh = ThresholdType::New();
         thresh->SetInput(segmentations[segFileNumber]);
         thresh->SetLowerThreshold(1);
         thresh->SetLowerThreshold(100);
         thresh->SetInsideValue(1);
         thresh->Update();
 
-        LabelStatisticsType::Pointer threshLabelStats = LabelStatisticsType::New();
+        typename LabelStatisticsType::Pointer threshLabelStats = LabelStatisticsType::New();
 
         threshLabelStats->SetInput(thresh->GetOutput());
         threshLabelStats->SetLabelInput(thresh->GetOutput());
         threshLabelStats->Update();
 
-        LabelStatisticsType::BoundingBoxType threshBbox = threshLabelStats->GetBoundingBox(1);
+        auto threshBbox = threshLabelStats->GetBoundingBox(1);
         /*
         cout << "OVerall bounding box: " << threshBbox[0] << ", " << threshBbox[1]
                << threshBbox[2] << ", " << threshBbox[3]
@@ -242,7 +245,7 @@ namespace dcmqi {
 
         cout << "Processing label " << label << endl;
 
-        LabelStatisticsType::BoundingBoxType bbox = labelStats->GetBoundingBox(label);
+        auto bbox = labelStats->GetBoundingBox(label);
         unsigned firstSlice, lastSlice;
         //bool skipEmptySlices = true; // TODO: what to do with that line?
         //bool skipEmptySlices = false; // TODO: what to do with that line?
@@ -354,15 +357,15 @@ namespace dcmqi {
 
           // PerFrame FG: PlanePositionSequence
           {
-            ShortImageType::PointType sliceOriginPoint;
-            ShortImageType::IndexType sliceOriginIndex;
+            typename ImageSourceType::PointType sliceOriginPoint;
+            typename ImageSourceType::IndexType sliceOriginIndex;
             sliceOriginIndex.Fill(0);
             sliceOriginIndex[2] = sliceNumber;
             segmentations[segFileNumber]->TransformIndexToPhysicalPoint(sliceOriginIndex, sliceOriginPoint);
             ostringstream pppSStream;
             if(sliceNumber>0){
-              ShortImageType::PointType prevOrigin;
-              ShortImageType::IndexType prevIndex;
+              typename ImageSourceType::PointType prevOrigin;
+              typename ImageSourceType::IndexType prevIndex;
               prevIndex.Fill(0);
               prevIndex[2] = sliceNumber-1;
               segmentations[segFileNumber]->TransformIndexToPhysicalPoint(prevIndex, prevOrigin);
@@ -375,9 +378,9 @@ namespace dcmqi {
 
           /* Add frame that references this segment */
           {
-            ShortImageType::RegionType sliceRegion;
-            ShortImageType::IndexType sliceIndex;
-            ShortImageType::SizeType sliceSize;
+            typename ImageSourceType::RegionType sliceRegion;
+            typename ImageSourceType::IndexType sliceIndex;
+            typename ImageSourceType::SizeType sliceSize;
 
             sliceIndex[0] = 0;
             sliceIndex[1] = 0;
@@ -391,11 +394,11 @@ namespace dcmqi {
             sliceRegion.SetSize(sliceSize);
 
             unsigned framePixelCnt = 0;
-            itk::ImageRegionConstIteratorWithIndex<ShortImageType> sliceIterator(segmentations[segFileNumber], sliceRegion);
+            itk::ImageRegionConstIteratorWithIndex<ImageSourceType> sliceIterator(segmentations[segFileNumber], sliceRegion);
             for(sliceIterator.GoToBegin();!sliceIterator.IsAtEnd();++sliceIterator,++framePixelCnt){
               if(sliceIterator.Get() == label){
                 frameData[framePixelCnt] = 1;
-                ShortImageType::IndexType idx = sliceIterator.GetIndex();
+                auto idx = sliceIterator.GetIndex();
               } else
                 frameData[framePixelCnt] = 0;
             }
@@ -685,4 +688,20 @@ namespace dcmqi {
     return true;
   }
 
+  template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<ShortImageType>(
+      vector<DcmDataset*> dcmDatasets,
+      vector<ShortImageType::ConstPointer> segmentations,
+      const string& metaData,
+      bool skipEmptySlices,
+      bool useLabelIDAsSegmentNumber,
+      bool referencesGeometryCheck);
+ 
+  using VectorImageAdapter = itk::VectorImageToImageAdaptor<short, 3U>;
+  template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<VectorImageAdapter>(
+      vector<DcmDataset*> dcmDatasets,
+      vector<VectorImageAdapter::ConstPointer> segmentations,
+      const string& metaData,
+      bool skipEmptySlices,
+      bool useLabelIDAsSegmentNumber,
+      bool referencesGeometryCheck);
 }
