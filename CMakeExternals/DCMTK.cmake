@@ -27,13 +27,13 @@ endif()
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
-    Slicer_${proj}_GIT_REPOSITORY
+    ${proj}_GIT_REPOSITORY
     "${EP_GIT_PROTOCOL}://github.com/commontk/DCMTK.git"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
-    Slicer_${proj}_GIT_TAG
+    ${proj}_GIT_TAG
     "ea07125078cd097245867a71d8fba8b36fd92878" # patched-DCMTK-3.6.8_20241024
     QUIET
     )
