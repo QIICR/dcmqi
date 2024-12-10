@@ -22,7 +22,7 @@ jobs:
         fetch-tags: true 
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.7.14'
+        python-version: '3.9'
 
     - name: "Install jsondiff"
       run: pip install jsondiff

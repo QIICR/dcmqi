@@ -129,7 +129,7 @@ set(MODULE_NAME tid1500)
 dcmqi_add_test(
   NAME ${MODULE_NAME}_meta_roundtrip
   MODULE_NAME ${READER_MODULE_NAME}
-  COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${EXAMPLES}/sr-tid1500-ct-liver-example.json
     ${MODULE_TEMP_DIR}/sr-tid1500-ct-liver-example.json
       "['activitySession', 'timePoint', 'imageLibrary', 'compositeContext','procedureReported']"

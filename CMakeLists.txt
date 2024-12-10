@@ -246,10 +246,10 @@ mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
 mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
 mark_as_superbuild(DCMQI_BUILTIN_JSONCPP:BOOL)
 
-# Python 2.7
+# Python 3
 if(BUILD_TESTING)
-  find_package(PythonInterp 2.7 REQUIRED)
-  mark_as_superbuild(PYTHON_EXECUTABLE)
+  find_package(Python3 COMPONENTS Interpreter REQUIRED)
+  mark_as_superbuild(Python3_EXECUTABLE)
 endif()
 
 #-----------------------------------------------------------------------------
