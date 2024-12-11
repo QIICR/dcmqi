@@ -33,7 +33,7 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "be914a8b57b581735f2655098431dab61ded01c5"
+    "29b78d73c81d6c00c393416598d16058704c535c"
     QUIET
     )
 

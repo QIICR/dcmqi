@@ -33,8 +33,8 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     )
 
   ExternalProject_SetIfNotDefined(
-    ${proj}_REVISION_TAG
-    "patched-DCMTK-3.6.6_20210115"
+    ${proj}_GIT_TAG
+    "ea07125078cd097245867a71d8fba8b36fd92878" # patched-DCMTK-3.6.8_20241024
     QUIET
     )
 
