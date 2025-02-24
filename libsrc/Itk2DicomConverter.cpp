@@ -172,6 +172,7 @@ namespace dcmqi {
     FGFrameContent* fgfc = new FGFrameContent();
     FGDerivationImage* fgder = new FGDerivationImage();
     OFVector<FGBase*> perFrameFGs;
+    unsigned framesAdded = 0;
 
     for(size_t segFileNumber=0; segFileNumber<segmentations.size(); segFileNumber++){
 
@@ -446,7 +447,10 @@ namespace dcmqi {
               }
             }
 
-            CHECK_COND(segdoc->addFrame(frameData, segmentNumber, perFrameFGs));
+            OFCondition frameAdded = segdoc->addFrame(frameData, segmentNumber, perFrameFGs);
+            if(frameAdded.good()){
+              framesAdded++;
+            }
 
             // remove derivation image FG from the per-frame FGs, only if applicable!
             if(referencesGeometryCheck && siVector.size()>0){
@@ -456,6 +460,12 @@ namespace dcmqi {
           }
         }
       }
+    }
+
+    if(framesAdded == 0){
+      cerr << "FATAL ERROR: No input labels found - input segmentation is empty!" << endl;
+      cerr << "If you would like to encode background label, please see https://github.com/QIICR/dcmqi/issues/490" << endl;
+      return NULL;
     }
 
     // add ReferencedSeriesItem only if it is not empty
