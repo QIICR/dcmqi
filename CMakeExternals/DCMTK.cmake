@@ -43,7 +43,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     set(location_args URL ${${proj}_URL})
   else()
     set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
-                      GIT_TAG ${${proj}_REVISION_TAG})
+                      GIT_TAG ${${proj}_GIT_TAG})
   endif()
 
   set(ep_project_include_arg)
