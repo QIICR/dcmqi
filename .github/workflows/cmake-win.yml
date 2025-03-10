@@ -27,22 +27,6 @@ jobs:
         with:
           python-version: '3.9.0'
 
-      - name: Download prerequisite packages
-        run: |
-          $client = new-object System.Net.WebClient;
-          $client.DownloadFile("https://github.com/QIICR/dicom3tools/releases/download/20200512090031/dicom3tools_winexe_1.00.snapshot.20200512090031.zip", "c:\dicom3tools.zip")
-          $client.DownloadFile("https://github.com/QIICR/zlib-dcmqi/releases/download/zlib-dcmqi-1.2.3-VS17-Win64-Release-static/zlib-dcmqi.zip", "c:\zlib-dcmqi.zip")
-          $client.DownloadFile("https://github.com/QIICR/dcmtk-dcmqi/releases/download/DCMTK-dcmqi-3.6.7_20220105-VS12-Win64-Release-v0.0.32-static/DCMTK-dcmqi.zip", "c:\DCMTK-dcmqi.zip")
-          $client.DownloadFile("https://github.com/QIICR/ITK-dcmqi/releases/download/ITK-dcmqi-VS17-Win64-Release-v0.0.40-static/ITK-dcmqi.zip", "c:\ITK-dcmqi.zip")
-        shell: pwsh
-
-      - name: Uncompress prerequisite packages
-        run: |
-          7z x c:\dicom3tools.zip -oc:\dicom3tools
-          7z x c:\zlib-dcmqi.zip  -oc:\zlib-install
-          7z x c:\DCMTK-dcmqi.zip -oc:\DCMTK-install
-          7z x c:\ITK-dcmqi.zip   -oc:\ITK-install
-
       - name: Install prerequisite python packages
         run: |
           pip install jsondiff
@@ -53,31 +37,31 @@ jobs:
           ls ${{ github.workspace }}
           echo "WORKSPACE dir: ${{ github.workspace }}"
           cmake --version
-          mkdir ${{ github.workspace }}\dcmqi-build
+          mkdir ${{ github.workspace }}\b
           echo "Step 2"
-          cd ${{ github.workspace }}\dcmqi-build
+          cd ${{ github.workspace }}\b
           echo "Step 3"
           cmake -G "Visual Studio 17 2022" -Ax64 -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
 
       - name: Build dcmqi
         run: |
-          cd ${{ github.workspace }}\dcmqi-build/
+          cd ${{ github.workspace }}\b/
           cmake --build . --config Release -- /m
 
       - name: Test dcmqi
         run: |
-          cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
+          cd ${{ github.workspace }}\b\dcmqi-build
           ctest -VV -C Release -D ExperimentalTest --no-compress-output
   
       - name: Package dcmqi
         run: |  
-          cd ${{ github.workspace }}\dcmqi-build\dcmqi-build
+          cd ${{ github.workspace }}\b\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
       - uses: actions/upload-artifact@v4
         with:
             name: dcmqi-build
-            path: ${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64*.zip
+            path: ${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64*.zip
 
   publish-windows:
 
@@ -97,15 +81,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: dcmqi-build
-          path: ${{ github.workspace }}\dcmqi-build\dcmqi-build
+          path: ${{ github.workspace }}\b\dcmqi-build
 
       - name: Publish package
         run: |
           pip install -U "scikit-ci-addons>=0.22.0"
           ci_addons publish_github_release qiicr/dcmqi `
           --exit-success-if-missing-token `
-          --release-packages "${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64.zip" `
-          --prerelease-packages "${{ github.workspace }}\dcmqi-build\dcmqi-build\dcmqi-*-win64-*.zip" `
+          --release-packages "${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64.zip" `
+          --prerelease-packages "${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64-*.zip" `
           --prerelease-packages-clear-pattern "dcmqi-*-win64-*" `
           --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" `
           --token ${{ secrets.GA_TOKEN }}
