@@ -33,7 +33,7 @@ jobs:
       run: |
         cmake --version
         echo ${PATH}
-        wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
+        wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-mac.zip
         unzip ninja-mac.zip && sudo cp ninja /usr/local/bin/
 
     # Make sure all directories required for computing the hash actually exist
