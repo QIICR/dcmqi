@@ -33,7 +33,7 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "be914a8b57b581735f2655098431dab61ded01c5"
+    "55c47b7a8ed6b80bc3be3ba9d304ebee02a8a71d" # slicer-v5.4.3-2025-03-19-0913f2a
     QUIET
     )
 
@@ -44,8 +44,6 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     set(location_args GIT_REPOSITORY ${${proj}_GIT_REPOSITORY}
                       GIT_TAG ${${proj}_REVISION_TAG})
   endif()
-
-  set(ep_project_include_arg)
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
