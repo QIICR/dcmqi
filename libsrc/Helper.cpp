@@ -67,13 +67,13 @@ namespace dcmqi {
     return dicomImageFiles;
   }
 
-  vector<DcmDataset*> Helper::loadDatasets(const vector<string>& dicomImageFiles) {
-    vector<DcmDataset*> dcmDatasets;
+  vector<DcmItem*> Helper::loadDatasets(const vector<string>& dicomImageFiles) {
+    vector<DcmItem*> dcmDatasets;
     OFString tmp, sopInstanceUID;
     DcmFileFormat* sliceFF = new DcmFileFormat();
     for(size_t dcmFileNumber=0; dcmFileNumber<dicomImageFiles.size(); dcmFileNumber++){
       if(sliceFF->loadFile(dicomImageFiles[dcmFileNumber].c_str()).good()){
-        DcmDataset* currentDataset = sliceFF->getAndRemoveDataset();
+        DcmItem* currentDataset = sliceFF->getAndRemoveDataset();
         if(!currentDataset->tagExistsWithValue(DCM_PixelData)){
           std::cerr << "Source DICOM file does not contain PixelData, skipping: " << std::endl
              << "  >>>   " << dicomImageFiles[dcmFileNumber] << std::endl;
