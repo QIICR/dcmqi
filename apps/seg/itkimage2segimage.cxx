@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
   if(!helper::pathsExist(dicomImageFiles))
     return EXIT_FAILURE;
 
-  vector<DcmDataset*> dcmDatasets = helper::loadDatasets(dicomImageFiles);
+  vector<DcmItem*> dcmDatasets = helper::loadDatasets(dicomImageFiles);
 
   if(dcmDatasets.empty()){
     cerr << "Error: no DICOM could be loaded from the specified list/directory" << endl;

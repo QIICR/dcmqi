@@ -27,7 +27,7 @@ namespace dcmqi {
   // -------------------------------------------------------------------------------------
 
   template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
-  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmDataset*> dcmDatasets,
+  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                                                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                                                           const string &metaData,
                                                           bool skipEmptySlices,
@@ -137,11 +137,11 @@ namespace dcmqi {
 			code_seg.CodeMeaning),"",derimgItem));
 
       OFVector<SourceImageItem*> srcimgItems;
-      OFVector<DcmDataset*> dcmDatasets_ofvector;
+      OFVector<DcmItem*> dcmDatasets_ofvector;
       for (const auto& dataset : dcmDatasets) {
         dcmDatasets_ofvector.push_back(dataset);
       }
-      derimgItem->addSourceImageItems(dcmDatasets_ofvector, 
+      derimgItem->addSourceImageItems(dcmDatasets_ofvector,
         CodeSequenceMacro(code_seg.CodeValue,code_seg.CodingSchemeDesignator, code_seg.CodeMeaning), srcimgItems, OFTrue /*skip file errors */);
 
       for(size_t src_image_cnt=0;src_image_cnt<srcimgItems.size();src_image_cnt++){
@@ -404,7 +404,7 @@ namespace dcmqi {
                 frameData[framePixelCnt] = 0;
             }
 
-            OFVector<DcmDataset*> siVector;
+            OFVector<DcmItem*> siVector;
             if(referencesGeometryCheck){
               for(size_t derImageInstanceNum=0;
                   derImageInstanceNum<slice2derimg[sliceNumber].size();
@@ -699,16 +699,16 @@ namespace dcmqi {
   }
 
   template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<ShortImageType>(
-      vector<DcmDataset*> dcmDatasets,
+      vector<DcmItem*> dcmDatasets,
       vector<ShortImageType::ConstPointer> segmentations,
       const string& metaData,
       bool skipEmptySlices,
       bool useLabelIDAsSegmentNumber,
       bool referencesGeometryCheck);
- 
+
   using VectorImageAdapter = itk::VectorImageToImageAdaptor<short, 3U>;
   template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<VectorImageAdapter>(
-      vector<DcmDataset*> dcmDatasets,
+      vector<DcmItem*> dcmDatasets,
       vector<VectorImageAdapter::ConstPointer> segmentations,
       const string& metaData,
       bool skipEmptySlices,

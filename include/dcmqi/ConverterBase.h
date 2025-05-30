@@ -299,7 +299,7 @@ namespace dcmqi {
 
     // AF: I could not quickly figure out how to template this function over image type - suggestions are welcomed!
     template<class ImageSourceType>
-    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmDataset*> dcmDatasets,
+    static vector<vector<int> > getSliceMapForSegmentation2DerivationImage(const vector<DcmItem*> dcmDatasets,
                                                                                        const ImageSourceType& labelImage) {
       // Find mapping from the segmentation slice number to the derivation image
       // Assume that orientation of the segmentation is the same as the source series
