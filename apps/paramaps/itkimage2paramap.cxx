@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     dicomImageFileList.insert(dicomImageFileList.end(), dicomFileList.begin(), dicomFileList.end());
   }
 
-  vector<DcmDataset*> dcmDatasets = helper::loadDatasets(dicomImageFileList);
+  vector<DcmItem*> dcmDatasets = helper::loadDatasets(dicomImageFileList);
 
   if(dcmDatasets.empty()){
     cerr << "ERROR: no DICOM could be loaded from the specified list/directory" << endl;

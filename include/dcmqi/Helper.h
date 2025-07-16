@@ -45,7 +45,7 @@ namespace dcmqi {
 
     static string getFileExtensionFromType(const string& type);
     static vector<string> getFileListRecursively(string directory);
-    static vector<DcmDataset*> loadDatasets(const vector<string>& dicomImageFiles);
+    static vector<DcmItem*> loadDatasets(const vector<string>& dicomImageFiles);
 
     static string floatToStr(float f);
     static void tokenizeString(string str, vector<string> &tokens, string delimiter);
