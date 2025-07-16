@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true     
+          fetch-tags: true
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -52,9 +52,9 @@ jobs:
         run: |
           cd ${{ github.workspace }}\b\dcmqi-build
           ctest -VV -C Release -D ExperimentalTest --no-compress-output
-  
+
       - name: Package dcmqi
-        run: |  
+        run: |
           cd ${{ github.workspace }}\b\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
@@ -65,7 +65,7 @@ jobs:
 
   publish-windows:
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     timeout-minutes: 5
     # Only run if the event is not a pull request and the repository owner is QIICR.
     # The latter is to prevent forks from publishing packages even if the owner's token
@@ -77,7 +77,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true          
+          fetch-tags: true
       - uses: actions/download-artifact@v4
         with:
           name: dcmqi-build
