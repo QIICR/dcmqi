@@ -47,7 +47,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_TAG
-    # DCMTK 3.6.8 ++ (June 6th, 2025), includes patch for building with C++11 and later
+    # DCMTK 3.6.9 ++ (June 6th, 2025), includes patch for building with C++11 and later
     # (commit 30cd132 from a few days earlier + a fix for the shared library build).
     "2726c0e19a42fa131150c334adf9b6ab76e21692"
     QUIET
