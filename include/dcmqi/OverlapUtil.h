@@ -27,6 +27,7 @@
 #include "dcmtk/ofstd/oftypes.h"
 #include "dcmtk/ofstd/ofvector.h"
 #include <set>
+#include <map>
 
 class DcmSegmentation;
 
@@ -91,7 +92,10 @@ public:
 
     /// Lists frames for each segment where segment with index i is represented by the vector at index i,
     /// and index 0 is unused. I.e. index i is segment number, value is vector of physical frame numbers.
-    typedef OFVector<OFVector<Uint32>> FramesForSegment;
+    typedef std::map<Uint32, std::set<Uint32>> FramesForSegment;
+
+    // Set of segments present on each frame.
+    typedef OFVector<std::set<Uint32>> SegmentsForFrame;
 
     /// Implements comparision operator to be used for sorting of frame positions,
     /// making the sorting order depend on the coordinate given in the constructor
@@ -116,7 +120,7 @@ public:
 
     /// Matrix of N x N segment numbers, where N is the number of segments.
     /// Value is 1 at x,y if x and y overlap, 0 if they don't overlap, and -1 if not initialized.
-    typedef OFVector<OFVector<Sint8>> OverlapMatrix;
+    typedef std::map<Uint32, std::map<Uint32, Sint8>> OverlapMatrix;
 
     /// Group of non-overlapping segments (each represented by its segment number)
     typedef OFVector<OFVector<Uint32>> SegmentGroups;
@@ -134,7 +138,7 @@ public:
             , m_frameNumber(f)
         {
         }
-        /// Segment number as used in DICOM segmentation object (1-n)
+        /// Segment number as used in DICOM segmentation object
         Uint16 m_segmentNumber;
         /// Logical frame number (number of frame in DistinctFramePositions vector)
         Uint16 m_frameNumber;
@@ -187,11 +191,18 @@ public:
     OFCondition getSegmentsByPosition(SegmentsByPosition& result);
 
     /** Get phyiscal frames for a specific segment by its segment number
-     *  @param segmentNumber Segment number to get frames for (1..n)
-     *  @param frames Resulting vector of physical frame numbers (first frame is frame 0)
+     *  @param segmentNumber Segment number for which to get frames
+     *  @param frames Resulting vector of physical frame numbers
      *  @return EC_Normal if successful, error otherwise
      */
-    OFCondition getFramesForSegment(const Uint32 segmentNumber, OFVector<Uint32>& frames);
+    OFCondition getFramesForSegment(const Uint32 segmentNumber, std::set<Uint32>& frames);
+
+    /** Get the all the segments present on a specified frame
+     *  @param frameNumber The frame number for which to get segments
+     *  @param segments Resulting set of segment numbers
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition getSegmentsForFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
 
     /** Returns computed overlap matrix
      *  @param  matrix Resulting overlap matrix
@@ -234,6 +245,22 @@ public:
 
 protected:
 
+    /** Get the list of segments within a label map segmentation frame.
+     *  Does not cache the result. To be used exclusively on a label map frame.
+     *  @param frameNumber The frame number for which to get labels
+     *  @param segments The resulting set of segments on the frame
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition getSegmentsForLabelMapFrame(const Uint32 frameNumber, std::set<Uint32>& segments);
+
+    /** Get the segment number for a binary or fractional segmentation frame.
+     *  Does not cache the result. To be used exclusively on a binary or fractional
+     *  segmentation frame.
+     *  @param frameNumber The frame number for which to get labels
+     *  @param segment The resulting segments on the frame
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition getSegmentForFrame(const Uint32 frameNumber, Uint32& segment);
 
     /** Group physical frame positions into logical positions. This is done by sorting
      *  frames after *that* position coordinate that in its mean position difference is
@@ -277,6 +304,17 @@ protected:
      */
     OFCondition checkFramesOverlap(const Uint32& f1, const Uint32& f2, OFBool& overlap);
 
+    /** Checks to see if a segment on a first frame overlaps with a different segment
+     *  on a second frame
+     *  @param sf1 Segment number on frame number to check
+     *  @param sf2 Segment number on frame number to check
+     *  @param overlap Resulting overlap (overlaps if OFTrue, otherwise not)
+     *  @return EC_Normal if successful, error otherwise
+    */
+    OFCondition checkFramesOverlapLabelMap(const SegNumAndFrameNum& sf1,
+                                           const SegNumAndFrameNum& sf2,
+                                           OFBool& overlap);
+
     /** Checks whether the given two frames overlap by using comparing their pixel data
      *  by bitwise "and". This is very efficient, however, only works and is called (right now),
      *  if row*cols % 8 = 0, so we can easily extract frames as binary bitsets without unpacking them.
@@ -292,8 +330,8 @@ protected:
      */
     OFCondition checkFramesOverlapBinary(const Uint32& f1,
                                          const Uint32& f2,
-                                         const DcmIODTypes::Frame* f1_data,
-                                         const DcmIODTypes::Frame* f2_data,
+                                         DcmIODTypes::Frame<Uint8>* f1_data,
+                                         DcmIODTypes::Frame<Uint8>* f2_data,
                                          const Uint16& rows,
                                          const Uint16 cols,
                                          OFBool& overlap);
@@ -312,8 +350,8 @@ protected:
      */
     OFCondition checkFramesOverlapUnpacked(const Uint32& f1,
                                            const Uint32& f2,
-                                           const DcmIODTypes::Frame* f1_data,
-                                           const DcmIODTypes::Frame* f2_data,
+                                           DcmIODTypes::Frame<Uint8>* f1_data,
+                                           DcmIODTypes::Frame<Uint8>* f2_data,
                                            const Uint16& rows,
                                            const Uint16 cols,
                                            OFBool& overlap);
@@ -339,6 +377,9 @@ private:
     /// Inner vector contains the physical frame numbers that represent the
     /// segment.
     FramesForSegment m_framesForSegment;
+
+    /// Stores which segments are present on each frame.
+    SegmentsForFrame m_segmentsForFrame;
 
     /// Logical frames, ie. physical frames with the same position are
     /// grouped together to a logical frame. For every logical frame, we
