@@ -23,13 +23,13 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/commontk/zlib.git"
+    "${EP_GIT_PROTOCOL}://github.com/Slicer/zlib-ng.git"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "66a753054b356da85e1838a081aa94287226823e"
+    "de0aca6040339aad56d96ab1c29850b00ec36a9b"
     QUIET
     )
 
@@ -49,7 +49,12 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
       -DCMAKE_C_FLAGS:STRING=${ep_common_c_flags}
-      -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_
+      # Options
+      -DBUILD_SHARED_LIBS:BOOL=OFF
+      -DZLIB_SYMBOL_PREFIX:STRING=dcmqi_zlib_
+      -DZLIB_COMPAT:BOOL=ON
+      -DZLIB_ENABLE_TESTS:BOOL=OFF
+      # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     DEPENDS
       ${${proj}_DEPENDENCIES}
