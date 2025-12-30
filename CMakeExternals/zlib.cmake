@@ -1,8 +1,11 @@
-
 set(proj zlib)
 
 # Set dependency list
 set(${proj}_DEPENDENCIES "")
+
+# For having lib vs lib64 available through LIBDIR variable
+# which is relevant for some linux systems
+include(GNUInstallDirs)
 
 # Include dependent projects if any
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
@@ -23,13 +26,13 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_REPOSITORY
-    "${EP_GIT_PROTOCOL}://github.com/commontk/zlib.git"
+    "${EP_GIT_PROTOCOL}://github.com/Slicer/zlib-ng.git"
     QUIET
     )
 
   ExternalProject_SetIfNotDefined(
     ${proj}_REVISION_TAG
-    "66a753054b356da85e1838a081aa94287226823e"
+    "de0aca6040339aad56d96ab1c29850b00ec36a9b"
     QUIET
     )
 
@@ -49,7 +52,12 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
       -DCMAKE_C_FLAGS:STRING=${ep_common_c_flags}
-      -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_
+      # Options
+      -DBUILD_SHARED_LIBS:BOOL=OFF
+      -DZLIB_SYMBOL_PREFIX:STRING=dcmqi_zlib_
+      -DZLIB_COMPAT:BOOL=ON
+      -DZLIB_ENABLE_TESTS:BOOL=OFF
+      # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     DEPENDS
       ${${proj}_DEPENDENCIES}
@@ -57,15 +65,16 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   set(ZLIB_ROOT ${EP_INSTALL_DIR})
   set(ZLIB_INCLUDE_DIR ${ZLIB_ROOT}/include)
   if(WIN32)
-    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/zlib.lib)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/${CMAKE_INSTALL_LIBDIR}/zlib.lib)
   else()
-    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/libzlib.a)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/${CMAKE_INSTALL_LIBDIR}/libzlib.a)
   endif()
 else()
   # The project is provided using ZLIB_ROOT, nevertheless since other project may depend on zlib,
   # let's add an 'empty' one
   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
+message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
 
 mark_as_superbuild(
   VARS
