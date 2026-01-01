@@ -64,7 +64,7 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   if(WIN32)
     set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/zlib.lib)
   else()
-    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/libzlib.a)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/libz.a)
   endif()
 else()
   # The project is provided using ZLIB_ROOT, nevertheless since other project may depend on zlib,
