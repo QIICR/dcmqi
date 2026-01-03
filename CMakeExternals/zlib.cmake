@@ -1,8 +1,11 @@
-
 set(proj zlib)
 
 # Set dependency list
 set(${proj}_DEPENDENCIES "")
+
+# For having lib vs lib64 available through LIBDIR variable
+# which is relevant for some linux systems
+include(GNUInstallDirs)
 
 # Include dependent projects if any
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
@@ -62,15 +65,16 @@ if(NOT DEFINED ZLIB_ROOT AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   set(ZLIB_ROOT ${EP_INSTALL_DIR})
   set(ZLIB_INCLUDE_DIR ${ZLIB_ROOT}/include)
   if(WIN32)
-    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/zlib.lib)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/${CMAKE_INSTALL_LIBDIR}/zlib.lib)
   else()
-    set(ZLIB_LIBRARY ${ZLIB_ROOT}/lib/libzlib.a)
+    set(ZLIB_LIBRARY ${ZLIB_ROOT}/${CMAKE_INSTALL_LIBDIR}/libzlib.a)
   endif()
 else()
   # The project is provided using ZLIB_ROOT, nevertheless since other project may depend on zlib,
   # let's add an 'empty' one
   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
+message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
 
 mark_as_superbuild(
   VARS
