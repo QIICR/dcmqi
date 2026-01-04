@@ -13,9 +13,19 @@ on:
 jobs:
   build-macos:
 
-    runs-on: macos-latest
+    runs-on: ${{ matrix.runner }}
     # So far, a full superbuild (no caches) has always been complete in < 45 minutes.
     timeout-minutes: 45
+
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: macos-15-intel
+            cmake_arch: x86_64
+          - arch: arm64
+            runner: macos-15
+            cmake_arch: arm64
 
     # Checkout and install python
     steps:
@@ -65,14 +75,14 @@ jobs:
         # The hash key decides whether cache entry is out of date or can be used.
         # We use the hash of the CMakeExternals files to decide whether
         # we must rebuild it. Also a change in the OS will trigger cash rebuild.
-        # A hashkey will have the form of macOS-build-cache-dcmtk-itk-<hash>
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake','CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake') }}
+        # A hashkey will have the form of macOS-<arch>-build-cache-dcmtk-itk-<hash>
+        key: ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake','CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake') }}
         # Below is the key pattern that defines, which cache entries stored on the
-        # GitHub repository will match our key. We simply use the name of OS and
+        # GitHub repository will match our key. We simply use the name of OS, architecture and
         # name of the cache, i.e. every cache entry with key pattern
-        # macOS-build-cache-dcmtk-itk-<hash> will match.
+        # macOS-<arch>-build-cache-dcmtk-itk-<hash> will match.
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-
 
     # This is step executed if a cache entry is found
     - name: "Configure dcmqi w/ cached DCMTK/ITK/ZLIB"
@@ -99,13 +109,16 @@ jobs:
 
     # ...and finally package it.
     - name: "Package dcmqi"
-      # Only run if the event is not a pull request and the repository owner is QIICR.
-      # The latter is to prevent forks from publishing packages even if the owner's token
-      # would have sufficient privileges.
-      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
       run: |
         cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
 
+    - name: "Upload package as artifact"
+      uses: actions/upload-artifact@v4
+      with:
+        name: dcmqi-macos-package
+        # Example:
+        # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-20260104-9b9b2be.tar.gz
+        path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
 
     - name: Publish package
       # Only run if the event is not a pull request and the repository owner is QIICR.
@@ -115,8 +128,8 @@ jobs:
       run: |
         pip install -U "scikit-ci-addons>=0.22.0"
         ci_addons publish_github_release qiicr/dcmqi \
-        --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz" \
-        --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-*.tar.gz \
-        --prerelease-packages-clear-pattern "dcmqi-*-mac-*" \
+        --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz" \
+        --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
+        --prerelease-packages-clear-pattern "dcmqi-*-mac*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
         --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
