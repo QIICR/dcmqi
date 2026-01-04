@@ -53,7 +53,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dcmqi-linux-package
-        path: build/dcmqi-build/dcmqi-*-linux.tar.gz
+        path: build/dcmqi-build/dcmqi-*-linux*.tar.gz
 
     - name: "Publish linux package"
       # Only run if the event is not a pull request and the repository owner is QIICR.

@@ -106,7 +106,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dcmqi-macos-package
-        path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac.tar.gz
+        # Example:
+        # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-20260104-9b9b2be.tar.gz
+        path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
 
     - name: Publish package
       # Only run if the event is not a pull request and the repository owner is QIICR.
