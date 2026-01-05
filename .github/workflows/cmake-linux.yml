@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
+    permissions:
+      contents: write
+      actions: write    
+
     steps:
     - uses: actions/checkout@v3
       with:
@@ -49,6 +53,12 @@ jobs:
          docker push qiicr/dcmqi:`git describe --tags --exact-match 2> /dev/null || echo "latest"` \
          || echo "skipping docker push"
 
+    - name: "Upload package as artifact"
+      uses: actions/upload-artifact@v4
+      with:
+        name: dcmqi-linux-package
+        path: build/dcmqi-build/dcmqi-*-linux*.tar.gz
+
     - name: "Publish linux package"
       # Only run if the event is not a pull request and the repository owner is QIICR.
       # The latter is to prevent forks from publishing packages even if the owner's token
@@ -64,4 +74,4 @@ jobs:
             --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
             --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
             --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-            --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+            --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }}

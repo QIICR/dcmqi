@@ -17,6 +17,10 @@ jobs:
     # So far, a full superbuild (no caches) has always been complete in < 45 minutes.
     timeout-minutes: 45
 
+    permissions:
+      contents: write
+      actions: write
+
     strategy:
       matrix:
         include:
@@ -109,18 +113,15 @@ jobs:
 
     # ...and finally package it.
     - name: "Package dcmqi"
-      # Only run if the event is not a pull request and the repository owner is QIICR.
-      # The latter is to prevent forks from publishing packages even if the owner's token
-      # would have sufficient privileges.
       run: |
         cd ${{ github.workspace }}/dcmqi-build/dcmqi-build && ninja package
 
     - name: "Upload package as artifact"
       uses: actions/upload-artifact@v4
       with:
-        name: dcmqi-macos-${{ matrix.arch }}-package
+        name: dcmqi-macos-package
         # Example:
-        # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-x86_64-20260104-9b9b2be.tar.gz
+        # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-20260104-9b9b2be.tar.gz
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
 
     - name: Publish package
@@ -135,4 +136,4 @@ jobs:
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
         --prerelease-packages-clear-pattern "dcmqi-*-mac*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-        --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+        --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }}
