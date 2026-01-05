@@ -17,6 +17,10 @@ jobs:
     # So far, a full superbuild (no caches) has always been complete in < 45 minutes.
     timeout-minutes: 45
 
+    permissions:
+      contents: write
+      actions: write
+
     strategy:
       matrix:
         include:
@@ -132,4 +136,4 @@ jobs:
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
         --prerelease-packages-clear-pattern "dcmqi-*-mac*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-        --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+        --exit-success-if-missing-token --token ${{ secrets.GITHUB_TOKEN }}
