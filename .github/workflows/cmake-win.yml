@@ -97,4 +97,4 @@ jobs:
           --prerelease-packages "${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64-*.zip" `
           --prerelease-packages-clear-pattern "dcmqi-*-win64-*" `
           --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" `
-          --token ${{ secrets.GITHUB_TOKEN }}
+          --token ${{ secrets.GA_TOKEN }}
