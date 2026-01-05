@@ -28,6 +28,7 @@
 #include "dcmtk/dcmfg/fgderimg.h"
 #include "dcmtk/dcmseg/segtypes.h"
 #include "dcmtk/dcmiod/cielabutil.h"
+#include <random>
 #include <zconf.h>
 
 namespace dcmqi
@@ -222,12 +223,12 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
         result = createPaletteColorLUT();
     }
 
-    // Add Derivation Image Functional Group with Source Image Item pointing to source segmentation
-    if (result.good())
-    {
-        DCMSEG_DEBUG("Adding Derivation Image Functional Group with Source Image Item pointing to source segmentation");
-        addSourceSegmentationToDerivationImageFG(m_inputSeg, m_outputSeg.get());
-    }
+    // // Add Derivation Image Functional Group with Source Image Item pointing to source segmentation
+    // if (result.good())
+    // {
+    //     DCMSEG_DEBUG("Adding Derivation Image Functional Group with Source Image Item pointing to source segmentation");
+    //     addSourceSegmentationToDerivationImageFG(m_inputSeg, m_outputSeg.get());
+    // }
 
     return result;
 }
@@ -477,6 +478,7 @@ OFCondition DcmBinToLabelConverter::createFramesWithMetadata(DcmSegmentation* sr
                     result = SG_EC_MissingPlanePositionPatient;
                     break;
                 }
+                FGBase* derivationImg = src->getFunctionalGroups().get(it->at(0), DcmFGTypes::EFG_DERIVATIONIMAGE);
                 // Create Frame Content FG for the frame
                 FGFrameContent* frameContent = OFnullptr;
                 result = createFrameContentFG(outputFrameNum, it, frameContent);
@@ -484,6 +486,7 @@ OFCondition DcmBinToLabelConverter::createFramesWithMetadata(DcmSegmentation* sr
 
                 OFVector<FGBase*> perFrameInfo;
                 if (planePos) perFrameInfo.push_back(planePos);
+                if (derivationImg) perFrameInfo.push_back(derivationImg);
                 // addFrame() will copy functional groups. Memory is still handled by source object, so
                 // no need to delete them.
                 if (m_use16Bit)
@@ -553,6 +556,11 @@ OFBool DcmBinToLabelConverter::checkCIELabColorsPresent()
             return OFFalse;
         }
 
+        // Prepare random generator and distribution once
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<Uint16> dist(1, 65535);
+
         // Check whether all segments have Recommended Display CIELab Value Macro
         size_t idx = 0;
         OFMap<Uint16, DcmSegment*>::const_iterator segIt = m_inputSeg->getSegments().begin();
@@ -575,9 +583,9 @@ OFBool DcmBinToLabelConverter::checkCIELabColorsPresent()
                     if (m_convFlags.m_forcePalette)
                     {
                         // Create random color, L, a and b are still in DICOM range 0..65535
-                        L = OFstatic_cast(Uint16, (rand() % 65535) + 1);
-                        a = OFstatic_cast(Uint16, (rand() % 65535) + 1);
-                        b = OFstatic_cast(Uint16, (rand() % 65535) + 1);
+                        L = dist(gen);
+                        a = dist(gen);
+                        b = dist(gen);
                         m_cielabColors.m_L[idx] = L;
                         m_cielabColors.m_a[idx] = a;
                         m_cielabColors.m_b[idx] = b;
@@ -809,7 +817,7 @@ OFCondition DcmBinToLabelConverter::createFrameContentFG(Uint32 outputFrameNum /
             result = frameContent->setDimensionIndexValues(outputFrameNum, 1);
         }
 
-        // Frame Comments: Create list of source frames that has been used for this frame and insert their label
+        // Frame Comments: Create list of source frames that have been used for this frame and insert their label
         // in the form "XXX, YYY ..." in the new frame's Frame Comment attribute
         if (result.good())
         {
@@ -854,7 +862,6 @@ OFCondition DcmBinToLabelConverter::createFrameContentFG(Uint32 outputFrameNum /
 
 OFCondition DcmBinToLabelConverter::addSourceSegmentationToDerivationImageFG(DcmSegmentation* src, DcmSegmentation* dest)
 {
-
     DCMSEG_DEBUG("Adding Derivation Image Functional Group to output segmentation");
     OFCondition result;
     OFBool isPerFrame = OFFalse;
