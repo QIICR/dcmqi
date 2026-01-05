@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: write
       actions: write
+      packages: write
 
     strategy:
       matrix:
