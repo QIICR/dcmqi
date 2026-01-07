@@ -9,10 +9,10 @@ set(HDRS
   ${INCLUDE_DIR}/preproc.h
   ${INCLUDE_DIR}/QIICRConstants.h
   ${INCLUDE_DIR}/QIICRUIDs.h
+  ${INCLUDE_DIR}/Bin2Label.h
   ${INCLUDE_DIR}/ConverterBase.h
   ${INCLUDE_DIR}/Dicom2ItkConverter.h
   ${INCLUDE_DIR}/Exceptions.h
-  ${INCLUDE_DIR}/framesorter.h
   ${INCLUDE_DIR}/Itk2DicomConverter.h
   ${INCLUDE_DIR}/ParaMapConverter.h
   ${INCLUDE_DIR}/Helper.h
@@ -20,12 +20,12 @@ set(HDRS
   ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
   ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
   ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
-  ${INCLUDE_DIR}/OverlapUtil.h
   ${INCLUDE_DIR}/SegmentAttributes.h
   ${INCLUDE_DIR}/TID1500Reader.h
   )
 
 set(SRCS
+  Bin2Label.cpp
   ConverterBase.cpp
   Dicom2ItkConverter.cpp
   ParaMapConverter.cpp
@@ -35,7 +35,6 @@ set(SRCS
   JSONMetaInformationHandlerBase.cpp
   JSONParametricMapMetaInformationHandler.cpp
   JSONSegmentationMetaInformationHandler.cpp
-  OverlapUtil.cpp
   SegmentAttributes.cpp
   TID1500Reader.cpp
   )

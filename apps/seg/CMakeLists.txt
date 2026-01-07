@@ -35,6 +35,17 @@ SEMMacroBuildCLI(
   )
 
 #-----------------------------------------------------------------------------
+set(MODULE_NAME bin2labelsegimage)
+
+#-----------------------------------------------------------------------------
+SEMMacroBuildCLI(
+  NAME ${MODULE_NAME}
+  TARGET_LIBRARIES dcmqi
+  EXECUTABLE_ONLY
+  )
+
+
+#-----------------------------------------------------------------------------
 if(BUILD_TESTING)
   add_subdirectory(Testing)
 endif()

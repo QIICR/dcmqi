@@ -627,7 +627,6 @@ namespace dcmqi {
     {
       groups.push_back(fgPlanePos.get());
       groups.push_back(fgFracon.get());
-      groups.push_back(fgPlanePos.get());
       DPMParametricMapIOD::FramesType frames = map.getFrames();
       result = OFget<DPMParametricMapIOD::Frames<FloatPixelType> >(&frames)->addFrame(&*data.begin(), frameSize, groups);
     }

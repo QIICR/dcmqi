@@ -1,11 +1,10 @@
-
 // DCMQI includes
 #include "dcmqi/Dicom2ItkConverter.h"
 #include "dcmqi/ColorUtilities.h"
-#include "dcmqi/OverlapUtil.h"
 
 // DCMTK includes
 #include <cstddef>
+#include <dcmtk/dcmseg/overlaputil.h>
 #include <dcmtk/dcmiod/cielabutil.h>
 #include <dcmtk/dcmsr/codes/dcm.h>
 #include <dcmtk/ofstd/ofmem.h>
@@ -149,11 +148,11 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                 }
                 // Handling differs depending on whether the segmentation is binary or fractional
                 // (we have to unpack binary frames before copying them into the ITK image)
-                const DcmIODTypes::Frame* rawFrame      = m_segDoc->getFrame(framesForSegment[frameIndex]);
-                const DcmIODTypes::Frame* unpackedFrame = NULL;
+                const DcmIODTypes::FrameBase* rawFrame      = m_segDoc->getFrame(framesForSegment[frameIndex]);
+                const DcmIODTypes::FrameBase* unpackedFrame = NULL;
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
-                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(rawFrame,
+                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(OFstatic_cast(const DcmIODTypes::Frame<Uint8>*, rawFrame),
                                                                    m_imageSize[1],  // Rows
                                                                    m_imageSize[0]); // Cols
                 }
@@ -218,7 +217,8 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                     {
                         ShortImageType::PixelType pixel;
                         unsigned bitCnt = row * m_imageSize[0] + col;
-                        pixel           = unpackedFrame->pixData[bitCnt];
+                        // This is always 8 bit data after unpacking
+                        pixel           = OFstatic_cast(Uint8*, unpackedFrame->getPixelData())[bitCnt];
                         ShortImageType::IndexType index;
                         if (pixel != 0)
                         {
@@ -321,17 +321,16 @@ OFCondition Dicom2ItkConverter::extractBasicSegmentationInfo()
 
     // Region, defined by DICOM rows and columns
     {
-        DcmIODImage<IODImagePixelModule<Uint8>>* ip
-            = static_cast<DcmIODImage<IODImagePixelModule<Uint8>>*>(m_segDoc.get());
-        Uint16 value;
-        if (ip->getImagePixel().getRows(value).good())
+        Uint16 rows, cols;
+        rows = m_segDoc->getRows();
+        cols = m_segDoc->getColumns();
+        if (rows == 0 || cols == 0)
         {
-            m_imageSize[1] = value;
+            cerr << "ERROR: Failed to get image rows and/or columns from DICOM!" << endl;
+            throw -1;
         }
-        if (ip->getImagePixel().getColumns(value).good())
-        {
-            m_imageSize[0] = value;
-        }
+        m_imageSize[1] = rows;
+        m_imageSize[0] = cols;
     }
     // Number of slices should be computed, since segmentation may have empty frames
     m_imageSize[2] = round(m_computedVolumeExtent / m_imageSpacing[2]) + 1;
