@@ -66,7 +66,7 @@ jobs:
     # both, headers and libraries.
     - name: Check for cached DCMTK, ITK and ZLIB
       id: cache-dcmtk-itk-zlib
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-dcmtk-itk-zlib
       with:
@@ -88,6 +88,17 @@ jobs:
         # macOS-<arch>-build-cache-dcmtk-itk-<hash> will match.
         restore-keys: |
           ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-
+
+    # Report cache status for monitoring
+    - name: Report cache status
+      run: |
+        if [ "${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit }}" == "true" ]; then
+          echo "✓ Cache hit! Using cached DCMTK, ITK, and zlib"
+          echo "Cache key: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-primary-key }}"
+          du -sh ${{ github.workspace }}/dcmqi-build/DCMTK* ${{ github.workspace }}/dcmqi-build/ITK* ${{ github.workspace }}/dcmqi-build/zlib-install 2>/dev/null || true
+        else
+          echo "✗ Cache miss. Will build DCMTK, ITK, and zlib from source"
+        fi
 
     # This is step executed if a cache entry is found
     - name: "Configure dcmqi w/ cached DCMTK/ITK/ZLIB"
@@ -120,7 +131,7 @@ jobs:
     - name: "Upload package as artifact"
       uses: actions/upload-artifact@v4
       with:
-        name: dcmqi-macos-package
+        name: dcmqi-macos-${{ matrix.arch }}-package
         # Example:
         # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-20260104-9b9b2be.tar.gz
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
@@ -135,6 +146,6 @@ jobs:
         ci_addons publish_github_release qiicr/dcmqi \
         --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz" \
         --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
-        --prerelease-packages-clear-pattern "dcmqi-*-mac*" \
+        --prerelease-packages-clear-pattern "dcmqi-*-mac-${{ matrix.arch }}-*" \
         --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
         --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
