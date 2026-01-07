@@ -71,7 +71,7 @@ jobs:
   publish-windows:
 
     runs-on: windows-2022
-    timeout-minutes: 5
+    timeout-minutes: 10
     # Only run if the event is not a pull request and the repository owner is QIICR.
     # The latter is to prevent forks from publishing packages even if the owner's token
     # would have sufficient privileges.
@@ -89,7 +89,10 @@ jobs:
           path: ${{ github.workspace }}\b\dcmqi-build
 
       - name: Publish package
+        shell: pwsh
         run: |
+          # Set longer timeout for HTTP operations in PowerShell
+          $PSDefaultParameterValues['*:TimeoutSec'] = 300
           pip install -U "scikit-ci-addons>=0.22.0"
           ci_addons publish_github_release qiicr/dcmqi `
           --exit-success-if-missing-token `
