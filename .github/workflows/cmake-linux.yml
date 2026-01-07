@@ -27,7 +27,7 @@ jobs:
         fetch-tags: true 
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10.11'
 
     - name: "Install jsondiff"
       run: pip install jsondiff
@@ -36,6 +36,46 @@ jobs:
         sudo apt-get update
         sudo apt-get install rsync
         sudo apt-get install cmake
+
+    # Set up Docker Buildx for better caching support
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # Cache the build directory containing all external dependencies
+    - name: Cache build directory
+      id: cache-build-dir
+      uses: actions/cache@v4
+      env:
+        cache-name: cache-build-artifacts
+      with:
+        path: |
+          build/
+          /tmp/dockcross
+        # Cache key includes hash of CMakeExternals files and Makefile
+        # to invalidate when dependencies or build process changes
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake', 'CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake', 'docker/Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.cache-name }}-
+
+    # Report cache status
+    - name: Report cache status
+      run: |
+        if [ "${{ steps.cache-build-dir.outputs.cache-hit }}" == "true" ]; then
+          echo "✓ Cache hit! Using cached build artifacts"
+          echo "Cache key: ${{ steps.cache-build-dir.outputs.cache-primary-key }}"
+          if [ -d build ]; then
+            echo "Build directory size:"
+            du -sh build/ 2>/dev/null || true
+            echo "Build directory contents:"
+            ls -lh build/ 2>/dev/null || true
+          fi
+          if [ -f /tmp/dockcross ]; then
+            echo "✓ Dockcross script cached"
+          fi
+        else
+          echo "✗ Cache miss. Will build all dependencies from source"
+        fi
+
     - name: "Build dcmqi"
       run: |
         cd docker && make dcmqi
