@@ -1,6 +1,7 @@
 [![OpenHub](https://www.openhub.net/p/dcmqi/widgets/project_thin_badge.gif)](https://www.openhub.net/p/dcmqi) [![codecov](https://codecov.io/gh/QIICR/dcmqi/branch/master/graph/badge.svg)](https://codecov.io/gh/QIICR/dcmqi)
 [![](https://img.shields.io/docker/pulls/qiicr/dcmqi.svg?maxAge=604800)](https://hub.docker.com/r/qiicr/dcmqi)
 
+
 | CI Build     | Linux | Windows | Mac |
 |--------------|-------|---------|-----|
 | Build Status for latest | ![GitHub CI Linux](https://github.com/QIICR/dcmqi/actions/workflows/cmake-linux.yml/badge.svg) | ![GitHub CI Windows](https://github.com/QIICR/dcmqi/actions/workflows/cmake-win.yml/badge.svg) | ![GitHub CI Mac](https://github.com/QIICR/dcmqi/actions/workflows/cmake-macos.yml/badge.svg)
