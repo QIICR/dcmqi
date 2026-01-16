@@ -13,6 +13,7 @@
   #include <dcmtk/dcmfg/fgfracon.h>
 #endif
 #include <dcmtk/dcmsr/codes/dcm.h>
+#include <dcmtk/dcmfg/fgfracon.h>
 
 #include <itkVectorImageToImageAdaptor.h>
 

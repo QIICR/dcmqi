@@ -124,24 +124,26 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
         {
             // Iterate over frames for this segment, and copy the data into the ITK image.
             // Afterwards, the ITK image will have the complete data belonging to that segment
-            OverlapUtil::FramesForSegment::value_type framesForSegment;
+            OverlapUtil::FramesForSegment::mapped_type framesForSegment;
             m_overlapUtil.getFramesForSegment(*segNum, framesForSegment);
-            for (size_t frameIndex = 0; frameIndex < framesForSegment.size(); frameIndex++)
+            for (std::set<Uint32>::iterator it = framesForSegment.begin();
+                 it != framesForSegment.end();
+                 it++)
             {
                 // Copy the data from the frame into the ITK image
                 ShortImageType::PointType frameOriginPoint;
                 ShortImageType::IndexType frameOriginIndex;
-                result = getITKImageOrigin(framesForSegment[frameIndex], frameOriginPoint);
+                result = getITKImageOrigin(*it, frameOriginPoint);
                 if (result.bad())
                 {
-                    cerr << "ERROR: Failed to get origin for frame " << framesForSegment[frameIndex] << " of segment "
+                    cerr << "ERROR: Failed to get origin for frame " << *it << " of segment "
                          << *segNum << endl;
                     m_groupIterator = m_segmentGroups.end();
                     return nullptr;
                 }
                 if (!itkImage->TransformPhysicalPointToIndex(frameOriginPoint, frameOriginIndex))
                 {
-                    cerr << "ERROR: Frame " << framesForSegment[frameIndex] << " origin " << frameOriginPoint
+                    cerr << "ERROR: Frame " << *it << " origin " << frameOriginPoint
                          << " is outside image geometry!" << frameOriginIndex << endl;
                     cerr << "Image size: " << itkImage->GetBufferedRegion().GetSize() << endl;
                     m_groupIterator = m_segmentGroups.end();
@@ -149,11 +151,11 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                 }
                 // Handling differs depending on whether the segmentation is binary or fractional
                 // (we have to unpack binary frames before copying them into the ITK image)
-                const DcmIODTypes::Frame* rawFrame      = m_segDoc->getFrame(framesForSegment[frameIndex]);
-                const DcmIODTypes::Frame* unpackedFrame = NULL;
+                DcmIODTypes::FrameBase* rawFrame      = const_cast<DcmIODTypes::FrameBase*>(m_segDoc->getFrame(*it));
+                DcmIODTypes::FrameBase* unpackedFrame = NULL;
                 if (m_segDoc->getSegmentationType() == DcmSegTypes::ST_BINARY)
                 {
-                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(rawFrame,
+                    unpackedFrame = DcmSegUtils::unpackBinaryFrame(dynamic_cast<const DcmIODTypes::Frame<Uint8>*>(rawFrame),
                                                                    m_imageSize[1],  // Rows
                                                                    m_imageSize[0]); // Cols
                 }
@@ -212,15 +214,18 @@ itk::SmartPointer<ShortImageType> Dicom2ItkConverter::nextResult()
                     /* WIP */
                 }
 
+                bool labelMapSegmentation = m_segDoc->getSegmentationType() == DcmSegTypes::ST_LABELMAP;
                 for (unsigned row = 0; row < m_imageSize[1]; row++)
                 {
                     for (unsigned col = 0; col < m_imageSize[0]; col++)
                     {
                         ShortImageType::PixelType pixel;
+                        Uint16 uint16Pixel;
                         unsigned bitCnt = row * m_imageSize[0] + col;
-                        pixel           = unpackedFrame->pixData[bitCnt];
+                        unpackedFrame->getUint16AtIndex(uint16Pixel, bitCnt);
+                        pixel = uint16Pixel;
                         ShortImageType::IndexType index;
-                        if (pixel != 0)
+                        if (labelMapSegmentation ? pixel == *segNum : pixel != 0)
                         {
                             index[0] = col;
                             index[1] = row;
@@ -371,7 +376,6 @@ OFCondition Dicom2ItkConverter::getNonOverlappingSegmentGroups(const bool mergeS
         cout << "Will not merge segments: Splitting segments into " << segmentGroups.size() << " groups" << endl;
     }
     return result;
-    ;
 }
 
 // -------------------------------------------------------------------------------------
