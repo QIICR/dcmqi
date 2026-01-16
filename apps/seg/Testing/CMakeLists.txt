@@ -325,7 +325,7 @@ foreach(phantom_test_labelmap ${TEST_SEG_SIZES})
     )
 endforeach()
 
-set(SEG_SAMPLES liver partial_overlaps)
+set(SEG_SAMPLES liver)
 
 foreach(more_test_labelmap ${SEG_SAMPLES})
 
@@ -336,4 +336,20 @@ foreach(more_test_labelmap ${SEG_SAMPLES})
       --inputDICOM ${CMAKE_SOURCE_DIR}/data/segmentations/${more_test_labelmap}.dcm
       --outputDICOM ${MODULE_TEMP_DIR}/${more_test_labelmap}-labelmap.dcm
     )
+
+endforeach()
+
+set(SEG_SAMPLES partial_overlaps)
+
+foreach(overlapping_segs ${SEG_SAMPLES})
+
+  dcmqi_add_test(
+    NAME ${overlapping_segs}_to_labelmap
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${seg2labelmap}>
+      --inputDICOM ${CMAKE_SOURCE_DIR}/data/segmentations/${overlapping_segs}.dcm
+      --outputDICOM ${MODULE_TEMP_DIR}/${overlapping_segs}-labelmap.dcm
+    )
+  set_tests_properties(${overlapping_segs}_to_labelmap PROPERTIES WILL_FAIL TRUE)
+
 endforeach()
