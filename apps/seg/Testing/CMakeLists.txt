@@ -313,3 +313,27 @@ foreach(seg_size ${TEST_SEG_SIZES})
 
 endforeach()
 
+set(seg2labelmap bin2labelsegimage)
+foreach(phantom_test_labelmap ${TEST_SEG_SIZES})
+
+  dcmqi_add_test(
+    NAME seg_phantom_${phantom_test_labelmap}_to_labelmap
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${seg2labelmap}>
+      --inputDICOM ${CMAKE_SOURCE_DIR}/data/segmentations/${phantom_test_labelmap}/seg/label.seg
+      --outputDICOM ${MODULE_TEMP_DIR}/${phantom_test_labelmap}-labelmap.seg
+    )
+endforeach()
+
+set(SEG_SAMPLES liver partial_overlaps)
+
+foreach(more_test_labelmap ${SEG_SAMPLES})
+
+  dcmqi_add_test(
+    NAME ${more_test_labelmap}_to_labelmap
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${seg2labelmap}>
+      --inputDICOM ${CMAKE_SOURCE_DIR}/data/segmentations/${more_test_labelmap}.dcm
+      --outputDICOM ${MODULE_TEMP_DIR}/${more_test_labelmap}-labelmap.dcm
+    )
+endforeach()
