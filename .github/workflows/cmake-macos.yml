@@ -131,7 +131,7 @@ jobs:
     - name: "Upload package as artifact"
       uses: actions/upload-artifact@v4
       with:
-       name: dcmqi-macos-${{ matrix.arch }}-package
+        name: dcmqi-macos-${{ matrix.arch }}-package
         # Example:
         # /Users/runner/work/dcmqi/dcmqi/dcmqi-build/dcmqi-build/dcmqi-1.4.0-mac-20260104-9b9b2be.tar.gz
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
