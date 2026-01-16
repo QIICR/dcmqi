@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Informatics.Converters</category>
+  <title>Convert binary 1 bit DICOM Segmentation Image into DICOM Labelmap Segmentation Image</title>
+  <description>Convert binary 1 bit DICOM Segmentation Images into DICOM Labelmap Segmentation Images. This only works if the binary segmentation does not have overlaps (checked by the converter).</description>
+  <version>1.0</version>
+  <documentation-url>https://github.com/QIICR/dcmqi</documentation-url>
+  <license></license>
+  <contributor>Michael Onken, Andrey Fedorov(BWH)</contributor>
+  <acknowledgements>This work is supported in part the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, grant Quantitative Image Informatics for Cancer Research (QIICR) (U24 CA180918, PIs Kikinis and Fedorov).</acknowledgements>
+
+  <parameters>
+    <label>Required input/output parameters</label>
+    <file>
+        <name>inputSEGFileName</name>
+        <label>SEG file name</label>
+        <channel>input</channel>
+        <longflag>inputDICOM</longflag>
+        <description>File name of the binary DICOM SEG object that is the source of conversion.</description>
+    </file>
+
+    <file>
+      <name>outputSEGFileName</name>
+      <label>SEG file name</label>
+      <channel>output</channel>
+      <longflag>outputDICOM</longflag>
+      <description>File name of the DICOM SEG object that will store the result of conversion.</description>
+    </file>
+  </parameters>
+
+  <parameters advanced="true">
+    <label>Advanced processing parameters</label>
+    <!-- <integer>
+      <name>skipEmptySlices</name>
+      <label>Skip empty slices</label>
+      <channel>input</channel>
+      <longflag>skip</longflag>
+      <default>1</default>
+      <description>Skip empty slices while encoding segmentation image. By default, empty slices will not be encoded, resulting in a smaller output file size.</description>
+    </integer>
+
+    <integer>
+      <name>referencesGeometryCheck</name>
+      <label>Check referenced source image geometry</label>
+      <channel>input</channel>
+      <longflag>referencesGeometryCheck</longflag>
+      <default>1</default>
+      <description>Check whether referenced image slices match the geometry of the segmentation before adding them to the references list. Set this flag to 0 to bypass these checks and add references independently of the geometry consistency.</description>
+    </integer>
+
+    <boolean>
+      <name>useLabelIDAsSegmentNumber</name>
+      <label>Use label ID as Segment Number</label>
+      <channel>output</channel>
+      <longflag>useLabelIDAsSegmentNumber</longflag>
+      <default>false</default>
+      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1, otherwise conversion will fail.</description>
+    </boolean> -->
+
+    <boolean>
+      <name>verbose</name>
+      <label>Verbose</label>
+      <channel>input</channel>
+      <longflag>verbose</longflag>
+      <default>false</default>
+      <description>Display more verbose output, useful for troubleshooting.</description>
+    </boolean>
+
+    <boolean>
+      <name>usePalette</name>
+      <label>Use Palette Color Model</label>
+      <channel>input</channel>
+      <longflag>usePalette</longflag>
+      <default>false</default>
+      <description>Use Palette Color Model for output segmentation (default: MONOCHROME2).</description>
+    </boolean>
+
+    <boolean>
+      <name>noCheck</name>
+      <label>Disable various sanity checks</label>
+      <channel>input</channel>
+      <longflag>noCheck</longflag>
+      <default>false</default>
+      <description>Disable various sanity checks during conversion.</description>
+    </boolean>
+
+    <!--<boolean>-->
+    <!--<name>compress</name>-->
+    <!--<label>Deflate PixelData</label>-->
+    <!--<channel>input</channel>-->
+    <!--<longflag>zip</longflag>-->
+    <!--<description>Apply compression to PixelData.</description>-->
+    <!--</boolean>-->
+
+  </parameters>
+
+</executable>

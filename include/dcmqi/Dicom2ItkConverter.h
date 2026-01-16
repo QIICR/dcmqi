@@ -8,6 +8,7 @@
 #include <dcmtk/dcmseg/segdoc.h>
 #include <dcmtk/dcmseg/segment.h>
 #include <dcmtk/dcmseg/segutils.h>
+#include <dcmtk/dcmseg/overlaputil.h>
 
 // ITK includes
 #include <itkBinaryThresholdImageFilter.h>
@@ -18,10 +19,8 @@
 #include <itkLabelStatisticsImageFilter.h>
 
 // DCMQI includes
-#include "OverlapUtil.h"
 #include "dcmqi/ConverterBase.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
-#include "dcmqi/OverlapUtil.h"
 
 using namespace std;
 
