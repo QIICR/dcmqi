@@ -711,8 +711,7 @@ OFCondition DcmBinToLabelConverter::createPaletteColorLUT()
                 // Scale to full 16 bit range
                 double R, G, B;
                 IODCIELabUtil::dicomLab2RGB(R, G, B, m_cielabColors.m_L[idx], m_cielabColors.m_a[idx], m_cielabColors.m_b[idx]);
-                IODCIELabUtil::dicomLab2RGB(R, G, B, m_cielabColors.m_L[idx], m_cielabColors.m_a[idx], m_cielabColors.m_b[idx]);
-                IODCIELabUtil::dicomLab2RGB(R, G, B, m_cielabColors.m_L[idx], m_cielabColors.m_a[idx], m_cielabColors.m_b[idx]);
+
                 R = R*maxRange;
                 G = G*maxRange;
                 B = B*maxRange;

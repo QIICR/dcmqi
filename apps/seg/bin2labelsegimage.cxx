@@ -84,11 +84,7 @@ int main(int argc, char* argv[])
                 std::cerr << "ERROR: Failed to get output label segmentation: " << result.text() << std::endl;
                 returnCode = EXIT_FAILURE;
             }
-            if (result.bad() || !labelSeg)
-            {
-                std::cerr << "ERROR: Failed to get output label segmentation: " << result.text() << std::endl;
-                returnCode = EXIT_FAILURE;
-            }
+
         }
         else
         {

@@ -32,7 +32,8 @@
 
 #include "dcmqi/ConverterBase.h"
 
-/** Class representing an object of the "Segmentation SOP Class".
+/** Converter class for transforming binary DICOM segmentation (Segmentation SOP Class)
+ *  objects into labelmap segmentations.
  */
 
 namespace dcmqi
@@ -65,14 +66,14 @@ public:
 
     E_TransferSyntax getInputTransferSyntax() const;
 
-    /** Static method to load a Segmentation object from a file.
-     *  The memory of the resulting Segmentation object has to be freed by the
-     *  caller.
-     *  @param  filename The file to read from
-     *  @param  labelMap  The resulting segmentation object. NULL if dataset
-     *          could not be read successfully.
-     *  @param  flags Flags to configure the loading of the segmentation object
-     *  @return EC_Normal if reading was successful, error otherwise
+    /** Converts the currently set input segmentation from binary representation
+     *  to a label map segmentation.
+     *  The input segmentation must have been provided beforehand using one of the
+     *  setInput(...) methods. After successful conversion, the result can be
+     *  retrieved via getOutputSegmentation(...) or getOutputDataset(...).
+     *  @param  convFlags Flags to configure the conversion process. If omitted,
+     *          default conversion settings are used.
+     *  @return EC_Normal if conversion was successful, an error code otherwise.
      */
     OFCondition convert(const ConversionFlags& convFlags = ConversionFlags());
 
