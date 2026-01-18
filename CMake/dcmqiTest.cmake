@@ -35,6 +35,7 @@ macro(dcmqi_add_test_executable)
   add_executable(${_name} ${_source})
   target_link_libraries(${_name}
     ${_SELF_MODULE_NAME}Lib
+    dcmqi
     ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES}
     )
   set_target_properties(${_name} PROPERTIES LABELS ${_SELF_MODULE_NAME})
