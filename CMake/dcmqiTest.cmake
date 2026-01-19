@@ -8,6 +8,11 @@
 #   EXECUTABLE_NAME - name of the executable wrapper
 #   MODULE_NAME     - name of the module to test
 #
+
+if(DCMTK_DIR)
+  link_directories(${DCMTK_DIR}/lib)
+endif()
+
 macro(dcmqi_add_test_executable)
   set(options
   )
@@ -37,6 +42,7 @@ macro(dcmqi_add_test_executable)
     ${_SELF_MODULE_NAME}Lib
     dcmqi
     ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES}
+    ${DCMTK_LIBRARIES}
     )
   set_target_properties(${_name} PROPERTIES LABELS ${_SELF_MODULE_NAME})
   set_target_properties(${_name} PROPERTIES FOLDER ${${_SELF_MODULE_NAME}_TARGETS_FOLDER})
