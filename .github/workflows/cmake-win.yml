@@ -36,6 +36,19 @@ jobs:
         run: |
           pip install jsondiff
 
+      - name: Cache build dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}\b\DCMTK-build
+            ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\ITK-build
+            ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\zlib-install
+          key: windows-deps-${{ hashFiles('CMakeLists.txt', 'CMakeExternals/*.cmake') }}
+          restore-keys: |
+            windows-deps-
+
       - name: Configure project
 
         run: |
