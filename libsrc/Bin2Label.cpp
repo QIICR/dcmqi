@@ -19,6 +19,8 @@
  *
  */
 
+// Include ITK before DCMTK (ITK defines NOMINMAX before including windows.h to avoid name clash of min and max macros)
+#include "itkLightObject.h"
 
 #include "dcmtk/config/osconfig.h" // include OS configuration first
 #include "dcmqi/Bin2Label.h"
