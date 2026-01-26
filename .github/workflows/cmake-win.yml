@@ -55,7 +55,7 @@ jobs:
           ls ${{ github.workspace }}
           echo "WORKSPACE dir: ${{ github.workspace }}"
           cmake --version
-          mkdir -p ${{ github.workspace }}\b
+          if (-not (Test-Path "${{ github.workspace }}\b")) { mkdir -p "${{ github.workspace }}\b" }
           echo "Step 2"
           cd ${{ github.workspace }}\b
           echo "Step 3"
