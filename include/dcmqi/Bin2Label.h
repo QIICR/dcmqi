@@ -38,7 +38,7 @@
 
 namespace dcmqi
 {
-class DCMTK_DCMSEG_EXPORT DcmBinToLabelConverter
+class DcmBinToLabelConverter
 {
 
 public:
