@@ -1,6 +1,3 @@
-// Include ITK before DCMTK (ITK defines NOMINMAX before including windows.h to avoid name clash of min and max macros)
-#include "itkLightObject.h"
-
 // CLP includes
 #include "bin2labelsegimageCLP.h"
 #include <itkSmartPointer.h>
