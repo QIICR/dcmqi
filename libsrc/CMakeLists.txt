@@ -99,6 +99,11 @@ target_link_libraries(${lib_name} PUBLIC
   $<$<NOT:$<BOOL:${DCMQI_BUILTIN_JSONCPP}>>:${JsonCpp_LIBRARY}>
   )
 
+if(WIN32)
+  # Due to name clash of "max" macro, build may fail error on Windows without defining NOMINMAX.
+  target_compile_definitions(${lib_name} PRIVATE NOMINMAX)
+endif()
+
 if(export_targets)
   install(TARGETS ${lib_name}
           EXPORT ${PROJECT_NAME}Targets
