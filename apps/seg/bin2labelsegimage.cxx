@@ -9,6 +9,8 @@
 
 // DCMTK includes
 #include <dcmtk/oflog/configrt.h>
+#include <dcmtk/dcmdata/dcrledrg.h>
+#include <dcmtk/dcmdata/dcrleerg.h>
 
 typedef dcmqi::Helper helper;
 typedef itk::ImageFileWriter<ShortImageType> WriterType;
@@ -18,6 +20,7 @@ int main(int argc, char* argv[])
     std::cout << dcmqi_INFO << std::endl;
 
     PARSE_ARGS;
+    E_TransferSyntax outputTS = EXS_RLELossless;
 
     if (verbose)
     {
@@ -30,6 +33,7 @@ int main(int argc, char* argv[])
 
 
     DcmRLEDecoderRegistration::registerCodecs();
+    DcmRLEEncoderRegistration::registerCodecs();
 
     DcmFileFormat sliceFF;
     std::cout << "Loading DICOM SEG file " << inputSEGFileName << std::endl;
@@ -55,6 +59,26 @@ int main(int argc, char* argv[])
             convFlags.m_checkExportValues = OFFalse;
         }
         converter.setInput(dataset);
+        if (compressRLE)
+        {
+            outputTS = EXS_RLELossless;
+        }
+#ifdef WITH_ZLIB
+        else if (compressZLIB)
+        {
+            outputTS = EXS_DeflatedLittleEndianExplicit;
+        }
+#else
+        else if (compressZLIB)
+        {
+            std::cerr << "ERROR: ZLIB compression is not supported because DCMTK was built without ZLIB support." << std::endl;
+            return EXIT_FAILURE;
+        }
+#endif
+        else if (compressNone)
+        {
+            outputTS = EXS_LittleEndianExplicit;
+        }
         std::cout << "Converting binary segmentation to label map segmentation..." << std::endl;
         OFCondition result = converter.convert(convFlags);
         if (result.good())
@@ -77,7 +101,18 @@ int main(int argc, char* argv[])
 
                 CHECK_COND(labelSeg->writeDataset(*(outputFF.getDataset())));
                 std::cout << "Writing output DICOM label map SEG file to " << outputSEGFileName << std::endl;
-                CHECK_COND(outputFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));
+                // choose representation
+                result = outputFF.chooseRepresentation(outputTS, NULL);
+                if (result.good())
+                {
+                    std::cout << "Using transfer syntax: " << DcmXfer(outputTS).getXferName() << std::endl;
+                    CHECK_COND(outputFF.saveFile(outputSEGFileName.c_str(), outputTS));
+                }
+                else
+                {
+                    std::cerr << "ERROR: Failed to convert to desired output transfer syntax." << std::endl;
+                    returnCode = EXIT_FAILURE;
+                }
             }
             else
             {
@@ -101,5 +136,6 @@ int main(int argc, char* argv[])
 
     // deregister RLE codec
     DcmRLEDecoderRegistration::cleanup();
+    DcmRLEEncoderRegistration::cleanup();
     return returnCode;
 }

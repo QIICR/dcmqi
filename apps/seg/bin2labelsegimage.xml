@@ -76,6 +76,34 @@
     </boolean>
 
     <boolean>
+      <name>compressNone</name>
+      <label>Write uncompressed transfer syntax (LEE)</label>
+      <channel>input</channel>
+      <longflag>compressNone</longflag>
+      <default>true</default>
+      <description>Write uncompressed transfer syntax (Little Endian Explicit) for output labelmap
+        (default: RLE).</description>
+    </boolean>
+
+    <boolean>
+      <name>compressRLE</name>
+      <label>Write RLE transfer syntax</label>
+      <channel>input</channel>
+      <longflag>compressRLE</longflag>
+      <default>true</default>
+      <description>Write RLE transfer syntax for output labelmap (default).</description>
+    </boolean>
+
+    <boolean>
+      <name>compressZLIB</name>
+      <label>Write Deflated transfer syntax</label>
+      <channel>input</channel>
+      <longflag>compressZLIB</longflag>
+      <default>false</default>
+      <description>Write Deflated transfer syntax for output labelmap (default: RLE).</description>
+    </boolean>
+
+    <boolean>
       <name>noCheck</name>
       <label>Disable various sanity checks</label>
       <channel>input</channel>
