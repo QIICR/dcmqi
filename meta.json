@@ -1,0 +1,187 @@
+{
+  "BodyPartExamined" : "CHEST",
+  "ClinicalTrialCoordinatingCenterName" : "dcmqi",
+  "ClinicalTrialSeriesID" : "0",
+  "ClinicalTrialTimePointID" : "1",
+  "ContentCreatorName" : "IDC",
+  "InstanceNumber" : "1",
+  "SeriesDescription" : "TotalSegmentator(v1.5.6) Segmentation of Series 5",
+  "SeriesNumber" : "500",
+  "segmentAttributes" :
+  [
+    [
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 1 : spleen",
+        "SegmentLabel" : "Spleen",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Spleen",
+          "CodeValue" : "78961009",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 1,
+        "recommendedDisplayRGBValue" : [ 157, 108, 162 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 2 : kidney_right",
+        "SegmentLabel" : "Right Kidney",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Kidney",
+          "CodeValue" : "64033007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeModifierCodeSequence" :
+        {
+          "CodeMeaning" : "Right",
+          "CodeValue" : "24028007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 2,
+        "recommendedDisplayRGBValue" : [ 212, 126, 151 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 3 : kidney_left",
+        "SegmentLabel" : "Left Kidney",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Kidney",
+          "CodeValue" : "64033007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeModifierCodeSequence" :
+        {
+          "CodeMeaning" : "Left",
+          "CodeValue" : "7771000",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 3,
+        "recommendedDisplayRGBValue" : [ 212, 126, 151 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 4 : gallbladder",
+        "SegmentLabel" : "Gallbladder",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Gallbladder",
+          "CodeValue" : "28231008",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 4,
+        "recommendedDisplayRGBValue" : [ 139, 150, 98 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 5 : liver",
+        "SegmentLabel" : "Liver",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Liver",
+          "CodeValue" : "10200004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 5,
+        "recommendedDisplayRGBValue" : [ 221, 130, 101 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 6 : stomach",
+        "SegmentLabel" : "Stomach",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Stomach",
+          "CodeValue" : "69695003",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 6,
+        "recommendedDisplayRGBValue" : [ 160, 139, 76 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 7 : aorta",
+        "SegmentLabel" : "Aorta",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Aorta",
+          "CodeValue" : "15825003",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 7,
+        "recommendedDisplayRGBValue" : [ 224, 97, 76 ]
+      },
+      {
+        "SegmentAlgorithmName" : "TotalSegmentator v1.5.6",
+        "SegmentAlgorithmType" : "AUTOMATIC",
+        "SegmentDescription" : "TotalSegmentator 8 : inferior_vena_cava",
+        "SegmentLabel" : "Inferior vena cava",
+        "SegmentedPropertyCategoryCodeSequence" :
+        {
+          "CodeMeaning" : "Anatomical Structure",
+          "CodeValue" : "123037004",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "SegmentedPropertyTypeCodeSequence" :
+        {
+          "CodeMeaning" : "Inferior vena cava",
+          "CodeValue" : "64131007",
+          "CodingSchemeDesignator" : "SCT"
+        },
+        "labelID" : 8,
+        "recommendedDisplayRGBValue" : [ 110, 165, 54 ]
+      }
+    ]
+  ]
+}
