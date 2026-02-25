@@ -5,6 +5,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -22,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true
+          fetch-depth: 0
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -95,22 +97,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           name: dcmqi-build
           path: ${{ github.workspace }}\b\dcmqi-build
 
       - name: Publish package
-        shell: pwsh
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GA_TOKEN }}
         run: |
-          # Set longer timeout for HTTP operations in PowerShell
-          $PSDefaultParameterValues['*:TimeoutSec'] = 300
-          pip install -U "scikit-ci-addons>=0.22.0"
-          ci_addons publish_github_release qiicr/dcmqi `
-          --exit-success-if-missing-token `
-          --release-packages "${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64.zip" `
-          --prerelease-packages "${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64-*.zip" `
-          --prerelease-packages-clear-pattern "dcmqi-*-win64-*" `
-          --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" `
-          --token ${{ secrets.GA_TOKEN }}
+          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          if [ -n "$TAG" ]; then
+            gh release upload "$TAG" \
+              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
+              --clobber
+          else
+            gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
+              | grep "dcmqi-.*-win64-" \
+              | xargs -I{} gh release delete-asset latest "{}" --yes || true
+            gh release upload latest \
+              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
+              --clobber
+          fi

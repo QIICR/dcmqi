@@ -1,13 +1,12 @@
 name: C/C++ CI macOS
 
-# We only run this on pushes and pull requests to master branch,
-# as well as on manual trigger (workflow_dispatch, useful if workflow
-# has been disabled earlier).
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -36,7 +35,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-tags: true     
+        fetch-depth: 0
     - uses: actions/setup-python@v4
       with:
         python-version: '3.10.11'
@@ -141,11 +140,20 @@ jobs:
       # The latter is to prevent forks from publishing packages even if the owner's token
       # would have sufficient privileges.
       if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      env:
+        GH_TOKEN: ${{ secrets.GA_TOKEN }}
       run: |
-        pip install -U "scikit-ci-addons>=0.22.0"
-        ci_addons publish_github_release qiicr/dcmqi \
-        --release-packages "${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz" \
-        --prerelease-packages ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
-        --prerelease-packages-clear-pattern "dcmqi-*-mac-${{ matrix.arch }}-*" \
-        --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-        --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+        TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+        if [ -n "$TAG" ]; then
+          gh release upload "$TAG" \
+            ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
+            --clobber
+        else
+          # Clean old prerelease assets for this architecture, then upload new ones
+          gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
+            | grep "dcmqi-.*-mac-${{ matrix.arch }}-" \
+            | xargs -I{} gh release delete-asset latest "{}" --yes || true
+          gh release upload latest \
+            ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
+            --clobber
+        fi
