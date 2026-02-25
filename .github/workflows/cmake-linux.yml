@@ -112,7 +112,7 @@ jobs:
         TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
         if [ -n "$TAG" ]; then
           gh release upload "$TAG" \
-            build/dcmqi-build/dcmqi-*-linux*.tar.gz \
+            build/dcmqi-build/dcmqi-*-linux.tar.gz \
             --clobber
         else
           gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
