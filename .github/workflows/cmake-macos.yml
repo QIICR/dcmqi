@@ -136,13 +136,11 @@ jobs:
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
 
     - name: Publish package
-      # Only run if the event is not a pull request and the repository owner is QIICR.
-      # The latter is to prevent forks from publishing packages even if the owner's token
-      # would have sufficient privileges.
-      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR') }}
       env:
         GH_TOKEN: ${{ secrets.GA_TOKEN }}
       run: |
+        if [ -z "$GH_TOKEN" ]; then echo "GA_TOKEN not available, skipping publish"; exit 0; fi
         TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
         if [ -n "$TAG" ]; then
           gh release upload "$TAG" \

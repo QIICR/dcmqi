@@ -108,16 +108,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GA_TOKEN }}
         run: |
+          if [ -z "$GH_TOKEN" ]; then echo "GA_TOKEN not available, skipping publish"; exit 0; fi
+          PKG_DIR="$(cygpath "${{ github.workspace }}")/b/dcmqi-build"
           TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
           if [ -n "$TAG" ]; then
             gh release upload "$TAG" \
-              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
+              "$PKG_DIR"/dcmqi-*-win64*.zip \
               --clobber
           else
             gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
               | grep "dcmqi-.*-win64-" \
               | xargs -I{} gh release delete-asset latest "{}" --yes || true
             gh release upload latest \
-              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
+              "$PKG_DIR"/dcmqi-*-win64*.zip \
               --clobber
           fi

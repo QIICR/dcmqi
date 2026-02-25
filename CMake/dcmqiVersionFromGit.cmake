@@ -12,9 +12,19 @@
 #   DCMQI_VERSION_MINOR
 #   DCMQI_VERSION_PATCH
 #
-# Falls back to ``0.0.0`` with a warning if not in a git repository
-# or no matching tag is found.
+# Version is determined by (in order of priority):
+#
+# 1. CMake cache variables (``-DDCMQI_VERSION_MAJOR=...`` etc.)
+# 2. Git tag (nearest ``v*`` tag)
+# 3. ``VERSION`` file in the source root
+#
 
+# Allow explicit override via cache variables
+if(DEFINED DCMQI_VERSION_MAJOR AND DEFINED DCMQI_VERSION_MINOR AND DEFINED DCMQI_VERSION_PATCH)
+  return()
+endif()
+
+# Try extracting from git tag
 find_package(Git QUIET)
 if(GIT_FOUND)
   execute_process(
@@ -29,12 +39,26 @@ if(GIT_FOUND)
     set(DCMQI_VERSION_MAJOR ${CMAKE_MATCH_1})
     set(DCMQI_VERSION_MINOR ${CMAKE_MATCH_2})
     set(DCMQI_VERSION_PATCH ${CMAKE_MATCH_3})
+    return()
   endif()
 endif()
 
-if(NOT DEFINED DCMQI_VERSION_MAJOR)
-  message(WARNING "Could not extract version from git tag, using fallback version 0.0.0")
-  set(DCMQI_VERSION_MAJOR 0)
-  set(DCMQI_VERSION_MINOR 0)
-  set(DCMQI_VERSION_PATCH 0)
+# Fall back to VERSION file (for source tarballs without .git)
+set(_version_file "${CMAKE_CURRENT_SOURCE_DIR}/VERSION")
+if(EXISTS "${_version_file}")
+  file(READ "${_version_file}" _version_contents)
+  string(STRIP "${_version_contents}" _version_contents)
+  if(_version_contents MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+    set(DCMQI_VERSION_MAJOR ${CMAKE_MATCH_1})
+    set(DCMQI_VERSION_MINOR ${CMAKE_MATCH_2})
+    set(DCMQI_VERSION_PATCH ${CMAKE_MATCH_3})
+    return()
+  endif()
 endif()
+
+message(FATAL_ERROR
+  "Could not determine DCMQI version. Provide version via:\n"
+  "  - git tag (v1.2.3)\n"
+  "  - VERSION file in source root\n"
+  "  - cmake -DDCMQI_VERSION_MAJOR=1 -DDCMQI_VERSION_MINOR=2 -DDCMQI_VERSION_PATCH=3"
+)
