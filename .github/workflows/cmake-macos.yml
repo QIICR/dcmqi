@@ -146,7 +146,7 @@ jobs:
         TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
         if [ -n "$TAG" ]; then
           gh release upload "$TAG" \
-            ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
+            ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-${{ matrix.arch }}.tar.gz \
             --clobber
         else
           # Clean old prerelease assets for this architecture, then upload new ones

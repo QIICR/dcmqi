@@ -111,7 +111,7 @@ jobs:
           TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
           if [ -n "$TAG" ]; then
             gh release upload "$TAG" \
-              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
+              "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64.zip \
               --clobber
           else
             gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
