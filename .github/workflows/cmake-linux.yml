@@ -106,14 +106,19 @@ jobs:
       # The latter is to prevent forks from publishing packages even if the owner's token
       # would have sufficient privileges.
       if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      env:
+        GH_TOKEN: ${{ secrets.GA_TOKEN }}
       run: |
-         pip install -U "scikit-ci-addons>=0.22.0"
-         # python -m scikit-ci publish --package-name dcmqi --package-version `git
-         # describe --tags --exact-match 2> /dev/null || echo "latest"` --platform linux
-         # --commit-range ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} --repository ${{ github.event.pull_request.head.repo.full_name }} --token ${{ secrets.GITHUB_TOKEN }} --verbose
-         ci_addons publish_github_release qiicr/dcmqi \
-            --release-packages "build/dcmqi-build/dcmqi-*-linux.tar.gz" \
-            --prerelease-packages "build/dcmqi-build/dcmqi-*-linux-*.tar.gz" \
-            --prerelease-packages-clear-pattern "dcmqi-*-linux-*" \
-            --prerelease-packages-keep-pattern "*<COMMIT_DATE>-<COMMIT_SHORT_SHA>*" \
-            --exit-success-if-missing-token --token ${{ secrets.GA_TOKEN }}
+        TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+        if [ -n "$TAG" ]; then
+          gh release upload "$TAG" \
+            build/dcmqi-build/dcmqi-*-linux*.tar.gz \
+            --clobber
+        else
+          gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
+            | grep "dcmqi-.*-linux-" \
+            | xargs -I{} gh release delete-asset latest "{}" --yes || true
+          gh release upload latest \
+            build/dcmqi-build/dcmqi-*-linux*.tar.gz \
+            --clobber
+        fi
