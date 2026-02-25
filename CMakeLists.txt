@@ -172,9 +172,7 @@ endforeach()
 #-----------------------------------------------------------------------------
 # DCMQI version number
 #
-set(DCMQI_VERSION_MAJOR 1)
-set(DCMQI_VERSION_MINOR 5)
-set(DCMQI_VERSION_PATCH 1)
+include(dcmqiVersionFromGit)
 set(DCMQI_VERSION
     "${DCMQI_VERSION_MAJOR}.${DCMQI_VERSION_MINOR}.${DCMQI_VERSION_PATCH}")
 

@@ -5,6 +5,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -22,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true
+          fetch-depth: 0
       - uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: '17'
@@ -95,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-tags: true
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           name: dcmqi-build

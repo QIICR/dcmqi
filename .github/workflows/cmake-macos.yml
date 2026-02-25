@@ -1,13 +1,12 @@
 name: C/C++ CI macOS
 
-# We only run this on pushes and pull requests to master branch,
-# as well as on manual trigger (workflow_dispatch, useful if workflow
-# has been disabled earlier).
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -36,7 +35,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-tags: true     
+        fetch-depth: 0
     - uses: actions/setup-python@v4
       with:
         python-version: '3.10.11'
