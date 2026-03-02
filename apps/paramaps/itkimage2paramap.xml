@@ -47,6 +47,7 @@
   </parameters>
 
   <parameters advanced="true">
+
     <label>Additional input/output</label>
     <string-vector>
       <name>dicomImageFileList</name>
@@ -56,6 +57,17 @@
       <default></default>
       <description>File name of the DICOM image file that should be used to populate the composite context (attributes related to the patient and imaging study).</description>
     </string-vector>
+
+  <boolean>
+    <name>noDicomValueChecks</name>
+    <label>No DICOM Value Check</label>
+    <channel>output</channel>
+    <longflag>noDicomValueChecks</longflag>
+    <default>false</default>
+    <description>Bypass DICOM value checks when writing DICOM parametric map file. This can be useful for
+      debugging or when taking over attributes from non-compliant DICOM image files.</description>
+  </boolean>
+
   </parameters>
 
 </executable>

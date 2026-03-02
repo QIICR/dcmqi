@@ -127,7 +127,8 @@ int main(int argc, char *argv[])
                                                                              metadata,
                                                                              skipEmptySlices,
                                                                              useLabelIDAsSegmentNumber,
-                                                                             referencesGeometryCheck);
+                                                                             referencesGeometryCheck,
+                                                                             !noDicomValueChecks);
 
     if (result == NULL){
       std::cerr << "ERROR: Conversion failed." << std::endl;

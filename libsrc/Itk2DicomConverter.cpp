@@ -32,7 +32,8 @@ namespace dcmqi {
                                                           const string &metaData,
                                                           bool skipEmptySlices,
                                                           bool useLabelIDAsSegmentNumber,
-                                                          bool referencesGeometryCheck) {
+                                                          bool referencesGeometryCheck,
+                                                          bool doDicomValueChecks) {
 
     auto inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
@@ -495,6 +496,8 @@ namespace dcmqi {
     // Ensure dataset memory is cleaned up on exit, and avoid the copy on
     // return that was performed before
     std::unique_ptr<DcmDataset> segdocDataset(new DcmDataset());
+    std::cout << "Checking DICOM attribute values before writing: " << (doDicomValueChecks ? "enabled" : "disabled") << std::endl;
+    segdoc->setValueCheckOnWrite(doDicomValueChecks);
     OFCondition writeResult = segdoc->writeDataset(*segdocDataset);
     if(writeResult.bad()){
       cerr << "FATAL ERROR: Writing of the SEG dataset failed!";
@@ -704,7 +707,8 @@ namespace dcmqi {
       const string& metaData,
       bool skipEmptySlices,
       bool useLabelIDAsSegmentNumber,
-      bool referencesGeometryCheck);
+      bool referencesGeometryCheck,
+      bool doDicomValueChecks);
 
   using VectorImageAdapter = itk::VectorImageToImageAdaptor<short, 3U>;
   template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<VectorImageAdapter>(
@@ -713,5 +717,6 @@ namespace dcmqi {
       const string& metaData,
       bool skipEmptySlices,
       bool useLabelIDAsSegmentNumber,
-      bool referencesGeometryCheck);
+      bool referencesGeometryCheck,
+      bool doDicomValueChecks);
 }
