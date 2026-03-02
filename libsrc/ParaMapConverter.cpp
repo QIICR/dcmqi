@@ -27,7 +27,8 @@ using namespace std;
 namespace dcmqi {
 
   DcmDataset* ParaMapConverter::itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmItem*> dcmDatasets,
-                                         const string &metaData) {
+                                         const string &metaData,
+                                         const bool doDicomValueChecks) {
 
     MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage(parametricMapImage);
@@ -454,6 +455,7 @@ namespace dcmqi {
     // Don't check functional groups since its very time consuming and we trust
     // ourselves to put together valid datasets
     pMapDoc->getFunctionalGroups().setCheckOnWrite(OFFalse);
+    pMapDoc->setValueCheckOnWrite(doDicomValueChecks);
     CHECK_COND(pMapDoc->writeDataset(*output));
     return output;
   }

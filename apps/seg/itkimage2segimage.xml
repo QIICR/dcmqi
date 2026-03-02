@@ -83,6 +83,15 @@
     </boolean>
 
     <boolean>
+      <name>noDicomValueChecks</name>
+      <label>No DICOM Value Check</label>
+      <channel>output</channel>
+      <longflag>noDicomValueChecks</longflag>
+      <default>false</default>
+      <description>Bypass DICOM value checks when writing segmentation file. This can be useful for debugging or when taking over attributes from non-compliant DICOM image files.</description>
+    </boolean>
+
+    <boolean>
       <name>verbose</name>
       <label>Verbose</label>
       <channel>input</channel>
@@ -92,11 +101,11 @@
     </boolean>
 
     <!--<boolean>-->
-      <!--<name>compress</name>-->
-      <!--<label>Deflate PixelData</label>-->
-      <!--<channel>input</channel>-->
-      <!--<longflag>zip</longflag>-->
-      <!--<description>Apply compression to PixelData.</description>-->
+    <!--<name>compress</name>-->
+    <!--<label>Deflate PixelData</label>-->
+    <!--<channel>input</channel>-->
+    <!--<longflag>zip</longflag>-->
+    <!--<description>Apply compression to PixelData.</description>-->
     <!--</boolean>-->
 
   </parameters>
