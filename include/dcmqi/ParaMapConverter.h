@@ -35,7 +35,8 @@ namespace dcmqi {
 
   public:
     static DcmDataset* itkimage2paramap(const FloatImageType::Pointer &parametricMapImage, vector<DcmItem*> dcmDatasets,
-                                        const string &metaData);
+                                        const string &metaData,
+                                        const bool doDicomValueChecks = true);
 
     static pair <FloatImageType::Pointer, string> paramap2itkimage(DcmDataset *pmapDataset);
   protected:

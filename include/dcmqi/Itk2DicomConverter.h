@@ -60,6 +60,12 @@ namespace dcmqi {
      * @param referencesGeometryCheck A boolean indicating whether the conversion process should attempt checking if the geometry of the referenced DICOM images is consistent with the corresponding slices of the segmentation.
      *        By default, this check is enabled. If disabled, all of the references will be
      *        added in the SharedFunctionalGroupsSequence without any geometry checks.
+     * @param doDicomValueChecks A boolean indicating whether to check the values of DICOM attributes
+     *       for validity when writing out the segmentation. This aims at the attributes taken over
+     *       from the input DICOM images. By default, this is enabled. If disabled, the conversion
+     *       will not fail if some of the DICOM attributes have invalid values
+     *       (e.g., VR of Patients'Name is violated, wrong value multiplicity, etc.).
+     *       However, the resulting DICOM object may not be compliant with the DICOM standard in this case.
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
@@ -68,7 +74,8 @@ namespace dcmqi {
                           const string &metaData,
                           bool skipEmptySlices=true,
                           bool useLabelIDAsSegmentNumber=false,
-                          bool referencesGeometryCheck=true);
+                          bool referencesGeometryCheck=true,
+                          bool doDicomValueChecks=true);
 
   protected:
 
