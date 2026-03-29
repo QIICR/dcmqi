@@ -11,7 +11,9 @@ set(HDRS
   ${INCLUDE_DIR}/QIICRUIDs.h
   ${INCLUDE_DIR}/Bin2Label.h
   ${INCLUDE_DIR}/ConverterBase.h
-  ${INCLUDE_DIR}/Dicom2ItkConverter.h
+  ${INCLUDE_DIR}/Dicom2ItkConverterBase.h
+  ${INCLUDE_DIR}/Dicom2ItkConverterBin.h
+  ${INCLUDE_DIR}/Dicom2ItkConverterLabel.h
   ${INCLUDE_DIR}/Exceptions.h
   ${INCLUDE_DIR}/Itk2DicomConverter.h
   ${INCLUDE_DIR}/ParaMapConverter.h
@@ -27,7 +29,9 @@ set(HDRS
 set(SRCS
   Bin2Label.cpp
   ConverterBase.cpp
-  Dicom2ItkConverter.cpp
+  Dicom2ItkConverterBase.cpp
+  Dicom2ItkConverterBin.cpp
+  Dicom2ItkConverterLabel.cpp
   ParaMapConverter.cpp
   Helper.cpp
   ColorUtilities.cpp

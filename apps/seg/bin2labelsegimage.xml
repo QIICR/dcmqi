@@ -104,6 +104,15 @@
     </boolean>
 
     <boolean>
+      <name>force16Bit</name>
+      <label>Force 16-bit pixel data</label>
+      <channel>input</channel>
+      <longflag>force16Bit</longflag>
+      <default>false</default>
+      <description>Force 16-bit pixel data in the output labelmap even if the number of segments would fit in 8 bits.</description>
+    </boolean>
+
+    <boolean>
       <name>noCheck</name>
       <label>Disable various sanity checks</label>
       <channel>input</channel>

@@ -128,7 +128,7 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
     }
     // Get number of segments to find out whether we need 16 bit data.
     size_t numSegments = m_inputSeg->getNumberOfSegments();
-    m_use16Bit    = (numSegments > 256);
+    m_use16Bit    = (numSegments > 256) || m_convFlags.m_force16Bit;
     DCMSEG_DEBUG("Using " << (m_use16Bit ? "16" : "8") << " bit pixel data for " << numSegments << " segments");
 
     // Get Content Identification Macro (required for labelmap creation call)

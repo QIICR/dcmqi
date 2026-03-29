@@ -339,6 +339,157 @@ foreach(more_test_labelmap ${SEG_SAMPLES})
 
 endforeach()
 
+# ------------------------------------------------------------------------------
+# Labelmap round-trip tests: binary SEG -> bin2labelsegimage -> segimage2itkimage -> compare
+# Tests all 4 combinations of 8/16-bit and MONOCHROME2/PALETTE COLOR.
+#
+# Uses CTest fixtures so that tests are automatically skipped (not failed) when
+# the prerequisite itkimage2segimage_makeSEG has not been run.
+
+set_tests_properties(${itk2dcm}_makeSEG PROPERTIES FIXTURES_SETUP liver_seg_dcm)
+
+# 8-bit MONOCHROME2
+dcmqi_add_test(
+  NAME liver_to_labelmap_mono8
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${seg2labelmap}>
+    --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono8.dcm
+    --compressNone
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG
+)
+set_tests_properties(liver_to_labelmap_mono8 PROPERTIES
+  FIXTURES_REQUIRED liver_seg_dcm
+  FIXTURES_SETUP liver_labelmap_mono8
+)
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_labelmap_mono8
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/labelmap_mono8-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono8.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix labelmap_mono8
+  TEST_DEPENDS
+    liver_to_labelmap_mono8
+)
+set_tests_properties(${dcm2itk}_labelmap_mono8 PROPERTIES
+  FIXTURES_REQUIRED liver_labelmap_mono8
+)
+
+# 8-bit PALETTE COLOR
+dcmqi_add_test(
+  NAME liver_to_labelmap_palette8
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${seg2labelmap}>
+    --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette8.dcm
+    --compressNone
+    --usePalette
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG
+)
+set_tests_properties(liver_to_labelmap_palette8 PROPERTIES
+  FIXTURES_REQUIRED liver_seg_dcm
+  FIXTURES_SETUP liver_labelmap_palette8
+)
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_labelmap_palette8
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/labelmap_palette8-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette8.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix labelmap_palette8
+  TEST_DEPENDS
+    liver_to_labelmap_palette8
+)
+set_tests_properties(${dcm2itk}_labelmap_palette8 PROPERTIES
+  FIXTURES_REQUIRED liver_labelmap_palette8
+)
+
+# 16-bit MONOCHROME2
+dcmqi_add_test(
+  NAME liver_to_labelmap_mono16
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${seg2labelmap}>
+    --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono16.dcm
+    --compressNone
+    --force16Bit
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG
+)
+set_tests_properties(liver_to_labelmap_mono16 PROPERTIES
+  FIXTURES_REQUIRED liver_seg_dcm
+  FIXTURES_SETUP liver_labelmap_mono16
+)
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_labelmap_mono16
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/labelmap_mono16-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono16.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix labelmap_mono16
+  TEST_DEPENDS
+    liver_to_labelmap_mono16
+)
+set_tests_properties(${dcm2itk}_labelmap_mono16 PROPERTIES
+  FIXTURES_REQUIRED liver_labelmap_mono16
+)
+
+# 16-bit PALETTE COLOR
+dcmqi_add_test(
+  NAME liver_to_labelmap_palette16
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${seg2labelmap}>
+    --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette16.dcm
+    --compressNone
+    --usePalette
+    --force16Bit
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG
+)
+set_tests_properties(liver_to_labelmap_palette16 PROPERTIES
+  FIXTURES_REQUIRED liver_seg_dcm
+  FIXTURES_SETUP liver_labelmap_palette16
+)
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_labelmap_palette16
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/labelmap_palette16-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette16.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix labelmap_palette16
+  TEST_DEPENDS
+    liver_to_labelmap_palette16
+)
+set_tests_properties(${dcm2itk}_labelmap_palette16 PROPERTIES
+  FIXTURES_REQUIRED liver_labelmap_palette16
+)
+
+# ------------------------------------------------------------------------------
+
 set(SEG_SAMPLES partial_overlaps)
 
 foreach(overlapping_segs ${SEG_SAMPLES})

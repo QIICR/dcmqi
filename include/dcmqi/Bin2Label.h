@@ -99,6 +99,10 @@ public:
         /// (default: OFFalse)
         OFBool m_forcePalette;
 
+        /// Force 16-bit pixel data even if the number of segments would fit in 8 bits
+        /// (default: OFFalse)
+        OFBool m_force16Bit;
+
         /// Constructor to initialize the flags
         ConversionFlags()
         {
@@ -114,7 +118,7 @@ public:
             m_checkExportValues = OFTrue;
             m_outputColorModel = DcmSegTypes::SLCM_MONOCHROME2;
             m_forcePalette = OFFalse;
-
+            m_force16Bit = OFFalse;
         }
     };
 

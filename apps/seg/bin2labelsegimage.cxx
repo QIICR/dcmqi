@@ -53,6 +53,9 @@ int main(int argc, char* argv[])
         else
             convFlags.m_outputColorModel = DcmSegTypes::SLCM_MONOCHROME2;
 
+        if (force16Bit)
+            convFlags.m_force16Bit = OFTrue;
+
         if (noCheck)
         {
             convFlags.m_checkExportFG     = OFFalse;

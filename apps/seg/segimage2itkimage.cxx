@@ -4,14 +4,45 @@
 
 // DCMQI includes
 #undef HAVE_SSTREAM // Avoid redefinition warning
-#include "dcmqi/Dicom2ItkConverter.h"
+#include "dcmqi/Dicom2ItkConverterBin.h"
 #include "dcmqi/internal/VersionConfigure.h"
 
 // DCMTK includes
 #include <dcmtk/oflog/configrt.h>
 
 typedef dcmqi::Helper helper;
-typedef itk::ImageFileWriter<ShortImageType> WriterType;
+typedef itk::ImageFileWriter<ShortImageType> ShortWriterType;
+typedef itk::ImageFileWriter<CharImageType> CharWriterType;
+
+template<typename TImageType, typename TNextFn>
+int writeImages(itk::SmartPointer<TImageType> itkImage,
+                TNextFn nextFn,
+                const string& outputDirName, const string& outputPrefix,
+                const string& fileExtension, size_t& fileIndex)
+{
+  typedef itk::ImageFileWriter<TImageType> WriterType;
+  while (itkImage)
+  {
+    stringstream imageFileNameSStream;
+    cout << "Writing itk image to " << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
+    imageFileNameSStream << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
+
+    try {
+      typename WriterType::Pointer writer = WriterType::New();
+      writer->SetFileName(imageFileNameSStream.str().c_str());
+      writer->SetInput(itkImage);
+      writer->SetUseCompression(1);
+      writer->Update();
+      cout << " ... done" << endl;
+    } catch (itk::ExceptionObject & error) {
+      std::cerr << "fatal ITK error: " << error << std::endl;
+      return EXIT_FAILURE;
+    }
+    itkImage = nextFn();
+    fileIndex++;
+  }
+  return EXIT_SUCCESS;
+}
 
 
 int main(int argc, char *argv[])
@@ -37,9 +68,10 @@ int main(int argc, char *argv[])
   DcmDataset* dataset = sliceFF.getDataset();
 
   try {
-    dcmqi::Dicom2ItkConverter converter;
+    // Get labelmap or binary segmentation converter based on the SOP Class UID of the input dataset
+    std::unique_ptr<dcmqi::Dicom2ItkConverterBase> converter(dcmqi::Dicom2ItkConverter::getConverter(dataset));
     std::string metaInfo;
-    OFCondition result  =  converter.dcmSegmentation2itkimage(dataset, metaInfo, mergeSegments);
+    OFCondition result  =  converter->dcmSegmentation2itkimage(dataset, metaInfo, mergeSegments);
     if (result.bad())
     {
       std::cerr << "ERROR: Failed to convert DICOM SEG to ITK image: " << result.text() << std::endl;
@@ -47,30 +79,23 @@ int main(int argc, char *argv[])
     }
 
     string outputPrefix = prefix.empty() ? "" : prefix + "-";
-
     string fileExtension = dcmqi::Helper::getFileExtensionFromType(outputType);
-    itk::SmartPointer<ShortImageType> itkImage = converter.begin();
     size_t fileIndex = 1;
-    while (itkImage)
-    {
-      stringstream imageFileNameSStream;
-      cout << "Writing itk image to " << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
-      imageFileNameSStream << outputDirName << "/" << outputPrefix << fileIndex << fileExtension;
 
-      try {
-        WriterType::Pointer writer = WriterType::New();
-        writer->SetFileName(imageFileNameSStream.str().c_str());
-        writer->SetInput(itkImage);
-        writer->SetUseCompression(1);
-        writer->Update();
-        cout << " ... done" << endl;
-      } catch (itk::ExceptionObject & error) {
-        std::cerr << "fatal ITK error: " << error << std::endl;
-        return EXIT_FAILURE;
-      }
-      itkImage = converter.next();
-      fileIndex++;
+    int writeResult;
+    bool is16Bit = converter->bytesPerPixel() > 1;
+    if (is16Bit || !converter->isLabelmap())
+    {
+      writeResult = writeImages(converter->begin16Bit(),
+        [&]() { return converter->next16Bit(); },
+        outputDirName, outputPrefix, fileExtension, fileIndex);
+    } else {
+      writeResult = writeImages(converter->begin8Bit(),
+        [&]() { return converter->next8Bit(); },
+        outputDirName, outputPrefix, fileExtension, fileIndex);
     }
+    if (writeResult != EXIT_SUCCESS)
+      return writeResult;
 
     stringstream jsonOutput;
     jsonOutput << outputDirName << "/" << outputPrefix << "meta.json";
