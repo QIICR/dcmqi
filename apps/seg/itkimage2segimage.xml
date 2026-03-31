@@ -107,8 +107,8 @@
       <longflag>compress</longflag>
       <default>none</default>
       <element>none</element>
-      <element>zlib</element>
-      <description>Apply compression to PixelData. Allowed values: none (no compression), zlib (Deflated Little Endian Explicit transfer syntax).</description>
+      <element>deflate</element>
+      <description>Apply compression to PixelData. Allowed values: none (no compression), deflate (Deflated Little Endian Explicit transfer syntax).</description>
     </string-enumeration>
 
   </parameters>

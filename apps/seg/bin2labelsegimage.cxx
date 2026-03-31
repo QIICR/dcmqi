@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     std::cout << dcmqi_INFO << std::endl;
 
     PARSE_ARGS;
-    E_TransferSyntax outputTS = EXS_RLELossless;
+    E_TransferSyntax outputTS = EXS_LittleEndianExplicit;
 
     if (verbose)
     {
@@ -62,23 +62,20 @@ int main(int argc, char* argv[])
             convFlags.m_checkExportValues = OFFalse;
         }
         converter.setInput(dataset);
-        if (compressRLE)
+        if (compress == "rle")
         {
             outputTS = EXS_RLELossless;
         }
+        else if (compress == "deflate")
+        {
 #ifdef WITH_ZLIB
-        else if (compressZLIB)
-        {
             outputTS = EXS_DeflatedLittleEndianExplicit;
-        }
 #else
-        else if (compressZLIB)
-        {
-            std::cerr << "ERROR: ZLIB compression is not supported because DCMTK was built without ZLIB support." << std::endl;
+            std::cerr << "ERROR: Deflate compression is not supported because DCMTK was built without ZLIB support." << std::endl;
             return EXIT_FAILURE;
-        }
 #endif
-        else if (compressNone)
+        }
+        else if (compress == "none")
         {
             outputTS = EXS_LittleEndianExplicit;
         }

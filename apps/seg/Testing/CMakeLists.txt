@@ -355,7 +355,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${seg2labelmap}>
     --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono8.dcm
-    --compressNone
+    --compress none
   TEST_DEPENDS
     ${itk2dcm}_makeSEG
 )
@@ -389,7 +389,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${seg2labelmap}>
     --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette8.dcm
-    --compressNone
+    --compress none
     --usePalette
   TEST_DEPENDS
     ${itk2dcm}_makeSEG
@@ -424,7 +424,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${seg2labelmap}>
     --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-mono16.dcm
-    --compressNone
+    --compress none
     --force16Bit
   TEST_DEPENDS
     ${itk2dcm}_makeSEG
@@ -459,7 +459,7 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${seg2labelmap}>
     --inputDICOM ${MODULE_TEMP_DIR}/liver.dcm
     --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-palette16.dcm
-    --compressNone
+    --compress none
     --usePalette
     --force16Bit
   TEST_DEPENDS
