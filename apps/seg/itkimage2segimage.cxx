@@ -135,8 +135,7 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     } else {
       DcmFileFormat segdocFF(result);
-      bool compress = false;
-      if(compress){
+      if(compress == "deflate"){
         CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_DeflatedLittleEndianExplicit));
       } else {
         CHECK_COND(segdocFF.saveFile(outputSEGFileName.c_str(), EXS_LittleEndianExplicit));

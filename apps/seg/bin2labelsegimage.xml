@@ -75,32 +75,25 @@
       <description>Use Palette Color Model for output segmentation (default: MONOCHROME2).</description>
     </boolean>
 
-    <boolean>
-      <name>compressNone</name>
-      <label>Write uncompressed transfer syntax (LEE)</label>
+    <string-enumeration>
+      <name>compress</name>
+      <label>Compress PixelData</label>
       <channel>input</channel>
-      <longflag>compressNone</longflag>
-      <default>true</default>
-      <description>Write uncompressed transfer syntax (Little Endian Explicit) for output labelmap
-        (default: RLE).</description>
-    </boolean>
+      <longflag>compress</longflag>
+      <default>none</default>
+      <element>none</element>
+      <element>rle</element>
+      <element>deflate</element>
+      <description>Compression for output labelmap. Allowed values: none (Little Endian Explicit), rle (RLE Lossless), deflate (Deflated Little Endian Explicit).</description>
+    </string-enumeration>
 
     <boolean>
-      <name>compressRLE</name>
-      <label>Write RLE transfer syntax</label>
+      <name>force16Bit</name>
+      <label>Force 16-bit pixel data</label>
       <channel>input</channel>
-      <longflag>compressRLE</longflag>
-      <default>true</default>
-      <description>Write RLE transfer syntax for output labelmap (default).</description>
-    </boolean>
-
-    <boolean>
-      <name>compressZLIB</name>
-      <label>Write Deflated transfer syntax</label>
-      <channel>input</channel>
-      <longflag>compressZLIB</longflag>
+      <longflag>force16Bit</longflag>
       <default>false</default>
-      <description>Write Deflated transfer syntax for output labelmap (default: RLE).</description>
+      <description>Force 16-bit pixel data in the output labelmap even if the number of segments would fit in 8 bits.</description>
     </boolean>
 
     <boolean>
@@ -112,13 +105,6 @@
       <description>Disable various sanity checks during conversion.</description>
     </boolean>
 
-    <!--<boolean>-->
-    <!--<name>compress</name>-->
-    <!--<label>Deflate PixelData</label>-->
-    <!--<channel>input</channel>-->
-    <!--<longflag>zip</longflag>-->
-    <!--<description>Apply compression to PixelData.</description>-->
-    <!--</boolean>-->
 
   </parameters>
 

@@ -100,13 +100,16 @@
       <description>Display more verbose output, useful for troubleshooting.</description>
     </boolean>
 
-    <!--<boolean>-->
-    <!--<name>compress</name>-->
-    <!--<label>Deflate PixelData</label>-->
-    <!--<channel>input</channel>-->
-    <!--<longflag>zip</longflag>-->
-    <!--<description>Apply compression to PixelData.</description>-->
-    <!--</boolean>-->
+    <string-enumeration>
+      <name>compress</name>
+      <label>Compress PixelData</label>
+      <channel>input</channel>
+      <longflag>compress</longflag>
+      <default>none</default>
+      <element>none</element>
+      <element>deflate</element>
+      <description>Apply compression to PixelData. Allowed values: none (no compression), deflate (Deflated Little Endian Explicit transfer syntax).</description>
+    </string-enumeration>
 
   </parameters>
 
