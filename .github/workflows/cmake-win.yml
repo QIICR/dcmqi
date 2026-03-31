@@ -82,7 +82,17 @@ jobs:
           cd ${{ github.workspace }}\b\dcmqi-build
           cmake --build . --config Release --target PACKAGE -- /m
 
-      - uses: actions/upload-artifact@v4
+      - name: "Upload package as artifact"
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+            name: dcmqi-build
+            path: ${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64*.zip
+
+      - name: "Upload package as artifact (retry)"
+        if: steps.upload-artifact.outcome == 'failure'
+        uses: actions/upload-artifact@v4
         with:
             name: dcmqi-build
             path: ${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64*.zip

@@ -102,6 +102,15 @@ jobs:
          || echo "skipping docker push"
 
     - name: "Upload package as artifact"
+      id: upload-artifact
+      uses: actions/upload-artifact@v4
+      continue-on-error: true
+      with:
+        name: dcmqi-linux-package
+        path: build/dcmqi-build/dcmqi-*-linux*.tar.gz
+
+    - name: "Upload package as artifact (retry)"
+      if: steps.upload-artifact.outcome == 'failure'
       uses: actions/upload-artifact@v4
       with:
         name: dcmqi-linux-package
