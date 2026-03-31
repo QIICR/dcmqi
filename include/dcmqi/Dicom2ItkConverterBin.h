@@ -113,7 +113,7 @@ protected:
      *        (default: false).
      * @return EC_Normal if successful, error otherwise.
      */
-    virtual OFCondition dcmSegmentation2itkimage(const bool mergeSegments) override;
+    OFCondition dcmSegmentation2itkimage(const bool mergeSegments) override;
 
     /// Internal iterator to "next" segment group to be returned,
     /// used while iterating over results using begin16Bit() and next16Bit()

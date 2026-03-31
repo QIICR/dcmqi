@@ -46,7 +46,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~Dicom2ItkConverterLabel() override;
+    ~Dicom2ItkConverterLabel() override;
 
     /**
      * @brief Converts the DICOM segmentation to ITK images and metadata.
