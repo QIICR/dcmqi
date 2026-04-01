@@ -134,4 +134,5 @@ jobs:
             gh release upload latest \
               "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
               --clobber
+            gh release edit latest --target $(git rev-parse HEAD)
           fi

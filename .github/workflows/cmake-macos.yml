@@ -169,4 +169,5 @@ jobs:
           gh release upload latest \
             ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
             --clobber
+          gh release edit latest --target $(git rev-parse HEAD)
         fi
