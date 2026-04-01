@@ -26,7 +26,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: microsoft/setup-msbuild@v1.1
@@ -34,7 +34,7 @@ jobs:
           vs-version: '17'
           msbuild-architecture: x64
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10.11'
 
@@ -43,15 +43,23 @@ jobs:
           pip install jsondiff
 
       - name: Cache build dependencies
-        uses: actions/cache@v4
+        id: cache-build-deps
+        uses: actions/cache/restore@v4
         with:
           path: |
+            ${{ github.workspace }}\b\DCMTK
             ${{ github.workspace }}\b\DCMTK-build
             ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\DCMTK-prefix
+            ${{ github.workspace }}\b\ITK
             ${{ github.workspace }}\b\ITK-build
             ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\ITK-prefix
+            ${{ github.workspace }}\b\zlib
+            ${{ github.workspace }}\b\zlib-build
             ${{ github.workspace }}\b\zlib-install
-          key: windows-deps-${{ hashFiles('CMakeLists.txt', 'CMakeExternals/*.cmake') }}
+            ${{ github.workspace }}\b\zlib-prefix
+          key: windows-deps-${{ hashFiles('CMakeExternals/*.cmake') }}
           restore-keys: |
             windows-deps-
 
@@ -97,6 +105,26 @@ jobs:
             name: dcmqi-build
             path: ${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64*.zip
 
+      # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
+      - name: Save build dependencies cache
+        if: always() && steps.cache-build-deps.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ github.workspace }}\b\DCMTK
+            ${{ github.workspace }}\b\DCMTK-build
+            ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\DCMTK-prefix
+            ${{ github.workspace }}\b\ITK
+            ${{ github.workspace }}\b\ITK-build
+            ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\ITK-prefix
+            ${{ github.workspace }}\b\zlib
+            ${{ github.workspace }}\b\zlib-build
+            ${{ github.workspace }}\b\zlib-install
+            ${{ github.workspace }}\b\zlib-prefix
+          key: ${{ steps.cache-build-deps.outputs.cache-primary-key }}
+
   publish-windows:
 
     runs-on: windows-2022
@@ -109,7 +137,7 @@ jobs:
     needs: build-windows
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/download-artifact@v4
@@ -134,4 +162,5 @@ jobs:
             gh release upload latest \
               "${{ github.workspace }}/b/dcmqi-build"/dcmqi-*-win64*.zip \
               --clobber
+            gh release edit latest --target $(git rev-parse HEAD)
           fi
