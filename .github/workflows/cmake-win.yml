@@ -47,11 +47,18 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
+            ${{ github.workspace }}\b\DCMTK
             ${{ github.workspace }}\b\DCMTK-build
             ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\DCMTK-prefix
+            ${{ github.workspace }}\b\ITK
             ${{ github.workspace }}\b\ITK-build
             ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\ITK-prefix
+            ${{ github.workspace }}\b\zlib
+            ${{ github.workspace }}\b\zlib-build
             ${{ github.workspace }}\b\zlib-install
+            ${{ github.workspace }}\b\zlib-prefix
           key: windows-deps-${{ hashFiles('CMakeExternals/*.cmake') }}
           restore-keys: |
             windows-deps-
@@ -104,11 +111,18 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
+            ${{ github.workspace }}\b\DCMTK
             ${{ github.workspace }}\b\DCMTK-build
             ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\DCMTK-prefix
+            ${{ github.workspace }}\b\ITK
             ${{ github.workspace }}\b\ITK-build
             ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\ITK-prefix
+            ${{ github.workspace }}\b\zlib
+            ${{ github.workspace }}\b\zlib-build
             ${{ github.workspace }}\b\zlib-install
+            ${{ github.workspace }}\b\zlib-prefix
           key: ${{ steps.cache-build-deps.outputs.cache-primary-key }}
 
   publish-windows:
