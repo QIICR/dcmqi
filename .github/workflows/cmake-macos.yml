@@ -69,7 +69,7 @@ jobs:
     # both, headers and libraries.
     - name: Check for cached DCMTK, ITK and ZLIB
       id: cache-dcmtk-itk-zlib
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v4
       env:
         cache-name: cache-dcmtk-itk-zlib
       with:
@@ -147,6 +147,19 @@ jobs:
       with:
         name: dcmqi-macos-${{ matrix.arch }}-package
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
+
+    # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
+    - name: Save DCMTK, ITK and ZLIB cache
+      if: always() && steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          ${{ github.workspace }}/dcmqi-build/DCMTK
+          ${{ github.workspace }}/dcmqi-build/DCMTK-build
+          ${{ github.workspace }}/dcmqi-build/ITK
+          ${{ github.workspace }}/dcmqi-build/ITK-build
+          ${{ github.workspace }}/dcmqi-build/zlib-install
+        key: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-primary-key }}
 
     - name: Publish package
       # Only run if the event is not a pull request and the repository owner is QIICR.
