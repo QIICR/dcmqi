@@ -221,6 +221,17 @@ protected:
 
     OFCondition createFrameContentFG(Uint32 outputFrameNum, OFVector<OverlapUtil::LogicalFrame>::iterator logicalFrame, FGFrameContent*& frameContent);
 
+    /** Check whether any frame in the output segmentation contains pixel value 0.
+     *  If so, add a background segment with Segment Number 0 using Property Type
+     *  Code (DCM, 125040, "Background").
+     *  The alternative would be to use Pixel Padding Value which is also
+     *  foreseen for Labelmaps but is expected, for now, that the background
+     *  segment is better supported by consuming applications.
+     *
+     *  @return EC_Normal if successful or no background segment needed, error otherwise
+     */
+    OFCondition addBackgroundSegmentIfNeeded();
+
 private:
 
     // Disable copy constructor and assignment operator
