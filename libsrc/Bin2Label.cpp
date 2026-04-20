@@ -217,6 +217,13 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
         result = createFramesWithMetadata(m_inputSeg);
     }
 
+    // Add background segment (number 0) if any pixel value 0 exists in the output frames
+    // (required by Sup 243, Section C.8.20.2.3.3)
+    if (result.good())
+    {
+        result = addBackgroundSegmentIfNeeded();
+    }
+
     // Create palette color lookup table if necessary
     if (result.good() && (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE))
     {
@@ -794,6 +801,69 @@ OFCondition DcmBinToLabelConverter::createPaletteColorLUT()
     if (result.good())
     {
         DCMSEG_DEBUG("Successfully created palette color lookup table and ICC profile for output segmentation");
+    }
+    return result;
+}
+
+
+OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
+{
+    if (!m_outputSeg)
+        return EC_IllegalParameter;
+
+    // Check whether any frame contains pixel value 0
+    OFBool hasZeroPixel = OFFalse;
+    size_t numFrames = m_outputSeg->getNumberOfFrames();
+    for (size_t f = 0; f < numFrames && !hasZeroPixel; f++)
+    {
+        const DcmIODTypes::FrameBase* frame = m_outputSeg->getFrame(f);
+        if (frame == NULL)
+            continue;
+        const size_t numPixels = frame->getLengthInBytes() / frame->bytesPerPixel();
+        for (size_t p = 0; p < numPixels; p++)
+        {
+            if (frame->bytesPerPixel() == 1)
+            {
+                Uint8 val = 0;
+                frame->getUint8AtIndex(val, p);
+                if (val == 0) { hasZeroPixel = OFTrue; break; }
+            }
+            else
+            {
+                Uint16 val = 0;
+                frame->getUint16AtIndex(val, p);
+                if (val == 0) { hasZeroPixel = OFTrue; break; }
+            }
+        }
+    }
+
+    if (!hasZeroPixel)
+        return EC_Normal;
+
+    // Create background segment with Segment Number 0
+    DCMSEG_DEBUG("Pixel value 0 found in output frames, adding background segment (number 0)");
+    DcmSegment* bgSeg = NULL;
+    CodeSequenceMacro bgCode("125040", "DCM", "Background");
+    OFCondition result = DcmSegment::create(bgSeg,
+                                            "Background",
+                                            bgCode,  /* category */
+                                            bgCode,  /* type */
+                                            DcmSegTypes::SAT_AUTOMATIC,
+                                            "dcmqi");
+    if (result.good() && bgSeg)
+    {
+        Uint16 segNum = 0;
+        result = m_outputSeg->addSegment(bgSeg, segNum);
+        if (result.bad())
+        {
+            DCMSEG_ERROR("Failed to add background segment: " << result.text());
+            delete bgSeg;
+        }
+    }
+    else
+    {
+        DCMSEG_ERROR("Failed to create background segment: " << result.text());
+        delete bgSeg;
     }
     return result;
 }
