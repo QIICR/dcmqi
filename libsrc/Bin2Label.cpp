@@ -258,13 +258,6 @@ OFCondition DcmBinToLabelConverter::copySegments(DcmSegmentation* src, DcmSegmen
             DcmSegment* clonedSegment = srcSegment->second->clone(dest);
             if (clonedSegment)
             {
-                // If we write palette color model, we need to make sure that the
-                // Recommended Display CIELab Value Macro will not be written
-                // for each segment, as this is not allowed in labelmaps with PALETTE color model.
-                if (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE)
-                {
-                    clonedSegment->getIODRules()->deleteRule(DCM_RecommendedDisplayCIELabValue);
-                }
                 Uint16 segNumber = srcSegment->first;
                 result = dest->addSegment(clonedSegment, segNumber);
                 if (result.bad())
@@ -703,13 +696,16 @@ OFCondition DcmBinToLabelConverter::createPaletteColorLUT()
     DCMSEG_DEBUG("Creating palette color lookup table for output segmentation");
     IODPaletteColorLUTModule& lutModule = m_outputSeg->getPaletteColorLUT();
     OFCondition result;
-    // Create LUT from CIELab colors stored during segment copying
+    // Create LUT from CIELab colors stored during segment copying.
+    // If a background segment (number 0) was added, the LUT starts at pixel
+    // value 0 (black for background); otherwise it starts at pixel value 1.
     size_t numSegments = m_outputSeg->getNumberOfSegments();
+    Uint16 firstPixelMapped = (m_outputSeg->getSegment(0) != NULL) ? 0 : 1;
     if (m_cielabColors.m_numSegments == numSegments)
     {
-        result = lutModule.setRedPaletteColorLookupTableDescriptor(numSegments, 1, (m_use16Bit ? 16 : 8));
-        if (result.good()) result = lutModule.setGreenPaletteColorLookupTableDescriptor(numSegments, 1, (m_use16Bit ? 16 : 8));
-        if (result.good()) result = lutModule.setBluePaletteColorLookupTableDescriptor(numSegments, 1, (m_use16Bit ? 16 : 8));
+        result = lutModule.setRedPaletteColorLookupTableDescriptor(numSegments, firstPixelMapped, (m_use16Bit ? 16 : 8));
+        if (result.good()) result = lutModule.setGreenPaletteColorLookupTableDescriptor(numSegments, firstPixelMapped, (m_use16Bit ? 16 : 8));
+        if (result.good()) result = lutModule.setBluePaletteColorLookupTableDescriptor(numSegments, firstPixelMapped, (m_use16Bit ? 16 : 8));
         if (result.good())
         {
             Uint16 maxRange = (m_use16Bit ? 65535 : 255);
@@ -852,12 +848,32 @@ OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
                                             "dcmqi");
     if (result.good() && bgSeg)
     {
+        // Set Recommended Display CIELab Value to black
+        // (CIELab L*=0, a*=0, b*=0 → DICOM 0, 32768, 32768)
+        result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
+        if (result.bad())
+        {
+            DCMSEG_ERROR("Failed to set CIELab color for background segment: " << result.text());
+            delete bgSeg;
+            return result;
+        }
         Uint16 segNum = 0;
         result = m_outputSeg->addSegment(bgSeg, segNum);
         if (result.bad())
         {
             DCMSEG_ERROR("Failed to add background segment: " << result.text());
             delete bgSeg;
+        }
+        else if (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE)
+        {
+            // In PALETTE mode the per-segment CIELab macro must not be written,
+            // but the color must still be present in the palette LUT so pixel
+            // value 0 maps to black.
+            if (!m_cielabColors.prepend(0, 32768, 32768))
+            {
+                DCMSEG_ERROR("Failed to prepend background color for palette LUT");
+                result = EC_MemoryExhausted;
+            }
         }
     }
     else

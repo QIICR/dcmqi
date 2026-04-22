@@ -279,6 +279,33 @@ private:
             return OFTrue;
         }
 
+        /** Prepend a color entry at index 0, shifting existing entries right.
+         *  @return OFTrue on success, OFFalse on memory allocation failure.
+         */
+        OFBool prepend(Uint16 L, Uint16 a, Uint16 b)
+        {
+            size_t newSize = m_numSegments + 1;
+            Uint16* newL = new Uint16[newSize];
+            Uint16* newA = new Uint16[newSize];
+            Uint16* newB = new Uint16[newSize];
+            if (!newL || !newA || !newB)
+            {
+                delete[] newL; delete[] newA; delete[] newB;
+                return OFFalse;
+            }
+            newL[0] = L; newA[0] = a; newB[0] = b;
+            for (size_t i = 0; i < m_numSegments; i++)
+            {
+                newL[i + 1] = m_L[i];
+                newA[i + 1] = m_a[i];
+                newB[i + 1] = m_b[i];
+            }
+            delete[] m_L; delete[] m_a; delete[] m_b;
+            m_L = newL; m_a = newA; m_b = newB;
+            m_numSegments = newSize;
+            return OFTrue;
+        }
+
         ~CIELabColor()
         {
             clear();
