@@ -114,7 +114,7 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
     // if they are not found, random colors are generated if forcePalette is set.
     // The call only fails (if not on hard errors) if forcePalette is not set and CIELab
     // colors are missing.
-    if ( (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE) && !checkCIELabColorsPresent() )
+    if ( (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE) && !ensureCIELabColorsPresent() )
     {
         DCMSEG_ERROR("Cannot convert to PALETTE color model since not all segments contain Recommended Display CIELab Value Macro");
         return SG_EC_CannotConvertMissingCIELab;
@@ -258,6 +258,7 @@ OFCondition DcmBinToLabelConverter::copySegments(DcmSegmentation* src, DcmSegmen
             DcmSegment* clonedSegment = srcSegment->second->clone(dest);
             if (clonedSegment)
             {
+                clonedSegment->getIODRules()->deleteRule(DCM_RecommendedDisplayCIELabValue);
                 Uint16 segNumber = srcSegment->first;
                 result = dest->addSegment(clonedSegment, segNumber);
                 if (result.bad())
@@ -266,6 +267,7 @@ OFCondition DcmBinToLabelConverter::copySegments(DcmSegmentation* src, DcmSegmen
                     delete clonedSegment;
                     break;
                 }
+
             }
             else
             {
@@ -543,7 +545,7 @@ E_TransferSyntax DcmBinToLabelConverter::getInputTransferSyntax() const
 }
 
 
-OFBool DcmBinToLabelConverter::checkCIELabColorsPresent()
+OFBool DcmBinToLabelConverter::ensureCIELabColorsPresent()
 {
     size_t numSegments = m_inputSeg->getNumberOfSegments();
     OFBool result = OFTrue;
@@ -848,14 +850,17 @@ OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
                                             "dcmqi");
     if (result.good() && bgSeg)
     {
-        // Set Recommended Display CIELab Value to black
+        // Set Recommended Display CIELab Value to black if not in PALETTE mode, as required by Sup 243
         // (CIELab L*=0, a*=0, b*=0 → DICOM 0, 32768, 32768)
-        result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
-        if (result.bad())
+        if (m_convFlags.m_outputColorModel != DcmSegTypes::SLCM_PALETTE)
         {
-            DCMSEG_ERROR("Failed to set CIELab color for background segment: " << result.text());
-            delete bgSeg;
-            return result;
+            result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
+            if (result.bad())
+            {
+                DCMSEG_ERROR("Failed to set CIELab color for background segment: " << result.text());
+                delete bgSeg;
+                return result;
+            }
         }
         Uint16 segNum = 0;
         result = m_outputSeg->addSegment(bgSeg, segNum);

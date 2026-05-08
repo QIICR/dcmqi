@@ -151,7 +151,7 @@ protected:
     static OFCondition copyCommonModules(DcmSegmentation* src, DcmSegmentation* dest);
     OFCondition createFramesWithMetadata(DcmSegmentation* src);
     OFCondition copySegments(DcmSegmentation* src, DcmSegmentation* dest);
-    OFBool checkCIELabColorsPresent();
+    OFBool ensureCIELabColorsPresent();
     OFCondition createPaletteColorLUT();
     OFCondition loadInput();
     OFCondition addSourceSegmentationToDerivationImageFG(DcmSegmentation* src, DcmSegmentation* dest);
