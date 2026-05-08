@@ -30,6 +30,68 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/liver.dcm
   )
 
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_labelmap
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd
+    --inputDICOMDirectory ${DICOM_DIR}
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-direct.dcm
+    --segmentationType labelmap
+  )
+
+# Multi-segment labelmap from two non-overlapping single-segment ITK inputs.
+# Verifies that segment numbering for foreground starts at 1 (regression guard
+# for the bug where the first foreground segment got number 0 and collided
+# with the implicit background pixel value).
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_labelmap_multi
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_liver_spine.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver_spine-labelmap.dcm
+    --segmentationType labelmap
+  )
+
+# Same as above but exercises --useLabelIDAsSegmentNumber together with
+# --segmentationType labelmap.
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_labelmap_multi_labelID
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_liver_spine.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver_spine-labelmap-labelID.dcm
+    --segmentationType labelmap
+    --useLabelIDAsSegmentNumber
+  )
+
+# Overlap rejection: liver+spine+heart input. Of the three segments only
+# liver and heart actually overlap (522 pixels, verified by pixel-level
+# intersection of the input NRRDs); spine does not overlap with either.
+# In labelmap mode the converter must abort because labelmaps cannot
+# represent overlapping segments — each pixel value can encode only one
+# segment number. The expected error is
+#   "Cannot write labelmap SEG due to overlapping segments at slice ..."
+# Reuses the existing 3-segment metadata so no new JSON file is needed.
+# This is the ITK->labelmap counterpart of partial_overlaps_to_labelmap,
+# which exercises the same rejection in the DICOM->labelmap path.
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_labelmap_overlap
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg.nrrd,${BASELINE}/heart_seg.nrrd
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver_spine_heart-labelmap.dcm
+    --segmentationType labelmap
+  )
+set_tests_properties(${itk2dcm}_makeSEG_labelmap_overlap PROPERTIES WILL_FAIL TRUE)
+
 
 # ------------------------------------------------------------------------------
 
@@ -115,6 +177,16 @@ if(EXISTS ${DCIODVFY_EXECUTABLE})
       TEST_DEPENDS
         ${itk2dcm}_makeSEG_multiple_segment_files_reordered
     )
+    # Note: dciodvfy is intentionally not run on the labelmap outputs produced
+    # by ${itk2dcm}_makeSEG_labelmap{,_multi,_multi_labelID} or by the
+    # bin2labelsegimage labelmap producers. All labelmap segmentations emitted
+    # by dcmqi today fail dciodvfy with
+    #   Error - Missing attribute Type 2C Conditional Element=<PatientOrientation>
+    #           Module=<GeneralImage>
+    # which is a pre-existing compliance gap shared by every labelmap-emitting
+    # path (Itk2DicomConverter and Bin2Label). Once Patient Orientation is
+    # populated for labelmap output, add dciodvfy invocations for
+    # liver-labelmap-direct.dcm and liver_spine-labelmap.dcm here.
 else()
   message(STATUS "Skipping test '${itk2dcm}_dciodvfy': dciodvfy executable not found")
 endif()
@@ -145,6 +217,39 @@ dcmqi_add_test(
     --prefix makeNRRD
   TEST_DEPENDS
     ${itk2dcm}_makeSEG
+  )
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRD_from_labelmap_direct
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/makeNRRD_labelmap_direct-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-labelmap-direct.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix makeNRRD_labelmap_direct
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG_labelmap
+  )
+
+# Roundtrip: multi-segment labelmap -> NRRD, compared against the merged
+# liver+spine baseline (two non-overlapping segments collapse into a single
+# output ITK image with labels 0/1/2).
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRD_from_labelmap_multi
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_spine_seg.nrrd
+    ${MODULE_TEMP_DIR}/makeNRRD_labelmap_multi-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver_spine-labelmap.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix makeNRRD_labelmap_multi
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG_labelmap_multi
   )
 
 dcmqi_add_test(

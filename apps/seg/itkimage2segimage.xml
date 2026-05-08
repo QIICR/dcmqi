@@ -101,6 +101,17 @@
     </boolean>
 
     <string-enumeration>
+      <name>segmentationType</name>
+      <label>DICOM Segmentation Type</label>
+      <channel>output</channel>
+      <longflag>segmentationType</longflag>
+      <default>binary</default>
+      <element>binary</element>
+      <element>labelmap</element>
+      <description>Type of DICOM SEG object to create. Use binary for classic 1-bit segments (default), or labelmap for direct labelmap SEG output.</description>
+    </string-enumeration>
+
+    <string-enumeration>
       <name>compress</name>
       <label>Compress PixelData</label>
       <channel>input</channel>

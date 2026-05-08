@@ -809,84 +809,23 @@ OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
     if (!m_outputSeg)
         return EC_IllegalParameter;
 
-    // Check whether any frame contains pixel value 0
-    OFBool hasZeroPixel = OFFalse;
-    size_t numFrames = m_outputSeg->getNumberOfFrames();
-    for (size_t f = 0; f < numFrames && !hasZeroPixel; f++)
-    {
-        const DcmIODTypes::FrameBase* frame = m_outputSeg->getFrame(f);
-        if (frame == NULL)
-            continue;
-        const size_t numPixels = frame->getLengthInBytes() / frame->bytesPerPixel();
-        for (size_t p = 0; p < numPixels; p++)
-        {
-            if (frame->bytesPerPixel() == 1)
-            {
-                Uint8 val = 0;
-                frame->getUint8AtIndex(val, p);
-                if (val == 0) { hasZeroPixel = OFTrue; break; }
-            }
-            else
-            {
-                Uint16 val = 0;
-                frame->getUint16AtIndex(val, p);
-                if (val == 0) { hasZeroPixel = OFTrue; break; }
-            }
-        }
-    }
+    const bool isPalette = (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE);
+    bool bgAdded = false;
+    OFCondition result = ConverterBase::addBackgroundSegmentIfNeeded(m_outputSeg.get(), !isPalette, &bgAdded);
+    if (result.bad() || !bgAdded)
+        return result;
 
-    if (!hasZeroPixel)
-        return EC_Normal;
+    DCMSEG_DEBUG("Pixel value 0 found in output frames, added background segment (number 0)");
 
-    // Create background segment with Segment Number 0
-    DCMSEG_DEBUG("Pixel value 0 found in output frames, adding background segment (number 0)");
-    DcmSegment* bgSeg = NULL;
-    CodeSequenceMacro bgCode("125040", "DCM", "Background");
-    OFCondition result = DcmSegment::create(bgSeg,
-                                            "Background",
-                                            bgCode,  /* category */
-                                            bgCode,  /* type */
-                                            DcmSegTypes::SAT_AUTOMATIC,
-                                            "dcmqi");
-    if (result.good() && bgSeg)
+    // In PALETTE mode the per-segment CIELab macro must not be written,
+    // but the color must still be present in the palette LUT so pixel
+    // value 0 maps to black.
+    if (isPalette && !m_cielabColors.prepend(0, 32768, 32768))
     {
-        // Set Recommended Display CIELab Value to black if not in PALETTE mode, as required by Sup 243
-        // (CIELab L*=0, a*=0, b*=0 → DICOM 0, 32768, 32768)
-        if (m_convFlags.m_outputColorModel != DcmSegTypes::SLCM_PALETTE)
-        {
-            result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
-            if (result.bad())
-            {
-                DCMSEG_ERROR("Failed to set CIELab color for background segment: " << result.text());
-                delete bgSeg;
-                return result;
-            }
-        }
-        Uint16 segNum = 0;
-        result = m_outputSeg->addSegment(bgSeg, segNum);
-        if (result.bad())
-        {
-            DCMSEG_ERROR("Failed to add background segment: " << result.text());
-            delete bgSeg;
-        }
-        else if (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE)
-        {
-            // In PALETTE mode the per-segment CIELab macro must not be written,
-            // but the color must still be present in the palette LUT so pixel
-            // value 0 maps to black.
-            if (!m_cielabColors.prepend(0, 32768, 32768))
-            {
-                DCMSEG_ERROR("Failed to prepend background color for palette LUT");
-                result = EC_MemoryExhausted;
-            }
-        }
+        DCMSEG_ERROR("Failed to prepend background color for palette LUT");
+        return EC_MemoryExhausted;
     }
-    else
-    {
-        DCMSEG_ERROR("Failed to create background segment: " << result.text());
-        delete bgSeg;
-    }
-    return result;
+    return EC_Normal;
 }
 
 

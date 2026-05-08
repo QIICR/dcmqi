@@ -151,6 +151,21 @@ protected:
     static OFCondition copyCommonModules(DcmSegmentation* src, DcmSegmentation* dest);
     OFCondition createFramesWithMetadata(DcmSegmentation* src);
     OFCondition copySegments(DcmSegmentation* src, DcmSegmentation* dest);
+
+    /** Collect Recommended Display CIELab Value of each input segment into
+     *  m_cielabColors so it can later be used to build the Palette Color LUT.
+     *  Only relevant when the conversion target color model is PALETTE; for
+     *  MONOCHROME2 output the call is a no-op and returns OFTrue.
+     *
+     *  In PALETTE mode every input segment must either provide a Recommended
+     *  Display CIELab Value Macro or m_convFlags.m_forcePalette must be set so
+     *  that random colors are generated for missing segments. Otherwise this
+     *  method clears m_cielabColors and returns OFFalse.
+     *
+     *  @return OFTrue on success or no-op (non-PALETTE mode), OFFalse if a
+     *          required color is missing and m_forcePalette is not set, or on
+     *          memory allocation failure.
+     */
     OFBool ensureCIELabColorsPresent();
     OFCondition createPaletteColorLUT();
     OFCondition loadInput();
@@ -228,6 +243,13 @@ protected:
      *  foreseen for Labelmaps but is expected, for now, that the background
      *  segment is better supported by consuming applications.
      *
+     *  Implementation delegates the frame scan and segment creation to
+     *  ConverterBase::addBackgroundSegmentIfNeeded(); this wrapper additionally
+     *  prepends the matching black entry to m_cielabColors when the output
+     *  color model is PALETTE so that pixel value 0 maps to black in the
+     *  Palette Color LUT (the per-segment CIELab macro is not written in
+     *  PALETTE mode, per Sup 243).
+     *
      *  @return EC_Normal if successful or no background segment needed, error otherwise
      */
     OFCondition addBackgroundSegmentIfNeeded();
@@ -280,6 +302,14 @@ private:
         }
 
         /** Prepend a color entry at index 0, shifting existing entries right.
+         *  After this call m_numSegments is incremented by 1 and the values
+         *  (L, a, b) occupy index 0; previous index i is now at i+1. Used to
+         *  align the Palette Color LUT with a newly added background segment
+         *  (Segment Number 0) so that pixel value 0 maps to the prepended
+         *  color in the LUT.
+         *  @param  L  L* component, DICOM-encoded (0..65535 maps to 0..100).
+         *  @param  a  a* component, DICOM-encoded (0..65535 maps to -128..127).
+         *  @param  b  b* component, DICOM-encoded (0..65535 maps to -128..127).
          *  @return OFTrue on success, OFFalse on memory allocation failure.
          */
         OFBool prepend(Uint16 L, Uint16 a, Uint16 b)

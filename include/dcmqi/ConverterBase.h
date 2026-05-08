@@ -46,6 +46,45 @@ namespace dcmqi {
 
   class ConverterBase {
 
+  public:
+
+    /** Scan all frames of a labelmap segmentation document for any pixel value
+     *  of 0. If at least one such pixel is found, create and add a background
+     *  segment with Segment Number 0 using Property Type Code
+     *  (DCM, 125040, "Background"). Per Sup 243 every pixel value used in a
+     *  labelmap segmentation must have a corresponding Segment Sequence item;
+     *  this helper ensures that requirement is met for the implicit zero
+     *  background that ITK-style and binary-derived inputs typically produce.
+     *
+     *  If no zero pixel is found this is a no-op and EC_Normal is returned;
+     *  in that case *bgAdded (if provided) remains false. *bgAdded is also
+     *  reset to false on entry so callers do not need to pre-initialize it.
+     *
+     *  @param  segdoc          The segmentation document to add the background
+     *                          segment to. Must be a labelmap segmentation
+     *                          previously created by
+     *                          DcmSegmentation::createLabelmapSegmentation().
+     *                          Must not be NULL.
+     *  @param  setCIELabValue  If true, set the Recommended Display CIELab
+     *                          Value Macro on the background segment to black
+     *                          (DICOM-encoded 0, 32768, 32768). Pass false for
+     *                          PALETTE color model where the per-segment
+     *                          CIELab macro must not be written; the caller
+     *                          is then responsible for ensuring the Palette
+     *                          Color LUT entry for pixel value 0 is set.
+     *  @param  bgAdded         Optional out-parameter. If non-null, set to
+     *                          true iff a background segment was actually
+     *                          added (i.e. a zero pixel was present and
+     *                          DcmSegmentation::addSegment() succeeded).
+     *  @return EC_Normal on success (segment added) or no-op (no zero pixel),
+     *          EC_IllegalParameter if segdoc is NULL, otherwise the error
+     *          condition from DcmSegment::create() / addSegment() /
+     *          setRecommendedDisplayCIELabValue().
+     */
+    static OFCondition addBackgroundSegmentIfNeeded(DcmSegmentation* segdoc,
+                                                     bool setCIELabValue = true,
+                                                     bool* bgAdded = nullptr);
+
   protected:
     static IODGeneralEquipmentModule::EquipmentInfo getEquipmentInfo();
     static IODEnhGeneralEquipmentModule::EquipmentInfo getEnhEquipmentInfo();
