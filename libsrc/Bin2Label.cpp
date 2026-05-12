@@ -258,7 +258,12 @@ OFCondition DcmBinToLabelConverter::copySegments(DcmSegmentation* src, DcmSegmen
             DcmSegment* clonedSegment = srcSegment->second->clone(dest);
             if (clonedSegment)
             {
-                clonedSegment->getIODRules()->deleteRule(DCM_RecommendedDisplayCIELabValue);
+                if (m_convFlags.m_outputColorModel == DcmSegTypes::SLCM_PALETTE)
+                {
+                    // Remove CIELab color from segment since in PALETTE mode the color is defined
+                    // in an ICC profile and the palette color lookup table
+                    clonedSegment->getIODRules()->deleteRule(DCM_RecommendedDisplayCIELabValue);
+                }
                 Uint16 segNumber = srcSegment->first;
                 result = dest->addSegment(clonedSegment, segNumber);
                 if (result.bad())
