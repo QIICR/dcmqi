@@ -74,21 +74,22 @@
     </integer>
 
     <boolean>
+      <name>noDicomValueChecks</name>
+      <label>No DICOM Value Check</label>
+      <channel>input</channel>
+      <longflag>noDicomValueChecks</longflag>
+      <default>false</default>
+      <description>Bypass DICOM value checks when writing segmentation file. This can be useful for
+        debugging or when taking over attributes from non-compliant DICOM image files.</description>
+    </boolean>
+
+    <boolean>
       <name>useLabelIDAsSegmentNumber</name>
       <label>Use label ID as Segment Number</label>
       <channel>output</channel>
       <longflag>useLabelIDAsSegmentNumber</longflag>
       <default>false</default>
       <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1, otherwise conversion will fail.</description>
-    </boolean>
-
-    <boolean>
-      <name>noDicomValueChecks</name>
-      <label>No DICOM Value Check</label>
-      <channel>output</channel>
-      <longflag>noDicomValueChecks</longflag>
-      <default>false</default>
-      <description>Bypass DICOM value checks when writing segmentation file. This can be useful for debugging or when taking over attributes from non-compliant DICOM image files.</description>
     </boolean>
 
     <boolean>
@@ -99,6 +100,17 @@
       <default>false</default>
       <description>Display more verbose output, useful for troubleshooting.</description>
     </boolean>
+
+    <string-enumeration>
+      <name>segmentationType</name>
+      <label>DICOM Segmentation Type</label>
+      <channel>output</channel>
+      <longflag>segmentationType</longflag>
+      <default>binary</default>
+      <element>binary</element>
+      <element>labelmap</element>
+      <description>Type of DICOM SEG object to create. Use binary for classic 1-bit segments (default), or labelmap for direct labelmap SEG output.</description>
+    </string-enumeration>
 
     <string-enumeration>
       <name>compress</name>

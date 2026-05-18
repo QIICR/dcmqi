@@ -89,6 +89,16 @@ int main(int argc, char *argv[])
     }
   }
 
+  bool outputLabelMap = false;
+  if (segmentationType == "binary")
+    outputLabelMap = false;
+  else if (segmentationType == "labelmap")
+    outputLabelMap = true;
+  else {
+    cerr << "Error: --segmentationType must be either 'binary' or 'labelmap'" << endl;
+    return EXIT_FAILURE;
+  }
+
   if(metaRoot.isMember("segmentAttributesFileMapping")){
     if(metaRoot["segmentAttributesFileMapping"].size() != metaRoot["segmentAttributes"].size()){
       cerr << "Number of files in segmentAttributesFileMapping should match the number of entries in segmentAttributes!" << endl;
@@ -128,7 +138,8 @@ int main(int argc, char *argv[])
                                                                              skipEmptySlices,
                                                                              useLabelIDAsSegmentNumber,
                                                                              referencesGeometryCheck,
-                                                                             !noDicomValueChecks);
+                                                                             !noDicomValueChecks,
+                                                                             outputLabelMap);
 
     if (result == NULL){
       std::cerr << "ERROR: Conversion failed." << std::endl;

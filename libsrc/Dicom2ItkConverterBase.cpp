@@ -199,7 +199,6 @@ OFCondition Dicom2ItkConverterBase::extractBasicSegmentationInfo()
     if (!firstFrame)
         return EC_IllegalParameter;
     m_bytesPerPixel = firstFrame->bytesPerPixel();
-    std::cout << "Bytes per pixel: " << static_cast<int>(m_bytesPerPixel) << std::endl;
     return result;
 }
 

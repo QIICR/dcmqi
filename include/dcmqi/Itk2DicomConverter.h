@@ -66,6 +66,27 @@ namespace dcmqi {
      *       will not fail if some of the DICOM attributes have invalid values
      *       (e.g., VR of Patients'Name is violated, wrong value multiplicity, etc.).
      *       However, the resulting DICOM object may not be compliant with the DICOM standard in this case.
+     * @param outputLabelMap If true, create a DICOM Labelmap Segmentation object
+     *       (SOP Class UID 1.2.840.10008.5.1.4.1.1.66.7, per Sup 243) directly
+     *       instead of a binary DICOM Segmentation object. Behavioral
+     *       differences when set to true:
+     *       - Output uses MONOCHROME2 photometric interpretation. Bit depth is
+     *         8-bit if the total number of metadata segments is <= 255, else
+     *         16-bit.
+     *       - Frames are organized via a Stack ID / In-Stack Position Number
+     *         dimension index instead of Referenced Segment Number / Image
+     *         Position (Patient).
+     *       - Each pixel value is the segment number of the segment present
+     *         at that location. Foreground segment numbers are assigned 1..N
+     *         (or taken from labelIDs if useLabelIDAsSegmentNumber is true);
+     *         pixel value 0 represents the absence of any foreground segment.
+     *       - If any frame contains pixel value 0 a Background segment with
+     *         Segment Number 0 (Property Type DCM 125040) is added
+     *         automatically so that every pixel value is covered by a Segment
+     *         Sequence item, as required by Sup 243.
+     *       - Segments must not overlap: if two foreground segments map to the
+     *         same pixel location with different segment numbers the
+     *         conversion fails (NULL is returned).
      * @return A pointer to the resulting DICOM Segmentation object.
      */
     template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
@@ -75,7 +96,8 @@ namespace dcmqi {
                           bool skipEmptySlices=true,
                           bool useLabelIDAsSegmentNumber=false,
                           bool referencesGeometryCheck=true,
-                          bool doDicomValueChecks=true);
+                          bool doDicomValueChecks=true,
+                          bool outputLabelMap=false);
 
   protected:
 

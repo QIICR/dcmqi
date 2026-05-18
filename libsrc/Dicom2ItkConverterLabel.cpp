@@ -41,15 +41,15 @@ OFCondition Dicom2ItkConverterLabel::dcmSegmentation2itkimage(const bool mergeSe
     // while the ITK images are made accessible through the begin()/next() iterators only.
     // createMetaInfo() requires groups of non-overlapping segments, but for labelmaps we know that
     // all segments are non-overlapping, so we can just create one group with all segments in it.
-    size_t numSegs = m_segDoc->getNumberOfSegments();
     OFVector<Uint32> segs;
-    for (size_t i = 1; i <= numSegs; ++i)
+    OFMap<Uint16, DcmSegment*>::const_iterator segIt = m_segDoc->getSegments().begin();
+    while (segIt != m_segDoc->getSegments().end())
     {
-        segs.push_back(i);
+        segs.push_back(segIt->first);
+        ++segIt;
     }
     m_segmentGroups.clear();
     m_segmentGroups.push_back(segs);
-    std::cout << "All " << numSegs << " segments will be put into one group for the metadata creation" << std::endl;
 
     // Now we are ready to create the meta information.
     // It is available directly after this call in m_metaInfo.
