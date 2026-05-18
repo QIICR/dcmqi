@@ -234,7 +234,7 @@ OFCondition Dicom2ItkConverterBase::getITKImageOrigin(const Uint32 frameNo, Shor
         }
     }
     // Dump the origin for debugging
-    std::cout << "Extracted image origin for frame " << frameNo << ": " << origin << std::endl;
+    // std::cout << "Extracted image origin for frame " << frameNo << ": " << origin << std::endl;
     return EC_Normal;
 }
 
