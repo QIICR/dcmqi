@@ -71,7 +71,7 @@ jobs:
       id: cache-dcmtk-itk-zlib
       uses: actions/cache/restore@v4
       env:
-        cache-name: cache-dcmtk-itk-zlib
+        cache-name: cache-dcmtk-itk-zlib-v2
       with:
         # The recursive content of these directories goes into the cache
         path: |
@@ -85,12 +85,6 @@ jobs:
         # we must rebuild it. Also a change in the OS will trigger cash rebuild.
         # A hashkey will have the form of macOS-<arch>-build-cache-dcmtk-itk-<hash>
         key: ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake','CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake') }}
-        # Below is the key pattern that defines, which cache entries stored on the
-        # GitHub repository will match our key. We simply use the name of OS, architecture and
-        # name of the cache, i.e. every cache entry with key pattern
-        # macOS-<arch>-build-cache-dcmtk-itk-<hash> will match.
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-
 
     # Report cache status for monitoring
     - name: Report cache status
@@ -103,16 +97,43 @@ jobs:
           echo "✗ Cache miss. Will build DCMTK, ITK, and zlib from source"
         fi
 
+    - name: Validate restored cache
+      id: validate-cache
+      run: |
+        CACHE_OK=false
+
+        if [ "${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit }}" == "true" ]; then
+          CACHE_OK=true
+
+          if [ ! -f "${{ github.workspace }}/dcmqi-build/ITK-build/ITKConfig.cmake" ]; then
+            echo "Missing ITK config: ${{ github.workspace }}/dcmqi-build/ITK-build/ITKConfig.cmake"
+            CACHE_OK=false
+          fi
+
+          if [ ! -f "${{ github.workspace }}/dcmqi-build/DCMTK-build/DCMTKConfig.cmake" ]; then
+            echo "Missing DCMTK config: ${{ github.workspace }}/dcmqi-build/DCMTK-build/DCMTKConfig.cmake"
+            CACHE_OK=false
+          fi
+
+          if [ ! -d "${{ github.workspace }}/dcmqi-build/zlib-install/include" ] || [ ! -d "${{ github.workspace }}/dcmqi-build/zlib-install/lib" ]; then
+            echo "Missing zlib install directories: ${{ github.workspace }}/dcmqi-build/zlib-install/include and/or ${{ github.workspace }}/dcmqi-build/zlib-install/lib"
+            CACHE_OK=false
+          fi
+        fi
+
+        echo "cache_ok=$CACHE_OK" >> "$GITHUB_OUTPUT"
+        echo "Validated cache usability: $CACHE_OK"
+
     # This is step executed if a cache entry is found
     - name: "Configure dcmqi w/ cached DCMTK/ITK/ZLIB"
-      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit == 'true' }}
+      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit == 'true' && steps.validate-cache.outputs.cache_ok == 'true' }}
       # Make sure to set ITK, DCMTK and ZLIB directories to dcmqi cmake configuration step
       run: |
         cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }} -DDCMTK_DIR=${{ github.workspace }}/dcmqi-build/DCMTK-build -DITK_DIR=${{ github.workspace }}/dcmqi-build/ITK-build -DZLIB_ROOT=${{ github.workspace }}/dcmqi-build/zlib-install
 
     # If we don't have a matching cache entry, configure for full rebuild (regular dcmqi superbuild)
     - name: "Configure dcmqi w/o cached DCMTK/ITK/ZLIB"
-      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true' || steps.validate-cache.outputs.cache_ok != 'true' }}
       run: |
         cd ${{ github.workspace }}/dcmqi-build && cmake -G Ninja ${{ github.workspace }}
 
