@@ -83,7 +83,7 @@ jobs:
         # The hash key decides whether cache entry is out of date or can be used.
         # We use the hash of the CMakeExternals files to decide whether
         # we must rebuild it. Also a change in the OS will trigger cash rebuild.
-        # A hashkey will have the form of macOS-<arch>-build-cache-dcmtk-itk-<hash>
+        # A hashkey will have the form of macOS-<arch>-build-cache-dcmtk-itk-zlib-v2-<hash>
         key: ${{ runner.os }}-${{ matrix.arch }}-build-${{ env.cache-name }}-${{ hashFiles('CMakeExternals/DCMTK.cmake','CMakeExternals/ITK.cmake', 'CMakeExternals/zlib.cmake') }}
 
     # Report cache status for monitoring
@@ -105,18 +105,18 @@ jobs:
         if [ "${{ steps.cache-dcmtk-itk-zlib.outputs.cache-hit }}" == "true" ]; then
           CACHE_OK=true
 
-          if [ ! -f "${{ github.workspace }}/dcmqi-build/ITK-build/ITKConfig.cmake" ]; then
-            echo "Missing ITK config: ${{ github.workspace }}/dcmqi-build/ITK-build/ITKConfig.cmake"
+          if [ ! -f "$GITHUB_WORKSPACE/dcmqi-build/ITK-build/ITKConfig.cmake" ]; then
+            echo "Missing ITK config: $GITHUB_WORKSPACE/dcmqi-build/ITK-build/ITKConfig.cmake"
             CACHE_OK=false
           fi
 
-          if [ ! -f "${{ github.workspace }}/dcmqi-build/DCMTK-build/DCMTKConfig.cmake" ]; then
-            echo "Missing DCMTK config: ${{ github.workspace }}/dcmqi-build/DCMTK-build/DCMTKConfig.cmake"
+          if [ ! -f "$GITHUB_WORKSPACE/dcmqi-build/DCMTK-build/DCMTKConfig.cmake" ]; then
+            echo "Missing DCMTK config: $GITHUB_WORKSPACE/dcmqi-build/DCMTK-build/DCMTKConfig.cmake"
             CACHE_OK=false
           fi
 
-          if [ ! -d "${{ github.workspace }}/dcmqi-build/zlib-install/include" ] || [ ! -d "${{ github.workspace }}/dcmqi-build/zlib-install/lib" ]; then
-            echo "Missing zlib install directories: ${{ github.workspace }}/dcmqi-build/zlib-install/include and/or ${{ github.workspace }}/dcmqi-build/zlib-install/lib"
+          if [ ! -d "$GITHUB_WORKSPACE/dcmqi-build/zlib-install/include" ] || [ ! -d "$GITHUB_WORKSPACE/dcmqi-build/zlib-install/lib" ]; then
+            echo "Missing zlib install directories: $GITHUB_WORKSPACE/dcmqi-build/zlib-install/include and/or $GITHUB_WORKSPACE/dcmqi-build/zlib-install/lib"
             CACHE_OK=false
           fi
         fi
