@@ -20,6 +20,31 @@ dcmqi_add_test(
   COMMAND $<TARGET_FILE:${itk2dcm}> --help
   )
 
+#-----------------------------------------------------------------------------
+# Equivalence guard for the in-memory handler overload of
+# itkimage2dcmSegmentation. The string overload is implemented as a thin
+# wrapper that parses its JSON argument into a handler and delegates to the
+# handler overload; this test asserts the two overloads produce semantically
+# equivalent DICOM datasets for the same input.
+add_executable(Itk2DicomHandlerOverloadEquivalenceTest
+  Itk2DicomHandlerOverloadEquivalenceTest.cxx)
+target_link_libraries(Itk2DicomHandlerOverloadEquivalenceTest
+  dcmqi
+  ${DCMTK_LIBRARIES})
+set_target_properties(Itk2DicomHandlerOverloadEquivalenceTest PROPERTIES
+  LABELS ${MODULE_NAME})
+
+dcmqi_add_test(
+  NAME ${itk2dcm}_handlerOverloadEquivalence
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:Itk2DicomHandlerOverloadEquivalenceTest>
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    ${BASELINE}/liver_seg.nrrd
+    ${DICOM_DIR}/01.dcm
+    ${DICOM_DIR}/02.dcm
+    ${DICOM_DIR}/03.dcm
+  )
+
 dcmqi_add_test(
   NAME ${itk2dcm}_makeSEG
   MODULE_NAME ${MODULE_NAME}

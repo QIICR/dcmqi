@@ -35,11 +35,30 @@ namespace dcmqi {
                                                           bool referencesGeometryCheck,
                                                           bool doDicomValueChecks,
                                                           bool outputLabelMap) {
-
-    auto inputSize = segmentations[0]->GetBufferedRegion().GetSize();
-
+    // Thin wrapper around the handler-based overload: parse the JSON string into a
+    // handler and delegate. Keeps the legacy file-driven call sites working while
+    // the handler overload is the load-bearing implementation.
     JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
     metaInfo.read();
+    return itkimage2dcmSegmentation(dcmDatasets, segmentations, metaInfo,
+                                    skipEmptySlices, useLabelIDAsSegmentNumber,
+                                    referencesGeometryCheck, doDicomValueChecks,
+                                    outputLabelMap);
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
+  DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
+                                                          vector<itk::SmartPointer<const ImageSourceType>> segmentations,
+                                                          JSONSegmentationMetaInformationHandler& metaInfo,
+                                                          bool skipEmptySlices,
+                                                          bool useLabelIDAsSegmentNumber,
+                                                          bool referencesGeometryCheck,
+                                                          bool doDicomValueChecks,
+                                                          bool outputLabelMap) {
+
+    auto inputSize = segmentations[0]->GetBufferedRegion().GetSize();
 
     if(metaInfo.segmentsAttributesMappingList.size() != segmentations.size()){
       cerr << "Mismatch between the number of input segmentation files and the size of metainfo list!" << endl;
@@ -973,11 +992,31 @@ namespace dcmqi {
       bool doDicomValueChecks,
       bool outputLabelMap);
 
+  template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<ShortImageType>(
+      vector<DcmItem*> dcmDatasets,
+      vector<ShortImageType::ConstPointer> segmentations,
+      JSONSegmentationMetaInformationHandler& metaInfo,
+      bool skipEmptySlices,
+      bool useLabelIDAsSegmentNumber,
+      bool referencesGeometryCheck,
+      bool doDicomValueChecks,
+      bool outputLabelMap);
+
   using VectorImageAdapter = itk::VectorImageToImageAdaptor<short, 3U>;
   template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<VectorImageAdapter>(
       vector<DcmItem*> dcmDatasets,
       vector<VectorImageAdapter::ConstPointer> segmentations,
       const string& metaData,
+      bool skipEmptySlices,
+      bool useLabelIDAsSegmentNumber,
+      bool referencesGeometryCheck,
+      bool doDicomValueChecks,
+      bool outputLabelMap);
+
+  template DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation<VectorImageAdapter>(
+      vector<DcmItem*> dcmDatasets,
+      vector<VectorImageAdapter::ConstPointer> segmentations,
+      JSONSegmentationMetaInformationHandler& metaInfo,
       bool skipEmptySlices,
       bool useLabelIDAsSegmentNumber,
       bool referencesGeometryCheck,
