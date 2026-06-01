@@ -27,6 +27,13 @@ typedef itk::LabelImageToLabelMapFilter<ShortImageType> LabelToLabelMapFilterTyp
 
 namespace dcmqi {
 
+  // Forward declaration: the handler overload of itkimage2dcmSegmentation takes
+  // this only by reference and the template definition lives in the .cpp, so the
+  // full header is not needed here. Callers that want to use the handler overload
+  // must include JSONSegmentationMetaInformationHandler.h themselves to construct
+  // an instance.
+  class JSONSegmentationMetaInformationHandler;
+
   /**
    * @brief The Itk2DicomConverter class provides methods to convert from itk images to DICOM Segmentation objects.
    */
@@ -89,10 +96,32 @@ namespace dcmqi {
      *         conversion fails (NULL is returned).
      * @return A pointer to the resulting DICOM Segmentation object.
      */
-    template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
+    template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool> = 0>
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                           const string &metaData,
+                          bool skipEmptySlices=true,
+                          bool useLabelIDAsSegmentNumber=false,
+                          bool referencesGeometryCheck=true,
+                          bool doDicomValueChecks=true,
+                          bool outputLabelMap=false);
+
+    /**
+     * @brief In-memory metadata overload of itkimage2dcmSegmentation.
+     *
+     * Accepts a fully-populated JSONSegmentationMetaInformationHandler instead
+     * of a JSON string. This is the core implementation; the string overload
+     * is a thin wrapper that parses its JSON argument into a handler and
+     * delegates here. Use this overload when the metadata is already held
+     * programmatically and serialising it just to re-parse would be wasteful
+     * or lossy.
+     *
+     * Parameter semantics are identical to the string overload.
+     */
+    template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool> = 0>
+    static DcmDataset* itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
+                          vector<itk::SmartPointer<const ImageSourceType>> segmentations,
+                          JSONSegmentationMetaInformationHandler& metaInfo,
                           bool skipEmptySlices=true,
                           bool useLabelIDAsSegmentNumber=false,
                           bool referencesGeometryCheck=true,
