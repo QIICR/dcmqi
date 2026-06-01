@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
   REQUIRE(resultA != nullptr);
 
   // Path B: handler overload (new).
-  dcmqi::JSONSegmentationMetaInformationHandler handler(metadata.c_str());
+  dcmqi::JSONSegmentationMetaInformationHandler handler(metadata);
   handler.read();
   std::unique_ptr<DcmDataset> resultB(
       dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(dcmDatasetsB, segmentations, handler));

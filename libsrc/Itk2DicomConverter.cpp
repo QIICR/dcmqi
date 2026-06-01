@@ -26,7 +26,7 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
-  template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
+  template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool>>
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                                                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                                                           const string &metaData,
@@ -38,7 +38,7 @@ namespace dcmqi {
     // Thin wrapper around the handler-based overload: parse the JSON string into a
     // handler and delegate. Keeps the legacy file-driven call sites working while
     // the handler overload is the load-bearing implementation.
-    JSONSegmentationMetaInformationHandler metaInfo(metaData.c_str());
+    JSONSegmentationMetaInformationHandler metaInfo(metaData);
     metaInfo.read();
     return itkimage2dcmSegmentation(dcmDatasets, segmentations, metaInfo,
                                     skipEmptySlices, useLabelIDAsSegmentNumber,
@@ -48,7 +48,7 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
-  template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool>>
+  template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool>>
   DcmDataset* Itk2DicomConverter::itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                                                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                                                           JSONSegmentationMetaInformationHandler& metaInfo,

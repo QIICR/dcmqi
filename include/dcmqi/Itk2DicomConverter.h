@@ -96,7 +96,7 @@ namespace dcmqi {
      *         conversion fails (NULL is returned).
      * @return A pointer to the resulting DICOM Segmentation object.
      */
-    template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
+    template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool> = 0>
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                           const string &metaData,
@@ -118,7 +118,7 @@ namespace dcmqi {
      *
      * Parameter semantics are identical to the string overload.
      */
-    template<class ImageSourceType, std::enable_if_t<std::is_same<short, typename ImageSourceType::PixelType>::value, bool> = 0>
+    template<class ImageSourceType, std::enable_if_t<std::is_same_v<short, typename ImageSourceType::PixelType>, bool> = 0>
     static DcmDataset* itkimage2dcmSegmentation(vector<DcmItem*> dcmDatasets,
                           vector<itk::SmartPointer<const ImageSourceType>> segmentations,
                           JSONSegmentationMetaInformationHandler& metaInfo,
