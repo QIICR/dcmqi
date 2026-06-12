@@ -95,6 +95,27 @@ dcmqi_add_test(
     --useLabelIDAsSegmentNumber
   )
 
+# Labelmap with non-consecutive label IDs (1 and 5) used as segment numbers.
+# LABELMAP only requires segment numbers to be unique, not consecutive, so this
+# must succeed (https://github.com/QIICR/dcmqi/issues/537). The companion
+# read-back tests below verify the pixel data and JSON metadata roundtrip.
+#
+# Input data: spine_seg_label5.nrrd is spine_seg.nrrd with its single label 2
+# relabeled to 5, voxel for voxel (identical 512x512x3 grid and geometry);
+# seg-example_liver_spine_gapped.json is seg-example_liver_spine.json with the
+# spine labelID changed from 2 to 5 accordingly.
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_labelmap_gapped_labelID
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_liver_spine_gapped.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd,${BASELINE}/spine_seg_label5.nrrd
+    --inputDICOMList ${DICOM_DIR}/01.dcm,${DICOM_DIR}/02.dcm,${DICOM_DIR}/03.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/liver_spine-labelmap-gapped.dcm
+    --segmentationType labelmap
+    --useLabelIDAsSegmentNumber
+  )
+
 # Overlap rejection: liver+spine+heart input. Of the three segments only
 # liver and heart actually overlap (522 pixels, verified by pixel-level
 # intersection of the input NRRDs); spine does not overlap with either.
@@ -277,6 +298,26 @@ dcmqi_add_test(
     ${itk2dcm}_makeSEG_labelmap_multi
   )
 
+# Roundtrip of the gapped-label-ID labelmap: pixel values / label IDs 1 and 5
+# must survive the DICOM roundtrip unchanged (issue #537). The baseline
+# liver_spine_gapped_seg.nrrd is liver_spine_seg.nrrd (the merged liver+spine
+# volume) with label 2 relabeled to 5, i.e. it holds labels 0 (background),
+# 1 (liver) and 5 (spine).
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRD_from_labelmap_gapped
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_spine_gapped_seg.nrrd
+    ${MODULE_TEMP_DIR}/makeNRRD_labelmap_gapped-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver_spine-labelmap-gapped.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix makeNRRD_labelmap_gapped
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG_labelmap_gapped_labelID
+  )
+
 dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_multiple_segment_files
   MODULE_NAME ${MODULE_NAME}
@@ -398,6 +439,34 @@ dcmqi_add_test(
     ${MODULE_TEMP_DIR}/makeNRRD-meta.json
   TEST_DEPENDS
     ${dcm2itk}_makeNRRD
+  )
+
+# JSON metadata roundtrip ITK -> labelmap SEG -> ITK: the metadata must come
+# back exactly as it went in. In particular the background (pixel value 0,
+# designated via Pixel Padding Value on write) must NOT produce an entry in
+# segmentAttributes. This fails if Pixel Padding Value is not written by the
+# ITK->DICOM conversion or not honored by the DICOM->ITK conversion.
+dcmqi_add_test(
+  NAME labelmap_meta_roundtrip
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    ${MODULE_TEMP_DIR}/makeNRRD_labelmap_direct-meta.json
+  TEST_DEPENDS
+    ${dcm2itk}_makeNRRD_from_labelmap_direct
+  )
+
+# Same for the gapped-label-ID labelmap (issue #537): label IDs 1 and 5 are
+# kept as labelID values, the background is omitted. The expected file holds
+# both segments in one group since a labelmap always reads back as one group.
+dcmqi_add_test(
+  NAME labelmap_gapped_meta_roundtrip
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_liver_spine_gapped_merged.json
+    ${MODULE_TEMP_DIR}/makeNRRD_labelmap_gapped-meta.json
+  TEST_DEPENDS
+    ${dcm2itk}_makeNRRD_from_labelmap_gapped
   )
 
 dcmqi_add_test(
@@ -617,6 +686,59 @@ dcmqi_add_test(
 set_tests_properties(${dcm2itk}_labelmap_palette16 PROPERTIES
   FIXTURES_REQUIRED liver_labelmap_palette16
 )
+
+# ------------------------------------------------------------------------------
+# Missing-frame ("sparse") labelmap handling: slice positions not encoded as
+# frames read back as background. The fill value is Pixel Padding Value if
+# present, 0 otherwise; without Pixel Padding Value the conversion is refused
+# if a real segment occupies pixel value 0 (missing data would be
+# indistinguishable from that segment).
+#
+# Both input files are a 24x38x3 8-bit labelmap whose middle slice is not
+# encoded (frames exist only for the first and last slice); they contain
+# segments 0 (Background-typed) and 1. sparse-labelmap-ppv5.dcm carries Pixel
+# Padding Value 5 (referencing no segment), sparse-labelmap-noppv.dcm carries
+# none.
+#
+# Provenance: the base object was written by itkimage2segimage
+# (--segmentationType labelmap, default skipEmptySlices) from a synthetic
+# short NRRD derived from 24x38x3/nrrd/label.nrrd, in which the phantom's
+# foreground (label 1, originally only on the middle slice) was copied to the
+# first and last slice and the middle slice cleared to 0 - so the empty middle
+# slice is not encoded as a frame. The two variants were then derived with
+# dcmodify: -m "(0028,0120)=5" for sparse-labelmap-ppv5.dcm and
+# -e "(0028,0120)" for sparse-labelmap-noppv.dcm.
+# sparse_labelmap_ppv5_seg.nrrd is the expected reader output for the ppv5
+# variant: the two encoded slices unchanged (labels 0/1), the missing middle
+# slice filled entirely with pixel value 5.
+
+# Pixel Padding Value present: missing middle slice is filled with its value
+# (5), encoded slices are exported unchanged.
+dcmqi_add_test(
+  NAME ${dcm2itk}_sparse_labelmap_ppv_fill
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/sparse_labelmap_ppv5_seg.nrrd
+    ${MODULE_TEMP_DIR}/sparse_ppv5-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${BASELINE}/sparse-labelmap-ppv5.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix sparse_ppv5
+  )
+
+# No Pixel Padding Value and segment 0 exists: refusing the conversion is the
+# expected behavior.
+dcmqi_add_test(
+  NAME ${dcm2itk}_sparse_labelmap_noppv_segment0
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}>
+    --inputDICOM ${BASELINE}/sparse-labelmap-noppv.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix sparse_noppv
+  )
+set_tests_properties(${dcm2itk}_sparse_labelmap_noppv_segment0 PROPERTIES WILL_FAIL TRUE)
 
 # ------------------------------------------------------------------------------
 

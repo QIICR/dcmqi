@@ -51,10 +51,14 @@ namespace dcmqi {
      * @param metaData A string containing the metadata to be used for the DICOM Segmentation object.
      * @param skipEmptySlices A boolean indicating whether to skip empty slices during the conversion.
      * @param useLabelIDAsSegmentNumber A boolean indicating whether to use input label IDs as segment numbers.
-     *        This only works if the label IDs start at 1 and are numbered monotonically without gaps.
+     *        For binary segmentations this only works if the label IDs start at 1 and are
+     *        numbered monotonically without gaps; if n labels are not assigned uniquely to
+     *        label IDs 1..n in the input, the conversion will fail. For labelmap output
+     *        (outputLabelMap=true) any set of unique positive label IDs is allowed, including
+     *        gaps, since LABELMAP does not require consecutive segment numbers
+     *        (https://github.com/QIICR/dcmqi/issues/537); label IDs that are used by more
+     *        than one input segment make the conversion fail.
      *        The processing order of label IDs is not relevant, i.e. they can occur in any order in the input.
-     *        If n labels are not assigned uniquely to label IDs 1..n in the input, the
-     *        conversion will fail.
      *        If this is set to false (default), the segment numbers are assigned in the order of the
      *        labels that are being converted, i.e. the first label will receive the Segment
      *        Number 1, the second label will receive the Segment Number 2, etc.
@@ -78,8 +82,9 @@ namespace dcmqi {
      *       instead of a binary DICOM Segmentation object. Behavioral
      *       differences when set to true:
      *       - Output uses MONOCHROME2 photometric interpretation. Bit depth is
-     *         8-bit if the total number of metadata segments is <= 255, else
-     *         16-bit.
+     *         8-bit if the highest segment number to be assigned (the highest
+     *         label ID if useLabelIDAsSegmentNumber is true, the total number
+     *         of metadata segments otherwise) is <= 255, else 16-bit.
      *       - Frames are organized via a Stack ID / In-Stack Position Number
      *         dimension index instead of Referenced Segment Number / Image
      *         Position (Patient).
@@ -87,10 +92,12 @@ namespace dcmqi {
      *         at that location. Foreground segment numbers are assigned 1..N
      *         (or taken from labelIDs if useLabelIDAsSegmentNumber is true);
      *         pixel value 0 represents the absence of any foreground segment.
-     *       - If any frame contains pixel value 0 a Background segment with
-     *         Segment Number 0 (Property Type DCM 125040) is added
-     *         automatically so that every pixel value is covered by a Segment
-     *         Sequence item, as required by Sup 243.
+     *       - If any frame contains pixel value 0, pixel value 0 is designated
+     *         as the background: a Background segment with Segment Number 0
+     *         (Property Type DCM 125040) is added automatically so that every
+     *         pixel value is covered by a Segment Sequence item, and Pixel
+     *         Padding Value (0028,0120) is set to 0 to mark that segment as
+     *         background, as foreseen by Sup 243.
      *       - Segments must not overlap: if two foreground segments map to the
      *         same pixel location with different segment numbers the
      *         conversion fails (NULL is returned).
