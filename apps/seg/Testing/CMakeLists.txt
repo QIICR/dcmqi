@@ -690,9 +690,9 @@ set_tests_properties(${dcm2itk}_labelmap_palette16 PROPERTIES
 # ------------------------------------------------------------------------------
 # Missing-frame ("sparse") labelmap handling: slice positions not encoded as
 # frames read back as background. The fill value is Pixel Padding Value if
-# present, 0 otherwise; without Pixel Padding Value the conversion is refused
-# if a real segment occupies pixel value 0 (missing data would be
-# indistinguishable from that segment).
+# present, 0 otherwise. Without Pixel Padding Value, if a real segment occupies
+# pixel value 0 the missing positions are still filled with 0 but a warning is
+# logged, since they then cannot be distinguished from that segment.
 #
 # Both input files are a 24x38x3 8-bit labelmap whose middle slice is not
 # encoded (frames exist only for the first and last slice); they contain
@@ -708,9 +708,9 @@ set_tests_properties(${dcm2itk}_labelmap_palette16 PROPERTIES
 # slice is not encoded as a frame. The two variants were then derived with
 # dcmodify: -m "(0028,0120)=5" for sparse-labelmap-ppv5.dcm and
 # -e "(0028,0120)" for sparse-labelmap-noppv.dcm.
-# sparse_labelmap_ppv5_seg.nrrd is the expected reader output for the ppv5
-# variant: the two encoded slices unchanged (labels 0/1), the missing middle
-# slice filled entirely with pixel value 5.
+# sparse_labelmap_ppv5_seg.nrrd / sparse_labelmap_noppv_seg.nrrd are the
+# expected reader outputs: the two encoded slices unchanged (labels 0/1), the
+# missing middle slice filled entirely with pixel value 5 resp. 0.
 
 # Pixel Padding Value present: missing middle slice is filled with its value
 # (5), encoded slices are exported unchanged.
@@ -727,18 +727,21 @@ dcmqi_add_test(
     --prefix sparse_ppv5
   )
 
-# No Pixel Padding Value and segment 0 exists: refusing the conversion is the
-# expected behavior.
+# No Pixel Padding Value and segment 0 exists: the missing middle slice is
+# filled with 0 (a warning about the ambiguity with segment 0 is logged), and
+# the conversion succeeds. The encoded slices are exported unchanged.
 dcmqi_add_test(
   NAME ${dcm2itk}_sparse_labelmap_noppv_segment0
   MODULE_NAME ${MODULE_NAME}
-  COMMAND $<TARGET_FILE:${dcm2itk}>
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/sparse_labelmap_noppv_seg.nrrd
+    ${MODULE_TEMP_DIR}/sparse_noppv-1.nrrd
+    ${dcm2itk}Test
     --inputDICOM ${BASELINE}/sparse-labelmap-noppv.dcm
     --outputDirectory ${MODULE_TEMP_DIR}
     --outputType nrrd
     --prefix sparse_noppv
   )
-set_tests_properties(${dcm2itk}_sparse_labelmap_noppv_segment0 PROPERTIES WILL_FAIL TRUE)
 
 # ------------------------------------------------------------------------------
 

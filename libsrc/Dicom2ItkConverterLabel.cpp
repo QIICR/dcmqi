@@ -59,9 +59,12 @@ OFCondition Dicom2ItkConverterLabel::dcmSegmentation2itkimage(const bool mergeSe
     // not encoded as frames in the DICOM ("missing" interior slices; positions
     // missing at the volume borders merely shrink the computed image grid and
     // never need filling). Missing data is treated as background: Pixel Padding
-    // Value if present, 0 otherwise. The 0 fallback is only safe if no real
-    // segment occupies pixel value 0 - otherwise missing data would be
-    // indistinguishable from that segment, so the conversion is refused.
+    // Value if present, 0 otherwise. If no Pixel Padding Value is present, frames
+    // are missing AND a real segment occupies pixel value 0, the filled-in
+    // positions become indistinguishable from that segment in the output. We
+    // still fill with 0 (the conventional background, and usually what a producer
+    // that simply forgot to set Pixel Padding Value intended) but warn about the
+    // ambiguity rather than refusing the conversion outright.
     m_fillValue   = 0;
     Uint16 ppv    = 0;
     OFBool havePpv = m_segDoc->getEquipment().getPixelPaddingValue(ppv).good();
@@ -78,11 +81,10 @@ OFCondition Dicom2ItkConverterLabel::dcmSegmentation2itkimage(const bool mergeSe
     }
     else if (hasMissingFrames && (m_segDoc->getSegment(0) != NULL))
     {
-        cerr << "ERROR: Labelmap encodes only " << m_segDoc->getNumberOfFrames() << " of "
+        cerr << "WARNING: Labelmap encodes only " << m_segDoc->getNumberOfFrames() << " of "
              << m_imageSize[2] << " slice positions, has no Pixel Padding Value, and uses"
-             << " pixel value 0 for a segment: the missing positions cannot be represented"
-             << " distinctly in the output image. Refusing conversion." << endl;
-        return EC_IllegalCall;
+             << " pixel value 0 for a segment: the missing positions are filled with 0 and"
+             << " are therefore indistinguishable from that segment in the output image." << endl;
     }
 
     // Prepare the meta information, which will be returned immediately from the dcmSegmentation2itkimage() call,
