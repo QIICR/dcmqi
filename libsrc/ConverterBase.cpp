@@ -3,6 +3,7 @@
 #include "dcmqi/ConverterBase.h"
 
 // DCMTK includes
+#include <dcmtk/dcmseg/segdoc.h>
 #include <dcmtk/dcmseg/segment.h>
 
 
@@ -17,7 +18,14 @@ namespace dcmqi {
     if (!segdoc)
       return EC_IllegalParameter;
 
-    // Check whether any frame contains pixel value 0
+    // Check whether any frame contains pixel value 0 (early-exit on first hit).
+    // Note: this makes the pixel data being traversed twice, since DCMTK scans all
+    // frames again when the object is written (coverage enforcement in
+    // harmonizeLabelmapBackground(): every pixel value must be described by a
+    // Segment, and that scan cannot early-exit). A DCMTK-side switch to skip the
+    // write-time scan for callers that guarantee coverage - as dcmqi does by
+    // construction, since it builds the frames from the segment numbers it just
+    // assigned - could remove that redundancy.
     OFBool hasZeroPixel = OFFalse;
     size_t numFrames = segdoc->getNumberOfFrames();
     for (size_t f = 0; f < numFrames && !hasZeroPixel; f++)
@@ -46,19 +54,16 @@ namespace dcmqi {
     if (!hasZeroPixel)
       return EC_Normal;
 
-    // Create background segment with Segment Number 0
-    DcmSegment* bgSeg = NULL;
-    CodeSequenceMacro bgCode("125040", "DCM", "Background");
-    OFCondition result = DcmSegment::create(bgSeg,
-                                            "Background",
-                                            bgCode,  /* category */
-                                            bgCode,  /* type */
-                                            DcmSegTypes::SAT_AUTOMATIC,
-                                            "dcmqi");
-    if (result.bad() || !bgSeg)
+    // Designate pixel value 0 as the labelmap background. DcmSegmentation
+    // immediately inserts a Background segment at Segment Number 0 (Segmented
+    // Property Category Code (SCT,309825002,"Spatial and Relational Concept"),
+    // Type Code (DCM,125040,"Background")) and derives Pixel Padding Value
+    // (0028,0120) from the designation when the object is written, so the
+    // element and the segment can never disagree.
+    OFCondition result = segdoc->setBackgroundPixelValue(0);
+    if (result.bad())
     {
-      cerr << "ERROR: Failed to create background segment: " << result.text() << endl;
-      delete bgSeg;
+      cerr << "ERROR: Failed to designate background pixel value 0: " << result.text() << endl;
       return result;
     }
 
@@ -67,22 +72,18 @@ namespace dcmqi {
     // macro must not be written; the LUT entry must instead be provided by the caller.
     if (setCIELabValue)
     {
+      DcmSegment* bgSeg = segdoc->getSegment(0);
+      if (!bgSeg)
+      {
+        cerr << "ERROR: Background segment missing after designating background pixel value 0" << endl;
+        return EC_IllegalCall;
+      }
       result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
       if (result.bad())
       {
         cerr << "ERROR: Failed to set CIELab color for background segment: " << result.text() << endl;
-        delete bgSeg;
         return result;
       }
-    }
-
-    Uint16 segNum = 0;
-    result = segdoc->addSegment(bgSeg, segNum);
-    if (result.bad())
-    {
-      cerr << "ERROR: Failed to add background segment: " << result.text() << endl;
-      delete bgSeg;
-      return result;
     }
 
     if (bgAdded)

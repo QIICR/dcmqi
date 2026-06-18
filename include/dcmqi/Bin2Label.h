@@ -1,24 +1,3 @@
-/*
- *
- *  Copyright (C) 2015-2025, Open Connections GmbH
- *  All rights reserved.  See COPYRIGHT file for details.
- *
- *  This software and supporting documentation are maintained by
- *
- *    OFFIS e.V.
- *    R&D Division Health
- *    Escherweg 2
- *    D-26121 Oldenburg, Germany
- *
- *
- *  Module:  dcmseg
- *
- *  Author:  Michael Onken
- *
- *  Purpose: Class for converting binary to label map segmentations
- *
- */
-
 #ifndef BIN2LABEL
 #define BIN2LABEL
 
@@ -237,20 +216,20 @@ protected:
     OFCondition createFrameContentFG(Uint32 outputFrameNum, OFVector<OverlapUtil::LogicalFrame>::iterator logicalFrame, FGFrameContent*& frameContent);
 
     /** Check whether any frame in the output segmentation contains pixel value 0.
-     *  If so, add a background segment with Segment Number 0 using Property Type
-     *  Code (DCM, 125040, "Background").
-     *  The alternative would be to use Pixel Padding Value which is also
-     *  foreseen for Labelmaps but is expected, for now, that the background
-     *  segment is better supported by consuming applications.
+     *  If so, designate pixel value 0 as the labelmap background: a background
+     *  segment with Segment Number 0 using Property Type Code
+     *  (DCM, 125040, "Background") is inserted, and Pixel Padding Value
+     *  (0028,0120) is written accordingly, which per DICOM standard marks
+     *  that segment as background.
      *
-     *  Implementation delegates the frame scan and segment creation to
+     *  Implementation delegates the frame scan and background designation to
      *  ConverterBase::addBackgroundSegmentIfNeeded(); this wrapper additionally
      *  prepends the matching black entry to m_cielabColors when the output
      *  color model is PALETTE so that pixel value 0 maps to black in the
      *  Palette Color LUT (the per-segment CIELab macro is not written in
      *  PALETTE mode, per Sup 243).
      *
-     *  @return EC_Normal if successful or no background segment needed, error otherwise
+     *  @return EC_Normal if successful or no background designation needed, error otherwise
      */
     OFCondition addBackgroundSegmentIfNeeded();
 

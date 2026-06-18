@@ -99,6 +99,15 @@ protected:
 
     /// Current frame
     size_t m_frameIterator;
+
+    /// Pixel value used to fill slice positions of the output ITK image that are
+    /// not encoded as frames in the DICOM labelmap ("missing" interior slices).
+    /// Missing data is treated as background: the value is taken from Pixel
+    /// Padding Value if present, 0 otherwise. If no Pixel Padding Value is
+    /// present, positions are missing AND a real segment occupies pixel value 0,
+    /// the conversion fails instead (missing data would be indistinguishable
+    /// from that segment). Determined in dcmSegmentation2itkimage().
+    Uint16 m_fillValue;
 };
 
 } // namespace dcmqi

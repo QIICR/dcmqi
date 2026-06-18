@@ -72,7 +72,8 @@ namespace dcmqi {
     // as it is found in the input image. This can be used later to re-map the segment numbers
     // to their original label IDs (see mapLabelIDsToSegmentNumbers() method).
     // Segment numbers always start at 1; pixel value 0 in labelmap output is reserved for
-    // background per Sup 243, and a background segment with number 0 is added later if needed.
+    // background per Sup 243, and a background segment with number 0 (designated via
+    // Pixel Padding Value) is added later if needed.
     map<Uint16,Uint16> segNum2Label;
     Uint16 nextSegmentNumber = 1;
 
@@ -87,12 +88,31 @@ namespace dcmqi {
 
     if (outputLabelMap)
     {
+      // Pixel values in the output equal the segment numbers, so the bit depth
+      // must accommodate the largest segment number that will be assigned:
+      // the highest label ID if label IDs are used as segment numbers (which
+      // may contain gaps), the number of segments otherwise (sequential 1..N).
+      size_t maxSegmentNumber = 0;
       size_t numSegmentsMetadata = 0;
       for (size_t segFileNumber = 0; segFileNumber < metaInfo.segmentsAttributesMappingList.size(); segFileNumber++)
       {
-        numSegmentsMetadata += metaInfo.segmentsAttributesMappingList[segFileNumber].size();
+        const map<unsigned, SegmentAttributes*>& fileAttributes = metaInfo.segmentsAttributesMappingList[segFileNumber];
+        numSegmentsMetadata += fileAttributes.size();
+        if (useLabelIDAsSegmentNumber && !fileAttributes.empty())
+        {
+          // map is ordered by key, so the last entry holds the highest label ID
+          maxSegmentNumber = std::max(maxSegmentNumber, static_cast<size_t>(fileAttributes.rbegin()->first));
+        }
       }
-      const bool use16Bit = numSegmentsMetadata > 255;
+      if (!useLabelIDAsSegmentNumber)
+        maxSegmentNumber = numSegmentsMetadata;
+      if (maxSegmentNumber > 65535)
+      {
+        cerr << "ERROR: Cannot create labelmap SEG: maximum segment number " << maxSegmentNumber
+             << " exceeds the 16 bit pixel value range!" << endl;
+        return NULL;
+      }
+      const bool use16Bit = maxSegmentNumber > 255;
       CHECK_COND(DcmSegmentation::createLabelmapSegmentation(
           segdoc,
           inputSize[1],
@@ -413,7 +433,25 @@ namespace dcmqi {
 
         Uint16 segmentNumber = 0;
         if (useLabelIDAsSegmentNumber)
+        {
+          if (label < 0)
+          {
+            cerr << "ERROR: Cannot use label ID " << label << " as segment number: label IDs must be positive!" << endl;
+            return NULL;
+          }
           segmentNumber = static_cast<Uint16>(label);
+          // For labelmap output the label IDs become segment numbers directly, and
+          // DcmSegmentation::addSegment() replaces an existing labelmap segment with
+          // the same number (upsert), so a collision across input files would
+          // silently drop a segment. Reject it here. (The binary path detects
+          // collisions later via checkLabelNumbering().)
+          if (outputLabelMap && segNum2Label.find(segmentNumber) != segNum2Label.end())
+          {
+            cerr << "ERROR: Label ID " << label << " is used by more than one input segment; "
+                 << "cannot use label IDs as segment numbers!" << endl;
+            return NULL;
+          }
+        }
         else
           segmentNumber = nextSegmentNumber++;
         CHECK_COND(segdoc->addSegment(segment, segmentNumber /* returns logical segment number */));
@@ -730,7 +768,8 @@ namespace dcmqi {
       }
     }
 
-    // For labelmap output, add background segment if pixel value 0 exists in any frame
+    // For labelmap output, designate pixel value 0 as background (Background
+    // segment plus Pixel Padding Value) if it occurs in any frame
     if (outputLabelMap)
     {
       CHECK_COND(addBackgroundSegmentIfNeeded(segdoc));
@@ -828,17 +867,21 @@ namespace dcmqi {
       CHECK_COND(segdocDataset->putAndInsertString(DCM_SegmentsOverlap, segmentsOverlap.c_str()));
     }
 
-    if (useLabelIDAsSegmentNumber)
+    if (useLabelIDAsSegmentNumber && !outputLabelMap)
     {
+      // Binary segmentations require Segment Numbers to start at 1 and increase
+      // monotonically by 1, so re-mapping to label IDs only works for label IDs
+      // that satisfy the same constraint.
       if (!checkLabelNumbering(segNum2Label))
       {
         return NULL;
       }
-      if (!outputLabelMap)
-      {
-        mapLabelIDsToSegmentNumbers(segdocDataset.get(), segNum2Label);
-      }
+      mapLabelIDsToSegmentNumbers(segdocDataset.get(), segNum2Label);
     }
+    // For labelmap output the label IDs were used as segment numbers directly when
+    // the segments were added. LABELMAP only requires segment numbers to be unique
+    // (enforced at insertion), not consecutive, so gaps in the label IDs are
+    // allowed (https://github.com/QIICR/dcmqi/issues/537).
 
     return segdocDataset.release();
   }

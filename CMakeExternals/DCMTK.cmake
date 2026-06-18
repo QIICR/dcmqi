@@ -52,7 +52,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     # which have been released a few days after DCMTK 3.7.0, as well as performance
     # optimizations for segmentation/parametric map. It also includes a simpler
     # mechanism to add external modules to the DCMTK CMake build.
-    "2dd54ca1c28100b820ccf1383a0948e889246f96"
+    "5708ba6"
     QUIET
     )
 

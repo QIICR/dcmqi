@@ -1,25 +1,3 @@
-/*
- *  Copyright (C) 2015-2025, Open Connections GmbH
- *
- *  All rights reserved.  See COPYRIGHT file for details.
- *
- *  This software and supporting documentation are maintained by
- *
- *    OFFIS e.V.
- *    R&D Division Health
- *    Escherweg 2
- *    D-26121 Oldenburg, Germany
- *
- *
- *  Module:  dcmseg
- *
- *  Author:  Michael Onken
- *
- *  Purpose: Class for converting binary to label map segmentations
- *
- */
-
-
 #include "dcmtk/config/osconfig.h" // include OS configuration first
 #include "dcmqi/Bin2Label.h"
 #include "dcmtk/dcmdata/dcuid.h"
@@ -126,9 +104,11 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
     {
         return SG_EC_OverlappingSegments;
     }
-    // Get number of segments to find out whether we need 16 bit data.
+    // Get number of segments to find out whether we need 16 bit data. The input is
+    // a binary segmentation, so its segments are numbered 1..N without gaps and are
+    // copied over as-is, i.e. the highest pixel value in the output equals N.
     size_t numSegments = m_inputSeg->getNumberOfSegments();
-    m_use16Bit    = (numSegments > 256) || m_convFlags.m_force16Bit;
+    m_use16Bit    = (numSegments > 255) || m_convFlags.m_force16Bit;
     DCMSEG_DEBUG("Using " << (m_use16Bit ? "16" : "8") << " bit pixel data for " << numSegments << " segments");
 
     // Get Content Identification Macro (required for labelmap creation call)
@@ -217,8 +197,9 @@ OFCondition DcmBinToLabelConverter::convert(const ConversionFlags& convFlags)
         result = createFramesWithMetadata(m_inputSeg);
     }
 
-    // Add background segment (number 0) if any pixel value 0 exists in the output frames
-    // (required by Sup 243, Section C.8.20.2.3.3)
+    // Designate pixel value 0 as background (Background segment with number 0 plus
+    // Pixel Padding Value) if any pixel value 0 exists in the output frames
+    // (segment coverage required by Sup 243, Section C.8.20.2.3.3)
     if (result.good())
     {
         result = addBackgroundSegmentIfNeeded();
@@ -248,9 +229,9 @@ OFCondition DcmBinToLabelConverter::copySegments(DcmSegmentation* src, DcmSegmen
     OFMap<Uint16, DcmSegment*>::const_iterator srcSegment = src->getSegments().begin();
     while (srcSegment != src->getSegments().end() && result.good())
     {
-        // Get segment from source segmentation
-        // Note that segment number is not relevant for labelmaps, so we don't pass it to addSegment
-        // (it will be assigned automatically in addSegment)
+        // Get segment from source segmentation and add it to the destination
+        // labelmap under its original segment number (binary segment numbers are
+        // 1..N, which never collides with the background value 0)
         DCMSEG_DEBUG("Copying segment number " << srcSegment->first);
         if (srcSegment->second)
         {
@@ -820,7 +801,7 @@ OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
     if (result.bad() || !bgAdded)
         return result;
 
-    DCMSEG_DEBUG("Pixel value 0 found in output frames, added background segment (number 0)");
+    DCMSEG_DEBUG("Pixel value 0 found in output frames, designated background (segment number 0, Pixel Padding Value 0)");
 
     // In PALETTE mode the per-segment CIELab macro must not be written,
     // but the color must still be present in the palette LUT so pixel
