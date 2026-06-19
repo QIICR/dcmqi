@@ -20,9 +20,9 @@ name: Finalize latest prerelease
 on:
   workflow_run:
     workflows:
-      - "C/C++ CI Linux"
-      - "C/C++ CI macOS"
-      - "C/C++ CI Windows"
+      - "CI Linux"
+      - "CI macOS"
+      - "CI Windows"
     types:
       - completed
 
