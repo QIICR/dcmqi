@@ -125,28 +125,14 @@ jobs:
             ${{ github.workspace }}\b\zlib-prefix
           key: ${{ steps.cache-build-deps.outputs.cache-primary-key }}
 
-  publish-windows:
-
-    runs-on: windows-2022
-    timeout-minutes: 10
-    # Publish tagged (stable) releases only. The rolling "latest" prerelease is
-    # (re)created by the finalize-latest workflow once all platforms finish building.
-    # The repository-owner check prevents forks from publishing packages even if the
-    # owner's token would have sufficient privileges.
-    if: ${{ (github.event_name == 'release') && (github.repository_owner == 'QIICR') }}
-
-    needs: build-windows
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/download-artifact@v8
-        with:
-          name: dcmqi-build
-          path: ${{ github.workspace }}\b\dcmqi-build
-
       - name: Publish package
+        # Publish tagged (stable) releases only, inline like the Linux/macOS builds, so
+        # there is no separate publish job that shows up "skipped" on every master push.
+        # The package built above is still on disk, so no artifact download is needed.
+        # The rolling "latest" prerelease is (re)created by the finalize-latest workflow
+        # once all platforms finish building. The repository-owner check prevents forks
+        # from publishing packages even if the owner's token would have sufficient privileges.
+        if: ${{ (github.event_name == 'release') && (github.repository_owner == 'QIICR') }}
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GA_TOKEN }}
