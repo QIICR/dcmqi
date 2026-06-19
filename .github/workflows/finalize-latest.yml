@@ -93,9 +93,18 @@ jobs:
           printf '  %s\n' "${ASSETS[@]}"
 
           NOW=$(date -u '+%Y-%m-%d %H:%M UTC')
-          # Delete the existing prerelease and its tag, then recreate both at this commit.
-          # Reusing the "latest" tag keeps the .../releases/download/latest/... URLs stable.
-          gh release delete latest --yes --cleanup-tag || true
+          # Move the rolling "latest" tag to this commit, then replace the release.
+          #
+          # The tag is moved via the git refs API (PATCH, or POST the first time it is
+          # created) rather than `gh release delete --cleanup-tag`, which deletes the ref and
+          # immediately recreates the same one; that delete/recreate race intermittently
+          # returns "HTTP 403: Resource not accessible by integration" on create.
+          # Reusing the "latest" tag keeps the .../releases/download/latest/... URLs stable,
+          # and the release's created_at follows the target commit's date, so it sorts to the top.
+          gh api -X PATCH "repos/$GH_REPO/git/refs/tags/latest" -f sha="$SHA" -F force=true >/dev/null 2>&1 \
+            || gh api -X POST "repos/$GH_REPO/git/refs" -f ref="refs/tags/latest" -f sha="$SHA" >/dev/null
+          # Delete only the release (keep the tag we just moved), then recreate it at this commit.
+          gh release delete latest --yes || true
           gh release create latest "${ASSETS[@]}" \
             --prerelease \
             --target "$SHA" \
