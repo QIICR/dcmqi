@@ -1,0 +1,15 @@
+version: 2
+
+updates:
+  # Keep the actions used in .github/workflows/ up to date.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Bundle all action bumps into one PR per run instead of one per action.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "CI"
