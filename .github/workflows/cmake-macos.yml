@@ -183,25 +183,17 @@ jobs:
         key: ${{ steps.cache-dcmtk-itk-zlib.outputs.cache-primary-key }}
 
     - name: Publish package
-      # Only run if the event is not a pull request and the repository owner is QIICR.
-      # The latter is to prevent forks from publishing packages even if the owner's token
-      # would have sufficient privileges.
-      if: ${{ (github.event_name != 'pull_request') && (github.repository_owner == 'QIICR')}}
+      # Publish tagged (stable) releases only. The rolling "latest" prerelease is
+      # (re)created by the finalize-latest workflow once all platforms finish building.
+      # The repository-owner check prevents forks from publishing packages even if the
+      # owner's token would have sufficient privileges.
+      if: ${{ (github.event_name == 'release') && (github.repository_owner == 'QIICR') }}
       env:
         GH_TOKEN: ${{ secrets.GA_TOKEN }}
       run: |
         TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-        if [ -n "$TAG" ]; then
+        if [ -n "$TAG" ] && [ "$TAG" != "latest" ]; then
           gh release upload "$TAG" \
             ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac-${{ matrix.arch }}.tar.gz \
             --clobber
-        else
-          # Clean old prerelease assets for this architecture, then upload new ones
-          gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
-            | grep "dcmqi-.*-mac-${{ matrix.arch }}-" \
-            | xargs -I{} gh release delete-asset latest "{}" --yes || true
-          gh release upload latest \
-            ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz \
-            --clobber
-          gh release edit latest --target $(git rev-parse HEAD)
         fi
