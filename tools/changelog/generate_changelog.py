@@ -51,6 +51,16 @@ HEADER = (
 def sh(args):
     return subprocess.run(args, capture_output=True, text=True).stdout
 
+# A version tag supplied on the command line ultimately reaches `git`/`gh` argument
+# lists (e.g. generate-notes' `tag_name=`), so validate it against the strict
+# vMAJOR.MINOR.PATCH shape at the boundary -- anything else is rejected before it can
+# flow into a subprocess invocation.
+def normalize_tag(value):
+    tag = value if value.startswith("v") else "v" + value
+    if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+        sys.exit(f"invalid version {value!r}; expected vMAJOR.MINOR.PATCH (e.g. v1.5.5)")
+    return tag
+
 # ---------------------------------------------------------------- tags -------
 def semver_tags():
     out = sh(["git", "for-each-ref", "--format=%(refname:short)\t%(creatordate:short)", "refs/tags"])
@@ -394,7 +404,7 @@ def main():
 
     # --extract is a pure file read: no git, no API, no cache.
     if args.extract:
-        section = extract_section(args.extract)
+        section = extract_section(normalize_tag(args.extract))
         if not section:
             sys.exit(f"no CHANGELOG.md section found for {args.extract}")
         print(section)
@@ -403,7 +413,7 @@ def main():
     load_cache()
     try:
         if args.next_version:
-            vtag = args.next_version if args.next_version.startswith("v") else "v" + args.next_version
+            vtag = normalize_tag(args.next_version)
             tags = semver_tags()
             prev = tags[-1][0] if tags else None
             head = sh(["git", "rev-parse", "HEAD"]).strip()
@@ -417,7 +427,7 @@ def main():
             sys.exit("no vMAJOR.MINOR.PATCH tags found")
 
         if args.release:
-            want = args.release if args.release.startswith("v") else "v" + args.release
+            want = normalize_tag(args.release)
             idx = next((i for i, t in enumerate(tags) if t[0] == want), None)
             if idx is None:
                 sys.exit(f"tag {want} not found among semver tags")
