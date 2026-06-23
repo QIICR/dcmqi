@@ -10,6 +10,28 @@ within the same release. New releases are appended with the same tool -- see
 `tools/changelog/`. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 
+## [1.5.5](https://github.com/QIICR/dcmqi/releases/tag/v1.5.5) - 2026-06-23
+
+### Added
+- Add an in-memory handler overload of `itkimage2dcmSegmentation` (convert without going through disk) ([`5074f43`](https://github.com/QIICR/dcmqi/commit/5074f43), @rfloca)
+- Add back-filled CHANGELOG.md and release-notes tooling ([`24c5f45`](https://github.com/QIICR/dcmqi/commit/24c5f45), @fedorov)
+
+### Changed
+- Designate a labelmap's background via Pixel Padding Value (0028,0120) instead of an inserted Background segment; this emits Pixel Padding Value on write and drops the `labelID 0` read entry that shifted segment metadata in 3D Slicer ([#541](https://github.com/QIICR/dcmqi/pull/541), @michaelonken)
+- Allow gapped labelmap segment numbers with `--useLabelIDAsSegmentNumber`, reject colliding label IDs across inputs, and size bit depth from the highest segment number (fixes [#537](https://github.com/QIICR/dcmqi/issues/537)) ([#541](https://github.com/QIICR/dcmqi/pull/541), @michaelonken)
+- Address SonarCloud findings: drop redundant `c_str()`, use `is_same_v` ([`145b7b4`](https://github.com/QIICR/dcmqi/commit/145b7b4), @rfloca)
+- Remove noisy console output ([`3e32642`](https://github.com/QIICR/dcmqi/commit/3e32642), @fedorov)
+
+### Fixed
+- Fill missing labelmap slice positions with the Pixel Padding Value (or 0, with a warning) instead of refusing the conversion ([#541](https://github.com/QIICR/dcmqi/pull/541), @michaelonken)
+- Fix ReDoS-prone regexes in changelog generator (SonarCloud S5852) ([`a29753b`](https://github.com/QIICR/dcmqi/commit/a29753b), @fedorov)
+- Validate and tighten macOS dependency cache usage in CI ([`2dea14e`](https://github.com/QIICR/dcmqi/commit/2dea14e), @Copilot)
+
+### Build & dependencies
+- Bump DCMTK (5708ba6) so the designated labelmap background drives both the Background segment and Pixel Padding Value on write, as required by [#541](https://github.com/QIICR/dcmqi/pull/541) ([`bedc18d`](https://github.com/QIICR/dcmqi/commit/bedc18d), @michaelonken)
+
+_[Full set of changes](https://github.com/QIICR/dcmqi/compare/v1.5.4...v1.5.5)_
+
 ## [1.5.4](https://github.com/QIICR/dcmqi/releases/tag/v1.5.4) - 2026-05-18
 
 ### Added
