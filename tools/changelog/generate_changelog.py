@@ -80,14 +80,14 @@ def strip_prefix(s):
 
 def norm(s):
     s = strip_prefix(s)
-    s = re.sub(r"\s*\(#\d+\)\s*$", "", s)
+    s = re.sub(r"\(#\d+\)\s*$", "", s)
     s = s.lower().strip().rstrip(".").strip()
     s = re.sub(r"\s+", " ", s)
     return s
 
 def pretty(s):
     s = strip_prefix(s).strip()
-    s = re.sub(r"\s*\(#\d+\)\s*$", "", s)
+    s = re.sub(r"\(#\d+\)\s*$", "", s)
     s = s.strip().rstrip("…").strip().rstrip(".")
     if s:
         s = s[0].upper() + s[1:]
@@ -218,8 +218,11 @@ def fetch_pr_title(num):
     return _pr_title_cache[num]
 
 # "* TITLE by @user in URL/pull/NN" -- tolerate co-authors ("by @a with @b in ...").
+# GitHub's generate-notes output uses single spaces; matching them literally (rather than
+# \s+) keeps this regex linear -- variable-width \s+ around the co-author group could be
+# distributed ambiguously and backtrack polynomially.
 PR_LINE = re.compile(
-    r"^\*\s+(?P<title>.+?)\s+by\s+@(?P<user>[\w-]+)(?:\s+with\s+@[\w-]+)*\s+in\s+\S+/pull/(?P<num>\d+)")
+    r"^\* (?P<title>.+?) by @(?P<user>[\w-]+)(?: with @[\w-]+)* in \S+/pull/(?P<num>\d+)")
 
 def pr_entries(tag, prev, target=None):
     args = ["gh", "api", "-X", "POST", f"repos/{REPO}/releases/generate-notes",
