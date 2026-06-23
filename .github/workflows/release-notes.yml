@@ -1,0 +1,33 @@
+name: Release notes from CHANGELOG
+
+# When a stable vX.Y.Z release is published, set its body from the matching section of
+# CHANGELOG.md (the source of truth). Authoring the section is a pre-release step -- see
+# RELEASE.md and tools/changelog/. The rolling "latest"/"nightly" prereleases are skipped.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  set-notes:
+    name: Set release body from CHANGELOG.md
+    if: ${{ startsWith(github.event.release.tag_name, 'v') && (github.repository_owner == 'QIICR') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject changelog section into the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          python3 tools/changelog/generate_changelog.py --extract "$TAG" > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::error::No CHANGELOG.md section found for $TAG -- add one (see RELEASE.md)."
+            exit 1
+          fi
+          gh release edit "$TAG" --notes-file release-notes.md
