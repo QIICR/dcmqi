@@ -110,6 +110,16 @@ jobs:
             CACHE_OK=false
           fi
 
+          # ITKConfig.cmake is written at configure time, but the static libraries only
+          # appear once ITK has finished compiling. A cache saved from a half-built ITK
+          # has the config but no libs, passing the check above yet failing later at link
+          # ("libITKCommon-*.a ... missing and no known rule to make it"). Require a real
+          # library so such a partial cache is rejected and rebuilt cleanly instead.
+          if ! ls "$GITHUB_WORKSPACE"/dcmqi-build/ITK-build/lib/libITKCommon-*.a >/dev/null 2>&1; then
+            echo "Missing ITK libraries: $GITHUB_WORKSPACE/dcmqi-build/ITK-build/lib/libITKCommon-*.a (cached ITK build is incomplete)"
+            CACHE_OK=false
+          fi
+
           if [ ! -f "$GITHUB_WORKSPACE/dcmqi-build/DCMTK-build/DCMTKConfig.cmake" ]; then
             echo "Missing DCMTK config: $GITHUB_WORKSPACE/dcmqi-build/DCMTK-build/DCMTKConfig.cmake"
             CACHE_OK=false
@@ -139,6 +149,7 @@ jobs:
 
     # Build dcmqi
     - name: "Build dcmqi"
+      id: build
       run: |
         cd ${{ github.workspace }}/dcmqi-build && ninja
 
@@ -169,9 +180,15 @@ jobs:
         name: dcmqi-macos-${{ matrix.arch }}-package
         path: ${{ github.workspace }}/dcmqi-build/dcmqi-build/dcmqi-*-mac*.tar.gz
 
-    # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
+    # Save the dependency cache only when the build step itself succeeded. This keeps the
+    # original intent -- cache the deps even if a *later* step (test, package) fails -- while
+    # never snapshotting a half-built tree when the build is cancelled (e.g. by the
+    # cancel-in-progress concurrency rule) or fails partway. A partial cache used to poison
+    # every subsequent run: once it exists, the restore below is a hit, so this save is
+    # skipped and the broken entry is never overwritten. `!cancelled()` keeps this step
+    # eligible after a failed test/package; `steps.build.outcome` does the real gating.
     - name: Save DCMTK, ITK and ZLIB cache
-      if: always() && steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true'
+      if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: |
