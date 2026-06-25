@@ -265,6 +265,49 @@ dcmqi_add_test(
     ${itk2dcm}_makeSEG
   )
 
+# ------------------------------------------------------------------------------
+# Deflate (Deflated Explicit VR Little Endian, 1.2.840.10008.1.2.1.99) round-trip.
+#
+# Reading or writing a deflated dataset requires DCMTK to have been built with
+# zlib. This pair is a regression guard for builds where it was not: the dcmqi
+# 1.5.5 Windows release shipped a DCMTK without zlib (the superbuild requested
+# DCMTK_WITH_ZLIB=ON but never handed DCMTK the bundled zlib, and the Windows
+# runner has no system zlib), so loading a deflated SEG failed at load time with
+#   "Unsupported compression or encryption".
+# macOS/Linux happened to find a system zlib, hence the platform-dependent break.
+#
+# makeSEG_deflate writes the same liver segmentation as makeSEG but with
+# --compress deflate; makeNRRD_deflate reads it back and must reproduce the
+# liver_seg.nrrd baseline. On a zlib-less DCMTK the write step already fails,
+# so this whole chain goes red there and green once zlib is wired into DCMTK.
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeSEG_deflate
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    --inputImageList ${BASELINE}/liver_seg.nrrd
+    --inputDICOMDirectory ${DICOM_DIR}
+    --outputDICOM ${MODULE_TEMP_DIR}/liver-deflate.dcm
+    --compress deflate
+  )
+
+dcmqi_add_test(
+  NAME ${dcm2itk}_makeNRRD_deflate
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${dcm2itk}Test>
+    --compare ${BASELINE}/liver_seg.nrrd
+    ${MODULE_TEMP_DIR}/makeNRRD_deflate-1.nrrd
+    ${dcm2itk}Test
+    --inputDICOM ${MODULE_TEMP_DIR}/liver-deflate.dcm
+    --outputDirectory ${MODULE_TEMP_DIR}
+    --outputType nrrd
+    --prefix makeNRRD_deflate
+  TEST_DEPENDS
+    ${itk2dcm}_makeSEG_deflate
+  )
+
+# ------------------------------------------------------------------------------
+
 dcmqi_add_test(
   NAME ${dcm2itk}_makeNRRD_from_labelmap_direct
   MODULE_NAME ${MODULE_NAME}
