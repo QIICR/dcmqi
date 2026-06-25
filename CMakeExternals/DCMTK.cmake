@@ -83,14 +83,22 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_SHARED_LIBS:BOOL=OFF
       -DDCMTK_WITH_DOXYGEN:BOOL=OFF
       # Build DCMTK against the bundled (symbol-prefixed) zlib, the same one ITK
-      # uses. DCMTK_WITH_ZLIB=ON only *requests* zlib; DCMTK then runs its own
-      # find_package(ZLIB). Without these hints it fell back to a system zlib,
-      # which exists on macOS/Linux runners but not on Windows - so the Windows
-      # release silently built without zlib and could not read/write Deflated
-      # Explicit VR Little Endian datasets ("Unsupported compression or
-      # encryption"). Passing the bundled zlib makes deflate support consistent
-      # across platforms (see apps/seg/Testing deflate round-trip tests).
+      # uses, so Deflated Explicit VR Little Endian SEG/PMAP datasets can be read
+      # and written. Two things are needed:
+      #   1. DCMTK_USE_FIND_PACKAGE=ON. On MSVC/Windows DCMTK defaults this to
+      #      OFF and instead globs a pre-built "support libraries" directory for
+      #      zlib_d.lib/zlib_o.lib (DCMTK's CMake/3rdparty.cmake). Our superbuild
+      #      does not ship that layout, so DCMTK silently disabled zlib
+      #      ("ZLIB support will be disabled because zlib directory was not
+      #      specified") and the 1.5.5 Windows release could not load deflated
+      #      SEGs ("Unsupported compression or encryption"). macOS/Linux already
+      #      default this ON, which is why they were unaffected. Forcing it ON
+      #      makes DCMTK use find_package(ZLIB) on every platform.
+      #   2. The ZLIB_* hints below point that find_package(ZLIB) at the bundled
+      #      zlib instead of a system one, keeping deflate support consistent
+      #      across platforms (see apps/seg/Testing deflate round-trip tests).
       -DDCMTK_WITH_ZLIB:BOOL=ON
+      -DDCMTK_USE_FIND_PACKAGE:BOOL=ON
       -DZLIB_ROOT:PATH=${ZLIB_ROOT}
       -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INCLUDE_DIR}
       -DZLIB_LIBRARY:FILEPATH=${ZLIB_LIBRARY}
