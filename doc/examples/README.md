@@ -8,6 +8,8 @@ The most common confusion about the format of the JSON file for segmentation con
 
 Remember that you can always use the [`dcmqi` webapp](http://qiicr.org/dcmqi/#/seg) to prepare JSON files for your conversion task, or to build intuition about how things work.
 
+For notes on the conversion tools themselves — for example how Segment Numbers are assigned and how the labelmap background is handled — see [itkimage2segimage.md](../itkimage2segimage.md) (ITK → DICOM) and [segimage2itkimage.md](../segimage2itkimage.md) (DICOM → ITK).
+
 * `seg-example.json`: the most basic example where the input segmentation being converted is stored in a single file, and the file contains a single label
 * `seg-example_multiple_segments_single_input_file.json`: single segmentation file as input, with multiple labels in the input file. This is reflected in the `segmentAttributes` field, which contains outer array with a single entry, and the inner array containing 3 entries corresponding to the 3 labels in the input segmentation.
 * `seg-example_multiple_segments.json`: this is an example of parameterization where each of the segmentation labels is saved in a separate file: outer array contains 3 entries, and each of the innner arrays has just one entry.

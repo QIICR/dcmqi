@@ -89,7 +89,7 @@
       <channel>output</channel>
       <longflag>useLabelIDAsSegmentNumber</longflag>
       <default>false</default>
-      <description>Use label IDs from ITK images as Segment Numbers in DICOM. Only works if label IDs are consecutively numbered starting from 1, otherwise conversion will fail.</description>
+      <description>Use label IDs from the input ITK images as Segment Numbers in the DICOM output, instead of numbering segments sequentially from 1 in the order they are processed. For binary segmentations the label IDs must be consecutive starting from 1, otherwise conversion fails. For labelmap segmentations (--segmentationType labelmap) any unique positive label IDs are accepted, including gaps; a label ID used by more than one input segment fails.</description>
     </boolean>
 
     <boolean>
