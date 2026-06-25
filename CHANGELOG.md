@@ -10,6 +10,16 @@ within the same release. New releases are appended with the same tool -- see
 `tools/changelog/`. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 
+## [1.5.6](https://github.com/QIICR/dcmqi/releases/tag/v1.5.6) - 2026-06-25
+
+### Fixed
+- Windows builds can again read Deflated Explicit VR Little Endian (zlib-compressed) DICOM SEG files. The 1.5.5 Windows release shipped DCMTK without zlib, so loading any deflated dataset failed with "Unsupported compression or encryption"; DCMTK is now built against the bundled zlib, guarded by a deflate round-trip regression test ([#549](https://github.com/QIICR/dcmqi/pull/549), @fedorov)
+
+### Changed
+- Document labelmap segment numbering and background handling: end-user notes for `itkimage2segimage`/`segimage2itkimage` covering how Segment Numbers are assigned (`--useLabelIDAsSegmentNumber`) and how the labelmap background is written and read back ([#548](https://github.com/QIICR/dcmqi/pull/548), @michaelonken)
+
+_[Full set of changes](https://github.com/QIICR/dcmqi/compare/v1.5.5...v1.5.6)_
+
 ## [1.5.5](https://github.com/QIICR/dcmqi/releases/tag/v1.5.5) - 2026-06-23
 
 ### Added
