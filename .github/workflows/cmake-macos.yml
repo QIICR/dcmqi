@@ -69,7 +69,7 @@ jobs:
     # both, headers and libraries.
     - name: Check for cached DCMTK, ITK and ZLIB
       id: cache-dcmtk-itk-zlib
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       env:
         cache-name: cache-dcmtk-itk-zlib-v2
       with:
@@ -172,7 +172,7 @@ jobs:
     # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
     - name: Save DCMTK, ITK and ZLIB cache
       if: always() && steps.cache-dcmtk-itk-zlib.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: |
           ${{ github.workspace }}/dcmqi-build/DCMTK

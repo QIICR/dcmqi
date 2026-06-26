@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache build dependencies
         id: cache-build-deps
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             ${{ github.workspace }}\b\DCMTK
@@ -108,7 +108,7 @@ jobs:
       # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
       - name: Save build dependencies cache
         if: always() && steps.cache-build-deps.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             ${{ github.workspace }}\b\DCMTK
