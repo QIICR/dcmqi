@@ -17,7 +17,7 @@ jobs:
     if: ${{ startsWith(github.event.release.tag_name, 'v') && (github.repository_owner == 'QIICR') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Inject changelog section into the release
         env:
