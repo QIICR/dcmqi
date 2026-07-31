@@ -57,7 +57,14 @@ namespace dcmqi {
     /**
      * @brief Build the frame inventory for the given source datasets.
      *
-     * Datasets without usable position information are kept (they can still be
+     * Classic single-frame instances contribute one frame with the position
+     * taken from the top-level Image Position (Patient). Multiframe instances
+     * (recognized by their Per-frame Functional Groups Sequence) contribute
+     * one frame per DICOM frame, with the position taken from the Plane
+     * Position (Patient) functional group.
+     *
+     * Datasets without usable position information (e.g. multiframe images
+     * without per-frame plane positions) are kept (they can still be
      * referenced as whole instances) but their frames are excluded from the
      * geometric slice mapping, with a warning.
      *
@@ -81,7 +88,11 @@ namespace dcmqi {
      * @brief Add a Derivation Image item referencing the given source frames.
      *
      * Creates one Source Image Sequence item per referenced instance and
-     * records the instances for populateCommonInstanceReference().
+     * records the instances for populateCommonInstanceReference(). For
+     * multiframe instances, Referenced Frame Number restricts the reference
+     * to the frames actually used, unless all frames of the instance are
+     * referenced (in which case a reference to the whole instance is written,
+     * as required by DICOM).
      *
      * @param fgder Derivation Image functional group to add the item to.
      * @param frameIds Indices (into getFrames()) of the source frames to reference,
@@ -154,6 +165,9 @@ namespace dcmqi {
       OFString sopInstanceUID;
       Uint32 numberOfFrames; ///< NumberOfFrames value; 0 for single-frame instances
     };
+
+    /// Add the frame inventory entries of a multiframe dataset
+    void addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, const InstanceInfo& info);
 
     /// Remember that an instance is referenced (deduplicated by dataset index)
     void recordReferencedInstance(size_t datasetIndex);

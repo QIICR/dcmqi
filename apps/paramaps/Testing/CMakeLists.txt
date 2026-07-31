@@ -45,6 +45,23 @@ dcmqi_add_test(
     --outputDICOM ${MODULE_TEMP_DIR}/paramap-float.dcm
   )
 
+# Parametric map derived from a multiframe (Legacy Converted Enhanced CT)
+# source series (https://github.com/QIICR/dcmqi/issues/217): all slices must
+# map to frames of the multiframe instance and the conversion must succeed.
+# The input image reuses the segmentation module's 24x38x3 phantom, which
+# matches the geometry of the multiframe source; frame-level reference checks
+# live in the segmentation module's MultiframeSourceReferencesTest, which
+# exercises the same shared SourceImageIndex code.
+dcmqi_add_test(
+  NAME ${itk2dcm}_makeParametricMapMultiframeSource
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:${itk2dcm}>
+    --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    --inputImage ${CMAKE_SOURCE_DIR}/data/segmentations/24x38x3/nrrd/label.nrrd
+    --inputDICOMList ${CMAKE_SOURCE_DIR}/data/segmentations/24x38x3/multiframe/mf.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/paramap-multiframe-source.dcm
+  )
+
 dcmqi_add_test(
   NAME ${itk2dcm}_makeParametricMapNoDerImg256x256
   MODULE_NAME ${MODULE_NAME}

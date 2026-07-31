@@ -580,7 +580,77 @@ foreach(seg_size ${TEST_SEG_SIZES})
       ${itk2dcm}_makeSEG_${seg_size}
     )
 
+  # Same conversion, but with the multiframe (Legacy Converted Enhanced CT)
+  # encoding of the source series (https://github.com/QIICR/dcmqi/issues/150).
+  # The slices of the segmentation must map to the frames of the multiframe
+  # instance, and the round trip must reproduce the same label image.
+  # Frame-level reference checks live in MultiframeSourceReferencesTest below.
+  dcmqi_add_test(
+    NAME ${itk2dcm}_makeSEG_${seg_size}_multiframe_source
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${itk2dcm}>
+      --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+      --inputImageList ${BASELINE}/${seg_size}/nrrd/label.nrrd
+      --inputDICOMList ${BASELINE}/${seg_size}/multiframe/mf.dcm
+      --outputDICOM ${MODULE_TEMP_DIR}/${seg_size}_mf_seg.dcm
+      --skip 0
+    )
+
+  dcmqi_add_test(
+    NAME ${dcm2itk}_makeNRRD_${seg_size}_multiframe_source
+    MODULE_NAME ${MODULE_NAME}
+    COMMAND $<TARGET_FILE:${dcm2itk}Test>
+      --compare ${BASELINE}/${seg_size}/nrrd/label.nrrd
+      ${MODULE_TEMP_DIR}/${seg_size}-mf-1.nrrd
+      ${dcm2itk}Test
+      --inputDICOM ${MODULE_TEMP_DIR}/${seg_size}_mf_seg.dcm
+      --outputDirectory ${MODULE_TEMP_DIR}
+      --outputType nrrd
+      --prefix ${seg_size}-mf
+    TEST_DEPENDS
+      ${itk2dcm}_makeSEG_${seg_size}_multiframe_source
+    )
+
 endforeach()
+
+if(EXISTS ${DCIODVFY_EXECUTABLE})
+  foreach(seg_size ${TEST_SEG_SIZES})
+    dcmqi_add_test(
+      NAME ${itk2dcm}_makeSEG_${seg_size}_multiframe_source_dciodvfy
+      MODULE_NAME ${MODULE_NAME}
+      COMMAND ${DCIODVFY_EXECUTABLE}
+        ${MODULE_TEMP_DIR}/${seg_size}_mf_seg.dcm
+      TEST_DEPENDS
+        ${itk2dcm}_makeSEG_${seg_size}_multiframe_source
+      )
+  endforeach()
+endif()
+
+# Verifies the DICOM references created for a multiframe source series against
+# those created for the equivalent classic single-frame series: identical
+# segmentation content, per-frame Referenced Frame Number pointing at the
+# source frame on the plane of the referencing frame, a single instance in the
+# Common Instance Reference module, and whole-instance references when the
+# geometry check is disabled.
+add_executable(MultiframeSourceReferencesTest
+  MultiframeSourceReferencesTest.cxx)
+target_link_libraries(MultiframeSourceReferencesTest
+  dcmqi
+  ${DCMTK_LIBRARIES})
+set_target_properties(MultiframeSourceReferencesTest PROPERTIES
+  LABELS ${MODULE_NAME})
+
+dcmqi_add_test(
+  NAME ${itk2dcm}_multiframeSourceReferences
+  MODULE_NAME ${MODULE_NAME}
+  COMMAND $<TARGET_FILE:MultiframeSourceReferencesTest>
+    ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
+    ${BASELINE}/24x38x3/nrrd/label.nrrd
+    ${BASELINE}/24x38x3/multiframe/mf.dcm
+    ${BASELINE}/24x38x3/image/IMG0001.dcm
+    ${BASELINE}/24x38x3/image/IMG0002.dcm
+    ${BASELINE}/24x38x3/image/IMG0003.dcm
+  )
 
 set(seg2labelmap bin2labelsegimage)
 foreach(phantom_test_labelmap ${TEST_SEG_SIZES})
