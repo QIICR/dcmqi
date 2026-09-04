@@ -912,8 +912,12 @@ namespace dcmqi {
        *  have to be patched into the written dataset */
       DcmDataset* writeDocument() {
         // populate the Common Instance Reference module with the references
-        // accumulated while creating the derivation image items
-        CHECK_COND(m_sourceIndex.populateCommonInstanceReference(m_segdoc->getCommonInstanceReference()));
+        // accumulated while creating the derivation image items; the study of
+        // this object decides which of its two sequences a reference goes into
+        OFString objectStudyInstanceUID;
+        m_segdoc->getStudy().getStudyInstanceUID(objectStudyInstanceUID);
+        CHECK_COND(m_sourceIndex.populateCommonInstanceReference(m_segdoc->getCommonInstanceReference(),
+                                                                 objectStudyInstanceUID));
 
         m_segdoc->getSeries().setSeriesNumber(m_metaInfo.getSeriesNumber().c_str());
 

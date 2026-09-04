@@ -2,6 +2,7 @@
 #define DCMQI_SOURCEIMAGEINDEX_H
 
 // STD includes
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -28,8 +29,10 @@ namespace dcmqi {
    * slices of the ITK image being converted to those frames by geometry, and
    * creates the DICOM references derived from that mapping:
    * - Derivation Image functional group items with their Source Image Sequence,
-   * - the Referenced Series Sequence of the Common Instance Reference module,
-   *   fed by the instances referenced through the derivation items.
+   * - the Common Instance Reference module, fed by the instances referenced
+   *   through the derivation items: instances from the study of the created
+   *   object go into its Referenced Series Sequence, instances from other
+   *   studies into its Studies Containing Other Referenced Instances Sequence.
    *
    * Factored out of the SEG and PM converters
    * (https://github.com/QIICR/dcmqi/issues/192).
@@ -115,16 +118,26 @@ namespace dcmqi {
                                                     const CodeSequenceMacro& purposeOfReference);
 
     /**
-     * @brief Populate the Referenced Series Sequence of the given Common Instance
-     * Reference module with the instances referenced so far.
+     * @brief Populate the given Common Instance Reference module with the
+     * instances referenced so far.
      *
-     * Instances are grouped by their Series Instance UID, in order of first
-     * reference. No-op if no instance has been referenced.
+     * Instances that belong to the study of the created object go into the
+     * Referenced Series Sequence; instances from other studies are filed under
+     * their Study Instance UID in the Studies Containing Other Referenced
+     * Instances Sequence, as required by PS3.3 C.12.2. Within either, instances
+     * are grouped by their Series Instance UID, in order of first reference.
+     * No-op if no instance has been referenced.
+     *
+     * Source instances without a Study Instance UID, and all instances if
+     * objectStudyInstanceUID is empty, are treated as belonging to the study
+     * of the created object (with a warning for the former).
      *
      * @param commref Common Instance Reference module of the target object.
+     * @param objectStudyInstanceUID Study Instance UID of the object being created.
      * @return EC_Normal on success, error otherwise.
      */
-    OFCondition populateCommonInstanceReference(IODCommonInstanceReferenceModule& commref) const;
+    OFCondition populateCommonInstanceReference(IODCommonInstanceReferenceModule& commref,
+                                                const OFString& objectStudyInstanceUID) const;
 
     /**
      * @brief Access the frame inventory (indexed by the ids used in the mapping methods).
@@ -135,6 +148,7 @@ namespace dcmqi {
 
     /// Cached per-dataset identification, parallel to m_datasets
     struct InstanceInfo {
+      OFString studyInstanceUID;
       OFString seriesInstanceUID;
       OFString sopClassUID;
       OFString sopInstanceUID;
@@ -143,6 +157,13 @@ namespace dcmqi {
 
     /// Remember that an instance is referenced (deduplicated by dataset index)
     void recordReferencedInstance(size_t datasetIndex);
+
+    /// Append one instance reference to the series list, creating the series
+    /// item (tracked in series2item, owned by the list) on first use
+    static OFCondition addToSeriesLevelReferences(
+        OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>& refseries,
+        map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>& series2item,
+        const InstanceInfo& info);
 
     vector<DcmItem*> m_datasets;
     vector<InstanceInfo> m_instances;

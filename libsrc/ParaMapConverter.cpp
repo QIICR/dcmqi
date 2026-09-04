@@ -355,8 +355,12 @@ namespace dcmqi {
     }
 
     // populate the Common Instance Reference module with the references
-    // accumulated while creating the derivation image items
-    CHECK_COND(sourceIndex.populateCommonInstanceReference(pMapDoc->getCommonInstanceReference()));
+    // accumulated while creating the derivation image items; the study of
+    // this object decides which of its two sequences a reference goes into
+    OFString objectStudyInstanceUID;
+    pMapDoc->getStudy().getStudyInstanceUID(objectStudyInstanceUID);
+    CHECK_COND(sourceIndex.populateCommonInstanceReference(pMapDoc->getCommonInstanceReference(),
+                                                           objectStudyInstanceUID));
 
     string bodyPartAssigned = metaInfo.getBodyPartExamined();
     if(srcDataset != NULL && bodyPartAssigned.empty()) {
