@@ -23,6 +23,7 @@ namespace dcmqi {
       DcmItem* dataset = m_datasets[i];
       InstanceInfo& info = m_instances[i];
 
+      dataset->findAndGetOFString(DCM_StudyInstanceUID, info.studyInstanceUID);
       dataset->findAndGetOFString(DCM_SeriesInstanceUID, info.seriesInstanceUID);
       dataset->findAndGetOFString(DCM_SOPClassUID, info.sopClassUID);
       dataset->findAndGetOFString(DCM_SOPInstanceUID, info.sopInstanceUID);
@@ -145,44 +146,91 @@ namespace dcmqi {
 
   // -------------------------------------------------------------------------------------
 
-  OFCondition SourceImageIndex::populateCommonInstanceReference(IODCommonInstanceReferenceModule& commref) const {
+  OFCondition SourceImageIndex::populateCommonInstanceReference(IODCommonInstanceReferenceModule& commref,
+                                                                const OFString& objectStudyInstanceUID) const {
     if(m_referencedDatasets.empty())
       return EC_Normal;
 
-    OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>& refseries = commref.getReferencedSeriesItems();
-
-    // group the referenced instances by series, both in order of first reference;
-    // the created items are owned by the module
+    // instances from the study of the created object, grouped by series
     map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> series2item;
+    // instances from other studies, grouped by study and, within it, by series
+    map<OFString, IODCommonInstanceReferenceModule::StudiesOtherInstancesItem*> study2item;
+    map<OFString, map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*> > foreignSeries2item;
+
+    // all in order of first reference; the created items are owned by the module
     for(size_t i=0;i<m_referencedDatasets.size();i++){
       const InstanceInfo& info = m_instances[m_referencedDatasets[i]];
 
-      IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = NULL;
-      map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>::iterator seriesIt =
-          series2item.find(info.seriesInstanceUID);
-      if(seriesIt == series2item.end()){
-        refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem();
-        OFCondition result = refseriesItem->setSeriesInstanceUID(info.seriesInstanceUID);
-        if(result.bad()){
-          delete refseriesItem;
-          return result;
-        }
-        series2item[info.seriesInstanceUID] = refseriesItem;
-        refseries.push_back(refseriesItem);
-      } else {
-        refseriesItem = seriesIt->second;
-      }
+      if(info.studyInstanceUID.empty() && !objectStudyInstanceUID.empty())
+        cerr << "WARNING: Source image " << info.sopInstanceUID << " has no Study Instance UID, "
+             << "referencing it as part of this object's study" << endl;
 
-      SOPInstanceReferenceMacro* refinstancesItem = new SOPInstanceReferenceMacro();
-      OFCondition result = refinstancesItem->setReferencedSOPClassUID(info.sopClassUID);
-      if(result.good())
-        result = refinstancesItem->setReferencedSOPInstanceUID(info.sopInstanceUID);
+      const bool foreignStudy = !info.studyInstanceUID.empty()
+          && !objectStudyInstanceUID.empty()
+          && info.studyInstanceUID != objectStudyInstanceUID;
+
+      OFCondition result;
+      if(!foreignStudy){
+        result = addToSeriesLevelReferences(commref.getReferencedSeriesItems(), series2item, info);
+      } else {
+        // Studies Containing Other Referenced Instances Sequence (PS3.3 C.12.2):
+        // one item per foreign study, holding its own series/instance references
+        IODCommonInstanceReferenceModule::StudiesOtherInstancesItem* studyItem = NULL;
+        map<OFString, IODCommonInstanceReferenceModule::StudiesOtherInstancesItem*>::iterator studyIt =
+            study2item.find(info.studyInstanceUID);
+        if(studyIt == study2item.end()){
+          studyItem = new IODCommonInstanceReferenceModule::StudiesOtherInstancesItem();
+          result = studyItem->setStudyInstanceUID(info.studyInstanceUID);
+          if(result.bad()){
+            delete studyItem;
+            return result;
+          }
+          study2item[info.studyInstanceUID] = studyItem;
+          commref.getStudiesContainingOtherReferences().push_back(studyItem);
+        } else {
+          studyItem = studyIt->second;
+        }
+        result = addToSeriesLevelReferences(
+            studyItem->getReferencedSeriesAndInstanceReferences().getReferencedSeriesItems(),
+            foreignSeries2item[info.studyInstanceUID], info);
+      }
+      if(result.bad())
+        return result;
+    }
+    return EC_Normal;
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  OFCondition SourceImageIndex::addToSeriesLevelReferences(
+      OFVector<IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>& refseries,
+      map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>& series2item,
+      const InstanceInfo& info) {
+    IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem* refseriesItem = NULL;
+    map<OFString, IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem*>::iterator seriesIt =
+        series2item.find(info.seriesInstanceUID);
+    if(seriesIt == series2item.end()){
+      refseriesItem = new IODSeriesAndInstanceReferenceMacro::ReferencedSeriesItem();
+      OFCondition result = refseriesItem->setSeriesInstanceUID(info.seriesInstanceUID);
       if(result.bad()){
-        delete refinstancesItem;
+        delete refseriesItem;
         return result;
       }
-      refseriesItem->getReferencedInstanceItems().push_back(refinstancesItem);
+      series2item[info.seriesInstanceUID] = refseriesItem;
+      refseries.push_back(refseriesItem);
+    } else {
+      refseriesItem = seriesIt->second;
     }
+
+    SOPInstanceReferenceMacro* refinstancesItem = new SOPInstanceReferenceMacro();
+    OFCondition result = refinstancesItem->setReferencedSOPClassUID(info.sopClassUID);
+    if(result.good())
+      result = refinstancesItem->setReferencedSOPInstanceUID(info.sopInstanceUID);
+    if(result.bad()){
+      delete refinstancesItem;
+      return result;
+    }
+    refseriesItem->getReferencedInstanceItems().push_back(refinstancesItem);
     return EC_Normal;
   }
 
