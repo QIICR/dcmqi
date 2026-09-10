@@ -13,12 +13,13 @@ description: >
 # fetched GitHub release assets, which *can* be replaced in place under an unchanged tag,
 # so there the tag alone did not pin what CI executed.
 #
-# To move to a newer dicom3tools build, bump the default below (or pass `version:`),
-# and keep docker/Makefile's dicom3tools_version in sync -- the Linux/x86_64 job
-# installs the same package inside its dockcross container instead of using this action.
+# To move to a newer dicom3tools build, bump the default below (or pass
+# `dicom3tools_version:`), and keep docker/Makefile's dicom3tools_version in sync -- the
+# Linux/x86_64 job installs the same package inside its dockcross container rather than
+# going through this action.
 
 inputs:
-  version:
+  dicom3tools_version:
     description: "Exact dicom3tools version to install from PyPI."
     required: false
     default: "20260901"
@@ -29,7 +30,7 @@ runs:
     - name: "Install dicom3tools (dciodvfy)"
       shell: bash
       env:
-        DICOM3TOOLS_VERSION: ${{ inputs.version }}
+        DICOM3TOOLS_VERSION: ${{ inputs.dicom3tools_version }}
       run: |
         set -euo pipefail
 
