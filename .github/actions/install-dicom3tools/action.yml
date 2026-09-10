@@ -54,6 +54,11 @@ runs:
           read -r bindir_posix
         } < <("$PY" -c 'import dicom3tools; d = dicom3tools.bin_dir(); print(d); print(d.as_posix())')
 
+        # Python terminates lines with CRLF on Windows and `read -r` keeps the CR, which
+        # would otherwise end up inside the path and in GITHUB_PATH. No-op elsewhere.
+        bindir_native=${bindir_native%$'\r'}
+        bindir_posix=${bindir_posix%$'\r'}
+
         exe="$bindir_posix/dciodvfy"
         [ -f "$exe" ] || exe="$bindir_posix/dciodvfy.exe"
         if [ ! -f "$exe" ]; then
