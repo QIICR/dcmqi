@@ -87,14 +87,13 @@ jobs:
       run: |
         cd docker && make dcmqi
 
-    # docker/Makefile's prereq.build_dicom3tools target is meant to put dciodvfy on PATH
-    # for this job, but it does not: it downloads dicom3tools_winexe_*.zip (prebuilt Cygwin
-    # Windows binaries, not source), extracts it with `tar xjf`, and cds into a directory
-    # the flat archive does not contain. The whole && chain fails into `|| echo "Reusing "`,
-    # so the step reports success while find_program() finds nothing and the dciodvfy tests
-    # are silently dropped. Even once that is repaired, the prebuilt Linux release cannot be
-    # substituted here: it needs glibc >= 2.34 and dockcross/manylinux2014-x64 has 2.17.
-    # See https://github.com/fedorov/dicom3tools/issues/19.
+    # dciodvfy comes from the dicom3tools PyPI wheels, installed into the dockcross
+    # container by docker/Makefile's prereq.install_dicom3tools target. This job runs its
+    # tests inside that container, so the .github/actions/install-dicom3tools step used by
+    # the other jobs would not reach them. The manylinux_2_17_x86_64 wheel matches
+    # dockcross/manylinux2014-x64's glibc 2.17; the target it replaces downloaded the
+    # Windows build and silently failed, leaving the conformance tests unregistered.
+    # `make dcmqi.test` now asserts they are registered before running the suite.
     - name: "Test dcmqi"
       run: |
         cd docker && make dcmqi.test
@@ -199,6 +198,12 @@ jobs:
         gcc --version
         "$PYTHON" --version
 
+    # Provides dciodvfy, which apps/*/Testing/CMakeLists.txt look up with find_program().
+    # Without it CMake silently drops the DICOM conformance tests. The dicom3tools wheels
+    # include a manylinux_2_28_aarch64 build, which matches this container exactly.
+    - name: "Install dicom3tools"
+      uses: ./.github/actions/install-dicom3tools
+
     # Same layout and caching strategy as the macOS build: DCMTK/ITK need both their source
     # and build trees, zlib only its install tree.
     #
@@ -291,16 +296,18 @@ jobs:
       run: |
         cd "$GITHUB_WORKSPACE"/dcmqi-build && ninja
 
+    # Guard against the silent-skip failure mode: when find_program() fails to locate
+    # dciodvfy, CMake drops the conformance tests without failing anything, so the checks
+    # stop running unnoticed. Assert they were registered before running the suite.
+    - name: "Verify dciodvfy tests are registered"
+      run: |
+        cd "$GITHUB_WORKSPACE"/dcmqi-build/dcmqi-build
+        count=$(ctest -N -R dciodvfy | sed -n 's/^Total Tests: //p')
+        echo "dciodvfy tests registered: ${count:-0}"
+        [ "${count:-0}" -gt 0 ]
+
     # The ajv tests are skipped here: ajv is optional and CMake drops those tests when it
-    # is absent.
-    #
-    # The dciodvfy (dicom3tools) tests are also skipped, and unlike on macOS and Windows
-    # that is not yet fixable by installing the prebuilt dicom3tools release. Those Linux
-    # binaries are built on ubuntu-22.04 and reference GLIBC_2.34 / GLIBC_2.29, while this
-    # job runs in manylinux_2_28_aarch64 (glibc 2.28) -- and no aarch64 asset is published
-    # at all. Tracked upstream in https://github.com/fedorov/dicom3tools/issues/19; once
-    # manylinux-built Linux assets exist, add the .github/actions/install-dicom3tools step
-    # used by the macOS and Windows workflows.
+    # is absent. The dciodvfy tests do run, on the wheel installed above.
     - name: "Test dcmqi"
       run: |
         cd "$GITHUB_WORKSPACE"/dcmqi-build/dcmqi-build

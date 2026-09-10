@@ -1,13 +1,27 @@
 name: "Install dicom3tools"
 description: >
-  Download a prebuilt dicom3tools distribution and prepend it to PATH, so that the
-  find_program(DCIODVFY_EXECUTABLE dciodvfy) calls in apps/*/Testing/CMakeLists.txt
-  succeed and the optional dciodvfy conformance tests are actually registered.
+  Install the dicom3tools command line utilities from PyPI and prepend the packaged
+  binaries to PATH, so that the find_program(DCIODVFY_EXECUTABLE dciodvfy) calls in
+  apps/*/Testing/CMakeLists.txt succeed and the optional dciodvfy conformance tests
+  are actually registered.
 
-# To move to a newer dicom3tools build, bump RELEASE_TAG and replace all three
-# digests below with the ones published for that release. The digests are verified
-# unconditionally: a release asset can be replaced in place under an unchanged tag,
-# so pinning the tag alone would not pin the bytes CI executes.
+# Requires a Python >= 3.10 on PATH (every workflow using this action already sets one up).
+#
+# The version below is an exact pin, and an exact pin is all that is needed here: PyPI
+# filenames are immutable, so a given version always resolves to the same bytes. That is
+# why this no longer carries per-platform SHA-256 digests -- the previous implementation
+# fetched GitHub release assets, which *can* be replaced in place under an unchanged tag,
+# so there the tag alone did not pin what CI executed.
+#
+# To move to a newer dicom3tools build, bump the default below (or pass `version:`),
+# and keep docker/Makefile's dicom3tools_version in sync -- the Linux/x86_64 job
+# installs the same package inside its dockcross container instead of using this action.
+
+inputs:
+  version:
+    description: "Exact dicom3tools version to install from PyPI."
+    required: false
+    default: "20260901"
 
 runs:
   using: composite
@@ -15,62 +29,38 @@ runs:
     - name: "Install dicom3tools (dciodvfy)"
       shell: bash
       env:
-        RELEASE_REPO: fedorov/dicom3tools
-        RELEASE_TAG: dicom3tools.20260901072548.post1
-        SHA256_LINUX: d793a53a0f6cc4bae28b2979f67b583783d0954a7da7a2cd40b7359adbf681ae
-        SHA256_MACOS: a5d1f718a2d47f5dc5566ec34762bf55641b2f8c8c5c7d922404f5a6a9fe3afe
-        SHA256_WINDOWS: 9bb25b5ee3692cd2690c8f62007f2c352f5870c81c5c2ca3abf08042d44781da
+        DICOM3TOOLS_VERSION: ${{ inputs.version }}
       run: |
         set -euo pipefail
 
-        case "$RUNNER_OS" in
-          Linux)   asset=dicom3tools-linux-x86_64.tar.gz;     expected=$SHA256_LINUX ;;
-          macOS)   asset=dicom3tools-macos-universal.tar.gz;  expected=$SHA256_MACOS ;;
-          Windows) asset=dicom3tools-windows-x86_64.zip;      expected=$SHA256_WINDOWS ;;
-          *) echo "Unsupported runner OS: $RUNNER_OS" >&2; exit 1 ;;
-        esac
+        # `python` is what actions/setup-python puts on PATH on all three runner images;
+        # the manylinux container jobs export their interpreter under that name too.
+        PY=python
+        command -v "$PY" >/dev/null 2>&1 || PY=python3
 
-        archive="$RUNNER_TEMP/$asset"
-        dest="$RUNNER_TEMP/dicom3tools"
-        mkdir -p "$dest"
+        # --only-binary refuses the sdist: it is a stub that cannot build the tools, so
+        # falling back to it would produce a silent no-op instead of a clear failure on a
+        # platform with no published wheel.
+        "$PY" -m pip install --disable-pip-version-check --only-binary=:all: \
+          "dicom3tools==$DICOM3TOOLS_VERSION"
 
-        url="https://github.com/$RELEASE_REPO/releases/download/$RELEASE_TAG/$asset"
-        echo "Downloading $url"
-        curl -fsSL --retry 3 --retry-delay 5 -o "$archive" "$url"
+        # bin_dir() is the package's supported way to locate the packaged programs. Putting
+        # that directory on PATH (rather than relying on the console scripts) gives CMake the
+        # native executables directly, and satisfies the packaged shell-script tools, which
+        # invoke their siblings by bare name. On Windows the Cygwin runtime DLLs ship in the
+        # same directory as the executables, which is where Windows looks for them first.
+        {
+          read -r bindir_native
+          read -r bindir_posix
+        } < <("$PY" -c 'import dicom3tools; d = dicom3tools.bin_dir(); print(d); print(d.as_posix())')
 
-        actual=$(openssl dgst -sha256 -r "$archive" | cut -d' ' -f1)
-        if [ "$actual" != "$expected" ]; then
-          echo "Checksum mismatch for $asset" >&2
-          echo "  expected: $expected" >&2
-          echo "  actual:   $actual" >&2
-          exit 1
-        fi
-
-        # All three archives are flat: every tool sits at the archive root, and the
-        # Windows build ships its Cygwin DLLs next to the executables, which is where
-        # Windows looks for them first.
-        case "$asset" in
-          *.tar.gz)
-            tar xzf "$archive" -C "$dest"
-            ;;
-          *.zip)
-            # unzip is not present on the hosted Windows images; 7z is.
-            if command -v 7z >/dev/null 2>&1; then
-              7z x -bso0 -o"$dest" "$archive"
-            else
-              unzip -q "$archive" -d "$dest"
-            fi
-            ;;
-        esac
-
-        exe="$dest/dciodvfy"
-        [ -f "$exe" ] || exe="$dest/dciodvfy.exe"
+        exe="$bindir_posix/dciodvfy"
+        [ -f "$exe" ] || exe="$bindir_posix/dciodvfy.exe"
         if [ ! -f "$exe" ]; then
-          echo "dciodvfy not found in $asset" >&2
-          ls -la "$dest" >&2
+          echo "dciodvfy not found in $bindir_posix" >&2
+          ls -la "$bindir_posix" >&2
           exit 1
         fi
-        chmod +x "$exe"
 
         # Smoke test. With no file argument dciodvfy validates (empty) stdin, which is
         # enough to exercise dynamic loading. Exit codes >= 126 mean the binary could not
@@ -85,5 +75,5 @@ runs:
           exit 1
         fi
 
-        echo "$dest" >> "$GITHUB_PATH"
-        echo "dciodvfy installed at $exe"
+        echo "$bindir_native" >> "$GITHUB_PATH"
+        echo "dciodvfy $DICOM3TOOLS_VERSION installed at $exe"
