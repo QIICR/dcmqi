@@ -685,7 +685,7 @@ dcmqi_add_test(
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --inputImageList ${BASELINE}/24x38x3/nrrd/label.nrrd
     --inputDICOMList ${BASELINE}/24x38x3/multiframe/mf-2frames-per-plane.dcm
-    --outputDICOM ${MODULE_TEMP_DIR}/24x38x3_mf_2frames_seg.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/24x38x3_mf_2frames_per_plane_seg.dcm
     --skip 0
   )
 
@@ -696,7 +696,7 @@ dcmqi_add_test(
     --inputMetadata ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     --inputImageList ${BASELINE}/24x38x3/nrrd/label.nrrd
     --inputDICOMList ${BASELINE}/24x38x3/multiframe/mf-shared-plane-position.dcm
-    --outputDICOM ${MODULE_TEMP_DIR}/24x38x3_mf_shared_seg.dcm
+    --outputDICOM ${MODULE_TEMP_DIR}/24x38x3_mf_shared_plane_position_seg.dcm
     --skip 0
   )
 
@@ -712,7 +712,7 @@ dcmqi_add_test(
   )
 
 if(EXISTS ${DCIODVFY_EXECUTABLE})
-  foreach(mf_variant 2frames shared two_series)
+  foreach(mf_variant 2frames_per_plane shared_plane_position two_series)
     dcmqi_add_test(
       NAME ${itk2dcm}_makeSEG_multiframe_${mf_variant}_dciodvfy
       MODULE_NAME ${MODULE_NAME}
