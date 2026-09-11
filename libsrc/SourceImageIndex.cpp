@@ -4,6 +4,9 @@
 
 // DCMTK includes
 #include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmfg/fginterface.h>
+#include <dcmtk/dcmfg/fgplanpo.h>
+#include <dcmtk/dcmfg/fgtypes.h>
 
 // ITK includes
 #include <itkPoint.h>
@@ -32,6 +35,20 @@ namespace dcmqi {
         numberOfFrames = 0;
       info.numberOfFrames = OFstatic_cast(Uint32, numberOfFrames);
 
+      if(dataset->tagExists(DCM_PerFrameFunctionalGroupsSequence)){
+        // (enhanced) multiframe instance: one source frame per DICOM frame,
+        // positions from the Plane Position (Patient) functional group
+        addMultiframeSourceFrames(i, *dataset, info);
+        continue;
+      }
+      if(info.numberOfFrames > 1){
+        // old-style multiframe instance without functional groups: there is no
+        // per-frame position information, so its frames cannot be mapped
+        cerr << "WARNING: Multiframe source image " << info.sopInstanceUID << " has no per-frame "
+             << "plane positions, it cannot be mapped to slices of the converted image" << endl;
+        continue;
+      }
+
       // classic single-frame instance: one source frame, position from the
       // top-level Image Position (Patient)
       SourceFrame frame;
@@ -52,6 +69,48 @@ namespace dcmqi {
              << "it cannot be mapped to slices of the converted image" << endl;
       m_frames.push_back(frame);
     }
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  void SourceImageIndex::addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, const InstanceInfo& info) {
+    FGInterface fgInterface;
+    if(fgInterface.read(dataset).bad()){
+      cerr << "WARNING: Failed to read functional groups of multiframe source image " << info.sopInstanceUID
+           << ", it cannot be mapped to slices of the converted image" << endl;
+      return;
+    }
+
+    bool positionsMissing = false;
+    const size_t numFrames = fgInterface.getNumberOfFrames();
+    for(size_t frameId=0;frameId<numFrames;frameId++){
+      SourceFrame frame;
+      frame.datasetIndex = datasetIndex;
+      frame.frameNumber = OFstatic_cast(Uint32, frameId+1); // DICOM frame numbers are 1-based
+      frame.hasPosition = false;
+
+      OFBool isPerFrame;
+      FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+          fgInterface.get(OFstatic_cast(Uint32, frameId), DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+      if(planposfg){
+        frame.hasPosition = true;
+        for(int j=0;j<3;j++){
+          OFString planposStr;
+          if(planposfg->getImagePositionPatient(planposStr, j).good()){
+            frame.position[j] = atof(planposStr.c_str());
+          } else {
+            frame.hasPosition = false;
+            break;
+          }
+        }
+      }
+      if(!frame.hasPosition)
+        positionsMissing = true;
+      m_frames.push_back(frame);
+    }
+    if(positionsMissing)
+      cerr << "WARNING: Multiframe source image " << info.sopInstanceUID << " has frames without "
+           << "Plane Position (Patient), those cannot be mapped to slices of the converted image" << endl;
   }
 
   // -------------------------------------------------------------------------------------
@@ -115,6 +174,36 @@ namespace dcmqi {
       result = derimgItem->addSourceImageItem(m_datasets[datasetIndex], purposeOfReference, srcimgItem);
       if(result.bad())
         return result;
+
+      // For multiframe instances, restrict the reference to the frames actually
+      // used via Referenced Frame Number. If all frames of the instance are
+      // referenced, the reference applies to the instance as a whole and
+      // Referenced Frame Number must be absent (type 1C).
+      const InstanceInfo& info = m_instances[datasetIndex];
+      const vector<Uint32>& frameNumbers = dataset2frameNumbers[datasetIndex];
+      // The DCMTK API only accepts Uint16 frame numbers; fall back to
+      // referencing the whole instance for (unrealistically) larger ones
+      bool representable = true;
+      for(size_t j=0;j<frameNumbers.size();j++)
+        if(frameNumbers[j] > 65535)
+          representable = false;
+      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.numberOfFrames
+         && representable){
+        // TODO: replace this loop with a single setReferencedFrameNumber() call
+        // once the minimum required DCMTK version contains the fix for that
+        // method: up to and including DCMTK 3.6.9 it stores the values via
+        // putUint16(), which is not applicable to the string-based (VR IS)
+        // Referenced Frame Number attribute and always fails with
+        // EC_IllegalCall. A fix has been prepared for DCMTK (07/2026);
+        // addReferencedFrameNumber() builds the IS value correctly.
+        for(size_t j=0;j<frameNumbers.size();j++){
+          result = srcimgItem->getImageSOPInstanceReference().addReferencedFrameNumber(
+              OFstatic_cast(Uint16, frameNumbers[j]));
+          if(result.bad())
+            return result;
+        }
+      }
+
       recordReferencedInstance(datasetIndex);
     }
     return EC_Normal;
