@@ -119,9 +119,11 @@ jobs:
     - name: "Upload package as artifact (retry)"
       if: steps.upload-artifact.outcome == 'failure'
       uses: actions/upload-artifact@v7
+      continue-on-error: true
       with:
         name: dcmqi-linux-package
         path: build/dcmqi-build/dcmqi-*-linux*.tar.gz
+        overwrite: true
 
     - name: "Publish linux package"
       # Publish tagged (stable) releases only. The rolling "latest" prerelease is
@@ -328,9 +330,11 @@ jobs:
     - name: "Upload package as artifact (retry)"
       if: steps.upload-artifact.outcome == 'failure'
       uses: actions/upload-artifact@v7
+      continue-on-error: true
       with:
         name: dcmqi-linux-arm64-package
         path: dcmqi-build/dcmqi-build/dcmqi-*-linux-arm64*.tar.gz
+        overwrite: true
 
     # Save the dependency cache only when the build step itself succeeded. This keeps the
     # original intent -- cache the deps even if a *later* step (test, package) fails -- while
