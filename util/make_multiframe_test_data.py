@@ -39,7 +39,8 @@ diff.
 
 Usage: make_multiframe_test_data.py [<data/segmentations/24x38x3/multiframe>]
 
-Requires pydicom (not a dcmqi dependency otherwise).
+Requires pydicom (not a dcmqi dependency otherwise); works with both the
+2.x and 3.x series.
 """
 import copy
 import os
@@ -57,6 +58,20 @@ def derive_uids(template):
         "2frames": (f"{sop_root}.2", f"{series_root}.{int(series_last) + 1}"),
         "shared": (f"{sop_root}.3", f"{series_root}.{int(series_last) + 2}"),
     }
+
+
+def save_dataset(ds, path):
+    """Write the dataset as a DICOM file including the file meta header.
+
+    The keyword for that differs between pydicom generations: up to 2.x it is
+    write_like_original=False, from 3.0 on it is enforce_file_format=True. The
+    old spelling still works in 3.x but is deprecated and goes away in 4.0.
+    Both produce byte-identical output for these fixtures.
+    """
+    if int(pydicom.__version_info__[0]) >= 3:
+        ds.save_as(path, enforce_file_format=True)
+    else:
+        ds.save_as(path, write_like_original=False)
 
 
 def frame_bytes(ds, index):
@@ -144,7 +159,7 @@ def main():
 
     for name, ds in variants:
         path = os.path.join(out_dir, name)
-        ds.save_as(path, write_like_original=False)
+        save_dataset(ds, path)
         print(f"wrote {path}: {ds.NumberOfFrames} frames, "
               f"{os.path.getsize(path)} bytes, SOP ...{ds.SOPInstanceUID[-8:]}")
 

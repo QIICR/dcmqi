@@ -63,7 +63,8 @@ user reported a problem with.
 
 ## Requirements
 
-- `highdicom` and `pydicom` (`pip install highdicom`)
+- `highdicom` and `pydicom` (`pip install highdicom`); highdicom requires
+  pydicom 3, while `util/make_multiframe_test_data.py` works with 2.x too
 - `idc-index` for the downloads (`pip install idc-index`), providing the `idc` command
 - a dcmqi build providing `itkimage2segimage` and `segimage2itkimage`
 - optional: `dciodvfy` (from dicom3tools), used for validation if present
