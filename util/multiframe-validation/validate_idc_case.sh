@@ -18,13 +18,16 @@
 # Usage:
 #   validate_idc_case.sh <work-dir> <SEG-SeriesInstanceUID>
 #
+# The work directory is wiped at the start, so it must either not exist yet or
+# have been created by an earlier run of this script.
+#
 # Environment:
 #   DCMQI_BIN  directory holding itkimage2segimage/segimage2itkimage
 #              (default: assumes they are on PATH)
 #   PYTHON     interpreter that has highdicom and pydicom (default: python3)
 #   IDC        idc-index command line tool (default: idc)
 #
-set -u
+set -u -o pipefail
 
 if [ $# -ne 2 ]; then
     sed -n '2,/^set -u/p' "$0" | sed 's/^# \?//'
@@ -45,8 +48,25 @@ for tool in "$itk2dcm" "$dcm2itk"; do
 done
 command -v "$IDC" >/dev/null 2>&1 || { echo "ERROR: $IDC not found (pip install idc-index)"; exit 1; }
 
-rm -rf "$work"
+# The work directory is wiped below, so only accept one this script may own:
+# either it does not exist yet, or it carries the marker of an earlier run.
+marker=.dcmqi-multiframe-validation
+case "$work" in
+    ""|/|/*/..|*/..) echo "ERROR: refusing to use '$work' as work directory"; exit 1 ;;
+esac
+if [ -e "$work" ]; then
+    if [ ! -d "$work" ]; then
+        echo "ERROR: '$work' exists and is not a directory"; exit 1
+    fi
+    if [ ! -f "$work/$marker" ] && [ -n "$(ls -A "$work" 2>/dev/null)" ]; then
+        echo "ERROR: '$work' is not empty and was not created by this script;"
+        echo "       refusing to delete it. Pick a new directory."
+        exit 1
+    fi
+    rm -rf "${work:?}"
+fi
 mkdir -p "$work/seg" "$work/series" "$work/itk"
+touch "$work/$marker"
 
 echo "--- downloading segmentation $seg_uid"
 $IDC download --download-dir "$work/seg" --dir-template "" "$seg_uid" >/dev/null 2>&1 \
@@ -74,12 +94,22 @@ echo "--- classic series -> Legacy Converted Enhanced (highdicom)"
 $PYTHON "$here/legacy_convert.py" "$work/series" "$work/source_enhanced.dcm" || exit 1
 
 echo "--- itkimage2segimage against both sources"
-$itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
-         --inputDICOMDirectory "$work/series" --outputDICOM "$work/seg_classic.dcm" \
-         --skip 0 2>&1 | grep -E "slices mapped" | tail -1 | sed 's/^/    classic : /'
-$itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
-         --inputDICOMList "$work/source_enhanced.dcm" --outputDICOM "$work/seg_enhanced.dcm" \
-         --skip 0 2>&1 | grep -E "slices mapped" | tail -1 | sed 's/^/    enhanced: /'
+# The conversions are piped into grep, so their own exit status has to be
+# checked explicitly - a failure here must not fall through to the comparison,
+# which would then report mismatches against missing or stale files.
+convert() {
+    label=$1; shift
+    if ! "$@" > "$work/convert.log" 2>&1; then
+        echo "ERROR: $label conversion failed:"
+        tail -5 "$work/convert.log" | sed 's/^/    /'
+        exit 1
+    fi
+    grep -E "slices mapped" "$work/convert.log" | tail -1 | sed "s|^|    $label: |"
+}
+convert "classic " $itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
+        --inputDICOMDirectory "$work/series" --outputDICOM "$work/seg_classic.dcm" --skip 0
+convert "enhanced" $itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
+        --inputDICOMList "$work/source_enhanced.dcm" --outputDICOM "$work/seg_enhanced.dcm" --skip 0
 
 echo "--- comparing"
 $PYTHON "$here/compare_references.py" "$work/seg_classic.dcm" "$work/seg_enhanced.dcm" \
