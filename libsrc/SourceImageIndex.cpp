@@ -188,14 +188,7 @@ namespace dcmqi {
       // silently turn a partial reference into a whole-instance claim.
       const InstanceInfo& info = m_instances[datasetIndex];
       const vector<Uint32>& frameNumbers = dataset2frameNumbers[datasetIndex];
-      // The DCMTK API only accepts Uint16 frame numbers; fall back to
-      // referencing the whole instance for (unrealistically) larger ones
-      bool representable = true;
-      for(size_t j=0;j<frameNumbers.size();j++)
-        if(frameNumbers[j] > 65535)
-          representable = false;
-      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.inventoriedFrames
-         && representable){
+      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.inventoriedFrames){
         // TODO: replace this loop with a single setReferencedFrameNumber() call
         // once the minimum required DCMTK version contains the fix for that
         // method: up to and including DCMTK 3.6.9 it stores the values via
@@ -204,6 +197,15 @@ namespace dcmqi {
         // EC_IllegalCall. A fix has been prepared for DCMTK (07/2026);
         // addReferencedFrameNumber() builds the IS value correctly.
         for(size_t j=0;j<frameNumbers.size();j++){
+          // Both DCMTK methods for Referenced Frame Number take Uint16, while
+          // the attribute itself (VR IS) permits larger values. Refuse rather
+          // than fall back to a reference without frame numbers: that would
+          // claim every frame of the instance, including those not used.
+          if(frameNumbers[j] > 65535){
+            cerr << "ERROR: Cannot reference frame " << frameNumbers[j] << " of source image "
+                 << info.sopInstanceUID << ": frame numbers above 65535 are not supported" << endl;
+            return FG_EC_InvalidData;
+          }
           result = srcimgItem->getImageSOPInstanceReference().addReferencedFrameNumber(
               OFstatic_cast(Uint16, frameNumbers[j]));
           if(result.bad())

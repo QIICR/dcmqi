@@ -23,6 +23,10 @@
 //     per-frame items, not on (0028,0008): partial references still have to
 //     carry Referenced Frame Number instead of silently claiming the whole
 //     instance.
+//  5. A multiframe source with more frames than a Referenced Frame Number can
+//     express through the DCMTK API (> 65535). The conversion must refuse
+//     rather than fall back to a reference without frame numbers, which would
+//     claim every frame of the instance.
 
 #include "dcmqi/Helper.h"
 #include "dcmqi/Itk2DicomConverter.h"
@@ -424,8 +428,45 @@ int main(int argc, char* argv[])
     for (DcmItem* item : datasets) { delete item; }
   }
 
+  // 5. more frames than Referenced Frame Number can express: refuse instead
+  //    of silently referencing the whole instance
+  {
+    std::vector<DcmItem*> datasets = dcmqi::Helper::loadDatasets({plainFile});
+    REQUIRE(datasets.size() == 1);
+    DcmSequenceOfItems* origSeq = nullptr;
+    REQUIRE(datasets[0]->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, origSeq).good() && origSeq);
+
+    // Push the real frames past frame number 65535 by prepending filler items.
+    // They carry no Plane Position, so they stay unmapped; only the real
+    // frames are referenced, and their numbers now exceed the limit.
+    const unsigned long filler = 65536;
+    std::unique_ptr<DcmSequenceOfItems> bigSeq(new DcmSequenceOfItems(DCM_PerFrameFunctionalGroupsSequence));
+    for (unsigned long i = 0; i < filler; ++i)
+    {
+      REQUIRE(bigSeq->insert(new DcmItem()).good());
+    }
+    for (unsigned long i = 0; i < origSeq->card(); ++i)
+    {
+      REQUIRE(bigSeq->insert(new DcmItem(*origSeq->getItem(i))).good());
+    }
+    REQUIRE(datasets[0]->insert(bigSeq.release(), OFTrue /* replace */).good());
+
+    bool refused = false;
+    try
+    {
+      std::unique_ptr<DcmDataset> seg(convertDatasets(datasets, segmentations, metadata));
+      refused = (seg == nullptr);
+    }
+    catch (...)   // the converter reports failing conditions by throwing
+    {
+      refused = true;
+    }
+    REQUIRE(refused);
+    for (DcmItem* item : datasets) { delete item; }
+  }
+
   std::cout << "PASS: multiframe sources with several frames per plane, with a shared plane "
-            << "position, from two series, and with a missing NumberOfFrames attribute "
-            << "are referenced correctly." << std::endl;
+            << "position, from two series, with a missing NumberOfFrames attribute, and "
+            << "beyond the expressible frame number are handled correctly." << std::endl;
   return EXIT_SUCCESS;
 }
