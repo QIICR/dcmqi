@@ -27,6 +27,10 @@
 //     express through the DCMTK API (> 65535). The conversion must refuse
 //     rather than fall back to a reference without frame numbers, which would
 //     claim every frame of the instance.
+//  6. A multiframe source whose Shared Functional Groups Sequence is missing
+//     or empty, which makes FGInterface reject the dataset as a whole. The
+//     plane positions must then be read from the per-frame items directly, so
+//     the instance still gets frame-level references instead of none at all.
 
 #include "dcmqi/Helper.h"
 #include "dcmqi/Itk2DicomConverter.h"
@@ -465,8 +469,48 @@ int main(int argc, char* argv[])
     for (DcmItem* item : datasets) { delete item; }
   }
 
+  // 6. unparsable functional groups: the plane positions must still be found
+  for (int variant = 0; variant < 2; ++variant)
+  {
+    std::vector<DcmItem*> datasets = dcmqi::Helper::loadDatasets({plainFile});
+    REQUIRE(datasets.size() == 1);
+    if (variant == 0)
+    {
+      // Shared Functional Groups Sequence missing entirely
+      REQUIRE(datasets[0]->findAndDeleteElement(DCM_SharedFunctionalGroupsSequence).good());
+    }
+    else
+    {
+      // present but empty, which FGInterface rejects just the same
+      DcmSequenceOfItems* sharedSeq = nullptr;
+      REQUIRE(datasets[0]->findAndGetSequence(DCM_SharedFunctionalGroupsSequence, sharedSeq).good() && sharedSeq);
+      sharedSeq->clear();
+    }
+
+    std::unique_ptr<DcmDataset> seg(convertDatasets(datasets, segmentations, metadata));
+    REQUIRE(seg != nullptr);
+    // same references as with the intact file: the frame positions are
+    // unchanged, only the way they have to be read differs
+    REQUIRE(checkFrameReferences(seg.get(), {plain}) == EXIT_SUCCESS);
+    unsigned long framesWithReferences = 0;
+    DcmSequenceOfItems* perFrameSeq = nullptr;
+    REQUIRE(seg->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, perFrameSeq).good() && perFrameSeq);
+    for (unsigned long f = 0; f < perFrameSeq->card(); ++f)
+    {
+      DcmItem* derivationItem = nullptr;
+      if (perFrameSeq->getItem(f)->findAndGetSequenceItem(DCM_DerivationImageSequence, derivationItem, 0).good()
+          && derivationItem)
+      {
+        framesWithReferences++;
+      }
+    }
+    REQUIRE(framesWithReferences == perFrameSeq->card());
+    for (DcmItem* item : datasets) { delete item; }
+  }
+
   std::cout << "PASS: multiframe sources with several frames per plane, with a shared plane "
-            << "position, from two series, with a missing NumberOfFrames attribute, and "
-            << "beyond the expressible frame number are handled correctly." << std::endl;
+            << "position, from two series, with a missing NumberOfFrames attribute, beyond "
+            << "the expressible frame number, and without parsable functional groups are "
+            << "handled correctly." << std::endl;
   return EXIT_SUCCESS;
 }

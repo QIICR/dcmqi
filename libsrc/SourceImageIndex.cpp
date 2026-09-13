@@ -4,6 +4,7 @@
 
 // DCMTK includes
 #include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcsequen.h>
 #include <dcmtk/dcmfg/fginterface.h>
 #include <dcmtk/dcmfg/fgplanpo.h>
 #include <dcmtk/dcmfg/fgtypes.h>
@@ -77,36 +78,59 @@ namespace dcmqi {
 
   void SourceImageIndex::addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info) {
     FGInterface fgInterface;
-    if(fgInterface.read(dataset).bad()){
-      cerr << "WARNING: Failed to read functional groups of multiframe source image " << info.sopInstanceUID
-           << ", it cannot be mapped to slices of the converted image" << endl;
-      return;
+    const bool functionalGroupsParsed = fgInterface.read(dataset).good();
+
+    // FGInterface rejects a dataset as a whole - e.g. when the Shared
+    // Functional Groups Sequence is missing or empty, or when a single shared
+    // group fails to parse - which would drop every frame of this instance
+    // from the mapping and leave it unreferenced. The mapping only needs Plane
+    // Position (Patient) though, so read it straight from the functional group
+    // items in that case; such files do occur in practice.
+    DcmSequenceOfItems* perFrameSeq = NULL;
+    DcmItem* sharedItem = NULL;
+    if(!functionalGroupsParsed){
+      cerr << "WARNING: Failed to read the functional groups of multiframe source image "
+           << info.sopInstanceUID << ", reading Plane Position (Patient) directly instead" << endl;
+      dataset.findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, perFrameSeq);
+      dataset.findAndGetSequenceItem(DCM_SharedFunctionalGroupsSequence, sharedItem, 0);
     }
 
-    bool positionsMissing = false;
-    const size_t numFrames = fgInterface.getNumberOfFrames();
+    const size_t numFrames = functionalGroupsParsed
+        ? fgInterface.getNumberOfFrames()
+        : (perFrameSeq ? perFrameSeq->card() : 0);
     info.inventoriedFrames = OFstatic_cast(Uint32, numFrames);
+
+    bool positionsMissing = false;
     for(size_t frameId=0;frameId<numFrames;frameId++){
       SourceFrame frame;
       frame.datasetIndex = datasetIndex;
       frame.frameNumber = OFstatic_cast(Uint32, frameId+1); // DICOM frame numbers are 1-based
       frame.hasPosition = false;
 
-      OFBool isPerFrame;
-      FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
-          fgInterface.get(OFstatic_cast(Uint32, frameId), DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
-      if(planposfg){
-        frame.hasPosition = true;
-        for(int j=0;j<3;j++){
-          OFString planposStr;
-          if(planposfg->getImagePositionPatient(planposStr, j).good()){
-            frame.position[j] = atof(planposStr.c_str());
-          } else {
-            frame.hasPosition = false;
-            break;
+      if(functionalGroupsParsed){
+        OFBool isPerFrame;
+        FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+            fgInterface.get(OFstatic_cast(Uint32, frameId), DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+        if(planposfg){
+          frame.hasPosition = true;
+          for(int j=0;j<3;j++){
+            OFString planposStr;
+            if(planposfg->getImagePositionPatient(planposStr, j).good()){
+              frame.position[j] = atof(planposStr.c_str());
+            } else {
+              frame.hasPosition = false;
+              break;
+            }
           }
         }
+      } else {
+        // per-frame position first, shared one as fallback (sources whose
+        // frames all lie on the same plane keep it there)
+        frame.hasPosition =
+            readPlanePosition(perFrameSeq->getItem(OFstatic_cast(unsigned long, frameId)), frame.position)
+            || readPlanePosition(sharedItem, frame.position);
       }
+
       if(!frame.hasPosition)
         positionsMissing = true;
       m_frames.push_back(frame);
@@ -114,6 +138,23 @@ namespace dcmqi {
     if(positionsMissing)
       cerr << "WARNING: Multiframe source image " << info.sopInstanceUID << " has frames without "
            << "Plane Position (Patient), those cannot be mapped to slices of the converted image" << endl;
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  bool SourceImageIndex::readPlanePosition(DcmItem* functionalGroupItem, double position[3]) {
+    DcmItem* planePosItem = NULL;
+    if(!functionalGroupItem
+       || functionalGroupItem->findAndGetSequenceItem(DCM_PlanePositionSequence, planePosItem, 0).bad()
+       || !planePosItem)
+      return false;
+    for(int j=0;j<3;j++){
+      OFString ippStr;
+      if(planePosItem->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j).bad())
+        return false;
+      position[j] = atof(ippStr.c_str());
+    }
+    return true;
   }
 
   // -------------------------------------------------------------------------------------

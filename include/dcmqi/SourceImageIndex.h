@@ -63,6 +63,11 @@ namespace dcmqi {
      * one frame per DICOM frame, with the position taken from the Plane
      * Position (Patient) functional group.
      *
+     * If the functional groups of a multiframe instance cannot be parsed as a
+     * whole (e.g. a missing or empty Shared Functional Groups Sequence), the
+     * plane positions are read directly from the per-frame items instead, so
+     * such instances stay usable.
+     *
      * Datasets without usable position information (e.g. multiframe images
      * without per-frame plane positions) are kept (they can still be
      * referenced as whole instances) but their frames are excluded from the
@@ -175,6 +180,11 @@ namespace dcmqi {
     /// Add the frame inventory entries of a multiframe dataset and record
     /// their count in info.inventoriedFrames
     void addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info);
+
+    /// Read Image Position (Patient) from the Plane Position (Patient) group of
+    /// the given functional group item, without going through FGInterface.
+    /// @return false if the item, the group or a coordinate is missing
+    static bool readPlanePosition(DcmItem* functionalGroupItem, double position[3]);
 
     /// Remember that an instance is referenced (deduplicated by dataset index)
     void recordReferencedInstance(size_t datasetIndex);
