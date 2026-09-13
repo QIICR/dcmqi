@@ -9,7 +9,10 @@ Referenced Frame Number.
 
 The frame numbers are resolved back to the SOP Instance UIDs of the original
 classic instances through the Conversion Source Attributes Sequence that the
-Legacy Converted Enhanced image carries per frame. The check therefore compares
+Legacy Converted Enhanced image carries per frame. A reference carrying no
+frame numbers denotes the whole instance and is resolved to all of its frames,
+so losing the frame-level detail shows up as a mismatch instead of passing
+unnoticed. The check therefore compares
 what the references actually denote and needs no assumption about slice
 geometry - which matters because a segmentation may sit on a different slice
 grid than the series it references, in which case several source frames legitimately
@@ -124,21 +127,34 @@ def main():
     check(len(frame2source) == int(multiframe.NumberOfFrames),
           f"source records its origin for all {multiframe.NumberOfFrames} frames")
 
+    # A reference without frame numbers denotes every frame of the instance, so
+    # it must be resolved to all of them rather than to whatever was expected -
+    # otherwise a regression dropping frame numbers altogether would turn this
+    # check into a tautology and pass.
+    all_sources = set(frame2source.values())
+
     mismatches = 0
     referenced = 0
+    whole_instance_frames = 0
     for expected, actual in zip(classic_refs, enhanced_refs):
         wanted = set(expected)
         resolved = set()
         for frames in actual.values():
-            if frames is None:      # whole instance: cannot be narrowed down
-                resolved = wanted
-                break
-            resolved |= {frame2source.get(n) for n in frames}
+            if frames is None:
+                resolved |= all_sources
+                whole_instance_frames += 1
+            else:
+                resolved |= {frame2source.get(n) for n in frames}
         referenced += len(wanted)
         if resolved != wanted:
             mismatches += 1
     check(mismatches == 0,
           f"frame references denote the same {referenced} source images as the classic ones")
+    # Not an error in itself - it is correct where a frame genuinely uses the
+    # whole instance - but on these single-frame-derived sources it would mean
+    # the frame-level detail was lost, and the check above would have caught it.
+    check(whole_instance_frames == 0,
+          f"references are frame-level throughout ({whole_instance_frames} whole-instance)")
 
     print("\n" + ("ALL CHECKS PASSED" if check.ok else "CHECKS FAILED"))
     return 0 if check.ok else 1
