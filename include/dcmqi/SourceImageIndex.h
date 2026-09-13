@@ -163,11 +163,18 @@ namespace dcmqi {
       OFString seriesInstanceUID;
       OFString sopClassUID;
       OFString sopInstanceUID;
-      Uint32 numberOfFrames; ///< NumberOfFrames value; 0 for single-frame instances
+      Uint32 numberOfFrames; ///< NumberOfFrames (0028,0008) value; 0 for single-frame instances
+      /// Number of source frames added to the inventory for this dataset:
+      /// 1 for a single-frame instance, the per-frame item count for a
+      /// multiframe one, 0 if nothing could be inventoried. Unlike
+      /// numberOfFrames this cannot disagree with the frame numbers used in
+      /// the inventory, so completeness decisions are made against it.
+      Uint32 inventoriedFrames;
     };
 
-    /// Add the frame inventory entries of a multiframe dataset
-    void addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, const InstanceInfo& info);
+    /// Add the frame inventory entries of a multiframe dataset and record
+    /// their count in info.inventoriedFrames
+    void addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info);
 
     /// Remember that an instance is referenced (deduplicated by dataset index)
     void recordReferencedInstance(size_t datasetIndex);

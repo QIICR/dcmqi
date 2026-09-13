@@ -34,6 +34,7 @@ namespace dcmqi {
       if(dataset->findAndGetSint32(DCM_NumberOfFrames, numberOfFrames).bad() || numberOfFrames < 0)
         numberOfFrames = 0;
       info.numberOfFrames = OFstatic_cast(Uint32, numberOfFrames);
+      info.inventoriedFrames = 0;
 
       if(dataset->tagExists(DCM_PerFrameFunctionalGroupsSequence)){
         // (enhanced) multiframe instance: one source frame per DICOM frame,
@@ -68,12 +69,13 @@ namespace dcmqi {
         cerr << "WARNING: Source image " << info.sopInstanceUID << " has no Image Position (Patient), "
              << "it cannot be mapped to slices of the converted image" << endl;
       m_frames.push_back(frame);
+      info.inventoriedFrames = 1;
     }
   }
 
   // -------------------------------------------------------------------------------------
 
-  void SourceImageIndex::addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, const InstanceInfo& info) {
+  void SourceImageIndex::addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info) {
     FGInterface fgInterface;
     if(fgInterface.read(dataset).bad()){
       cerr << "WARNING: Failed to read functional groups of multiframe source image " << info.sopInstanceUID
@@ -83,6 +85,7 @@ namespace dcmqi {
 
     bool positionsMissing = false;
     const size_t numFrames = fgInterface.getNumberOfFrames();
+    info.inventoriedFrames = OFstatic_cast(Uint32, numFrames);
     for(size_t frameId=0;frameId<numFrames;frameId++){
       SourceFrame frame;
       frame.datasetIndex = datasetIndex;
@@ -178,7 +181,11 @@ namespace dcmqi {
       // For multiframe instances, restrict the reference to the frames actually
       // used via Referenced Frame Number. If all frames of the instance are
       // referenced, the reference applies to the instance as a whole and
-      // Referenced Frame Number must be absent (type 1C).
+      // Referenced Frame Number must be absent (type 1C). Completeness is
+      // decided against the number of inventoried frames - the same source the
+      // frame numbers come from - not against NumberOfFrames (0028,0008),
+      // which can be absent or disagree in malformed input and would then
+      // silently turn a partial reference into a whole-instance claim.
       const InstanceInfo& info = m_instances[datasetIndex];
       const vector<Uint32>& frameNumbers = dataset2frameNumbers[datasetIndex];
       // The DCMTK API only accepts Uint16 frame numbers; fall back to
@@ -187,7 +194,7 @@ namespace dcmqi {
       for(size_t j=0;j<frameNumbers.size();j++)
         if(frameNumbers[j] > 65535)
           representable = false;
-      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.numberOfFrames
+      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.inventoriedFrames
          && representable){
         // TODO: replace this loop with a single setReferencedFrameNumber() call
         // once the minimum required DCMTK version contains the fix for that

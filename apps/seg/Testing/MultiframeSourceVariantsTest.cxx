@@ -17,6 +17,12 @@
 //     (mf.dcm + mf-2frames-per-plane.dcm): each segmentation frame references
 //     both instances with their own frame numbers, and the Common Instance
 //     Reference module groups the instances by their actual series.
+//  4. A multiframe source whose NumberOfFrames (0028,0008) is missing
+//     (malformed input; the attribute is type 1 for multiframe images).
+//     The are-all-frames-referenced decision must rely on the inventoried
+//     per-frame items, not on (0028,0008): partial references still have to
+//     carry Referenced Frame Number instead of silently claiming the whole
+//     instance.
 
 #include "dcmqi/Helper.h"
 #include "dcmqi/Itk2DicomConverter.h"
@@ -201,6 +207,16 @@ std::unique_ptr<DcmDataset> convert(const std::vector<std::string>& sourceFiles,
   return result;
 }
 
+// Variant taking datasets that were already loaded (and possibly modified)
+std::unique_ptr<DcmDataset> convertDatasets(std::vector<DcmItem*>& datasets,
+                                            const std::vector<ImageType::ConstPointer>& segmentations,
+                                            const std::string& metadata)
+{
+  return std::unique_ptr<DcmDataset>(
+      dcmqi::Itk2DicomConverter::itkimage2dcmSegmentation(datasets, segmentations, metadata,
+                                                          false /* skipEmptySlices */));
+}
+
 // For every frame of the segmentation, check the references against the source
 // frames actually located on the frame's plane.
 int checkFrameReferences(DcmDataset* seg, const std::vector<SourceInfo>& sources)
@@ -380,7 +396,36 @@ int main(int argc, char* argv[])
     REQUIRE(instanceUIDs == (std::set<OFString>{plain.sopInstanceUID, twoPerPlane.sopInstanceUID}));
   }
 
+  // 4. missing NumberOfFrames: partial references must still carry frame
+  //    numbers (regression test for deciding completeness against
+  //    (0028,0008) instead of the inventoried frames)
+  {
+    std::vector<DcmItem*> datasets = dcmqi::Helper::loadDatasets({twoPerPlaneFile});
+    REQUIRE(datasets.size() == 1);
+    REQUIRE(datasets[0]->findAndDeleteElement(DCM_NumberOfFrames).good());
+
+    std::unique_ptr<DcmDataset> seg(convertDatasets(datasets, segmentations, metadata));
+    REQUIRE(seg != nullptr);
+    // every frame references two of the six source frames, so Referenced
+    // Frame Number is required on every source image item
+    REQUIRE(checkFrameReferences(seg.get(), {twoPerPlane}) == EXIT_SUCCESS);
+    DcmSequenceOfItems* perFrameSeq = nullptr;
+    REQUIRE(seg->findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, perFrameSeq).good() && perFrameSeq);
+    for (unsigned long f = 0; f < perFrameSeq->card(); ++f)
+    {
+      DcmItem* derivationItem = nullptr;
+      REQUIRE(perFrameSeq->getItem(f)->findAndGetSequenceItem(DCM_DerivationImageSequence, derivationItem, 0).good()
+              && derivationItem);
+      DcmItem* sourceImageItem = nullptr;
+      REQUIRE(derivationItem->findAndGetSequenceItem(DCM_SourceImageSequence, sourceImageItem, 0).good()
+              && sourceImageItem);
+      REQUIRE(referencedFrameNumbers(sourceImageItem).size() == 2);
+    }
+    for (DcmItem* item : datasets) { delete item; }
+  }
+
   std::cout << "PASS: multiframe sources with several frames per plane, with a shared plane "
-            << "position, and from two series are referenced correctly." << std::endl;
+            << "position, from two series, and with a missing NumberOfFrames attribute "
+            << "are referenced correctly." << std::endl;
   return EXIT_SUCCESS;
 }
