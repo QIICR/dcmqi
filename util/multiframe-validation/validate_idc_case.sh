@@ -106,9 +106,9 @@ convert() {
     fi
     grep -E "slices mapped" "$work/convert.log" | tail -1 | sed "s|^|    $label: |"
 }
-convert "classic " $itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
+convert "classic " "$itk2dcm" --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
         --inputDICOMDirectory "$work/series" --outputDICOM "$work/seg_classic.dcm" --skip 0
-convert "enhanced" $itk2dcm --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
+convert "enhanced" "$itk2dcm" --inputMetadata "$work/itk/s-meta.json" --inputImageList "$images" \
         --inputDICOMList "$work/source_enhanced.dcm" --outputDICOM "$work/seg_enhanced.dcm" --skip 0
 
 echo "--- comparing"
