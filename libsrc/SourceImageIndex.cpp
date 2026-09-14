@@ -4,6 +4,10 @@
 
 // DCMTK includes
 #include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcsequen.h>
+#include <dcmtk/dcmfg/fginterface.h>
+#include <dcmtk/dcmfg/fgplanpo.h>
+#include <dcmtk/dcmfg/fgtypes.h>
 
 // ITK includes
 #include <itkPoint.h>
@@ -31,6 +35,21 @@ namespace dcmqi {
       if(dataset->findAndGetSint32(DCM_NumberOfFrames, numberOfFrames).bad() || numberOfFrames < 0)
         numberOfFrames = 0;
       info.numberOfFrames = OFstatic_cast(Uint32, numberOfFrames);
+      info.inventoriedFrames = 0;
+
+      if(dataset->tagExists(DCM_PerFrameFunctionalGroupsSequence)){
+        // (enhanced) multiframe instance: one source frame per DICOM frame,
+        // positions from the Plane Position (Patient) functional group
+        addMultiframeSourceFrames(i, *dataset, info);
+        continue;
+      }
+      if(info.numberOfFrames > 1){
+        // old-style multiframe instance without functional groups: there is no
+        // per-frame position information, so its frames cannot be mapped
+        cerr << "WARNING: Multiframe source image " << info.sopInstanceUID << " has no per-frame "
+             << "plane positions, it cannot be mapped to slices of the converted image" << endl;
+        continue;
+      }
 
       // classic single-frame instance: one source frame, position from the
       // top-level Image Position (Patient)
@@ -51,7 +70,91 @@ namespace dcmqi {
         cerr << "WARNING: Source image " << info.sopInstanceUID << " has no Image Position (Patient), "
              << "it cannot be mapped to slices of the converted image" << endl;
       m_frames.push_back(frame);
+      info.inventoriedFrames = 1;
     }
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  void SourceImageIndex::addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info) {
+    FGInterface fgInterface;
+    const bool functionalGroupsParsed = fgInterface.read(dataset).good();
+
+    // FGInterface rejects a dataset as a whole - e.g. when the Shared
+    // Functional Groups Sequence is missing or empty, or when a single shared
+    // group fails to parse - which would drop every frame of this instance
+    // from the mapping and leave it unreferenced. The mapping only needs Plane
+    // Position (Patient) though, so read it straight from the functional group
+    // items in that case; such files do occur in practice.
+    DcmSequenceOfItems* perFrameSeq = NULL;
+    DcmItem* sharedItem = NULL;
+    if(!functionalGroupsParsed){
+      cerr << "WARNING: Failed to read the functional groups of multiframe source image "
+           << info.sopInstanceUID << ", reading Plane Position (Patient) directly instead" << endl;
+      dataset.findAndGetSequence(DCM_PerFrameFunctionalGroupsSequence, perFrameSeq);
+      dataset.findAndGetSequenceItem(DCM_SharedFunctionalGroupsSequence, sharedItem, 0);
+    }
+
+    const size_t numFrames = functionalGroupsParsed
+        ? fgInterface.getNumberOfFrames()
+        : (perFrameSeq ? perFrameSeq->card() : 0);
+    info.inventoriedFrames = OFstatic_cast(Uint32, numFrames);
+
+    bool positionsMissing = false;
+    for(size_t frameId=0;frameId<numFrames;frameId++){
+      SourceFrame frame;
+      frame.datasetIndex = datasetIndex;
+      frame.frameNumber = OFstatic_cast(Uint32, frameId+1); // DICOM frame numbers are 1-based
+      frame.hasPosition = false;
+
+      if(functionalGroupsParsed){
+        OFBool isPerFrame;
+        FGPlanePosPatient *planposfg = OFstatic_cast(FGPlanePosPatient*,
+            fgInterface.get(OFstatic_cast(Uint32, frameId), DcmFGTypes::EFG_PLANEPOSPATIENT, isPerFrame));
+        if(planposfg){
+          frame.hasPosition = true;
+          for(int j=0;j<3;j++){
+            OFString planposStr;
+            if(planposfg->getImagePositionPatient(planposStr, j).good()){
+              frame.position[j] = atof(planposStr.c_str());
+            } else {
+              frame.hasPosition = false;
+              break;
+            }
+          }
+        }
+      } else {
+        // per-frame position first, shared one as fallback (sources whose
+        // frames all lie on the same plane keep it there)
+        frame.hasPosition =
+            readPlanePosition(perFrameSeq->getItem(OFstatic_cast(unsigned long, frameId)), frame.position)
+            || readPlanePosition(sharedItem, frame.position);
+      }
+
+      if(!frame.hasPosition)
+        positionsMissing = true;
+      m_frames.push_back(frame);
+    }
+    if(positionsMissing)
+      cerr << "WARNING: Multiframe source image " << info.sopInstanceUID << " has frames without "
+           << "Plane Position (Patient), those cannot be mapped to slices of the converted image" << endl;
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  bool SourceImageIndex::readPlanePosition(DcmItem* functionalGroupItem, double position[3]) {
+    DcmItem* planePosItem = NULL;
+    if(!functionalGroupItem
+       || functionalGroupItem->findAndGetSequenceItem(DCM_PlanePositionSequence, planePosItem, 0).bad()
+       || !planePosItem)
+      return false;
+    for(int j=0;j<3;j++){
+      OFString ippStr;
+      if(planePosItem->findAndGetOFString(DCM_ImagePositionPatient, ippStr, j).bad())
+        return false;
+      position[j] = atof(ippStr.c_str());
+    }
+    return true;
   }
 
   // -------------------------------------------------------------------------------------
@@ -115,6 +218,42 @@ namespace dcmqi {
       result = derimgItem->addSourceImageItem(m_datasets[datasetIndex], purposeOfReference, srcimgItem);
       if(result.bad())
         return result;
+
+      // For multiframe instances, restrict the reference to the frames actually
+      // used via Referenced Frame Number. If all frames of the instance are
+      // referenced, the reference applies to the instance as a whole and
+      // Referenced Frame Number must be absent (type 1C). Completeness is
+      // decided against the number of inventoried frames - the same source the
+      // frame numbers come from - not against NumberOfFrames (0028,0008),
+      // which can be absent or disagree in malformed input and would then
+      // silently turn a partial reference into a whole-instance claim.
+      const InstanceInfo& info = m_instances[datasetIndex];
+      const vector<Uint32>& frameNumbers = dataset2frameNumbers[datasetIndex];
+      if(!frameNumbers.empty() && frameNumbers[0] > 0 && frameNumbers.size() < info.inventoriedFrames){
+        // TODO: replace this loop with a single setReferencedFrameNumber() call
+        // once the minimum required DCMTK version contains the fix for that
+        // method: up to and including DCMTK 3.6.9 it stores the values via
+        // putUint16(), which is not applicable to the string-based (VR IS)
+        // Referenced Frame Number attribute and always fails with
+        // EC_IllegalCall. A fix has been prepared for DCMTK (07/2026);
+        // addReferencedFrameNumber() builds the IS value correctly.
+        for(size_t j=0;j<frameNumbers.size();j++){
+          // Both DCMTK methods for Referenced Frame Number take Uint16, while
+          // the attribute itself (VR IS) permits larger values. Refuse rather
+          // than fall back to a reference without frame numbers: that would
+          // claim every frame of the instance, including those not used.
+          if(frameNumbers[j] > 65535){
+            cerr << "ERROR: Cannot reference frame " << frameNumbers[j] << " of source image "
+                 << info.sopInstanceUID << ": frame numbers above 65535 are not supported" << endl;
+            return FG_EC_InvalidData;
+          }
+          result = srcimgItem->getImageSOPInstanceReference().addReferencedFrameNumber(
+              OFstatic_cast(Uint16, frameNumbers[j]));
+          if(result.bad())
+            return result;
+        }
+      }
+
       recordReferencedInstance(datasetIndex);
     }
     return EC_Normal;

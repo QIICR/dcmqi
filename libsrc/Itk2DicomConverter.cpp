@@ -711,10 +711,10 @@ namespace dcmqi {
         // Shared FGs: DerivationImageSequence
         // When geometry checks are disabled, all source images are referenced as
         // whole instances by all frames.
-        if(!m_options.referencesGeometryCheck && m_dcmDatasets.size() > 1){
+        if(!m_options.referencesGeometryCheck && !m_dcmDatasets.empty()){
           FGDerivationImage fgderShared;
           CHECK_COND(m_sourceIndex.addWholeInstanceDerivationImageItem(fgderShared,
-              segmentationDerivationCode(), "", segmentationDerivationCode()));
+              segmentationDerivationCode(), "", sourceImagePurposeOfReferenceCode()));
           CHECK_COND(m_segdoc->addForAllFrames(fgderShared));
         }
       }

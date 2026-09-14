@@ -57,7 +57,19 @@ namespace dcmqi {
     /**
      * @brief Build the frame inventory for the given source datasets.
      *
-     * Datasets without usable position information are kept (they can still be
+     * Classic single-frame instances contribute one frame with the position
+     * taken from the top-level Image Position (Patient). Multiframe instances
+     * (recognized by their Per-frame Functional Groups Sequence) contribute
+     * one frame per DICOM frame, with the position taken from the Plane
+     * Position (Patient) functional group.
+     *
+     * If the functional groups of a multiframe instance cannot be parsed as a
+     * whole (e.g. a missing or empty Shared Functional Groups Sequence), the
+     * plane positions are read directly from the per-frame items instead, so
+     * such instances stay usable.
+     *
+     * Datasets without usable position information (e.g. multiframe images
+     * without per-frame plane positions) are kept (they can still be
      * referenced as whole instances) but their frames are excluded from the
      * geometric slice mapping, with a warning.
      *
@@ -81,7 +93,11 @@ namespace dcmqi {
      * @brief Add a Derivation Image item referencing the given source frames.
      *
      * Creates one Source Image Sequence item per referenced instance and
-     * records the instances for populateCommonInstanceReference().
+     * records the instances for populateCommonInstanceReference(). For
+     * multiframe instances, Referenced Frame Number restricts the reference
+     * to the frames actually used, unless all frames of the instance are
+     * referenced (in which case a reference to the whole instance is written,
+     * as required by DICOM).
      *
      * @param fgder Derivation Image functional group to add the item to.
      * @param frameIds Indices (into getFrames()) of the source frames to reference,
@@ -152,8 +168,23 @@ namespace dcmqi {
       OFString seriesInstanceUID;
       OFString sopClassUID;
       OFString sopInstanceUID;
-      Uint32 numberOfFrames; ///< NumberOfFrames value; 0 for single-frame instances
+      Uint32 numberOfFrames; ///< NumberOfFrames (0028,0008) value; 0 for single-frame instances
+      /// Number of source frames added to the inventory for this dataset:
+      /// 1 for a single-frame instance, the per-frame item count for a
+      /// multiframe one, 0 if nothing could be inventoried. Unlike
+      /// numberOfFrames this cannot disagree with the frame numbers used in
+      /// the inventory, so completeness decisions are made against it.
+      Uint32 inventoriedFrames;
     };
+
+    /// Add the frame inventory entries of a multiframe dataset and record
+    /// their count in info.inventoriedFrames
+    void addMultiframeSourceFrames(size_t datasetIndex, DcmItem& dataset, InstanceInfo& info);
+
+    /// Read Image Position (Patient) from the Plane Position (Patient) group of
+    /// the given functional group item, without going through FGInterface.
+    /// @return false if the item, the group or a coordinate is missing
+    static bool readPlanePosition(DcmItem* functionalGroupItem, double position[3]);
 
     /// Remember that an instance is referenced (deduplicated by dataset index)
     void recordReferencedInstance(size_t datasetIndex);
