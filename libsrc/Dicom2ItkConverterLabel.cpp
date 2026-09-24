@@ -1,6 +1,5 @@
 // DCMQI includes
 #include "dcmqi/Dicom2ItkConverterLabel.h"
-#include "dcmqi/ColorUtilities.h"
 
 // DCMTK includes
 #include <cstddef>
