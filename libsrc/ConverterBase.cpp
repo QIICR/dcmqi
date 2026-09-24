@@ -3,6 +3,7 @@
 #include "dcmqi/ConverterBase.h"
 
 // DCMTK includes
+#include <dcmtk/dcmiod/cielabutil.h>
 #include <dcmtk/dcmseg/segdoc.h>
 #include <dcmtk/dcmseg/segment.h>
 
@@ -67,7 +68,7 @@ namespace dcmqi {
       return result;
     }
 
-    // Set Recommended Display CIELab Value to black (DICOM-encoded 0, 32768, 32768
+    // Set Recommended Display CIELab Value to black (DICOM-encoded 0, 32896, 32896
     // for L*=0, a*=0, b*=0). Skipped in PALETTE mode where the per-segment CIELab
     // macro must not be written; the LUT entry must instead be provided by the caller.
     if (setCIELabValue)
@@ -78,7 +79,9 @@ namespace dcmqi {
         cerr << "ERROR: Background segment missing after designating background pixel value 0" << endl;
         return EC_IllegalCall;
       }
-      result = bgSeg->setRecommendedDisplayCIELabValue(0, 32768, 32768);
+      Uint16 L, a, b;
+      IODCIELabUtil::rgb2DicomLab(L, a, b, 0, 0, 0);
+      result = bgSeg->setRecommendedDisplayCIELabValue(L, a, b);
       if (result.bad())
       {
         cerr << "ERROR: Failed to set CIELab color for background segment: " << result.text() << endl;

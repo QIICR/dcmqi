@@ -2,7 +2,6 @@
 #include "dcmqi/Dicom2ItkConverterBase.h"
 #include "dcmqi/Dicom2ItkConverterBin.h"
 #include "dcmqi/Dicom2ItkConverterLabel.h"
-#include "dcmqi/ColorUtilities.h"
 
 // DCMTK includes
 #include <cstddef>
@@ -254,19 +253,18 @@ OFCondition Dicom2ItkConverterBase::addSegmentMetadata(const size_t segmentGroup
 
     // get CIELab color for the segment
     Uint16 ciedcm[3];
-    int rgb[3];
+    Uint8 rgb[3];
     if (segment->getRecommendedDisplayCIELabValue(ciedcm[0], ciedcm[1], ciedcm[2]).bad())
     {
         // NOTE: if the call above fails, it overwrites the values anyway,
         //  not sure if this is a dcmtk bug or not
-        ciedcm[0] = 43803;
-        ciedcm[1] = 26565;
-        ciedcm[2] = 37722;
+        //  default is RGB 128,174,128, same as for ITK to DICOM conversion
+        IODCIELabUtil::rgb2DicomLab(ciedcm[0], ciedcm[1], ciedcm[2], 128, 174, 128);
         cerr << "Failed to get CIELab values - initializing to default " << ciedcm[0] << "," << ciedcm[1] << ","
              << ciedcm[2] << endl;
     }
 
-    ColorUtilities::getSRGBFromIntegerScaledCIELabPCS(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
+    IODCIELabUtil::dicomLab2RGB(rgb[0], rgb[1], rgb[2], ciedcm[0], ciedcm[1], ciedcm[2]);
 
     if (segmentAttributes)
     {

@@ -1,7 +1,6 @@
 
 // DCMQI includes
 #include "dcmqi/Itk2DicomConverter.h"
-#include "dcmqi/ColorUtilities.h"
 #include "dcmqi/JSONSegmentationMetaInformationHandler.h"
 #include "dcmqi/SourceImageIndex.h"
 
@@ -13,6 +12,7 @@
   #include <dcmtk/dcmdata/dcvrtm.h>
   #include <dcmtk/dcmfg/fgfracon.h>
 #endif
+#include <dcmtk/dcmiod/cielabutil.h>
 #include <dcmtk/dcmsr/codes/dcm.h>
 
 #include <itkVectorImageToImageAdaptor.h>
@@ -318,9 +318,12 @@ namespace dcmqi {
       }
 
       unsigned* rgb = segmentAttributes.getRecommendedDisplayRGBValue();
-      int cielab[3];
+      Uint16 cielab[3];
 
-      ColorUtilities::getIntegerScaledCIELabPCSFromSRGB(cielab[0], cielab[1], cielab[2], rgb[0], rgb[1], rgb[2]);
+      IODCIELabUtil::rgb2DicomLab(cielab[0], cielab[1], cielab[2],
+                                  OFstatic_cast(Uint8, std::min(rgb[0], 255u)),
+                                  OFstatic_cast(Uint8, std::min(rgb[1], 255u)),
+                                  OFstatic_cast(Uint8, std::min(rgb[2], 255u)));
 
       CHECK_COND(segment->setRecommendedDisplayCIELabValue(cielab[0],cielab[1],cielab[2]));
 
