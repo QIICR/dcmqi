@@ -49,7 +49,7 @@ if(APPLE)
   endif()
 
   if(NOT "${CMAKE_OSX_SYSROOT}" STREQUAL "")
-    if(NOT EXISTS "${CMAKE_OSX_SYSROOT}")
+    if(IS_ABSOLUTE "${CMAKE_OSX_SYSROOT}" AND NOT EXISTS "${CMAKE_OSX_SYSROOT}")
       message(FATAL_ERROR "error: CMAKE_OSX_SYSROOT='${CMAKE_OSX_SYSROOT}' does not exist")
     endif()
   endif()
