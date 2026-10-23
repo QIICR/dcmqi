@@ -162,7 +162,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/examples/pm-example.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/Expected/pm-example.json
     ${MODULE_TEMP_DIR}/makeNRRDParametricMap-meta.json
   TEST_DEPENDS
     ${dcm2itk}_makeNRRDParametricMap
@@ -186,7 +186,7 @@ dcmqi_add_test(
   NAME ${MODULE_NAME}_FP_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
-    ${CMAKE_SOURCE_DIR}/doc/examples/pm-example-float.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/Expected/pm-example-float.json
     ${MODULE_TEMP_DIR}/makeNRRDParametricMapFP-meta.json
   TEST_DEPENDS
     ${dcm2itk}_makeNRRDParametricMapFP
