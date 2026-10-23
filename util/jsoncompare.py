@@ -50,10 +50,10 @@ def _generate_pprint_json(value):
 
 
 def _is_dict_same(expected, actual, ignore_value_of_keys, ignore_missing_keys):
-    # DAN - I had to flip flop this
     for key in expected:
         if key in ignore_value_of_keys:
             continue
+        # Strict mode already checked the key sets; containment still needs this check.
         if key not in actual:
             return False, \
                    Stack().append(
@@ -118,10 +118,13 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
 
     if isinstance(expected, dict):
         if not ignore_missing_keys:
-            ignored = set(ignore_value_of_keys)
-            if set(expected) - ignored != set(actual) - ignored:
+            expected_keys = set(expected) - ignore_value_of_keys
+            actual_keys = set(actual) - ignore_value_of_keys
+            if expected_keys != actual_keys:
                 return False, Stack().append(
-                    StackItem('Different keys', expected, actual))
+                    StackItem('Different keys: Missing keys: {0}; Extra keys: {1}'
+                              .format(sorted(expected_keys - actual_keys),
+                                      sorted(actual_keys - expected_keys)), expected, actual))
         return _is_dict_same(expected, actual, ignore_value_of_keys,
                              ignore_missing_keys)
 
@@ -137,26 +140,21 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
     return False, Stack().append(StackItem('Unhandled Type: {0}'.format(type(expected)), expected, actual))
 
 
-def get_missing_keys(expected, actual):
-    return [key for key in expected if key not in actual]
-
-
 def are_same(original_a, original_b, ignore_list_order_recursively=False, ignore_missing_keys=False, ignore_value_of_keys=None):
-    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
+    ignore_value_of_keys = set(ignore_value_of_keys or ())
     a = _bottom_up_sort(original_a) if ignore_list_order_recursively else original_a
     b = _bottom_up_sort(original_b) if ignore_list_order_recursively else original_b
     return _are_same(a, b, ignore_value_of_keys, ignore_missing_keys)
 
 
 def contains(expected_original, actual_original, ignore_list_order_recursively=False, ignore_value_of_keys=None):
-    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
+    ignore_value_of_keys = set(ignore_value_of_keys or ())
     actual = _bottom_up_sort(actual_original) if ignore_list_order_recursively else actual_original
     expected = _bottom_up_sort(expected_original) if ignore_list_order_recursively else expected_original
     return _are_same(expected, actual, ignore_value_of_keys, True)
 
 
 def json_are_same(a, b, ignore_list_order_recursively=False, ignore_value_of_keys=None):
-    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
     return are_same(json.loads(a), json.loads(b),
                     ignore_list_order_recursively=ignore_list_order_recursively,
                     ignore_value_of_keys=ignore_value_of_keys)

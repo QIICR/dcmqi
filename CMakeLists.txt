@@ -294,7 +294,7 @@ add_subdirectory("libsrc")
 
 if(BUILD_TESTING)
   add_test(NAME dcmqi_jsoncompare
-    COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+    COMMAND "${Python3_EXECUTABLE}" -B -m unittest discover
       -s "${CMAKE_CURRENT_SOURCE_DIR}/util" -p test_jsoncompare.py
     )
 endif()

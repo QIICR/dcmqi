@@ -445,7 +445,7 @@ dcmqi_add_test(
   dcmqi_add_test(
     NAME ${dcm2itk}_makeNRRD_merged_segment_file_JSON
     MODULE_NAME ${MODULE_NAME}
-    COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    COMMAND python -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
       ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments_merged.json
       ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_file-meta.json
     TEST_DEPENDS
@@ -492,7 +492,7 @@ dcmqi_add_test(
   dcmqi_add_test(
     NAME ${dcm2itk}_makeNRRD_merged_segment_files_from_partial_overlaps_JSON
     MODULE_NAME ${MODULE_NAME}
-    COMMAND python ${CMAKE_SOURCE_DIR}/util/comparejson.py
+    COMMAND python -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
       ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_partial_overlaps.json
       ${MODULE_TEMP_DIR}/makeNRRD_merged_segment_files_from_partial_overlaps-meta.json
     TEST_DEPENDS
@@ -504,7 +504,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     ${MODULE_TEMP_DIR}/makeNRRD-meta.json
   TEST_DEPENDS
@@ -519,7 +519,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME labelmap_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${CMAKE_SOURCE_DIR}/doc/examples/seg-example.json
     ${MODULE_TEMP_DIR}/makeNRRD_labelmap_direct-meta.json
   TEST_DEPENDS
@@ -532,7 +532,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME labelmap_gapped_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_liver_spine_gapped_merged.json
     ${MODULE_TEMP_DIR}/makeNRRD_labelmap_gapped-meta.json
   TEST_DEPENDS
@@ -542,7 +542,7 @@ dcmqi_add_test(
 dcmqi_add_test(
   NAME multi_seg_meta_roundtrip
   MODULE_NAME ${MODULE_NAME}
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/util/comparejson.py
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_SOURCE_DIR}/util/comparejson.py
     ${CMAKE_SOURCE_DIR}/doc/examples/seg-example_multiple_segments.json
     ${MODULE_TEMP_DIR}/makeNRRD_multiple_segments-meta.json
         "['labelID']"
