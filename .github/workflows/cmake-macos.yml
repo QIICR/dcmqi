@@ -17,8 +17,8 @@ jobs:
   build-macos:
 
     runs-on: ${{ matrix.runner }}
-    # So far, a full superbuild (no caches) has always been complete in < 45 minutes.
-    timeout-minutes: 45
+    # Cold Intel superbuilds can exceed 45 minutes before tests and packaging.
+    timeout-minutes: ${{ matrix.arch == 'x86_64' && 90 || 45 }}
 
     permissions:
       contents: write
@@ -144,6 +144,7 @@ jobs:
 
     # Build dcmqi
     - name: "Build dcmqi"
+      id: build
       run: |
         cd ${{ github.workspace }}/dcmqi-build && ninja
 
