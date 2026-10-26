@@ -74,7 +74,7 @@ namespace dcmqi {
      *                          Must not be NULL.
      *  @param  setCIELabValue  If true, set the Recommended Display CIELab
      *                          Value Macro on the background segment to black
-     *                          (DICOM-encoded 0, 32768, 32768). Pass false for
+     *                          (DICOM-encoded 0, 32896, 32896). Pass false for
      *                          PALETTE color model where the per-segment
      *                          CIELab macro must not be written; the caller
      *                          is then responsible for ensuring the Palette

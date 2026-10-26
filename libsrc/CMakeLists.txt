@@ -18,7 +18,6 @@ set(HDRS
   ${INCLUDE_DIR}/Itk2DicomConverter.h
   ${INCLUDE_DIR}/ParaMapConverter.h
   ${INCLUDE_DIR}/Helper.h
-  ${INCLUDE_DIR}/ColorUtilities.h
   ${INCLUDE_DIR}/JSONMetaInformationHandlerBase.h
   ${INCLUDE_DIR}/JSONParametricMapMetaInformationHandler.h
   ${INCLUDE_DIR}/JSONSegmentationMetaInformationHandler.h
@@ -35,7 +34,6 @@ set(SRCS
   Dicom2ItkConverterLabel.cpp
   ParaMapConverter.cpp
   Helper.cpp
-  ColorUtilities.cpp
   Itk2DicomConverter.cpp
   JSONMetaInformationHandlerBase.cpp
   JSONParametricMapMetaInformationHandler.cpp

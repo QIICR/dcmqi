@@ -699,22 +699,13 @@ OFCondition DcmBinToLabelConverter::createPaletteColorLUT()
             Uint16 maxRange = (m_use16Bit ? 65535 : 255);
             for (size_t idx = 0; idx < m_cielabColors.m_numSegments; idx++)
             {
-                // Scale to full 16 bit range
+                // Scale to the LUT range (R, G and B are already clipped to 0..1),
+                // rounding the same way as the 8 bit variant of dicomLab2RGB()
                 double R, G, B;
                 IODCIELabUtil::dicomLab2RGB(R, G, B, m_cielabColors.m_L[idx], m_cielabColors.m_a[idx], m_cielabColors.m_b[idx]);
-
-                R = R*maxRange;
-                G = G*maxRange;
-                B = B*maxRange;
-                if (R < 0) R = 0;
-                if (R > maxRange) R = maxRange;
-                if (G < 0) G = 0;
-                if (G > maxRange) G = maxRange;
-                if (B < 0) B = 0;
-                if (B > maxRange) B = maxRange;
-                m_cielabColors.m_L[idx] = OFstatic_cast(Uint16, R);
-                m_cielabColors.m_a[idx] = OFstatic_cast(Uint16, G);
-                m_cielabColors.m_b[idx] = OFstatic_cast(Uint16, B);
+                m_cielabColors.m_L[idx] = OFstatic_cast(Uint16, floor(R * maxRange + 0.5));
+                m_cielabColors.m_a[idx] = OFstatic_cast(Uint16, floor(G * maxRange + 0.5));
+                m_cielabColors.m_b[idx] = OFstatic_cast(Uint16, floor(B * maxRange + 0.5));
                 // Print RGB values
                 DCMSEG_DEBUG("Segment #" << (idx+1) << " uses RGB color: R=" << m_cielabColors.m_L[idx] << ", G=" << m_cielabColors.m_a[idx] << ", B=" << m_cielabColors.m_b[idx]);
             }
@@ -806,7 +797,9 @@ OFCondition DcmBinToLabelConverter::addBackgroundSegmentIfNeeded()
     // In PALETTE mode the per-segment CIELab macro must not be written,
     // but the color must still be present in the palette LUT so pixel
     // value 0 maps to black.
-    if (isPalette && !m_cielabColors.prepend(0, 32768, 32768))
+    Uint16 L, a, b;
+    IODCIELabUtil::rgb2DicomLab(L, a, b, 0, 0, 0);
+    if (isPalette && !m_cielabColors.prepend(L, a, b))
     {
         DCMSEG_ERROR("Failed to prepend background color for palette LUT");
         return EC_MemoryExhausted;

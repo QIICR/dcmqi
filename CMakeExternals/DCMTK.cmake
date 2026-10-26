@@ -47,12 +47,11 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_SetIfNotDefined(
     ${proj}_GIT_TAG
-    # DCMTK 3.7.0 ++ (May 8th, 2026).
+    # DCMTK 3.7.0 ++ (Sep 20th, 2026).
     # This is DCMTK version with some extra fixes on segmentations and parametric maps,
-    # which have been released a few days after DCMTK 3.7.0, as well as performance
-    # optimizations for segmentation/parametric map. It also includes a simpler
-    # mechanism to add external modules to the DCMTK CMake build.
-    "5708ba6"
+    # as well as fixes on the RGB color conversion.
+    # It also includes a simpler mechanism to add external modules to the DCMTK CMake build.
+    "4e89d4f15512704ebf00b620082d6497f840f45a"
     QUIET
     )
 
