@@ -84,7 +84,8 @@ namespace dcmqi {
     data["SeriesDescription"] = this->seriesDescription;
     data["SeriesNumber"] = this->seriesNumber;
     data["InstanceNumber"] = this->instanceNumber;
-    data["BodyPartExamined"] = this->bodyPartExamined;
+    if (!this->bodyPartExamined.empty())
+      data["BodyPartExamined"] = this->bodyPartExamined;
 
     data["segmentAttributes"] = createAndGetSegmentAttributesJSON();
 

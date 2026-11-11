@@ -292,6 +292,15 @@ endif()
 
 add_subdirectory("libsrc")
 
+if(BUILD_TESTING)
+  add_test(NAME dcmqi_jsoncompare
+    COMMAND "${Python3_EXECUTABLE}" -B
+      "${CMAKE_CURRENT_SOURCE_DIR}/util/test_jsoncompare.py"
+    )
+  set_tests_properties(dcmqi_jsoncompare PROPERTIES
+    LABELS "segmentation;paramap;tid1500;jsoncompare")
+endif()
+
 if(DCMQI_BUILD_APPS)
   add_subdirectory("apps")
 endif()

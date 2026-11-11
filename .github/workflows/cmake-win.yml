@@ -81,9 +81,30 @@ jobs:
           cmake -G "Visual Studio 17 2022" -Ax64 -DBUILD_SHARED_LIBS:BOOL=OFF ${{ github.workspace }}
 
       - name: Build dcmqi
+        id: build
         run: |
           cd ${{ github.workspace }}\b/
           cmake --build . --config Release -- /m
+
+      # Save dependencies before tests/packaging can time out.
+      - name: Save build dependencies cache
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.cache-build-deps.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            ${{ github.workspace }}\b\DCMTK
+            ${{ github.workspace }}\b\DCMTK-build
+            ${{ github.workspace }}\b\DCMTK-install
+            ${{ github.workspace }}\b\DCMTK-prefix
+            ${{ github.workspace }}\b\ITK
+            ${{ github.workspace }}\b\ITK-build
+            ${{ github.workspace }}\b\ITK-install
+            ${{ github.workspace }}\b\ITK-prefix
+            ${{ github.workspace }}\b\zlib
+            ${{ github.workspace }}\b\zlib-build
+            ${{ github.workspace }}\b\zlib-install
+            ${{ github.workspace }}\b\zlib-prefix
+          key: ${{ steps.cache-build-deps.outputs.cache-primary-key }}
 
       # Guard against the silent-skip failure mode: when find_program() fails to locate
       # dciodvfy, CMake drops the conformance tests without failing anything, so the checks
@@ -122,26 +143,6 @@ jobs:
             name: dcmqi-build
             path: ${{ github.workspace }}\b\dcmqi-build\dcmqi-*-win64*.zip
             overwrite: true
-
-      # Save cache even if a later step (test, package) failed, so deps don't need rebuilding next run
-      - name: Save build dependencies cache
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.cache-build-deps.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
-        with:
-          path: |
-            ${{ github.workspace }}\b\DCMTK
-            ${{ github.workspace }}\b\DCMTK-build
-            ${{ github.workspace }}\b\DCMTK-install
-            ${{ github.workspace }}\b\DCMTK-prefix
-            ${{ github.workspace }}\b\ITK
-            ${{ github.workspace }}\b\ITK-build
-            ${{ github.workspace }}\b\ITK-install
-            ${{ github.workspace }}\b\ITK-prefix
-            ${{ github.workspace }}\b\zlib
-            ${{ github.workspace }}\b\zlib-build
-            ${{ github.workspace }}\b\zlib-install
-            ${{ github.workspace }}\b\zlib-prefix
-          key: ${{ steps.cache-build-deps.outputs.cache-primary-key }}
 
       - name: Publish package
         # Publish tagged (stable) releases only, inline like the Linux/macOS builds, so
