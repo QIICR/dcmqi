@@ -41,9 +41,12 @@ macro(dcmqi_add_test_executable)
   target_link_libraries(${_name}
     ${_SELF_MODULE_NAME}Lib
     dcmqi
-    ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES}
     ${DCMTK_LIBRARIES}
     )
+  # The test drivers include the application source, so they must see the
+  # same TCLAP headers as ${_SELF_MODULE_NAME}Lib even if the including
+  # project has another copy of TCLAP on its include path.
+  target_include_directories(${_name} BEFORE PRIVATE ${DCMQI_TCLAP_INCLUDE_DIR})
   set_target_properties(${_name} PROPERTIES LABELS ${_SELF_MODULE_NAME})
   set_target_properties(${_name} PROPERTIES FOLDER ${${_SELF_MODULE_NAME}_TARGETS_FOLDER})
   if(TARGET ITKFactoryRegistration)

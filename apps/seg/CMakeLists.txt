@@ -9,16 +9,15 @@ if(NOT DCMQI_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
 endif()
 
 #
-# SlicerExecutionModel
+# Command-line applications
 #
-find_package(SlicerExecutionModel REQUIRED)
-include(${SlicerExecutionModel_USE_FILE})
+include(dcmqiMacroBuildCLI)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME segimage2itkimage)
 
 #-----------------------------------------------------------------------------
-SEMMacroBuildCLI(
+dcmqiMacroBuildCLI(
   NAME ${MODULE_NAME}
   TARGET_LIBRARIES dcmqi
   EXECUTABLE_ONLY
@@ -33,7 +32,7 @@ endif()
 set(MODULE_NAME itkimage2segimage)
 
 #-----------------------------------------------------------------------------
-SEMMacroBuildCLI(
+dcmqiMacroBuildCLI(
   NAME ${MODULE_NAME}
   TARGET_LIBRARIES dcmqi
   EXECUTABLE_ONLY
@@ -48,7 +47,7 @@ endif()
 set(MODULE_NAME bin2labelsegimage)
 
 #-----------------------------------------------------------------------------
-SEMMacroBuildCLI(
+dcmqiMacroBuildCLI(
   NAME ${MODULE_NAME}
   TARGET_LIBRARIES dcmqi
   EXECUTABLE_ONLY

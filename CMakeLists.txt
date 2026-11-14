@@ -252,6 +252,24 @@ mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
 mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
 mark_as_superbuild(DCMQI_BUILTIN_JSONCPP:BOOL)
 
+# TCLAP (header-only, used by the command-line parsing code of the applications)
+set(TCLAP_INCLUDE_DIR "" CACHE PATH
+  "Directory containing tclap/CmdLine.h. If empty, the copy of TCLAP bundled with ${PROJECT_NAME} is used.")
+mark_as_advanced(TCLAP_INCLUDE_DIR)
+set(_msg "Checking if using built-in TCLAP")
+message(STATUS ${_msg})
+if(TCLAP_INCLUDE_DIR)
+  if(NOT EXISTS "${TCLAP_INCLUDE_DIR}/tclap/CmdLine.h")
+    message(FATAL_ERROR "TCLAP_INCLUDE_DIR is set to ${TCLAP_INCLUDE_DIR}, which does not contain tclap/CmdLine.h")
+  endif()
+  set(DCMQI_TCLAP_INCLUDE_DIR ${TCLAP_INCLUDE_DIR})
+  message(STATUS "${_msg} - no")
+else()
+  set(DCMQI_TCLAP_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/tclap)
+  message(STATUS "${_msg} - yes")
+endif()
+mark_as_superbuild(TCLAP_INCLUDE_DIR:PATH)
+
 # Python 3
 if(BUILD_TESTING)
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
@@ -333,16 +351,10 @@ if(NOT Slicer_DIR)
     CONFIG_DIR_CONFIG
     DCMTK_DIR_CONFIG
     )
-  if(DCMQI_BUILD_APPS)
-    list(APPEND path_vars
-      SlicerExecutionModel_DIR_CONFIG
-      )
-  endif()
 
   # For a build tree
   set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
   set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
-  set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}find_package(DCMTK NO_MODULE REQUIRED)\n")
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}find_package(ITK NO_MODULE REQUIRED)\n")
