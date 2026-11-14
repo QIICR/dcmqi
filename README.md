@@ -32,6 +32,10 @@ dcmqi is developed and maintained by the [NCI Imaging Data Commons](https://imag
 
 dcmqi is distributed under [3-clause BSD license](https://github.com/QIICR/dcmqi/blob/master/LICENSE.txt).
 
+The source tree includes two third-party libraries under their own licenses:
+[JsonCpp](jsoncpp/jsoncpp.cpp) (public domain or MIT) and
+[TCLAP](tclap/README.md) (MIT, see [tclap/COPYING](tclap/COPYING)).
+
 Our goal is to support and encourage adoption of the DICOM standard in both academic and commercial tools. We will be happy to hear about your usage of dcmqi, but you don't have to report back to us.
 
 # Support
