@@ -40,6 +40,14 @@
 #include <string>
 #include <vector>
 
+// dcmqiMacroBuildCLI compiles each application into "<module>Lib" with main
+// renamed ModuleEntryPoint, and the executable's main() calls it. This
+// declaration precedes the application's main(), so ModuleEntryPoint gets C
+// linkage and its symbol name does not depend on how the application declares
+// argv: MSVC decorates "char* argv[]" and "char** argv" differently, although
+// they are the same type.
+extern "C" int ModuleEntryPoint(int argc, char* argv[]);
+
 namespace dcmqiCLP
 {
 

@@ -2,9 +2,10 @@
 //
 // The application's own main() is compiled into the "<module>Lib" library
 // under the name ModuleEntryPoint, so that the test drivers can link the
-// application code without a second main().
+// application code without a second main(). ModuleEntryPoint has C linkage,
+// as declared in dcmqiCLP.h.
 
-int ModuleEntryPoint(int argc, char* argv[]);
+extern "C" int ModuleEntryPoint(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
