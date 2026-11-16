@@ -411,6 +411,24 @@ if(NOT Slicer_DIR)
 endif()
 
 #-----------------------------------------------------------------------------
+# License notices
+#
+# Shipped with the applications in the RuntimeLibraries component, which is
+# what the packages below contain. The TCLAP notice is required by its MIT
+# license whenever the bundled copy is compiled into the applications.
+
+if(NOT Slicer_DIR)
+  install(FILES ${DCMQI_SOURCE_DIR}/LICENSE.txt
+    DESTINATION ${DCMQI_INSTALL_DOC_DIR} COMPONENT RuntimeLibraries
+    )
+  if(DCMQI_BUILD_APPS AND DCMQI_TCLAP_INCLUDE_DIR STREQUAL "${DCMQI_SOURCE_DIR}/tclap")
+    install(FILES ${DCMQI_SOURCE_DIR}/tclap/COPYING
+      DESTINATION ${DCMQI_INSTALL_DOC_DIR} RENAME TCLAP-COPYING.txt COMPONENT RuntimeLibraries
+      )
+  endif()
+endif()
+
+#-----------------------------------------------------------------------------
 # Packaging
 #
 
