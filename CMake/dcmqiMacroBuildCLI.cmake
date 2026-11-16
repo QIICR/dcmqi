@@ -28,6 +28,15 @@
 #   SlicerExecutionModel_DEFAULT_CLI_TARGETS_FOLDER_PREFIX
 #   SlicerExecutionModel_USE_UTF8 (Windows: use UTF-8 as the process code page)
 #
+# 3D Slicer turns off ITK's automatic IO factory registration and instead
+# provides a main() that registers the factories before calling the
+# application, with the include directories and libraries it needs. They are
+# used when defined:
+#
+#   SlicerExecutionModel_CLI_LIBRARY_WRAPPER_CXX
+#   SlicerExecutionModel_EXTRA_INCLUDE_DIRECTORIES
+#   SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES
+#
 # Sets <name>_TARGETS_FOLDER in the calling scope.
 #
 # Requires DCMQI_TCLAP_INCLUDE_DIR (set in the top-level CMakeLists.txt) and
@@ -112,8 +121,18 @@ function(dcmqiMacroBuildCLI)
     )
 
   # <name>
-  add_executable(${name} ${DCMQI_SOURCE_DIR}/CMake/dcmqiCLIExecutableWrapper.cxx)
-  target_link_libraries(${name} PRIVATE ${name}Lib)
+  if(SlicerExecutionModel_CLI_LIBRARY_WRAPPER_CXX)
+    add_executable(${name} ${SlicerExecutionModel_CLI_LIBRARY_WRAPPER_CXX})
+    # Without MODULE_STATIC, Slicer's wrapper declares ModuleEntryPoint as
+    # imported from a DLL on Windows; here it is in the static <name>Lib.
+    target_compile_definitions(${name} PRIVATE MODULE_STATIC)
+  else()
+    add_executable(${name} ${DCMQI_SOURCE_DIR}/CMake/dcmqiCLIExecutableWrapper.cxx)
+  endif()
+  if(SlicerExecutionModel_EXTRA_INCLUDE_DIRECTORIES)
+    target_include_directories(${name} PRIVATE ${SlicerExecutionModel_EXTRA_INCLUDE_DIRECTORIES})
+  endif()
+  target_link_libraries(${name} PRIVATE ${name}Lib ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES})
   if(WIN32 AND SlicerExecutionModel_USE_UTF8)
     target_sources(${name} PRIVATE ${DCMQI_SOURCE_DIR}/CMake/dcmqiCLIUTF8.manifest)
   endif()
