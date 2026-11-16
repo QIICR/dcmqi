@@ -2,23 +2,15 @@
 #-----------------------------------------------------------------------------
 
 #
-# DCMQI
+# Command-line applications
 #
-if(NOT DCMQI_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
-  find_package(DCMQI REQUIRED)
-endif()
-
-#
-# SlicerExecutionModel
-#
-find_package(SlicerExecutionModel REQUIRED)
-include(${SlicerExecutionModel_USE_FILE})
+include(dcmqiMacroBuildCLI)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME tid1500writer)
 
 #-----------------------------------------------------------------------------
-SEMMacroBuildCLI(
+dcmqiMacroBuildCLI(
   NAME ${MODULE_NAME}
   TARGET_LIBRARIES dcmqi
   EXECUTABLE_ONLY
@@ -33,7 +25,7 @@ endif()
 set(MODULE_NAME tid1500reader)
 
 #-----------------------------------------------------------------------------
-SEMMacroBuildCLI(
+dcmqiMacroBuildCLI(
   NAME ${MODULE_NAME}
   TARGET_LIBRARIES dcmqi
   EXECUTABLE_ONLY

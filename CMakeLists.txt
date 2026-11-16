@@ -252,6 +252,31 @@ mark_as_superbuild(JsonCpp_INCLUDE_DIR:PATH)
 mark_as_superbuild(JsonCpp_LIBRARY:FILEPATH)
 mark_as_superbuild(DCMQI_BUILTIN_JSONCPP:BOOL)
 
+# TCLAP (header-only, used by the command-line parsing code of the applications)
+set(TCLAP_INCLUDE_DIR "" CACHE PATH
+  "Directory containing tclap/CmdLine.h. If empty, the copy of TCLAP bundled with ${PROJECT_NAME} is used.")
+mark_as_advanced(TCLAP_INCLUDE_DIR)
+set(_msg "Checking if using built-in TCLAP")
+message(STATUS ${_msg})
+if(TCLAP_INCLUDE_DIR)
+  if(NOT EXISTS "${TCLAP_INCLUDE_DIR}/tclap/CmdLine.h")
+    message(FATAL_ERROR "TCLAP_INCLUDE_DIR is set to ${TCLAP_INCLUDE_DIR}, which does not contain tclap/CmdLine.h")
+  endif()
+  set(DCMQI_TCLAP_INCLUDE_DIR ${TCLAP_INCLUDE_DIR})
+  message(STATUS "${_msg} - no")
+else()
+  set(DCMQI_TCLAP_INCLUDE_DIR ${DCMQI_SOURCE_DIR}/tclap)
+  message(STATUS "${_msg} - yes")
+endif()
+mark_as_superbuild(TCLAP_INCLUDE_DIR:PATH)
+
+# dcmqiGenerateCLP (apps/GenerateCLP) runs during the build. When cross-compiling,
+# point this at a copy built for the build host.
+set(DCMQI_GENERATECLP_EXECUTABLE "" CACHE FILEPATH
+  "dcmqiGenerateCLP executable to run during the build instead of building it (for cross-compiling)")
+mark_as_advanced(DCMQI_GENERATECLP_EXECUTABLE)
+mark_as_superbuild(DCMQI_GENERATECLP_EXECUTABLE:FILEPATH)
+
 # Python 3
 if(BUILD_TESTING)
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
@@ -333,16 +358,10 @@ if(NOT Slicer_DIR)
     CONFIG_DIR_CONFIG
     DCMTK_DIR_CONFIG
     )
-  if(DCMQI_BUILD_APPS)
-    list(APPEND path_vars
-      SlicerExecutionModel_DIR_CONFIG
-      )
-  endif()
 
   # For a build tree
   set(CONFIG_DIR_CONFIG ${CMAKE_BINARY_DIR})
   set(DCMTK_DIR_CONFIG ${DCMTK_DIR})
-  set(SlicerExecutionModel_DIR_CONFIG ${SlicerExecutionModel_DIR})
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}####### Expanded from \@DCMQI_CONFIG_CODE\@ #######\n")
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}find_package(DCMTK NO_MODULE REQUIRED)\n")
   set(${PROJECT_NAME}_CONFIG_CODE "${${PROJECT_NAME}_CONFIG_CODE}find_package(ITK NO_MODULE REQUIRED)\n")
@@ -388,6 +407,24 @@ if(NOT Slicer_DIR)
             DESTINATION cmake
             )
     install(DIRECTORY ${PROJECT_BINARY_DIR}/include DESTINATION .)
+  endif()
+endif()
+
+#-----------------------------------------------------------------------------
+# License notices
+#
+# Shipped with the applications in the RuntimeLibraries component, which is
+# what the packages below contain. The TCLAP notice is required by its MIT
+# license whenever the bundled copy is compiled into the applications.
+
+if(NOT Slicer_DIR)
+  install(FILES ${DCMQI_SOURCE_DIR}/LICENSE.txt
+    DESTINATION ${DCMQI_INSTALL_DOC_DIR} COMPONENT RuntimeLibraries
+    )
+  if(DCMQI_BUILD_APPS AND DCMQI_TCLAP_INCLUDE_DIR STREQUAL "${DCMQI_SOURCE_DIR}/tclap")
+    install(FILES ${DCMQI_SOURCE_DIR}/tclap/COPYING
+      DESTINATION ${DCMQI_INSTALL_DOC_DIR} RENAME TCLAP-COPYING.txt COMPONENT RuntimeLibraries
+      )
   endif()
 endif()
 

@@ -26,11 +26,6 @@ set(DCMQI_DEPENDENCIES
   DCMTK
   ITK
   )
-if(DCMQI_BUILD_APPS)
-  list(APPEND DCMQI_DEPENDENCIES
-    SlicerExecutionModel
-    )
-endif()
 
 #-----------------------------------------------------------------------------
 # WARNING - No change should be required after this comment

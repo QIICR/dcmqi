@@ -142,6 +142,7 @@ jobs:
 
     # Build dcmqi
     - name: "Build dcmqi"
+      id: build
       run: |
         cd ${{ github.workspace }}/dcmqi-build && ninja
 
