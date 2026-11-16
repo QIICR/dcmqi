@@ -28,16 +28,13 @@ jobs:
       actions: write
       packages: write
 
+    # No host Python is set up here: the build and tests run inside the dockcross
+    # container (docker/Makefile), which brings its own interpreters.
     steps:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v7
-      with:
-        python-version: '3.10.11'
 
-    - name: "Install jsondiff"
-      run: pip install jsondiff
     - name: "Install cmake"
       run: |
         sudo apt-get update
@@ -189,7 +186,7 @@ jobs:
           # Fall back to the newest CPython in the image if the pinned one is ever dropped.
           PYTHON=$(ls -1 /opt/python/cp3*-cp3*/bin/python | sort -V | tail -n 1)
         fi
-        "$PYTHON" -m pip install --no-cache-dir "cmake<4" ninja jsondiff
+        "$PYTHON" -m pip install --no-cache-dir "cmake<4" ninja
         echo "PYTHON=$PYTHON" >> "$GITHUB_ENV"
         echo "$(dirname "$PYTHON")" >> "$GITHUB_PATH"
 

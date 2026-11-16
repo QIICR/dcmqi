@@ -36,11 +36,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.10.11'
-
-      - name: Install prerequisite python packages
-        run: |
-          pip install jsondiff
+          python-version: '3.12'
 
       # Provides dciodvfy, which apps/*/Testing/CMakeLists.txt look up with find_program().
       # Without it CMake silently drops the DICOM conformance tests.
