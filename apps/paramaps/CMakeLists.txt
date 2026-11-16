@@ -2,13 +2,6 @@
 #-----------------------------------------------------------------------------
 
 #
-# DCMQI
-#
-if(NOT DCMQI_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
-  find_package(DCMQI REQUIRED)
-endif()
-
-#
 # Command-line applications
 #
 include(dcmqiMacroBuildCLI)
