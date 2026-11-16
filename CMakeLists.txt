@@ -270,6 +270,13 @@ else()
 endif()
 mark_as_superbuild(TCLAP_INCLUDE_DIR:PATH)
 
+# dcmqiGenerateCLP (apps/GenerateCLP) runs during the build. When cross-compiling,
+# point this at a copy built for the build host.
+set(DCMQI_GENERATECLP_EXECUTABLE "" CACHE FILEPATH
+  "dcmqiGenerateCLP executable to run during the build instead of building it (for cross-compiling)")
+mark_as_advanced(DCMQI_GENERATECLP_EXECUTABLE)
+mark_as_superbuild(DCMQI_GENERATECLP_EXECUTABLE:FILEPATH)
+
 # Python 3
 if(BUILD_TESTING)
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
