@@ -675,6 +675,9 @@ Parameter ReadParameter(const Element& element, ParameterType type)
         {
           throw DescriptorError(context + ": <default> must be an integer");
         }
+        // The default is written into the generated code, where "010" would be
+        // octal and "08" would not compile: write the value parsed above.
+        parameter.defaultValue = std::to_string(value);
       }
       break;
     case BooleanParameter:

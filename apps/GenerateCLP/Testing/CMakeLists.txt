@@ -126,6 +126,33 @@ dcmqi_add_rejected_descriptor_test(cdataSection "CDATA sections .* are not suppo
 ]==])
 
 #-----------------------------------------------------------------------------
+# Descriptors that dcmqiGenerateCLP must accept, and the code it generates
+#
+
+# dcmqi_add_generated_header_test(<case> <regex the header must match> <xml>)
+function(dcmqi_add_generated_header_test case regex xml)
+  file(WRITE ${descriptor_dir}/${case}.xml "${xml}")
+  add_test(NAME dcmqiGenerateCLP_generates_${case}
+    COMMAND ${CMAKE_COMMAND}
+      "-DCOMMAND=$<TARGET_FILE:dcmqiGenerateCLP>|${descriptor_dir}/${case}.xml|${descriptor_dir}/${case}CLP.h"
+      -DEXPECTED_RESULT=0
+      -DOUTPUT_FILE=${descriptor_dir}/${case}CLP.h
+      "-DEXPECTED_OUTPUT_FILE_REGEX=${regex}"
+      -P ${check_script}
+    )
+  set_property(TEST dcmqiGenerateCLP_generates_${case} PROPERTY LABELS dcmqiGenerateCLP)
+endfunction()
+
+# A leading zero would make the literal octal ("010" is 8) or invalid ("08").
+dcmqi_add_generated_header_test(integerDefaultDecimal [[int x = 8;.*false, 8, "int"]] [[
+<executable>
+  <parameters>
+    <integer><name>x</name><longflag>x</longflag><default>+008</default></integer>
+  </parameters>
+</executable>
+]])
+
+#-----------------------------------------------------------------------------
 # Command-line interface of the applications
 #
 set(applications
