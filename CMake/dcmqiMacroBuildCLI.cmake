@@ -10,6 +10,9 @@
 #    renamed ModuleEntryPoint so that test drivers can link it.
 #  - <name> is the executable. <name>.xml is copied next to it and installed
 #    with it.
+#  - With MSVC, the C/C++ runtime DLLs are installed next to the executables
+#    (InstallRequiredSystemLibraries; CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP
+#    turns this off).
 #
 # Applications are always built as executables; EXECUTABLE_ONLY is accepted
 # for compatibility and has no effect.
@@ -134,6 +137,17 @@ function(dcmqiMacroBuildCLI)
   install(FILES ${xml}
     DESTINATION ${install_destination} COMPONENT RuntimeLibraries
     )
+
+  # The Microsoft C/C++ runtime DLLs are installed next to the executables,
+  # once, so that the applications run on systems without the Visual C++
+  # Redistributable.
+  get_property(runtime_installed GLOBAL PROPERTY DCMQI_CLI_SYSTEM_RUNTIME_INSTALLED)
+  if(MSVC AND NOT runtime_installed)
+    set_property(GLOBAL PROPERTY DCMQI_CLI_SYSTEM_RUNTIME_INSTALLED TRUE)
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${install_destination})
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT RuntimeLibraries)
+    include(InstallRequiredSystemLibraries)
+  endif()
 
   set(${name}_TARGETS_FOLDER ${folder} PARENT_SCOPE)
 endfunction()
